@@ -20,26 +20,81 @@ body {
   height: auto;
 }
 
-/* Header Styles */
-header {
+/* Front Page Styles */
+.front-page {
   background-color: #2980b9;
   color: #fff;
-  padding: 20px 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
 }
 
-header .container {
-  display: flex;
+.front-page .logo {
+  margin-bottom: 20px;
 }
 
-header h1 {
-  margin: 0;
-  font-size: 36px;
-  align-self: center;
+.front-page h1 {
+  font-size: 40px;
+  margin-bottom: 20px;
 }
 
-header .logo {
-  margin-right: 20px;
+.front-page p {
+  font-size: 20px;
+  margin-bottom: 40px;
+}
+
+.scroll-down {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.scroll-down a {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  position: relative;
+  animation: scroll-down 1.5s infinite;
+}
+
+.scroll-down a:before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 6px;
+  height: 6px;
+  background-color: #fff;
+  border-radius: 50%;
+  animation: scroll-down-pulse 1.5s infinite;
+}
+
+@keyframes scroll-down {
+  0% {
+    transform: translate(-50%, -40%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -40%) scale(0.8);
+  }
+  100% {
+    transform: translate(-50%, -40%) scale(1);
+  }
+}
+
+@keyframes scroll-down-pulse {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 /* Section Styles */
