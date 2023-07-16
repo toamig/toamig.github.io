@@ -1,0 +1,204 @@
+/* Add your custom CSS styles here */
+
+/* General Styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f2f2f2;
+  color: #333;
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.logo {
+  width: 120px; /* Adjust the size of your logo */
+  height: auto;
+}
+
+/* Header Styles */
+header {
+  background-color: #2980b9;
+  color: #fff;
+  padding: 20px 0;
+  text-align: center;
+}
+
+header .container {
+  display: flex;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 36px;
+  align-self: center;
+}
+
+header .logo {
+  margin-right: 20px;
+}
+
+/* Section Styles */
+section {
+  margin-bottom: 40px;
+}
+
+h2 {
+  margin-bottom: 20px;
+  font-size: 30px;
+  text-align: center;
+}
+
+/* About Section Styles */
+#about p {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.about-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.about-content ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.about-content ul li {
+  margin-bottom: 10px;
+}
+
+/* Technologies Section Styles */
+.cards.technologies {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.cards.technologies .card {
+  width: 180px; /* Adjust the width of the technology cards */
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  margin: 10px; /* Adjust the right margin between technology cards */
+  transition: transform 0.3s ease;
+}
+
+.cards.technologies .card:hover {
+  transform: translateY(-5px);
+}
+
+.cards.technologies .card .card-content {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+
+.cards.technologies .card .logo {
+  width: 60px; /* Adjust the size of the technology logo */
+  height: auto;
+  margin-right: 20px;
+}
+
+.cards.technologies .card .description {
+  flex: 1;
+}
+
+.cards.technologies .card h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+/* Projects Section Styles */
+#projects {
+  background-color: #f2f2f2;
+}
+
+#projects .container {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+#projects h2 {
+  margin-bottom: 20px;
+  font-size: 30px;
+  text-align: center;
+}
+
+.project-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px; /* Add the desired space between project cards */
+}
+
+.project-card {
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  width: 45%; /* Adjust the width of the project cards */
+  height: 200px; /* Adjust the height of the project cards */
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.project-card:hover {
+  transform: scale(1.1); /* Increase size on hover */
+}
+
+.project-card .project-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  margin: 0 auto;
+}
+
+.project-card .project-details {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.7);
+  transition: opacity 0.3s ease;
+  opacity: 0;
+}
+
+.project-card:hover .project-details {
+  opacity: 1;
+}
+
+.project-card h3 {
+  margin: 0;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.project-card p {
+  margin-bottom: 20px;
+}
+
+/* Footer Styles */
+footer {
+  background-color: #2980b9;
+  color: #fff;
+  text-align: center;
+  padding: 20px 0;
+}
