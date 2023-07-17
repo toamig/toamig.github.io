@@ -32,8 +32,20 @@ body {
   text-align: center;
 }
 
+.front-page .branding {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.front-page .branding h1 {
+  font-size: 55px;
+}
+
 .front-page .logo {
   margin-bottom: 20px;
+  margin-right: 20px;
+  width: 25%;
 }
 
 .front-page h1 {
@@ -139,7 +151,7 @@ h2 {
 }
 
 .cards.technologies .card {
-  width: 180px; /* Adjust the width of the technology cards */
+  width: 160px; /* Adjust the width of the technology cards */
   background-color: #fff;
   border-radius: 5px;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
@@ -158,8 +170,8 @@ h2 {
 }
 
 .cards.technologies .card .logo {
-  width: 60px; /* Adjust the size of the technology logo */
-  height: auto;
+  height: 40px; /* Adjust the size of the technology logo */
+  width: auto;
   margin-right: 20px;
 }
 
