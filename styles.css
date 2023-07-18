@@ -9,6 +9,16 @@ body {
   color: #333;
 }
 
+section {
+  margin-bottom: 40px;
+}
+
+h2 {
+  margin-bottom: 20px;
+  font-size: 30px;
+  text-align: center;
+}
+
 .container {
   max-width: 960px;
   margin: 0 auto;
@@ -18,6 +28,12 @@ body {
 .logo {
   width: 120px; /* Adjust the size of your logo */
   height: auto;
+}
+
+.strong-text {
+  color: black;
+  font-size: 120%;
+  font-weight: 900;
 }
 
 /* Front Page Styles */
@@ -109,38 +125,59 @@ body {
   }
 }
 
-/* Section Styles */
-section {
-  margin-bottom: 40px;
-}
-
-h2 {
-  margin-bottom: 20px;
-  font-size: 30px;
-  text-align: center;
-}
-
 /* About Section Styles */
-#about p {
-  text-align: center;
-  margin-bottom: 20px;
+#about {
+  background-color: #2980b9;
 }
 
 .about-content {
+  padding: 5em 0;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: center;
   align-items: center;
-  text-align: center;
+  gap: 25px;
 }
 
-.about-content ul {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
+#about img {
+  height: 15em;
+  width: auto;
+  margin: 0 25px;
+  object-fit: cover;
+  border-radius: 50%;
+  padding: 5px;
+  border:5px solid black;
 }
 
-.about-content ul li {
-  margin-bottom: 10px;
+.about-text {
+  flex: 1;
+  text-align: left;
+}
+
+#about h2 {
+  margin-top: 0;
+  font-size: 36px;
+  margin-bottom: 25px;
+  color: black;
+}
+
+#about p {
+  font-size: 18px;
+  line-height: 1.6;
+  margin-bottom: 15px;
+  color: white;
+}
+
+#about .p1 {
+  margin-left: 0px;
+}
+
+#about .p2 {
+  margin-left: 40px;
+}
+
+#about .p3 {
+  margin-left: 80px;
 }
 
 /* Technologies Section Styles */
@@ -184,11 +221,18 @@ h2 {
   font-size: 16px;
 }
 
-/* Projects Section Styles */
-#projects {
-  background-color: #f2f2f2;
+/* Other section styles */
+#other ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
 }
 
+#other ul li {
+  margin-bottom: 10px;
+}
+
+/* Projects Section Styles */
 #projects .container {
   max-width: 960px;
   margin: 0 auto;
