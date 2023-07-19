@@ -128,6 +128,7 @@ h2 {
 /* About Section Styles */
 #about {
   background-color: #2980b9;
+  border-top: 5px solid white;
 }
 
 .about-content {
@@ -146,7 +147,7 @@ h2 {
   object-fit: cover;
   border-radius: 50%;
   padding: 5px;
-  border:5px solid black;
+  /* border:5px solid white; */
 }
 
 .about-text {
@@ -178,6 +179,22 @@ h2 {
 
 #about .p3 {
   margin-left: 80px;
+}
+
+/* Education Section Styles */
+#education .education-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px; /* Adjust the space between education cards */
+}
+
+/* Experience Section Styles */
+#experience .experience-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px; /* Adjust the space between experience cards */
 }
 
 /* Technologies Section Styles */
@@ -312,4 +329,68 @@ footer {
   color: #fff;
   text-align: center;
   padding: 20px 0;
+}
+
+.social-icons {
+  margin-top: 20px;
+}
+
+.social-icons a {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.social-icons img {
+  width: 30px; /* Adjust the size of the social media icons */
+  height: 30px;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.social-icons img:hover {
+  opacity: 1;
+}
+
+
+/**
+ * Cards Section
+ */
+
+/* Exteded Card Section */
+.extended-card {
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease;
+  width: 300px; /* Adjust the width of the experience cards */
+  padding: 20px;
+}
+
+.extended-card:hover {
+  transform: translateY(-5px);
+}
+
+.extended-card .logo {
+  height: 80px; /* Adjust the size of the company logos */
+  width: auto;
+  margin-bottom: 10px;
+}
+
+.extended-card .details h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.extended-card .details p {
+  margin-bottom: 10px;
+}
+
+.extended-card .details .role {
+  font-weight: bold;
+}
+
+.extended-card .details .time-period {
+  color: #888;
+  font-size: 14px;
 }
