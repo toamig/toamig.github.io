@@ -1,5 +1,8 @@
 /* Add your custom CSS styles here */
 
+@import url('https://fonts.googleapis.com/css2?family=Hind:wght@300;400;500;600;700&family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
 /* General Styles */
 body {
   font-family: Arial, sans-serif;
@@ -13,16 +16,55 @@ section {
   margin-bottom: 40px;
 }
 
+h1 {
+  font-family: 'Montserrat', sans-serif;
+}
+
 h2 {
-  margin-bottom: 20px;
+  font-family: 'Montserrat', sans-serif;
+  margin: 0;
+  margin-bottom: 5px;
   font-size: 30px;
   text-align: center;
+}
+
+h3 {
+  font-family: 'Roboto', sans-serif;
+}
+
+p {
+  font-family: 'Lato', sans-serif;
+}
+
+audio {
+  display: none;
 }
 
 .container {
   max-width: 960px;
   margin: 0 auto;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.container .underline {
+  background-image: linear-gradient(to right, #2980b9, #00a575);
+  width: 5rem;
+  height: 5px;
+  border-radius: 5px;
+  opacity: 1;
+  margin-bottom: 2.5em;
+}
+
+.cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  gap: 20px; /* Adjust the space between education cards */
 }
 
 .logo {
@@ -38,7 +80,7 @@ h2 {
 
 /* Front Page Styles */
 .front-page {
-  background-color: #2980b9;
+  background-image: linear-gradient(to bottom, #2980b9 100%, #00a575 0%);;
   color: #fff;
   height: 100vh;
   display: flex;
@@ -127,8 +169,7 @@ h2 {
 
 /* About Section Styles */
 #about {
-  background-color: #2980b9;
-  border-top: 5px solid white;
+  background-image: linear-gradient(to bottom, #2980b9, #00a575 100%);
 }
 
 .about-content {
@@ -156,10 +197,8 @@ h2 {
 }
 
 #about h2 {
-  margin-top: 0;
   font-size: 36px;
-  margin-bottom: 25px;
-  color: black;
+  color: white;
 }
 
 #about p {
@@ -169,71 +208,37 @@ h2 {
   color: white;
 }
 
-#about .p1 {
-  margin-left: 0px;
-}
-
-#about .p2 {
-  margin-left: 40px;
-}
-
-#about .p3 {
-  margin-left: 80px;
-}
-
-/* Education Section Styles */
-#education .education-cards {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px; /* Adjust the space between education cards */
-}
-
-/* Experience Section Styles */
-#experience .experience-cards {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px; /* Adjust the space between experience cards */
-}
-
 /* Technologies Section Styles */
-.cards.technologies {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.cards.technologies .card {
+#technologies .card {
   width: 160px; /* Adjust the width of the technology cards */
   background-color: #fff;
   border-radius: 5px;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-  margin: 10px; /* Adjust the right margin between technology cards */
   transition: transform 0.3s ease;
 }
 
-.cards.technologies .card:hover {
+#technologies .card:hover {
   transform: translateY(-5px);
 }
 
-.cards.technologies .card .card-content {
+#technologies .card .card-content {
   display: flex;
   align-items: center;
   padding: 10px;
 }
 
-.cards.technologies .card .logo {
+#technologies .card .logo {
+  color: #2980b9;
   height: 40px; /* Adjust the size of the technology logo */
   width: auto;
   margin-right: 20px;
 }
 
-.cards.technologies .card .description {
+#technologies .card .description {
   flex: 1;
 }
 
-.cards.technologies .card h3 {
+#technologies .card h3 {
   margin: 0;
   font-size: 16px;
 }
@@ -255,24 +260,11 @@ h2 {
   margin: 0 auto;
 }
 
-#projects h2 {
-  margin-bottom: 20px;
-  font-size: 30px;
-  text-align: center;
-}
-
-.project-cards {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px; /* Add the desired space between project cards */
-}
-
 .project-card {
   background-size: cover;
   background-position: center;
   position: relative;
-  width: 45%; /* Adjust the width of the project cards */
+  width: 50%; /* Adjust the width of the project cards */
   height: 200px; /* Adjust the height of the project cards */
   background-color: #fff;
   border-radius: 5px;
@@ -325,14 +317,14 @@ h2 {
 
 /* Footer Styles */
 footer {
-  background-color: #2980b9;
+  background-image: linear-gradient(to bottom, #00a575, #2980b9 100%);
   color: #fff;
   text-align: center;
   padding: 20px 0;
 }
 
 .social-icons {
-  margin-top: 20px;
+  margin: 0;
 }
 
 .social-icons a {
@@ -353,17 +345,17 @@ footer {
 
 
 /**
- * Cards Section
+ * Cards Styles
  */
 
-/* Exteded Card Section */
+/* Exteded Card Styles */
 .extended-card {
   background-color: #fff;
   border-radius: 5px;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   transition: transform 0.3s ease;
-  width: 300px; /* Adjust the width of the experience cards */
+  width: 40%; /* Adjust the width of the experience cards */
   padding: 20px;
 }
 
@@ -393,4 +385,25 @@ footer {
 .extended-card .details .time-period {
   color: #888;
   font-size: 14px;
+}
+
+/* Gradient Box Styles */
+.gradient-box {
+  border: 2px solid;
+  border-image: linear-gradient(to top right, #2980b9, #00a575);
+  border-image-slice: 1;
+  
+  /*color: #FFF; 
+  background-clip: padding-box;
+  border: solid 5px linear-gradient(to right, blue, green);
+  /* border-radius: 1em; 
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    z-index: -1;
+    margin: -5px; 
+    border-radius: inherit; 
+    background: linear-gradient(to right, blue, green);*/
 }

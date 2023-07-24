@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Game Developer Portfolio</title>
+  <title>Toamig</title>
+  <!-- Link to your favicon -->
+  <link rel="icon" href="logo_head.svg" type="image/svg+xml">
+
   <link rel="stylesheet" type="text/css" href="styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
   <script>
@@ -18,8 +21,7 @@
     });
   </script>
 </head>
-<body>
-  
+<body>  
   <div class="front-page">
     <div class="branding">
       <object data="logo.svg" type="image/svg+xml" class="logo" alt="Logo"></object>
@@ -31,6 +33,7 @@
       <a href="#content"></a>
     </div>
   </div>
+  
   <!-- <header>
     <div class="container">
       <object data="logo.svg" type="image/svg+xml" class="logo" alt="Logo"></object>
@@ -45,6 +48,7 @@
           <img src="me/IMG_7.jfif" alt="Profile Picture" class="profile-image">
           <div class="about-text">
             <h2>About Me</h2>
+            <span class="underline"></span>
             <p class="p1">My name is Miguel Vieira, and I'm a software engineer with a passion for game development.</p>
             <p class="p2">I love to create and design solid, extensible and modular software systems.</p>
             <p class="p3">With a proactive mindset, eager to face new challenges and chase the deepest knowledge sources.</p>
@@ -64,8 +68,9 @@
     <section id="education">
       <div class="container">
         <h2>Education</h2>
-        <div class="education-cards">
-          <div class="extended-card">
+        <span class="underline"></span>
+        <div class="cards-container">
+          <div class="extended-card  gradient-box">
             <img src="education/feup-logo.png" alt="feup Logo" class="logo">
             <div class="card-details">
               <h3>U.Porto - FEUP</h3>
@@ -73,7 +78,7 @@
               <p class="time-period">Time Period: 2016 - 2021</p>
             </div>
           </div>
-          <div class="extended-card">
+          <div class="extended-card gradient-box">
             <img src="education/feup-logo.png" alt="feup Logo" class="logo">
             <div class="card-details">
               <h3>U.Porto - FEUP</h3>
@@ -89,8 +94,9 @@
     <section id="experience">
       <div class="container">
         <h2>Work Experience</h2>
-        <div class="experience-cards">
-          <div class="extended-card">
+        <span class="underline"></span>
+        <div class="cards-container">
+          <div class="extended-card gradient-box">
             <img src="experience/dive.jfif" alt="dive Logo" class="logo">
             <div class="experience-details">
               <h3>Dive Studios</h3>
@@ -98,7 +104,7 @@
               <p class="time-period">Time Period: Feb 2021 - Jun 2021</p>
             </div>
           </div>
-          <div class="extended-card">
+          <div class="extended-card gradient-box">
             <img src="experience/shadowprofile.png" alt="shadow profile Logo" class="logo">
             <div class="experience-details">
               <h3>Shadow Profile</h3>
@@ -106,7 +112,7 @@
               <p class="time-period">Time Period: May 2022 - Aug 2022</p>
             </div>
           </div>
-          <div class="extended-card">
+          <div class="extended-card gradient-box">
             <img src="experience/saber.jfif" alt="saber Iinteractive Logo" class="logo">
             <div class="experience-details">
               <h3>Saber Interactive</h3>
@@ -122,42 +128,43 @@
     <section id="technologies">
       <div class="container">
         <h2>Used Technologies</h2>
-        <div class="cards technologies">
-          <div class="card">
+        <span class="underline"></span>
+        <div class="cards-container">
+          <div class="card gradient-box">
             <div class="card-content">
-              <img class="logo" src="technologies/c%23.png" alt="C#">
+              <img class="logo" src="technologies/c%23.svg" alt="C#">
               <div class="description">
                 <h3>C#</h3>
               </div>
             </div>
           </div>
-          <div class="card">
+          <div class="card gradient-box">
             <div class="card-content">
-              <img class="logo" src="technologies/unity.png" alt="Unity">
-              <div class="description">
-                <h3>Unity</h3>
-              </div>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-content">
-              <img class="logo" src="technologies/c++.png" alt="C++">
+              <img class="logo" src="technologies/c++.svg" alt="C++">
               <div class="description">
                 <h3>C++</h3>
               </div>
             </div>
           </div>
-          <div class="card">
+          <div class="card gradient-box">
             <div class="card-content">
-              <img class="logo" src="technologies/unreal.png" alt="Unreal">
+              <img class="logo" src="technologies/unity.svg" alt="Unity">
+              <div class="description">
+                <h3>Unity</h3>
+              </div>
+            </div>
+          </div>
+          <div class="card gradient-box">
+            <div class="card-content">
+              <img class="logo" src="technologies/unreal.svg" alt="Unreal">
               <div class="description">
                 <h3>Unreal</h3>
               </div>
             </div>
           </div>
-          <div class="card">
+          <div class="card gradient-box">
             <div class="card-content">
-              <img class="logo" src="technologies/houdini.png" alt="Houdini">
+              <img class="logo" src="technologies/houdini.svg" alt="Houdini">
               <div class="description">
                 <h3>Houdini</h3>
               </div>
@@ -171,20 +178,21 @@
     <section id="projects">
       <div class="container">
         <h2>Past Projects</h2>
-        <div class="project-cards">
-          <a class="project-card" style="background-image: url('projects/autorocket.png')" href="https://fb.watch/lQlTru9G4J/" target="_blank">
+        <span class="underline"></span>
+        <div class="cards-container">
+          <a class="project-card extended-card gradient-box" style="background-image: url('projects/autorocket.png')" href="https://fb.watch/lQlTru9G4J/" target="_blank">
             <div class="project-details">
               <h3>AutoRocket</h3>
               <p>Educative rocket simulator.</p>
             </div>
           </a>
-          <a class="project-card" style="background-image: url('projects/cape.jpg')" href="https://cape.org.nz/aotearoa-explorers-game/">
+          <a class="project-card extended-card gradient-box" style="background-image: url('projects/cape.jpg')" href="https://cape.org.nz/aotearoa-explorers-game/">
               <div class="project-details">
                 <h3>Aoteroa Explorers</h3>
                 <p>Educative exploration game.</p>
               </div>
           </a>
-          <a class="project-card" style="background-image: url('projects/dakar.jpg')" href="https://www.dakarthegame.com/en/">
+          <a class="project-card extended-card gradient-box" style="background-image: url('projects/dakar.jpg')" href="https://www.dakarthegame.com/en/">
             <div class="project-details">
               <h3>Dakar Desert Rally</h3>
               <p>The biggest rally racer ever.</p>
@@ -202,11 +210,14 @@
         <a href="https://www.linkedin.com/in/toamig/" target="_blank">
           <img src="socials/linkedin.svg" class="logo" alt="Linkedin"></img>
         </a>
-        <a href="https://toamig.itch.io/" target="_blank">
+        <!-- <a href="https://toamig.itch.io/" target="_blank">
           <img src="socials/itchio.svg" class="logo" alt="Itchio"></img>
-        </a>
+        </a> -->
         <a href="https://github.com/toamig" target="_blank">
           <img src="socials/github.svg" class="logo" alt="Github"></img>
+        </a>
+        <a href="https://t.me/cvieirasaber3d" target="_blank">
+          <img src="socials/telegram.svg" class="logo" alt="Telegram"></img>
         </a>
         <!-- Add more social media icons as needed -->
       </div>
