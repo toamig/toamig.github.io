@@ -29,11 +29,11 @@ h2 {
 }
 
 h3 {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Montserrat', sans-serif;
 }
 
 p {
-  font-family: 'Lato', sans-serif;
+  font-family: 'Montserrat', sans-serif;
 }
 
 audio {
@@ -357,6 +357,8 @@ footer {
   transition: transform 0.3s ease;
   width: 40%; /* Adjust the width of the experience cards */
   padding: 20px;
+  text-decoration: none;
+  color: black;
 }
 
 .extended-card:hover {
