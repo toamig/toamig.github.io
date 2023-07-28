@@ -78,6 +78,67 @@ audio {
   font-weight: 900;
 }
 
+/*************/
+#logo-img {
+  max-width: 100%;
+  /* Additional styles for smooth transition when changing position */
+  transition: position 0.3s, top 0.3s;
+}
+
+/* Header Styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  width: 100%;
+  padding: 10px;
+  background-color: transparent; /* Initial background color */
+  color: white; /* Initial font color */
+  transition: background-color 0.5s, color 0.5s; /* Add smooth transition effect */
+}
+
+header #header-placeholder {
+  height: 75px;
+}
+
+header .logo-header {
+  width: auto;
+  height: 100%;
+}
+
+header.scrolled {
+  background-color: black; /* Background color when scrolled down */
+  color: #fff; /* Font color when scrolled down */
+}
+
+header nav {
+  display: flex;
+  justify-content: left;
+  gap: 15px;
+}
+
+header nav a {
+  align-self: center;
+  color: white;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  background-color: #2980b9;
+  transition: background-color 0.3s;
+  transition: transform 2s ease;
+}
+
+header nav a:hover {
+  background-color: #1d5f8b;
+}
+
 /* Front Page Styles */
 .front-page {
   background-image: linear-gradient(to bottom, #2980b9 100%, #00a575 0%);;
@@ -96,14 +157,23 @@ audio {
   align-items: center;
 }
 
+.front-page .branding #logo-variable{
+  fill: black;
+}
+
+
 .front-page .branding h1 {
   font-size: 55px;
 }
 
-.front-page .logo {
+.front-page #branding-placeholder {
   margin-bottom: 20px;
   margin-right: 20px;
   width: 25%;
+}
+
+.front-page .logo {
+  width: 100%
 }
 
 .front-page h1 {
