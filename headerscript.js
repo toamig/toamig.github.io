@@ -1,38 +1,33 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const header = document.querySelector('header');
-    const brandingPlaceholder = document.getElementById('branding-placeholder');
-    const logoImg = document.getElementById('my-logo');
-    const headerPlaceholder = document.getElementById('header-placeholder');
-
-    const logoOffsetTop = logoImg.clientHeight;
-    let lastScrollY = 0;
-
-    let CopiedLogo = logoImg.cloneNode(true);
-
-    window.addEventListener('scroll', function() {
-        const scrollY = window.scrollY;
-
-        if (scrollY > logoOffsetTop) {
+    var header = document.querySelector('header');
+    var logo = document.querySelector('.logo-header');
+    
+    // Check if the logo element exists on the current page
+    if (logo) {
+        // Get the height of the header and the logo
+        var headerHeight = header.clientHeight;
+        var logoHeight = logo.clientHeight;
+    
+        // When scrolling, add background color to the header and show the logo
+        window.addEventListener('scroll', function() {
+        if (window.pageYOffset > headerHeight) {
             header.classList.add('scrolled');
-
-            // Move the logo dynamically into the header-placeholder div when scrolling down
-            if (!headerPlaceholder.contains(CopiedLogo)) {
-                headerPlaceholder.appendChild(CopiedLogo);
-            }
-            const logoVariable = CopiedLogo.getElementById('logo-variable');
-            CopiedLogo.style.position = 'static';
-            CopiedLogo.classList.add('logo-header');
-            CopiedLogo.classList.remove('logo');
-            logoVariable.setAttribute('fill', '#2980b9');
-            
-            headerPlaceholder.style.height = `${CopiedLogo.offsetHeight}px`;
+            logo.style.visibility = 'visible';
+            logo.style.width = "auto";
         } else {
             header.classList.remove('scrolled');
-
-            // Move the logo back to its original position when scrolling up
-            CopiedLogo.remove(true);
+            logo.style.visibility = 'hidden';
+            logo.style.width = "0";
         }
-
-        lastScrollY = scrollY;
-    });
+        });
+    } else {
+        // If the logo is not present, only add the background color on scroll
+        window.addEventListener('scroll', function() {
+        if (window.pageYOffset > header.clientHeight) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+        });
+    }
 });
