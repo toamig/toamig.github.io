@@ -2,15 +2,18 @@
 <html>
   <head>
     <title>Toamig - About</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <link rel="icon" href="logo_head.svg" type="image/svg+xml">
     <link rel="stylesheet" type="text/css" href="styles.css">
     <link rel="stylesheet" type="text/css" href="about.css">
-    <script src="headerscript.js"></script>
+    <script src="headerscript.js" defer></script>
   </head>
   <body>
     <header>
       <nav> 
         <div id="header-placeholder">
+          <!-- your SVG logo and header content unchanged -->
           <svg id="my-logo" class="logo-header" alt="Logo" version="1.0" xmlns="http://www.w3.org/2000/svg" width="689.000000pt" height="633.000000pt" viewBox="0 0 689.000000 633.000000" preserveAspectRatio="xMidYMid meet">
             <g id="logosvg" transform="translate(0.000000,633.000000) scale(0.100000,-0.100000)" stroke="none" fill="#ffffff">
               <path id="logo-variable" d="M507 4863 c-4 -3 -7 -152 -7 -330 l0 -323 335 0 335 0 0 -1332 0
@@ -37,12 +40,13 @@
     <section id="about">
       <div class="container">
         <div class="about-content">
-          <img src="me/IMG_7.jfif" alt="Profile Picture" class="profile-image">
+          <img src="me/IMG_7.JPEG" alt="Profile Picture" class="profile-image">
           <div class="about-text">
             <h2>About Me</h2>
             <span class="underline"></span>
-            <p class="p1">My name is [Your Name], and I'm a [Your Profession] with a passion for [Your Passion].</p>
-            <p class="p2">[Write a short description about yourself, your interests, and hobbies. Share your personal side and what motivates you in life.]</p>
+            <p class="p1">My name is Miguel Vieira, and I'm a software engineer with a passion for game development.</p>
+            <p class="p2">I love to develop, design and plan solid, extensible and modular software systems.</p>
+            <p class="p3">With a proactive mindset, eager to face new challenges and chase the deepest knowledge sources.</p>
           </div>
         </div>
       </div>
@@ -52,22 +56,51 @@
       <div class="container">
         <h2>Life Timeline</h2>
         <span class="underline"></span>
-        <div class="timeline">
-          <div class="timeline-event">
-            <div class="event-date">Year 20XX</div>
-            <div class="event-description">
-              <h3>Event Title 1</h3>
-              <p>Event details and description go here.</p>
+
+        <!-- Controls Section -->
+        <div class="timeline-controls">
+          <div class="filter-section">
+            <h3>Filter by Category:</h3>
+            <div class="filter-buttons">
+              <button class="filter-btn active" data-category="all">All</button>
+              <button class="filter-btn" data-category="hobbies">Hobbies</button>
+              <button class="filter-btn" data-category="studies">Studies</button>
+              <button class="filter-btn" data-category="personal">Personal</button>
+              <button class="filter-btn" data-category="work">Work & Career</button>
             </div>
           </div>
-          <!-- Add more timeline events as needed -->
-          <div class="timeline-event">
-            <div class="event-date">Year 20XX</div>
-            <div class="event-description">
-              <h3>Event Title 2</h3>
-              <p>Event details and description go here.</p>
-            </div>
+
+          <div class="date-filter-section">
+            <label for="year-filter-select">Filter by Date:</label>
+            <select id="year-filter-select">
+              <option value="">All Years</option>
+            </select>
+            <select id="month-filter-select" disabled>
+              <option value="">All Months</option>
+            </select>
           </div>
+
+          <div class="sort-section">
+            <label for="sort-select">Sort by:</label>
+            <select id="sort-select">
+              <option value="date-desc">Date (Newest First)</option>
+              <option value="date-asc">Date (Oldest First)</option>
+              <option value="title-asc">Title (A-Z)</option>
+              <option value="title-desc">Title (Z-A)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Timeline Events Grid -->
+        <div class="timeline-grid" id="timeline-grid">
+          <div class="loading-message" id="loading-message">
+            <p>Loading events...</p>
+          </div>
+        </div>
+
+        <!-- No Results Message -->
+        <div class="no-results" id="no-results" style="display: none;">
+          <p>No events found for the selected filter.</p>
         </div>
       </div>
     </section>
@@ -76,21 +109,451 @@
       <div class="container">
         <div class="social-icons">
           <a href="https://www.linkedin.com/in/toamig/" target="_blank">
-            <img src="socials/linkedin.svg" class="logo" alt="Linkedin"></img>
+            <img src="socials/linkedin.svg" class="logo" alt="Linkedin">
           </a>
-          <!-- <a href="https://toamig.itch.io/" target="_blank">
-            <img src="socials/itchio.svg" class="logo" alt="Itchio"></img>
-          </a> -->
           <a href="https://github.com/toamig" target="_blank">
-            <img src="socials/github.svg" class="logo" alt="Github"></img>
+            <img src="socials/github.svg" class="logo" alt="Github">
           </a>
           <a href="https://t.me/cvieirasaber3d" target="_blank">
-            <img src="socials/telegram.svg" class="logo" alt="Telegram"></img>
+            <img src="socials/telegram.svg" class="logo" alt="Telegram">
           </a>
-          <!-- Add more social media icons as needed -->
         </div>
         <p>&copy; 2023 Toamig's Game Developer Portfolio. All rights reserved.</p>
       </div>
     </footer>
+
+    <script>
+      // -------------------------
+      // Helpers
+      // -------------------------
+      function escapeHtml(s = '') {
+        return String(s)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      // Converts a plaintext block into a container with <p> paragraphs.
+      // Splits paragraphs on blank lines. Single newlines become <br>.
+      function createParagraphsFromText(text) {
+        const container = document.createElement('div');
+        container.className = 'event-extended-description';
+        if (!text) return container;
+        const normalized = String(text).replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+        const parts = normalized.split(/\n{2,}/g); // split on blank lines
+        parts.forEach(pText => {
+          const p = document.createElement('p');
+          const withLineBreaks = escapeHtml(pText).replace(/\n/g, '<br>');
+          p.innerHTML = withLineBreaks;
+          container.appendChild(p);
+        });
+        return container;
+      }
+
+      // -------------------------
+      // Data & state
+      // -------------------------
+      let lifeEvents = []; // filled from events.json or fallback
+      let currentFilter = 'all';
+      let currentSort = 'date-desc';
+      let currentYearFilter = '';
+      let currentMonthFilter = '';
+
+      // Embedded fallback data (used if events.json not found)
+      const embeddedLifeEvents = [
+        {
+          id: "evt-2016-university",
+          date: "2016-09-01",
+          title: "Started University",
+          category: "studies",
+          description: "The beginning of one of the most intense and rewarding chapters of my life — university!",
+          extendedDescription: "In 2016 I started one of the most important chapters of my life. I was prepared for it, so I made sure to party hard and study even harder.\n\nUniversity is a mix of feelings and experiences that make us grow in a lot of directions. Fortunately, I left with a great baggage and ready to face the working life.\n\nThere were all-nighters, coffee-fueled code sessions, and friendships that still matter today.",
+          images: []
+        },
+        {
+          id: "evt-2018-first-game",
+          date: "2018-03-15",
+          title: "First Game Project",
+          category: "hobbies",
+          description: "Created my first complete game project and discovered a passion for game development.",
+          extendedDescription: "This prototype helped me learn iteration cycles, asset pipelines and build/deploy basics.\n\nI shipped a small demo and learned a lot about gameplay loops.",
+          images: ["projects/first-game-screenshot.jpg"],
+          links: [{ text: "Prototype (Web build)", url: "https://example.com/first-game" }]
+        }
+      ];
+
+      // -------------------------
+      // Load events (attempt events.json then fallback)
+      // -------------------------
+      async function loadEvents() {
+        const loadingMessage = document.getElementById('loading-message');
+        try {
+          const resp = await fetch('/events.json', { cache: 'no-cache' });
+          if (!resp.ok) throw new Error('no remote json');
+          const data = await resp.json();
+          if (!Array.isArray(data)) throw new Error('events.json must be an array');
+          lifeEvents = data;
+        } catch (e) {
+          console.info('events.json not found or invalid, using embedded fallback', e);
+          lifeEvents = embeddedLifeEvents;
+        } finally {
+          if (loadingMessage) loadingMessage.style.display = 'none';
+        }
+        initTimeline();
+      }
+
+      // -------------------------
+      // Timeline logic
+      // -------------------------
+      function initTimeline() {
+        initLightbox();
+        renderEvents();
+        setupEventListeners();
+      }
+
+      function getAvailableYears() {
+        const years = new Set();
+        lifeEvents.forEach(ev => {
+          if (ev.date && ev.date.length >= 4) years.add(ev.date.substring(0,4));
+        });
+        return Array.from(years).sort((a,b) => b.localeCompare(a));
+      }
+
+      function getAvailableMonths(year) {
+        const months = new Set();
+        lifeEvents.forEach(ev => {
+          if (ev.date && ev.date.length >= 7 && ev.date.substring(0,4) === year) {
+            months.add(ev.date.substring(5,7));
+          }
+        });
+        return Array.from(months).sort((a,b) => a.localeCompare(b));
+      }
+
+      function populateYearDropdown() {
+        const sel = document.getElementById('year-filter-select');
+        if (!sel) return;
+        sel.innerHTML = '<option value=\"\">All Years</option>';
+        getAvailableYears().forEach(y => {
+          const opt = document.createElement('option');
+          opt.value = y; opt.textContent = y;
+          sel.appendChild(opt);
+        });
+      }
+
+      function populateMonthDropdown(year) {
+        const sel = document.getElementById('month-filter-select');
+        if (!sel) return;
+        sel.innerHTML = '<option value=\"\">All Months</option>';
+        getAvailableMonths(year).forEach(m => {
+          const opt = document.createElement('option');
+          opt.value = m;
+          const monthNames = { '01':'January','02':'February','03':'March','04':'April','05':'May','06':'June','07':'July','08':'August','09':'September','10':'October','11':'November','12':'December' };
+          opt.textContent = monthNames[m] || m;
+          sel.appendChild(opt);
+        });
+      }
+
+      function setupEventListeners() {
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+          btn.addEventListener('click', function() {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentFilter = this.dataset.category;
+            renderEvents();
+          });
+        });
+
+        const yearSel = document.getElementById('year-filter-select');
+        const monthSel = document.getElementById('month-filter-select');
+        if (yearSel) {
+          populateYearDropdown();
+          yearSel.addEventListener('change', function() {
+            currentYearFilter = this.value;
+            currentMonthFilter = '';
+            monthSel.value = '';
+            if (currentYearFilter) {
+              populateMonthDropdown(currentYearFilter);
+              monthSel.disabled = false;
+            } else {
+              monthSel.innerHTML = '<option value=\"\">All Months</option>';
+              monthSel.disabled = true;
+            }
+            renderEvents();
+          });
+        }
+        if (monthSel) {
+          monthSel.addEventListener('change', function() {
+            currentMonthFilter = this.value;
+            renderEvents();
+          });
+        }
+
+        const sortSel = document.getElementById('sort-select');
+        if (sortSel) sortSel.addEventListener('change', function() {
+          currentSort = this.value; renderEvents();
+        });
+
+        // keyboard accessible toggle
+        const grid = document.getElementById('timeline-grid');
+        if (grid) {
+          grid.addEventListener('keydown', (e) => {
+            const target = e.target.closest && e.target.closest('.event-content[tabindex]');
+            if (!target) return;
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              target.click();
+            }
+          });
+        }
+      }
+
+      function filterEvents(events) {
+        let res = events.slice();
+        if (currentFilter && currentFilter !== 'all') {
+          res = res.filter(e => e.category === currentFilter);
+        }
+        if (currentYearFilter) {
+          res = res.filter(e => e.date && e.date.substring(0,4) === currentYearFilter);
+          if (currentMonthFilter) {
+            res = res.filter(e => e.date && e.date.length >= 7 && e.date.substring(5,7) === currentMonthFilter);
+          }
+        }
+        return res;
+      }
+
+      function sortEvents(events) {
+        const arr = events.slice();
+        switch (currentSort) {
+          case 'date-desc': return arr.sort((a,b)=> new Date(b.date) - new Date(a.date));
+          case 'date-asc': return arr.sort((a,b)=> new Date(a.date) - new Date(b.date));
+          case 'title-asc': return arr.sort((a,b)=> (a.title||'').localeCompare(b.title||''));
+          case 'title-desc': return arr.sort((a,b)=> (b.title||'').localeCompare(a.title||''));
+          default: return arr;
+        }
+      }
+
+      function formatDate(dateString) {
+        if (!dateString) return '';
+        const hasDay = /^\d{4}-\d{2}-\d{2}$/.test(dateString);
+        const d = new Date(dateString);
+        if (isNaN(d)) return escapeHtml(dateString);
+        if (hasDay) {
+          return d.toLocaleDateString(undefined, { year:'numeric', month:'long', day:'numeric' });
+        } else {
+          return d.toLocaleDateString(undefined, { year:'numeric', month:'long' });
+        }
+      }
+
+      function getCategoryInfo(category) {
+        const categoryMap = {
+          hobbies: { name: 'Hobbies', color: '#f9fbbf' },
+          studies: { name: 'Studies', color: '#b8dcff' },
+          personal: { name: 'Personal', color: '#f6c48a' },
+          professional: { name: 'Professional', color: '#cbc5ff' },
+          travels: { name: 'Travels', color: '#c9f3b2' },
+          work: { name: 'Work & Career', color: '#cbc5ff' }
+        };
+        return categoryMap[category] || { name: (category || 'Other'), color: '#dfe6e9' };
+      }
+
+      // -------------------------
+      // Render events (DOM-based, safe)
+      // -------------------------
+      function renderEvents() {
+        const grid = document.getElementById('timeline-grid');
+        const noResults = document.getElementById('no-results');
+        if (!grid) return;
+
+        grid.innerHTML = '';
+        let filtered = filterEvents(lifeEvents);
+        let sorted = sortEvents(filtered);
+
+        if (!sorted || sorted.length === 0) {
+          if (noResults) noResults.style.display = 'block';
+          return;
+        } else {
+          if (noResults) noResults.style.display = 'none';
+        }
+
+        sorted.forEach(event => {
+          const cat = getCategoryInfo(event.category);
+
+          // event card
+          const card = document.createElement('article');
+          card.className = 'event-card';
+
+          // header
+          const header = document.createElement('div');
+          header.className = 'event-header';
+          const catSpan = document.createElement('span');
+          catSpan.className = 'event-category';
+          catSpan.style.backgroundColor = cat.color;
+          catSpan.textContent = cat.name;
+          const dateSpan = document.createElement('span');
+          dateSpan.className = 'event-date';
+          dateSpan.textContent = formatDate(event.date || '');
+          header.appendChild(catSpan);
+          header.appendChild(dateSpan);
+
+          // content (title + short desc)
+          const content = document.createElement('div');
+          const isExpandable = !!(event.extendedDescription || (event.images && event.images.length) || (event.links && event.links.length));
+          content.className = 'event-content' + (isExpandable ? ' clickable' : '');
+          if (isExpandable) {
+            content.setAttribute('role','button');
+            content.setAttribute('tabindex','0');
+          }
+          const h3 = document.createElement('h3'); h3.textContent = event.title || 'Untitled';
+          const shortP = document.createElement('p'); shortP.className = 'event-description'; shortP.textContent = event.description || '';
+          content.appendChild(h3); content.appendChild(shortP);
+          if (isExpandable) {
+            const ind = document.createElement('span'); ind.className = 'expand-indicator'; ind.innerHTML = '&#9660;'; content.appendChild(ind);
+          }
+
+          // expandable container
+          const expandable = document.createElement('div');
+          expandable.className = 'event-expandable';
+
+          // extended description (paragraph aware)
+          if (event.extendedDescription) {
+            const extNode = createParagraphsFromText(event.extendedDescription);
+            expandable.appendChild(extNode);
+          }
+
+          // images
+          if (Array.isArray(event.images) && event.images.length > 0) {
+            const imagesWrap = document.createElement('div'); imagesWrap.className = 'event-images';
+            event.images.forEach((imgSrc, idx) => {
+              if (!imgSrc) return;
+              const img = document.createElement('img');
+              img.className = (event.images.length === 1) ? 'event-image full' : 'event-image grid';
+              img.src = imgSrc;
+              img.alt = event.title || `image ${idx+1}`;
+              img.dataset.eventId = String(event.id);
+              img.dataset.imageIndex = String(idx);
+              // images shouldn't toggle the expansion - they open lightbox
+              img.addEventListener('click', (ev) => {
+                ev.stopPropagation();
+                openImageLightbox(String(event.id), parseInt(img.dataset.imageIndex, 10) || 0);
+              });
+              imagesWrap.appendChild(img);
+            });
+            expandable.appendChild(imagesWrap);
+          }
+
+          // links
+          if (Array.isArray(event.links) && event.links.length > 0) {
+            const linksWrap = document.createElement('div'); linksWrap.className = 'event-links';
+            event.links.forEach(link => {
+              if (!link || !link.url) return;
+              const a = document.createElement('a');
+              a.className = 'event-link';
+              a.href = link.url;
+              a.target = '_blank';
+              a.rel = 'noopener noreferrer';
+              a.textContent = link.text || link.label || link.url;
+              a.addEventListener('click', ev => ev.stopPropagation());
+              linksWrap.appendChild(a);
+            });
+            expandable.appendChild(linksWrap);
+          }
+
+          // handle toggle
+          if (isExpandable) {
+            content.addEventListener('click', (e) => {
+              if (e.target.tagName === 'A') return;
+              card.classList.toggle('expanded');
+              const indicator = card.querySelector('.expand-indicator');
+              if (card.classList.contains('expanded')) indicator.innerHTML = '&#9650;'; else indicator.innerHTML = '&#9660;';
+            });
+          }
+
+          // assemble card
+          card.appendChild(header);
+          card.appendChild(content);
+          card.appendChild(expandable);
+
+          grid.appendChild(card);
+        });
+      }
+
+      // -------------------------
+      // Image lightbox (basic)
+      // -------------------------
+      let lightboxModal = null;
+      let currentEventImages = [];
+      let currentImageIndex = 0;
+
+      function initLightbox() {
+        if (document.querySelector('.image-lightbox')) {
+          lightboxModal = document.querySelector('.image-lightbox');
+          return;
+        }
+        lightboxModal = document.createElement('div');
+        lightboxModal.className = 'image-lightbox';
+        lightboxModal.innerHTML = `
+          <div class="lightbox-overlay"></div>
+          <div class="lightbox-content">
+            <button class="lightbox-close" aria-label="Close">&times;</button>
+            <button class="lightbox-nav lightbox-prev" aria-label="Previous image">&#8249;</button>
+            <button class="lightbox-nav lightbox-next" aria-label="Next image">&#8250;</button>
+            <div class="lightbox-image-container">
+              <img class="lightbox-image" src="" alt="">
+              <div class="lightbox-counter"></div>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(lightboxModal);
+
+        lightboxModal.querySelector('.lightbox-close').addEventListener('click', closeLightbox);
+        lightboxModal.querySelector('.lightbox-overlay').addEventListener('click', closeLightbox);
+        lightboxModal.querySelector('.lightbox-prev').addEventListener('click', () => navigateImage(-1));
+        lightboxModal.querySelector('.lightbox-next').addEventListener('click', () => navigateImage(1));
+        document.addEventListener('keydown', (e) => {
+          if (!lightboxModal || !lightboxModal.classList.contains('active')) return;
+          if (e.key === 'Escape') closeLightbox();
+          if (e.key === 'ArrowLeft') navigateImage(-1);
+          if (e.key === 'ArrowRight') navigateImage(1);
+        });
+      }
+
+      function openImageLightbox(eventId, imageIndex) {
+        const ev = lifeEvents.find(x => String(x.id) === String(eventId));
+        if (!ev || !Array.isArray(ev.images) || ev.images.length === 0) return;
+        currentEventImages = ev.images.filter(Boolean);
+        currentImageIndex = Math.min(Math.max(0, imageIndex || 0), currentEventImages.length - 1);
+        updateLightboxImage();
+        lightboxModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeLightbox() {
+        if (!lightboxModal) return;
+        lightboxModal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+
+      function navigateImage(delta) {
+        if (!currentEventImages || currentEventImages.length === 0) return;
+        currentImageIndex = (currentImageIndex + delta + currentEventImages.length) % currentEventImages.length;
+        updateLightboxImage();
+      }
+
+      function updateLightboxImage() {
+        if (!lightboxModal) return;
+        const imgEl = lightboxModal.querySelector('.lightbox-image');
+        const counterEl = lightboxModal.querySelector('.lightbox-counter');
+        if (!imgEl) return;
+        imgEl.src = currentEventImages[currentImageIndex] || '';
+        counterEl.textContent = `${currentImageIndex + 1} / ${currentEventImages.length}`;
+      }
+
+      // -------------------------
+      // Init
+      // -------------------------
+      document.addEventListener('DOMContentLoaded', loadEvents);
+    </script>
   </body>
 </html>

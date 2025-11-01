@@ -1,0 +1,110 @@
+[
+  {
+    "id": "evt-2023-Poland",
+    "date": "2023-12",
+    "title": "Traveled to Poland",
+    "category": "travels",
+    "description": "Had an amazing winter trip to Poland",
+    "extendedDescription": "I went to Poland this winter to surprise a friend and ended up having one of the best trips ever. Gdańsk welcomed me with snow, Christmas lights, and the smell of hot wine. I spent my days ice skating, exploring the markets, and trying every local food I could find.\n\nAfter that, I headed to Kraków, visited Auschwitz, wandered through the old streets, and took a trip to the mountains in Zakopane. Between the snowy hikes, hot springs in Chochołowskie Termy, and speeding around on a snowmobile, I fell completely in love with Polish winters.",
+    "images": [
+      "events/Poland/IMG_9012.JPEG",
+      "events/Poland/IMG_9116.JPEG",
+      "events/Poland/IMG_9128.JPEG",
+      "events/Poland/IMG_9132.JPEG",
+      "events/Poland/IMG_9149.JPEG",
+      "events/Poland/IMG_9189.JPEG",
+      "events/Poland/IMG_9197.JPEG",
+      "events/Poland/IMG_9203.JPEG",
+      "events/Poland/IMG_9288.JPEG",
+      "events/Poland/IMG_9299.JPEG",
+      "events/Poland/IMG_9352.JPEG",
+      "events/Poland/IMG_9405.JPEG"
+    ],
+    "links": [],
+    "expandable": true
+  },
+  {
+    "id": "evt-2005-Tikki",
+    "date": "2020-05",
+    "title": "Tikki",
+    "category": "personal",
+    "description": "I adopted my little cat Tikki",
+    "extendedDescription": "It was 2020, in the middle of the pandemic, when I was sitting at a T3 alone and isolated. I made one of the best decisions of my life and adopted my little cat Tikki. Ever since then it has been my best companion and friend.",
+    "images": [
+      "events/Tikki/IMG_3436.PNG",
+      "events/Tikki/C409F785-5117-4D14-8CE2-B1FC8F40FAC9.jpg",
+      "events/Tikki/76F53706-D80E-4615-8B7C-A6A70C40F3A7.jpg",
+      "events/Tikki/abad45ef-7091-40d9-99d4-d8f700c6c3a2.jpg"
+      ],
+    "links": [{ "text": "Toa Cats", "url": "https://www.instagram.com/toa_cats/" }],
+    "expandable": true
+  },
+  {
+    "id": "evt-2016-university",
+    "date": "2016-09",
+    "title": "Started University",
+    "category": "studies",
+    "description": "Began my Informatics and Computer Engineering Integrated Master's degree at U.Porto - FEUP.",
+    "extendedDescription": "In 2016, I kicked off one of the biggest chapters of my life: university. I came in ready for it, so I partied hard, studied harder, and learned a ton, not just from books, but from life itself.\n\nIt was a crazy mix of everything: new friends, late-night study marathons, deadlines, projects, and those all-nighters where coffee basically became part of my bloodstream. Looking back, it was a time of growth, discovery, and some of the best memories I’ve got.",
+    "images": [],
+    "links": [],
+    "expandable": true
+  },
+  {
+    "id": "evt-2018-first-game",
+    "date": "2018-03-15",
+    "title": "First Game Project",
+    "category": "hobbies",
+    "description": "Created my first complete game project and discovered a passion for game development.",
+    "extendedDescription": "This prototype helped me learn iteration cycles, asset pipelines and build/deploy basics. I shipped a small demo and learned a lot about gameplay loops.",
+    "images": ["projects/first-game-screenshot.jpg"],
+    "links": [
+      { "text": "Prototype (Web build)", "url": "https://example.com/first-game" }
+    ],
+    "expandable": true
+  },
+  {
+    "id": "evt-2021-dive",
+    "date": "2021-02-01",
+    "title": "Team Leader at Dive Studios",
+    "category": "professional",
+    "description": "Led a talented team at Dive Studios, managing projects and coordinating development efforts.",
+    "extendedDescription": "Managed multiple game development projects, coordinated cross-functional teams, and helped establish engineering workflows. Mentored junior devs and worked closely with designers to polish features.",
+    "images": ["experience/dive.jfif"],
+    "links": [{ "text": "Dive Studios", "url": "https://www.dive-studios.com" }],
+    "expandable": true
+  },
+  {
+    "id": "evt-2021-graduation",
+    "date": "2021-07-20",
+    "title": "Graduated Bachelor's Degree",
+    "category": "studies",
+    "description": "Completed my Software Engineering Bachelor's degree with honors.",
+    "extendedDescription": "Final project focused on systems design and optimization. This graduation was the beginning of the professional journey into game engineering.",
+    "images": [],
+    "links": [],
+    "expandable": true
+  },
+  {
+    "id": "evt-2022-toolslead",
+    "date": "2022-08-15",
+    "title": "Tools Lead at Saber Interactive",
+    "category": "professional",
+    "description": "Promoted to Tools Lead Programmer position, working on AAA game development tools.",
+    "extendedDescription": "Built internal tools for content pipelines and automated repetitive tasks to speed up production. Focused on maintainability and developer ergonomics.",
+    "images": [],
+    "links": [],
+    "expandable": true
+  },
+  {
+    "id": "evt-2005-school",
+    "date": "2005-09",
+    "title": "Started primary school",
+    "category": "studies",
+    "description": "Completed a challenging mountain hiking expedition and discovered new perspectives.",
+    "extendedDescription": "",
+    "images": ["me/hiking1.jpg", "me/hiking2.jpg"],
+    "links": [],
+    "expandable": false
+  }
+]
