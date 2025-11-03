@@ -7,6 +7,21 @@
     <link rel="icon" href="logo_head.svg" type="image/svg+xml">
     <link rel="stylesheet" type="text/css" href="styles.css">
     <link rel="stylesheet" type="text/css" href="about.css">
+    <script>
+      // Add smooth scroll behavior when arrow is pressed
+      document.addEventListener('DOMContentLoaded', function() {
+        var scrollDownArrow = document.querySelector('#about-2 .scroll-down a');
+        if (scrollDownArrow) {
+          scrollDownArrow.addEventListener('click', function(event) {
+            event.preventDefault();
+            var target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+              target.scrollIntoView({ behavior: 'smooth' });
+            }
+          });
+        }
+      });
+    </script>
     <script src="headerscript.js" defer></script>
   </head>
   <body>
@@ -37,18 +52,19 @@
       </nav>
     </header>
 
-    <section id="about">
-      <div class="container">
-        <div class="about-content">
-          <img src="me/IMG_7.JPEG" alt="Profile Picture" class="profile-image">
-          <div class="about-text">
-            <h2>About Me</h2>
-            <span class="underline"></span>
-            <p class="p1">My name is Miguel Vieira, and I'm a software engineer with a passion for game development.</p>
-            <p class="p2">I love to develop, design and plan solid, extensible and modular software systems.</p>
-            <p class="p3">With a proactive mindset, eager to face new challenges and chase the deepest knowledge sources.</p>
-          </div>
+    <section id="about-2">
+      <div class="about-content-2">
+        <img src="me/IMG_7.JPEG" alt="Profile Picture" class="profile-image">
+        <div class="about-text-2">
+          <h2>About Me</h2>
+          <span class="underline"></span>
+          <p class="p1">I design systems, solve problems, and chase dreams, always choosing the edge of discomfort as my playground.</p>
+          <p class="p2">I bring structure to chaos and lead by example. Grounded in pragmatism but never blind to detail, I stay deeply committed to my responsibilities and driven by an insatiable thirst for learning.</p>
+          <p class="p3">These are the values that define me as a person, a developer, and a leader.</p>
         </div>
+      </div>
+      <div class="scroll-down">
+        <a href="#life-timeline"></a>
       </div>
     </section>
 
