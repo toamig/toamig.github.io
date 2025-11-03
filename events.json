@@ -46,7 +46,11 @@
     "category": "studies",
     "description": "Began my Informatics and Computer Engineering Integrated Master's degree at U.Porto - FEUP.",
     "extendedDescription": "In 2016, I kicked off one of the biggest chapters of my life: university. I came in ready for it, so I partied hard, studied harder, and learned a ton, not just from books, but from life itself.\n\nIt was a crazy mix of everything: new friends, late-night study marathons, deadlines, projects, and those all-nighters where coffee basically became part of my bloodstream. Looking back, it was a time of growth, discovery, and some of the best memories I’ve got.",
-    "images": [],
+    "images": [
+      "events/University/IMG_7385.JPG",
+      "events/University/IMG_7669.JPG",
+      "events/University/IMG_7850.JPG"
+    ],
     "links": [],
     "expandable": true
   },
