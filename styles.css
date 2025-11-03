@@ -341,8 +341,8 @@ header nav a:hover {
 }
 
 .extended-card .card-logo {
-  width: 100px;
   height: 100px;
+  width: 55%;
   object-fit: contain;
   margin-bottom: 20px;
   transition: transform 0.3s ease;
