@@ -812,6 +812,8 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 10002;
+  pointer-events: none;
 }
 
 .lightbox-image {
@@ -820,6 +822,7 @@ html, body {
   object-fit: contain;
   border-radius: 8px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  pointer-events: auto;
 }
 
 .lightbox-counter {
