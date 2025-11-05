@@ -1,0 +1,26 @@
+# Sensitive files - do not commit these
+*.exe
+*.zip
+*.dmg
+*.pkg
+
+# Personal/sensitive documents
+*.pdf
+!projects/*.pdf
+!experience/*.pdf
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+

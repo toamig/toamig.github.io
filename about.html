@@ -84,7 +84,7 @@
         <div class="nav-menu">
           <a href="index.html">Home</a>
           <a href="about.html">About</a>
-          <a href="me/Miguel's CV.pdf" target="_blank">Resume</a>
+          <a href="me/Miguel's CV.pdf" target="_blank" rel="noopener noreferrer">Resume</a>
         </div>
       </nav>
     </header>
@@ -124,24 +124,23 @@
             </div>
           </div>
 
-          <div class="date-filter-section">
-            <label for="year-filter-select">Filter by Date:</label>
-            <select id="year-filter-select">
-              <option value="">All Years</option>
-            </select>
-            <select id="month-filter-select" disabled>
-              <option value="">All Months</option>
-            </select>
-          </div>
+          <div class="date-sort-row">
+            <div class="date-filter-section">
+              <label for="year-filter-select">Filter by Date:</label>
+              <select id="year-filter-select">
+                <option value="">All Years</option>
+              </select>
+              <select id="month-filter-select" disabled>
+                <option value="">All Months</option>
+              </select>
+            </div>
 
-          <div class="sort-section">
-            <label for="sort-select">Sort by:</label>
-            <select id="sort-select">
-              <option value="date-desc">Date (Newest First)</option>
-              <option value="date-asc">Date (Oldest First)</option>
-              <option value="title-asc">Title (A-Z)</option>
-              <option value="title-desc">Title (Z-A)</option>
-            </select>
+            <div class="sort-section">
+              <button class="sort-toggle-btn" id="sort-toggle" aria-label="Toggle sort order">
+                <span class="sort-label">Sort:</span>
+                <span class="sort-value" id="sort-value">Newest First</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -162,13 +161,13 @@
     <footer>
       <div class="container">
         <div class="social-icons">
-          <a href="https://www.linkedin.com/in/toamig/" target="_blank">
+          <a href="https://www.linkedin.com/in/toamig/" target="_blank" rel="noopener noreferrer">
             <img src="socials/linkedin.svg" class="logo" alt="Linkedin">
           </a>
-          <a href="https://github.com/toamig" target="_blank">
+          <a href="https://github.com/toamig" target="_blank" rel="noopener noreferrer">
             <img src="socials/github.svg" class="logo" alt="Github">
           </a>
-          <a href="https://t.me/cvieirasaber3d" target="_blank">
+          <a href="https://t.me/cvieirasaber3d" target="_blank" rel="noopener noreferrer">
             <img src="socials/telegram.svg" class="logo" alt="Telegram">
           </a>
         </div>
@@ -344,16 +343,21 @@
           });
         }
 
-        const sortSel = document.getElementById('sort-select');
-        if (sortSel) sortSel.addEventListener('change', function() {
-          currentSort = this.value; renderEvents();
-        });
+        const sortToggle = document.getElementById('sort-toggle');
+        const sortValue = document.getElementById('sort-value');
+        if (sortToggle) {
+          sortToggle.addEventListener('click', function() {
+            currentSort = (currentSort === 'date-desc') ? 'date-asc' : 'date-desc';
+            sortValue.textContent = (currentSort === 'date-desc') ? 'Newest First' : 'Oldest First';
+            renderEvents();
+          });
+        }
 
         // keyboard accessible toggle
         const grid = document.getElementById('timeline-grid');
         if (grid) {
           grid.addEventListener('keydown', (e) => {
-            const target = e.target.closest && e.target.closest('.event-content[tabindex]');
+            const target = e.target.closest && e.target.closest('.clickable-card[tabindex]');
             if (!target) return;
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
@@ -366,7 +370,19 @@
       function filterEvents(events) {
         let res = events.slice();
         if (currentFilter && currentFilter !== 'all') {
-          res = res.filter(e => e.category === currentFilter);
+          res = res.filter(e => {
+            // Support multiple tags: check for tags array, categories array, or fallback to single category
+            let eventTags = [];
+            if (Array.isArray(e.tags)) {
+              eventTags = e.tags;
+            } else if (Array.isArray(e.categories)) {
+              eventTags = e.categories;
+            } else if (e.category) {
+              eventTags = [e.category];
+            }
+            // Event matches if any of its tags matches the current filter
+            return eventTags.includes(currentFilter);
+          });
         }
         if (currentYearFilter) {
           res = res.filter(e => e.date && e.date.substring(0,4) === currentYearFilter);
@@ -432,7 +448,15 @@
         }
 
         sorted.forEach(event => {
-          const cat = getCategoryInfo(event.category);
+          // Support multiple tags: check for tags array, categories array, or fallback to single category
+          let eventTags = [];
+          if (Array.isArray(event.tags)) {
+            eventTags = event.tags;
+          } else if (Array.isArray(event.categories)) {
+            eventTags = event.categories;
+          } else if (event.category) {
+            eventTags = [event.category];
+          }
 
           // event card
           const card = document.createElement('article');
@@ -441,24 +465,29 @@
           // header
           const header = document.createElement('div');
           header.className = 'event-header';
-          const catSpan = document.createElement('span');
-          catSpan.className = 'event-category';
-          catSpan.style.backgroundColor = cat.color;
-          catSpan.textContent = cat.name;
+          
+          // Create container for multiple tags
+          const tagsContainer = document.createElement('div');
+          tagsContainer.className = 'event-tags-container';
+          eventTags.forEach(tag => {
+            const cat = getCategoryInfo(tag);
+            const catSpan = document.createElement('span');
+            catSpan.className = 'event-category';
+            catSpan.style.backgroundColor = cat.color;
+            catSpan.textContent = cat.name;
+            tagsContainer.appendChild(catSpan);
+          });
+          
           const dateSpan = document.createElement('span');
           dateSpan.className = 'event-date';
           dateSpan.textContent = formatDate(event.date || '');
-          header.appendChild(catSpan);
+          header.appendChild(tagsContainer);
           header.appendChild(dateSpan);
 
           // content (title + short desc)
           const content = document.createElement('div');
-          const isExpandable = !!(event.extendedDescription || (event.images && event.images.length) || (event.links && event.links.length));
-          content.className = 'event-content' + (isExpandable ? ' clickable' : '');
-          if (isExpandable) {
-            content.setAttribute('role','button');
-            content.setAttribute('tabindex','0');
-          }
+          const isExpandable = !!(event.extendedDescription || (event.images && event.images.length) || (event.links && event.links.length) || (event.documents && event.documents.length));
+          content.className = 'event-content';
           const h3 = document.createElement('h3'); h3.textContent = event.title || 'Untitled';
           const shortP = document.createElement('p'); shortP.className = 'event-description'; shortP.textContent = event.description || '';
           content.appendChild(h3); content.appendChild(shortP);
@@ -514,10 +543,38 @@
             expandable.appendChild(linksWrap);
           }
 
-          // handle toggle
+          // documents (PDFs and other documents)
+          if (Array.isArray(event.documents) && event.documents.length > 0) {
+            const docsWrap = document.createElement('div'); docsWrap.className = 'event-documents';
+            event.documents.forEach(doc => {
+              if (!doc || !doc.url) return;
+              const a = document.createElement('a');
+              a.className = 'event-document';
+              a.href = doc.url;
+              a.target = '_blank';
+              a.rel = 'noopener noreferrer';
+              const icon = document.createElement('span');
+              icon.className = 'document-icon';
+              icon.innerHTML = '&#128196;'; // 📄 document emoji/icon
+              const text = document.createElement('span');
+              text.className = 'document-text';
+              text.textContent = doc.text || doc.label || doc.name || 'View Document';
+              a.appendChild(icon);
+              a.appendChild(text);
+              a.addEventListener('click', ev => ev.stopPropagation());
+              docsWrap.appendChild(a);
+            });
+            expandable.appendChild(docsWrap);
+          }
+
+          // handle toggle - make entire card clickable
           if (isExpandable) {
-            content.addEventListener('click', (e) => {
-              if (e.target.tagName === 'A') return;
+            card.classList.add('clickable-card');
+            card.setAttribute('role','button');
+            card.setAttribute('tabindex','0');
+            card.addEventListener('click', (e) => {
+              // Don't toggle if clicking on links or images
+              if (e.target.tagName === 'A' || e.target.tagName === 'IMG' || e.target.closest('a') || e.target.closest('img')) return;
               card.classList.toggle('expanded');
               const indicator = card.querySelector('.expand-indicator');
               if (card.classList.contains('expanded')) indicator.innerHTML = '&#9650;'; else indicator.innerHTML = '&#9660;';
