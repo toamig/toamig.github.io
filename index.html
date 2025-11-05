@@ -51,40 +51,154 @@
           });
         }
 
-        // Music Player
+        // Music Player - Cross-page persistence with seamless playback
         var musicPlayer = document.getElementById('backgroundMusic');
         var musicToggle = document.getElementById('musicToggle');
         var musicIcon = document.getElementById('musicIcon');
         
         if (musicPlayer && musicToggle) {
-          // Check if user has explicitly stopped music
-          var wasStopped = localStorage.getItem('musicStopped') === 'true';
+          // Detect if this is a fresh load (hard refresh, browser restart) vs navigation
+          var isNavigating = sessionStorage.getItem('isNavigating') === 'true';
+          var navigationType = performance.getEntriesByType('navigation')[0]?.type;
+          var isReload = navigationType === 'reload';
+          var referrer = document.referrer || '';
+          var currentOrigin = window.location.origin;
+          var isFromSameSite = referrer && referrer.indexOf(currentOrigin) === 0;
+          
+          // Only consider it navigation if we came from the same site AND the flag was set
+          // This ensures we only restore music state for actual internal navigation
+          var isInternalNavigation = isNavigating && isFromSameSite;
+          var isHardRefresh = isReload && !isInternalNavigation;
+          
+          // Get user preference (persists across hard resets)
+          var userPreference = localStorage.getItem('musicUserPreference'); // 'playing' or 'stopped'
+          
+          // If this is a fresh load (hard refresh, new browser session, or external link), reset navigation state
+          // But keep user preference for persistent behavior
+          if (!isInternalNavigation || isHardRefresh) {
+            localStorage.removeItem('musicPlaying');
+            localStorage.removeItem('musicStopped');
+            localStorage.removeItem('musicTime');
+          }
+          
+          // Always clear the navigation flag on page load - it will be set again if user clicks internal link
+          // This prevents stale flags from causing issues after clicking external links
+          sessionStorage.removeItem('isNavigating');
           
           // Set volume to 50%
           musicPlayer.volume = 0.5;
           
-          // Try to autoplay if user hasn't stopped it
-          if (!wasStopped) {
-            musicPlayer.play().catch(function(error) {
-              console.log('Autoplay blocked by browser:', error);
-              // If autoplay fails, show play button
-              musicIcon.textContent = '▶';
-            });
+          // Check saved state (after potential reset)
+          // User preference always takes precedence - if user paused, respect that across all pages
+          var wasPlaying = false;
+          var wasStopped = false;
+          var savedTime = 0;
+          
+          // First check user preference - if user paused, always respect that
+          if (userPreference === 'stopped') {
+            wasStopped = true;
+            wasPlaying = false;
+            savedTime = 0;
+          } else if (isInternalNavigation) {
+            // Internal navigation: use navigation state for seamless playback
+            // Only if user hasn't explicitly stopped
+            wasPlaying = localStorage.getItem('musicPlaying') === 'true';
+            wasStopped = localStorage.getItem('musicStopped') === 'true';
+            savedTime = parseFloat(localStorage.getItem('musicTime')) || 0;
+          } else {
+            // Fresh load or hard refresh: use user preference
+            wasStopped = userPreference === 'stopped';
+            wasPlaying = userPreference === 'playing';
+            savedTime = 0; // Start from beginning on fresh load/hard refresh
           }
           
-          // Update icon based on playing state
-          musicPlayer.addEventListener('play', function() {
-            musicIcon.textContent = '⏸';
-            localStorage.setItem('musicStopped', 'false');
-          });
+          // Function to save playing state and position
+          function savePlayingState() {
+            if (!musicPlayer.paused) {
+              localStorage.setItem('musicPlaying', 'true');
+              localStorage.setItem('musicStopped', 'false');
+              localStorage.setItem('musicTime', musicPlayer.currentTime.toString());
+              // Save user preference (persists across hard resets)
+              localStorage.setItem('musicUserPreference', 'playing');
+            }
+          }
           
-          musicPlayer.addEventListener('pause', function() {
-            musicIcon.textContent = '▶';
-            // Only mark as stopped if user manually paused (not if autoplay failed)
-            if (musicPlayer.currentTime > 0) {
-              localStorage.setItem('musicStopped', 'true');
+          // Function to save paused state
+          function savePausedState() {
+            localStorage.setItem('musicStopped', 'true');
+            localStorage.setItem('musicPlaying', 'false');
+            localStorage.setItem('musicTime', musicPlayer.currentTime.toString());
+            // Save user preference (persists across hard resets)
+            localStorage.setItem('musicUserPreference', 'stopped');
+          }
+          
+          // Wait for audio to be ready before restoring position
+          musicPlayer.addEventListener('loadedmetadata', function() {
+            // Restore playback position if music was playing
+            if (wasPlaying && !wasStopped && savedTime > 0) {
+              musicPlayer.currentTime = savedTime;
             }
           });
+          
+          // Resume playing if it was playing and user hasn't stopped it
+          if (wasPlaying && !wasStopped) {
+            // Wait for audio to load and set position
+            musicPlayer.addEventListener('canplaythrough', function() {
+              if (savedTime > 0) {
+                musicPlayer.currentTime = savedTime;
+              }
+              musicPlayer.play().then(function() {
+                musicIcon.textContent = '⏸';
+              }).catch(function(error) {
+                console.log('Autoplay blocked by browser:', error);
+                musicIcon.textContent = '▶';
+              });
+            }, { once: true });
+            
+            // Also try to load the audio
+            musicPlayer.load();
+          } else if (!wasStopped) {
+            // First visit - try to autoplay
+            setTimeout(function() {
+              musicPlayer.play().then(function() {
+                musicIcon.textContent = '⏸';
+              }).catch(function(error) {
+                console.log('Autoplay blocked by browser:', error);
+                musicIcon.textContent = '▶';
+              });
+            }, 100);
+          } else {
+            // User had stopped it - restore position but don't play
+            if (savedTime > 0) {
+              musicPlayer.addEventListener('loadedmetadata', function() {
+                musicPlayer.currentTime = savedTime;
+              }, { once: true });
+              musicPlayer.load();
+            }
+            musicIcon.textContent = '▶';
+          }
+          
+          // Update icon and save state when playing
+          musicPlayer.addEventListener('play', function() {
+            musicIcon.textContent = '⏸';
+            savePlayingState();
+          });
+          
+          // Update icon and save state when paused
+          musicPlayer.addEventListener('pause', function() {
+            musicIcon.textContent = '▶';
+            // Only mark as stopped if music was actually playing (not just failed to start)
+            if (musicPlayer.currentTime > 0 || wasPlaying) {
+              savePausedState();
+            }
+          });
+          
+          // Save position continuously while playing (for seamless cross-page navigation)
+          var saveInterval = setInterval(function() {
+            if (!musicPlayer.paused) {
+              localStorage.setItem('musicTime', musicPlayer.currentTime.toString());
+            }
+          }, 200); // Save position every 200ms for seamless transition
           
           // Toggle play/pause on button click
           musicToggle.addEventListener('click', function() {
@@ -95,12 +209,70 @@
             }
           });
           
-          // Set initial icon based on playing state
-          if (musicPlayer.paused) {
-            musicIcon.textContent = '▶';
-          } else {
-            musicIcon.textContent = '⏸';
-          }
+          // Track clicks on links to set navigation flag
+          document.addEventListener('click', function(e) {
+            var link = e.target.closest('a');
+            if (link && link.href) {
+              try {
+                var linkUrl = new URL(link.href, window.location.href);
+                var currentUrl = new URL(window.location.href);
+                var isSameOrigin = linkUrl.origin === currentUrl.origin;
+                var opensInNewTab = link.target === '_blank' || link.hasAttribute('target');
+                
+                if (isSameOrigin && !opensInNewTab) {
+                  // Internal link that navigates in same tab - set flag for seamless navigation
+                  sessionStorage.setItem('isNavigating', 'true');
+                } else if (!isSameOrigin) {
+                  // External link (different origin) - clear flag to reset on return
+                  sessionStorage.removeItem('isNavigating');
+                }
+                // Same-origin links with target="_blank" (like PDFs) don't affect flag
+                // This allows music to continue when opening files on same site
+              } catch (err) {
+                // Invalid URL, clear flag to be safe
+                sessionStorage.removeItem('isNavigating');
+              }
+            }
+          }, true);
+          
+          // Save state before page unload (for cross-page persistence)
+          window.addEventListener('beforeunload', function() {
+            clearInterval(saveInterval);
+            // Only save if we're actually navigating internally (flag was set)
+            if (sessionStorage.getItem('isNavigating') === 'true') {
+              if (!musicPlayer.paused) {
+                localStorage.setItem('musicPlaying', 'true');
+                localStorage.setItem('musicStopped', 'false');
+                localStorage.setItem('musicTime', musicPlayer.currentTime.toString());
+              } else {
+                localStorage.setItem('musicPlaying', 'false');
+                localStorage.setItem('musicTime', musicPlayer.currentTime.toString());
+              }
+            }
+          });
+          
+          // Also save on pagehide (more reliable than beforeunload)
+          window.addEventListener('pagehide', function() {
+            clearInterval(saveInterval);
+            // Only save if we're actually navigating internally (flag was set)
+            if (sessionStorage.getItem('isNavigating') === 'true') {
+              if (!musicPlayer.paused) {
+                localStorage.setItem('musicPlaying', 'true');
+                localStorage.setItem('musicStopped', 'false');
+                localStorage.setItem('musicTime', musicPlayer.currentTime.toString());
+              } else {
+                localStorage.setItem('musicPlaying', 'false');
+                localStorage.setItem('musicTime', musicPlayer.currentTime.toString());
+              }
+            }
+          });
+          
+          // Save on visibility change (when user switches tabs)
+          document.addEventListener('visibilitychange', function() {
+            if (!musicPlayer.paused) {
+              savePlayingState();
+            }
+          });
         }
       });
     </script>
@@ -253,6 +425,14 @@
                 <p class="time-period">Aug 2022 - Jan 2024</p>
               </div>
             </a>
+            <!--<a class="extended-card" href="" target="_blank" rel="noopener noreferrer">
+              <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=" alt="Ikonic Games Logo" class="card-logo">
+              <div class="card-details">
+                <h3>Ikonic Games</h3>
+                <p class="role">Core Software Engineer</p>
+                <p class="time-period">Fev 2024 - Fev 2025</p>
+              </div>
+            </a>-->
             <a class="extended-card" href="https://www.flamacraftworks.com/" target="_blank" rel="noopener noreferrer">
               <img src="experience/flama.jpg" alt="Flama Craftworks Logo" class="card-logo">
               <div class="card-details">
@@ -346,6 +526,9 @@
           <a href="https://www.linkedin.com/in/toamig/" target="_blank" rel="noopener noreferrer">
             <img src="socials/linkedin.svg" class="logo" alt="Linkedin">
           </a>
+          <a href="https://www.instagram.com/toamig/" target="_blank" rel="noopener noreferrer">
+            <img src="socials/insta.svg" class="logo" alt="Instagram">
+          </a>
           <a href="https://github.com/toamig" target="_blank" rel="noopener noreferrer">
             <img src="socials/github.svg" class="logo" alt="Github">
           </a>
@@ -353,7 +536,7 @@
             <img src="socials/telegram.svg" class="logo" alt="Telegram">
           </a>
         </div>
-        <p>&copy; 2023 Toamig's Game Developer Portfolio. All rights reserved.</p>
+        <p>&copy; 2025 Toamig's Game Developer Portfolio. All rights reserved.</p>
       </div>
     </footer>
   </body>
