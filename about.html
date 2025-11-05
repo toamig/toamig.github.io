@@ -50,11 +50,75 @@
             }
           });
         }
+
+        // Music Player
+        var musicPlayer = document.getElementById('backgroundMusic');
+        var musicToggle = document.getElementById('musicToggle');
+        var musicIcon = document.getElementById('musicIcon');
+        
+        if (musicPlayer && musicToggle) {
+          // Check if user has explicitly stopped music
+          var wasStopped = localStorage.getItem('musicStopped') === 'true';
+          
+          // Set volume to 50%
+          musicPlayer.volume = 0.5;
+          
+          // Try to autoplay if user hasn't stopped it
+          if (!wasStopped) {
+            musicPlayer.play().catch(function(error) {
+              console.log('Autoplay blocked by browser:', error);
+              // If autoplay fails, show play button
+              musicIcon.textContent = '▶';
+            });
+          }
+          
+          // Update icon based on playing state
+          musicPlayer.addEventListener('play', function() {
+            musicIcon.textContent = '⏸';
+            localStorage.setItem('musicStopped', 'false');
+          });
+          
+          musicPlayer.addEventListener('pause', function() {
+            musicIcon.textContent = '▶';
+            // Only mark as stopped if user manually paused (not if autoplay failed)
+            if (musicPlayer.currentTime > 0) {
+              localStorage.setItem('musicStopped', 'true');
+            }
+          });
+          
+          // Toggle play/pause on button click
+          musicToggle.addEventListener('click', function() {
+            if (musicPlayer.paused) {
+              musicPlayer.play();
+            } else {
+              musicPlayer.pause();
+            }
+          });
+          
+          // Set initial icon based on playing state
+          if (musicPlayer.paused) {
+            musicIcon.textContent = '▶';
+          } else {
+            musicIcon.textContent = '⏸';
+          }
+        }
       });
     </script>
     <script src="headerscript.js" defer></script>
   </head>
   <body>
+    <!-- Music Player -->
+    <div class="music-player" id="musicPlayer">
+      <button class="music-toggle" id="musicToggle" aria-label="Toggle music">
+        <span class="music-icon" id="musicIcon">▶</span>
+      </button>
+      <audio id="backgroundMusic" loop>
+        <!-- Replace with your music file path -->
+        <source src="music/background-music.mp3" type="audio/mpeg">
+        <source src="music/background-music.ogg" type="audio/ogg">
+        Your browser does not support the audio element.
+      </audio>
+    </div>
     <header>
       <nav> 
         <div id="header-placeholder">

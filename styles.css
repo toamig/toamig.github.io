@@ -800,3 +800,65 @@ footer p {
     height: 220px;
   }
 }
+
+/* Music Player */
+.music-player {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.music-toggle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2980b9, #1d5f8b);
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(41, 128, 185, 0.4);
+  transition: all 0.3s ease;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.music-toggle:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(41, 128, 185, 0.6);
+  background: linear-gradient(135deg, #3498db, #2980b9);
+}
+
+.music-toggle:active {
+  transform: scale(0.95);
+}
+
+.music-icon {
+  display: inline-block;
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* Mobile Responsive for Music Player */
+@media (max-width: 768px) {
+  .music-player {
+    bottom: 20px;
+    right: 20px;
+  }
+
+  .music-toggle {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+
+  .music-icon {
+    font-size: 18px;
+  }
+}
