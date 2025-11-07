@@ -72,10 +72,10 @@
   {
     "id": "evt-2018-RedBull",
     "date": "2018-02",
-    "title": "Can You Make? it participation",
+    "title": "Can You Make It? participation",
     "category": "personal",
     "description": "Applied for the 'RedBull Can You Make It?' challenge.",
-    "extendedDescription": "During this year, me and two other friends decided to apply for the 'RedBull Can You Make It?' challenge. We had to create video that would promote the challenge and the most liked videos would be selected for a travel across Europe, using only RedBull cans as currency.\n\nUnfortunately we weren't selected, but it was a fun journey, all the ideation, the video recording, the sharing and promoting of the video. It was fun even with all the disappointments.",
+    "extendedDescription": "During this year, me and two other friends decided to apply for the 'RedBull Can You Make It?' challenge. We had to create a video that would promote the challenge and the most liked videos would be selected for a travel across Europe, using only RedBull cans as currency.\n\nUnfortunately we weren't selected, but it was a fun journey, all the ideation, the video recording, the sharing and promoting of the video. It was fun even with all the disappointments.",
     "images": ["events/RedBull/Routine breakers.jpg", "events/RedBull/Cover.jpg"],
     "links": [{ "text": "Participation Video", "url": "https://www.youtube.com/watch?v=HHLmkttiyfI" }],
     "expandable": true
@@ -86,7 +86,7 @@
     "title": "Twitch Streams",
     "category": "personal",
     "description": "Started streaming on Twitch.",
-    "extendedDescription": "I found out one of my biggest passions this year. I was a dedicated League of Legends player, and decided to start streaming it to share the journey of my dreams: Becoming a Challenger!\n\nI was a Silver player back when I started and throughout my journey I ended up reaching Diamond and building up a strong and reasonable community that supported me.\n\n Made friends, reached an average of 15-20 viewers per stream and created a discord server where around 10 people would be joining almost every single night to chat and play together, creating amazing memories.\n\n This was also the moment where I started creating my first personal brand (TOA), I explored a lot my artistic and design skills to achieve the results I wanted for the branding of my Stream and was always cumplimented for the quality I delivered.",
+    "extendedDescription": "I found out one of my biggest passions this year. I was a dedicated League of Legends player, and decided to start streaming it to share the journey of my dreams: Becoming a Challenger!\n\nI was a Silver player back when I started and throughout my journey I ended up reaching Diamond and building up a strong and reasonable community that supported me.\n\n Made friends, reached an average of 15-20 viewers per stream and created a discord server where around 10 people would be joining almost every single night to chat and play together, creating amazing memories.\n\n This was also the moment where I started creating my first personal brand (TOA), I explored a lot my artistic and design skills to achieve the results I wanted for the branding of my Stream and was always complimented for the quality I delivered.",
     "images": [
       "events/Streams/Toamig Twitch.jpg",
       "events/Streams/Stream is live! 3.png",
@@ -107,7 +107,7 @@
     "title": "Graduated Bachelor's Degree",
     "category": "studies",
     "description": "Completed my Software Engineering Bachelor's degree with honors.",
-    "extendedDescription": "After a few detours, a lot of work and sleepless nights, I was finally able to graduate successfully with a 13 GPA on my bachelors.\n\n Highliting my best performance in: Algebra (17), Graphical Applications Laboratory (16), Database and Web Applications Labortory (18) and Personal and Interpersonal Proficiency (16).",
+    "extendedDescription": "After a few detours, a lot of work and sleepless nights, I was finally able to graduate successfully with a 13 GPA on my bachelors.\n\n Highlighting my best performance in: Algebra (17), Graphical Applications Laboratory (16), Database and Web Applications Laboratory (18) and Personal and Interpersonal Proficiency (16).",
     "images": [],
     "links": [{ "text": "Study Plan", "url": "https://sigarra.up.pt/feup/pt/cur_geral.cur_planos_estudos_view?pv_plano_id=31224&pv_ano_lectivo=2025&pv_tipo_cur_sigla=L&pv_origem=CUR" }],
     "documents": [
@@ -129,7 +129,7 @@
     "date": "2023-02",
     "title": "Tools Lead at Saber Interactive",
     "category": "professional",
-    "description": "Founded de Tools department and became the Tools Lead Programmer.",
+    "description": "Founded the Tools department and became the Tools Lead Programmer.",
     "extendedDescription": "After a successful journey in the multiplayer department, I was offered the opportunity to pick up and lead the development of a core tool for the Road Kings project. \n\nWith this the tools department was formerly started in Saber Porto and I became in charge of closing the communication and pipeline gaps between the programmer and art teams as well as developing tools to speed up and automate processes.\n\nIt was an amazing opportunity to solidify my leadership skills and my knowledge in the field of game development.",
     "images": ["events/ToolsLead/Facetune_03-10-2023-18-13-16.JPEG"],
     "links": [
@@ -140,10 +140,10 @@
   {
     "id": "evt-2024-Ikonic",
     "date": "2024-02",
-    "title": "Joined Ikonic Games",
+    "title": "Core Software Engineer at Ikonic Games",
     "category": "professional",
     "description": "Started a new chapter as a Core Software Engineer at Ikonic Games.",
-    "extendedDescription": "After a successful journey in Saber Interactive, I was offered the opportunity to join Ikonic Games as a Core Software Engineer. I was responsible for the development of the gmaplay system for the Timefront project. \n\n I was thirsty for knowledge and wanted new challenges in my career so I decided to join this new startup along with experienced friends from the field to start creating new and exciting projects in the Action-Adventure genre.\n\n It was an awesome journey, the teamwork spirit and the awesome office environment made this time feel amazing everyday. I'm grateful for the opportunity and all the moments I lived here",
+    "extendedDescription": "After a successful journey in Saber Interactive, I was offered the opportunity to join Ikonic Games as a Core Software Engineer. I was thirsty for new challenges in my career so I decided to join this new startup along with experienced friends from the field to start creating new and exciting projects.\n\n Among many other things, I was responsible for designing and developing core gameplay systems for new action-adventure projects, being mainly focused on AI, Combat, Animation programming and Tools Development. \n\n It was an awesome journey, the teamwork spirit and the awesome office environment made this time feel amazing every day. I'm grateful for the opportunity and all the moments I lived here",
     "images": [
       "events/Ikonic/0d2161da-4256-4ede-9ae5-525394c05fa5.jpg",
       "events/Ikonic/3b2b0442-d15f-49fc-8103-363ab1e30188.jpg",
@@ -164,9 +164,9 @@
     "date": "2005-09",
     "title": "Started primary school",
     "category": "studies",
-    "description": "Completed a challenging mountain hiking expedition and discovered new perspectives.",
+    "description": "Began my educational journey in primary school.",
     "extendedDescription": "",
-    "images": ["me/hiking1.jpg", "me/hiking2.jpg"],
+    "images": [],
     "links": [],
     "expandable": false
   }
