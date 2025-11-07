@@ -26,9 +26,9 @@
   {
     "id": "evt-2005-Tikki",
     "date": "2020-05",
-    "title": "Tikki",
+    "title": "Adopted Tikki",
     "category": "personal",
-    "description": "I adopted my little cat Tikki",
+    "description": "I adopted my little tiger, Tikki",
     "extendedDescription": "It was 2020, in the middle of the pandemic, when I was sitting at a T3 alone and isolated. I made one of the best decisions of my life and adopted my little cat Tikki. Ever since then it has been my best companion and friend.",
     "images": [
       "events/Tikki/IMG_3436.PNG",
@@ -57,9 +57,9 @@
   {
     "id": "evt-2021-Dive",
     "date": "2021-06",
-    "title": "Team Leader at Dive Studios",
+    "title": "Became Team Leader at Dive Studios",
     "tags": ["studies", "professional"],
-    "description": "Led the project development of an educative rocket simulator prototype.",
+    "description": "Led the development of an educational rocket simulator prototype.",
     "extendedDescription": "During 2021, in the context of the subject 'LGP' (Project Management Laboratory) I got the opportunity to lead a team of 8 programmers, and be the communication bridge between the team, the client and the multimedia department.\n\nThe project ended up being a success at the eyes of the team, the client and our end users, given the measure tests we did in real schools.\n\nIt was a huge opportunity for me to be able to lead the development of this project, not only for the leadership skills, but also for the first contact with Unity and game development in general.\n\nEnded up with a grade of 19.",
     "images": ["experience/dive.jfif", "events/AutoRocket/autorocket1.png"],
     "links": [
@@ -72,10 +72,10 @@
   {
     "id": "evt-2018-RedBull",
     "date": "2018-02",
-    "title": "Can You Make It? participation",
+    "title": "Participated in RedBull Can You Make It?",
     "category": "personal",
-    "description": "Applied for the 'RedBull Can You Make It?' challenge.",
-    "extendedDescription": "During this year, me and two other friends decided to apply for the 'RedBull Can You Make It?' challenge. We had to create a video that would promote the challenge and the most liked videos would be selected for a travel across Europe, using only RedBull cans as currency.\n\nUnfortunately we weren't selected, but it was a fun journey, all the ideation, the video recording, the sharing and promoting of the video. It was fun even with all the disappointments.",
+    "description": "Applied for the 'RedBull Can You Make It?' challenge with friends.",
+    "extendedDescription": "During this year, me and two other friends decided to apply for the 'RedBull Can You Make It?' challenge. We had to create a video that would promote the challenge and the most liked videos would be selected for a travel across Europe, using only RedBull cans as currency.\n\nUnfortunately we weren't selected, but it was a fun journey, from ideation and recording to sharing and promoting the video. It was fun even with all the disappointments.",
     "images": ["events/RedBull/Routine breakers.jpg", "events/RedBull/Cover.jpg"],
     "links": [{ "text": "Participation Video", "url": "https://www.youtube.com/watch?v=HHLmkttiyfI" }],
     "expandable": true
@@ -107,7 +107,7 @@
     "title": "Graduated Bachelor's Degree",
     "category": "studies",
     "description": "Completed my Software Engineering Bachelor's degree with honors.",
-    "extendedDescription": "After a few detours, a lot of work and sleepless nights, I was finally able to graduate successfully with a 13 GPA on my bachelors.\n\n Highlighting my best performance in: Algebra (17), Graphical Applications Laboratory (16), Database and Web Applications Laboratory (18) and Personal and Interpersonal Proficiency (16).",
+    "extendedDescription": "After a few detours, a lot of work and sleepless nights... I was finally able to graduate successfully with a 13 GPA on my bachelors.\n\n Highlighting my best performance in: Algebra (17), Graphical Applications Laboratory (16), Database and Web Applications Laboratory (18) and Personal and Interpersonal Proficiency (16).",
     "images": [],
     "links": [{ "text": "Study Plan", "url": "https://sigarra.up.pt/feup/pt/cur_geral.cur_planos_estudos_view?pv_plano_id=31224&pv_ano_lectivo=2025&pv_tipo_cur_sigla=L&pv_origem=CUR" }],
     "documents": [
@@ -127,10 +127,10 @@
   {
     "id": "evt-2022-toolslead",
     "date": "2023-02",
-    "title": "Tools Lead at Saber Interactive",
+    "title": "Promoted to Lead at Saber Interactive",
     "category": "professional",
     "description": "Founded the Tools department and became the Tools Lead Programmer.",
-    "extendedDescription": "After a successful journey in the multiplayer department, I was offered the opportunity to pick up and lead the development of a core tool for the Road Kings project. \n\nWith this the tools department was formerly started in Saber Porto and I became in charge of closing the communication and pipeline gaps between the programmer and art teams as well as developing tools to speed up and automate processes.\n\nIt was an amazing opportunity to solidify my leadership skills and my knowledge in the field of game development.",
+    "extendedDescription": "After a successful journey in the multiplayer department, I was offered the opportunity to pick up and lead the development of a core tool for the Road Kings project. \n\nThis marked the formal start of the Tools department at Saber Porto. I became in charge of closing the communication and pipeline gaps between the programmer and art teams as well as developing tools to speed up and automate processes.\n\nIt was an amazing opportunity to solidify my leadership skills and my knowledge in the field of game development.",
     "images": ["events/ToolsLead/Facetune_03-10-2023-18-13-16.JPEG"],
     "links": [
       { "text": "Road Kings", "url": "https://store.steampowered.com/app/2141130/Road_Kings/" }
@@ -140,10 +140,10 @@
   {
     "id": "evt-2024-Ikonic",
     "date": "2024-02",
-    "title": "Core Software Engineer at Ikonic Games",
+    "title": "Joined Ikonic Games",
     "category": "professional",
     "description": "Started a new chapter as a Core Software Engineer at Ikonic Games.",
-    "extendedDescription": "After a successful journey in Saber Interactive, I was offered the opportunity to join Ikonic Games as a Core Software Engineer. \n\n I was thirsty for new challenges in my career so I decided to join this new startup along with experienced friends from the field to start creating new and exciting projects.\n\n Among many other things, I was responsible for designing and developing core gameplay systems for new action-adventure projects, being mainly focused on AI, Combat, Animation programming and Tools Development. \n\n It was an awesome journey, the teamwork spirit and the awesome office environment made this time feel amazing every day. I'm grateful for the opportunity and all the moments I lived here",
+    "extendedDescription": "After a successful journey in Saber Interactive, I was offered the opportunity to join Ikonic Games as a Core Software Engineer. \n\n I was thirsty for new challenges in my career so I decided to join this new startup along with experienced friends to create exciting projects.\n\n Among many other things, I was responsible for designing and developing core gameplay systems for new action-adventure projects, being mainly focused on AI, Combat, Animation programming and Tools Development. \n\n It was an awesome journey, the teamwork spirit and the awesome office environment made this time feel amazing every day. I'm grateful for the opportunity and all the moments I lived here",
     "images": [
       "events/Ikonic/0d2161da-4256-4ede-9ae5-525394c05fa5.jpg",
       "events/Ikonic/3b2b0442-d15f-49fc-8103-363ab1e30188.jpg",
@@ -162,12 +162,23 @@
   {
     "id": "evt-2005-school",
     "date": "2005-09",
-    "title": "Started primary school",
+    "title": "Started Primary School",
     "category": "studies",
     "description": "Began my educational journey in primary school.",
     "extendedDescription": "",
     "images": [],
     "links": [],
     "expandable": false
+  },
+  {
+    "id": "evt-1998-born",
+    "date": "1998-10-01",
+    "title": "The Beginning",
+    "category": "personal",
+    "description": "The story begins! I was born and raised in Portugal.",
+    "extendedDescription": "This is where everything started. I was born in a small valley in northern Portugal, in a town called Vila Pouca de Aguiar.\n\n I grew up surrounded by much love, creativity, curiosity, and of course ... technology. Little did I know that my dream would come true and I would end up in the worlds of game development!",
+    "images": [],
+    "links": [],
+    "expandable": true
   }
 ]
