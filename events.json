@@ -1,11 +1,41 @@
 [
   {
+    "id": "evt-2025-Greece",
+    "date": "2025-09",
+    "title": "Traveled to Greece",
+    "category": "travels",
+    "description": "Explored Athens and Aegina",
+    "extendedDescription": "I took one of my most anticipated trips and visited Athens, the city of the ancient gods, before exploring the island of Aegina. \n\n Greece received me better than I was expecting, with sunny weather, 26°C beaches, and countless breathtaking ruins. I fell in love with the history, the people and (of course) the amazing Freddo Espresso coffee. \n\n Later on the trip I spent a few days on Aegina and even got the chance to visit Moni Island. Incredible food, stunning views, and the crystal-clear waters of those seas made it unforgettable.",
+    "images": [
+      "events/Greece/dji_fly_20250915_135356_86_1757941505515_photo_optimized.jpg",
+      "events/Greece/dji_fly_20250920_014838_234_1758383795500_photo_optimized.jpg",
+      "events/Greece/Facetune_14-09-2025-18-26-56.jpg",
+      "events/Greece/IMG_0279.JPEG",
+      "events/Greece/IMG_0535.JPEG",
+      "events/Greece/IMG_0542.JPEG",
+      "events/Greece/IMG_0560.JPEG",
+      "events/Greece/IMG_0778.JPEG",
+      "events/Greece/IMG_0803.JPEG",
+      "events/Greece/IMG_0806.JPEG",
+      "events/Greece/IMG_0988.JPEG",
+      "events/Greece/IMG_1038.JPEG",
+      "events/Greece/IMG_8787.JPEG",
+      "events/Greece/IMG_9037.JPEG",
+      "events/Greece/IMG_9055.JPEG",
+      "events/Greece/IMG_9250.JPEG",
+      "events/Greece/IMG_9422.JPEG",
+      "events/Greece/IMG_9769.JPEG"
+    ],
+    "links": [],
+    "expandable": true
+  },
+  {
     "id": "evt-2023-Poland",
     "date": "2023-12",
     "title": "Traveled to Poland",
     "category": "travels",
     "description": "Had an amazing winter trip to Poland",
-    "extendedDescription": "I went to Poland this winter to surprise a friend and ended up having one of the best trips ever. Gdańsk welcomed me with snow, Christmas lights, and the smell of hot wine. I spent my days ice skating, exploring the markets, and trying every local food I could find.\n\nAfter that, I headed to Kraków, visited Auschwitz, wandered through the old streets, and took a trip to the mountains in Zakopane. Between the snowy hikes, hot springs in Chochołowskie Termy, and speeding around on a snowmobile, I fell completely in love with Polish winters.",
+    "extendedDescription": "In this year's winter I went to Poland and ended up having one of the best trips ever. Gdańsk welcomed me with snow, Christmas lights, and the smell of hot wine. I spent my days ice skating, exploring the markets, and trying every local food I could find.\n\nAfter that, I headed to Kraków, visited Auschwitz, wandered through the old streets, and took a trip to the mountains in Zakopane. Between the snowy hikes, hot springs in Chochołowskie Termy, and speeding around on a snowmobile, I fell completely in love with Polish winters.",
     "images": [
       "events/Poland/IMG_9012.JPEG",
       "events/Poland/IMG_9116.JPEG",
