@@ -426,13 +426,23 @@
       }
 
       // Converts a plaintext block into a container with <p> paragraphs.
-      // Splits paragraphs on blank lines. Single newlines become <br>.
+      // Accepts either a string (split on blank lines) or an array of strings (one per paragraph).
+      // Single newlines within paragraphs become <br>.
       function createParagraphsFromText(text) {
         const container = document.createElement('div');
         container.className = 'event-extended-description';
-        if (!text) return container;
-        const normalized = String(text).replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-        const parts = normalized.split(/\n{2,}/g); // split on blank lines
+        if (!text || (Array.isArray(text) && text.length === 0)) return container;
+        
+        let parts = [];
+        if (Array.isArray(text)) {
+          // If it's an array, use it directly (one element per paragraph)
+          parts = text;
+        } else {
+          // If it's a string, split on blank lines (backward compatibility)
+          const normalized = String(text).replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+          parts = normalized.split(/\n{2,}/g);
+        }
+        
         parts.forEach(pText => {
           const p = document.createElement('p');
           const withLineBreaks = escapeHtml(pText).replace(/\n/g, '<br>');
@@ -725,7 +735,11 @@
 
           // content (title + short desc)
           const content = document.createElement('div');
-          const isExpandable = !!(event.extendedDescription || (event.images && event.images.length) || (event.links && event.links.length) || (event.documents && event.documents.length));
+          const hasExtendedDesc = event.extendedDescription && 
+            (Array.isArray(event.extendedDescription) 
+              ? event.extendedDescription.length > 0
+              : (typeof event.extendedDescription === 'string' && event.extendedDescription.trim().length > 0));
+          const isExpandable = !!(hasExtendedDesc || (event.images && event.images.length) || (event.links && event.links.length) || (event.documents && event.documents.length));
           content.className = 'event-content';
           const h3 = document.createElement('h3'); h3.textContent = event.title || 'Untitled';
           const shortP = document.createElement('p'); shortP.className = 'event-description'; shortP.textContent = event.description || '';
@@ -738,10 +752,15 @@
           const expandable = document.createElement('div');
           expandable.className = 'event-expandable';
 
-          // extended description (paragraph aware)
+          // extended description (paragraph aware - supports string or array)
           if (event.extendedDescription) {
-            const extNode = createParagraphsFromText(event.extendedDescription);
-            expandable.appendChild(extNode);
+            const isEmpty = Array.isArray(event.extendedDescription) 
+              ? event.extendedDescription.length === 0
+              : (typeof event.extendedDescription === 'string' && event.extendedDescription.trim().length === 0);
+            if (!isEmpty) {
+              const extNode = createParagraphsFromText(event.extendedDescription);
+              expandable.appendChild(extNode);
+            }
           }
 
           // images

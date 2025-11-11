@@ -1,11 +1,116 @@
 [
   {
+    "id": "evt-2022-Monography",
+    "date": "2022-06",
+    "title": "Delivered Monography",
+    "category": "studies",
+    "description": "Defined the topic and delivered the state of the art for my Master's thesis on procedural generation in games.",
+    "extendedDescription": [
+      "During this phase of my Master's, I faced an unexpected challenge: none of the proposed thesis topics matched my interests or long-term goals. I knew I wanted to work on something related to games, so I decided to pursue a custom topic that would truly motivate me.",
+      "After many conversations with professors and former students, I began researching the state of the art in procedural generation, exploring its applications and potential in the gaming field. I read extensively on the subject, including a full book dedicated to procedural generation in games, and became fascinated by the balance between randomness, control, and design intent.",
+      "Eventually, I defined my thesis around the generation and assessment of tower defense maps with controlled difficulty. The goal was to design a system capable of generating levels based on a target difficulty input, automatically testing them with simulated waves of enemies to evaluate how well the generated level matched the intended challenge.",
+      "This milestone marked the completion of the state of the art and the formal delivery of my monography. It laid the foundation for the research and development phase that would later follow, and it was the first real step into combining my academic background with my passion for game development."
+    ],
+    "images": [],
+    "documents": [
+      {
+        "url": "events/Monography/Monography.pdf",
+        "text": "Monography",
+        "name": "Dissertation Preparation Monography"
+      },
+      {
+        "url": "events/Monography/Miguel-Vieira-Procedural-Generation.pdf",
+        "text": "Final Presentation",
+        "name": "Dissertation Preparation Final Presentation"
+      }
+    ],
+    "links": [
+      { "text": "PCG in Games Book", "url": "https://www.pcgbook.com/" }
+    ],
+    "expandable": true
+  },
+  {
+    "id": "evt-2022-Dakar",
+    "date": "2022-10-04",
+    "title": "Shipped Dakar Desert Rally",
+    "category": "professional",
+    "description": "Shipped my first game, Dakar Desert Rally.",
+    "extendedDescription": [
+      "In October 2022, Dakar Desert Rally was officially released, the first AAA title I ever contributed to, and one of the most valuable learning experiences of my career so far.",
+      "I joined Saber Interactive Porto just three months before release, during the final bug-fixing and polishing phase of development. My work focused on improving the multiplayer experience, resolving replication issues, and refining gameplay systems across various areas.",
+      "Because the project was being shipped on multiple platforms, including PlayStation and Xbox, I also had the chance to work closely with console-specific builds and requirements. It gave me first-hand insight into the final stages of the production pipeline, from QA feedback to the submission process and release preparation.",
+      "Despite joining late in development, it was incredibly rewarding to see the game go live and know that I had contributed to its final shape. It was a defining moment that deepened my understanding of large-scale production and multiplayer systems."
+    ],
+    "images": [
+      "events/Dakar/photo_2022-10-04_16-01-42.jpg",
+      "events/Dakar/photo_2022-10-04_17-36-27.jpg",
+      "events/Dakar/photo_2022-10-05_15-54-24.jpg",
+      "events/Dakar/photo_2022-10-05_16-04-34.jpg",
+      "events/Dakar/photo_2022-10-21_18-31-53.jpg"
+    ],
+    "links": [
+      { "text": "Dakar Desert Rally", "url": "https://www.dakarthegame.com/en/" },
+      { "text": "Saber Interactive Porto", "url": "https://www.linkedin.com/company/saber-interactive-porto/" }
+    ],
+    "expandable": true
+  },
+  {
+    "id": "evt-2022-Saber",
+    "date": "2022-08",
+    "title": "Joined Saber Interactive Porto",
+    "category": "professional",
+    "description": "Started my career in the AAA games industry.",
+    "extendedDescription": [
+      "After three months working at a small company that provided game development services, I received an email that would completely change my professional life and future.",
+      "I had been looking for a position in the game development industry for months. Around three or four months earlier, I had completed Saber Interactive's coding challenge but never heard back from them.",
+      "Receiving their answer made my day in a way I can hardly explain. I knew my life was about to change and that I had reached a huge milestone. There was no way I could let this opportunity slip away.",
+      "And so it happened... I joined as a junior developer, completely unfamiliar with the technologies and processes being used. But I learned fast, asked countless questions, and paid close attention to every detail. It felt like there was valuable knowledge everywhere. I often stayed late at the office with the last programmers, then went home to study more Unreal Engine to show my leads I was growing.",
+      "The effort definitely paid off. Over time, I earned more independence and the trust of my leads and managers. I was definitely on the right track.",
+      "It's also important to say that beyond the career growth, Saber gave me friendships that I'm sure will last a lifetime. Between late work nights, intense milestone deliveries, and fun cultural events, the memories I brought with me remain very vivid."
+    ],
+    "images": [
+      "events/Saber/IMG_1202.JPEG",
+      "events/Saber/IMG_1205.PNG",
+      "events/Saber/IMG_1278.JPEG",
+      "events/Saber/IMG_1661.JPG",
+      "events/Saber/IMG_1662.JPG",
+      "events/Saber/IMG_1664.JPG",
+      "events/Saber/IMG_1880.JPEG",
+      "events/Saber/IMG_1881.JPG",
+      "events/Saber/IMG_2950.JPEG",
+      "events/Saber/IMG_3008_magicstudio_11g7ppbkec9g.png",
+      "events/Saber/IMG_3015.jpg",
+      "events/Saber/IMG_3019.JPG",
+      "events/Saber/IMG_3020.JPG",
+      "events/Saber/IMG_WD01.JPG",
+      "events/Saber/IMG_WD02.jpg",
+      "events/Saber/IMG_WD03.JPEG",
+      "events/Saber/IMG_WD04.JPEG",
+      "events/Saber/photo_2022-09-29_12-13-02.jpg",
+      "events/Saber/photo_2022-10-05_15-54-24.jpg",
+      "events/Saber/photo_2022-10-07_17-14-53.jpg",
+      "events/Saber/photo_2022-10-07_17-14-55.jpg",
+      "events/Saber/photo_2022-10-07_17-14-56.jpg",
+      "events/Saber/photo_2022-10-07_17-15-00.jpg",
+      "events/Saber/photo_2022-10-07_17-15-01.jpg",
+      "events/Saber/photo_2022-10-21_18-31-53.jpg",
+      "events/Saber/photo_2022-12-22_16-30-53.jpg",
+      "events/Saber/photo_2022-12-22_16-30-54.jpg"
+    ],
+    "links": [{ "text": "Saber Interactive Porto", "url": "https://www.linkedin.com/company/saber-interactive-porto/" }],
+    "expandable": true
+  },
+  {
     "id": "evt-2025-Greece",
     "date": "2025-09",
     "title": "Traveled to Greece",
     "category": "travels",
-    "description": "Explored Athens and Aegina",
-    "extendedDescription": "I took one of my most anticipated trips and visited Athens, the city of the ancient gods, before exploring the island of Aegina. \n\n Greece received me better than I was expecting, with sunny weather, 26°C beaches, and countless breathtaking ruins. I fell in love with the history, the people and (of course) the amazing Freddo Espresso coffee. \n\n Later on the trip I spent a few days on Aegina and even got the chance to visit Moni Island. Incredible food, stunning views, and the crystal-clear waters of those seas made it unforgettable.",
+    "description": "Explored Athens and Aegina.",
+    "extendedDescription": [
+      "I took one of my most anticipated trips and visited Athens, the city of the ancient gods, before exploring the island of Aegina.",
+      "Greece received me better than I was expecting, with sunny weather, 26°C beaches, and countless breathtaking ruins. I fell in love with the history, the people, and (of course) the amazing Freddo Espresso coffee.",
+      "Later on the trip, I spent a few days on Aegina and even got the chance to visit Moni Island. Incredible food, stunning views, and the crystal-clear waters of those seas made it unforgettable."
+    ],
     "images": [
       "events/Greece/dji_fly_20250915_135356_86_1757941505515_photo_optimized.jpg",
       "events/Greece/dji_fly_20250920_014838_234_1758383795500_photo_optimized.jpg",
@@ -30,12 +135,48 @@
     "expandable": true
   },
   {
+    "id": "evt-2023-Roadtrip",
+    "date": "2023-06-08",
+    "title": "Made a Road Trip through Spain",
+    "category": "travels",
+    "description": "Visited Madrid, Valencia and Benidorm without any plans.",
+    "extendedDescription": [
+      "In June 2023, I took advantage of a national holiday to go on a short road trip. It was my first real vacation since starting my professional career, and I wanted to do something different.",
+      "I picked up the car on a dark and rainy day and headed east, hoping to escape the bad weather. My initial plan was to reach Barcelona within two days on the road, but things quickly changed along the way. I first stopped in Madrid, where I discovered the fascinating concept of capsule hostels. It was a fun experience, and I also had the chance to explore the city center and visit an iconic cat café.",
+      "After Madrid, I remembered I had a friend working in Valencia and, unlike Barcelona, the forecast there was sunny. So, I drove south to meet him and enjoy the rest of my trip. We met an adventurous group of people who stayed with us all night to watch the sunrise and dive into the sea after a sleepless night.",
+      "On the last day, we headed to Benidorm to experience its lively beach lifestyle. Needless to say, I tried authentic paella, and it was as awesome as it could be.",
+      "In the end, I drove the 9 hours straight back to Portugal to reach the office in time for work. It was such a unique and unforgettable experience."
+    ],
+    "images": [
+      "events/RoadTrip2023/6004AE3C-6E12-45A7-833F-F21B855D7BBF.jpg",
+      "events/RoadTrip2023/IMG_4098.JPEG",
+      "events/RoadTrip2023/IMG_4197.JPEG",
+      "events/RoadTrip2023/IMG_4203.JPEG",
+      "events/RoadTrip2023/IMG_4235.JPEG",
+      "events/RoadTrip2023/IMG_4308.JPEG",
+      "events/RoadTrip2023/IMG_4309.JPEG",
+      "events/RoadTrip2023/IMG_4330.JPEG",
+      "events/RoadTrip2023/IMG_4334.JPEG",
+      "events/RoadTrip2023/IMG_4367.JPEG",
+      "events/RoadTrip2023/IMG_4423.JPEG",
+      "events/RoadTrip2023/IMG_4431.JPEG",
+      "events/RoadTrip2023/IMG_4462.JPEG",
+      "events/RoadTrip2023/IMG_4465.JPEG",
+      "events/RoadTrip2023/IMG_4469.JPEG"
+    ],
+    "links": [],
+    "expandable": true
+  },
+  {
     "id": "evt-2023-Poland",
     "date": "2023-12",
     "title": "Traveled to Poland",
     "category": "travels",
-    "description": "Had an amazing winter trip to Poland",
-    "extendedDescription": "In this year's winter I went to Poland and ended up having one of the best trips ever. Gdańsk welcomed me with snow, Christmas lights, and the smell of hot wine. I spent my days ice skating, exploring the markets, and trying every local food I could find.\n\nAfter that, I headed to Kraków, visited Auschwitz, wandered through the old streets, and took a trip to the mountains in Zakopane. Between the snowy hikes, hot springs in Chochołowskie Termy, and speeding around on a snowmobile, I fell completely in love with Polish winters.",
+    "description": "Had an amazing winter trip to Poland.",
+    "extendedDescription": [
+      "In this year's winter, I went to Poland and ended up having one of the best trips ever. Gdańsk welcomed me with snow, Christmas lights, and the smell of hot wine. I spent my days ice skating, exploring the markets, and trying every local food I could find.",
+      "After that, I headed to Kraków, visited Auschwitz, wandered through the old streets, and took a trip to the mountains in Zakopane. Between the snowy hikes, hot springs in Chochołowskie Termy, and speeding around on a snowmobile, I fell completely in love with Polish winters."
+    ],
     "images": [
       "events/Poland/IMG_9012.JPEG",
       "events/Poland/IMG_9116.JPEG",
@@ -58,14 +199,16 @@
     "date": "2020-05",
     "title": "Adopted Tikki",
     "category": "personal",
-    "description": "I adopted my little tiger, Tikki",
-    "extendedDescription": "It was 2020, in the middle of the pandemic, when I was sitting at a T3 alone and isolated. I made one of the best decisions of my life and adopted my little cat Tikki. Ever since then it has been my best companion and friend.",
+    "description": "I adopted my little tiger, Tikki.",
+    "extendedDescription": [
+      "It was 2020, in the middle of the pandemic, when I was sitting at a T3 alone and isolated. I made one of the best decisions of my life and adopted my little cat Tikki. Ever since then, it has been my best companion and friend."
+    ],
     "images": [
       "events/Tikki/IMG_3436.PNG",
       "events/Tikki/C409F785-5117-4D14-8CE2-B1FC8F40FAC9.jpg",
       "events/Tikki/76F53706-D80E-4615-8B7C-A6A70C40F3A7.jpg",
       "events/Tikki/abad45ef-7091-40d9-99d4-d8f700c6c3a2.jpg"
-      ],
+    ],
     "links": [{ "text": "Toa Cats", "url": "https://www.instagram.com/toa_cats/" }],
     "expandable": true
   },
@@ -75,7 +218,10 @@
     "title": "Started University",
     "category": "studies",
     "description": "Began my Informatics and Computer Engineering Integrated Master's degree at U.Porto - FEUP.",
-    "extendedDescription": "In 2016, I kicked off one of the biggest chapters of my life: university. I came in ready for it, so I partied hard, studied harder, and learned a ton, not just from books, but from life itself.\n\nIt was a crazy mix of everything: new friends, late-night study marathons, deadlines, projects, and those all-nighters where coffee basically became part of my bloodstream. Looking back, it was a time of growth, discovery, and some of the best memories I’ve got.",
+    "extendedDescription": [
+      "In 2016, I kicked off one of the biggest chapters of my life: university. I came in ready for it, so I partied hard, studied harder, and learned a ton, not just from books, but from life itself.",
+      "It was a crazy mix of everything: new friends, late-night study marathons, deadlines, projects, and those all-nighters where coffee basically became part of my bloodstream. Looking back, it was a time of growth, discovery, and some of the best memories I've got."
+    ],
     "images": [
       "events/University/IMG_7385.JPG",
       "events/University/IMG_7669.JPG",
@@ -90,7 +236,12 @@
     "title": "Became Team Leader at Dive Studios",
     "tags": ["studies", "professional"],
     "description": "Led the development of an educational rocket simulator prototype.",
-    "extendedDescription": "During 2021, in the context of the subject 'LGP' (Project Management Laboratory) I got the opportunity to lead a team of 8 programmers, and be the communication bridge between the team, the client and the multimedia department.\n\nThe project ended up being a success at the eyes of the team, the client and our end users, given the measure tests we did in real schools.\n\nIt was a huge opportunity for me to be able to lead the development of this project, not only for the leadership skills, but also for the first contact with Unity and game development in general.\n\nEnded up with a grade of 19.",
+    "extendedDescription": [
+      "During 2021, in the context of the subject 'LGP' (Project Management Laboratory), I got the opportunity to lead a team of 8 programmers, and be the communication bridge between the team, the client and the multimedia department.",
+      "The project ended up being a success in the eyes of the team, the client and our end users, given the measure tests we did in real schools.",
+      "It was a huge opportunity for me to be able to lead the development of this project, not only for the leadership skills, but also for the first contact with Unity and game development in general.",
+      "I ended up with a grade of 19."
+    ],
     "images": ["experience/dive.jfif", "events/AutoRocket/autorocket1.png"],
     "links": [
       { "text": "Prototype build", "url": "https://toamig.itch.io/autorocket" },
@@ -105,7 +256,10 @@
     "title": "Participated in RedBull Can You Make It?",
     "category": "personal",
     "description": "Applied for the 'RedBull Can You Make It?' challenge with friends.",
-    "extendedDescription": "During this year, me and two other friends decided to apply for the 'RedBull Can You Make It?' challenge. We had to create a video that would promote the challenge and the most liked videos would be selected for a travel across Europe, using only RedBull cans as currency.\n\nUnfortunately we weren't selected, but it was a fun journey, from ideation and recording to sharing and promoting the video. It was fun even with all the disappointments.",
+    "extendedDescription": [
+      "During this year, two other friends and I decided to apply for the 'RedBull Can You Make It?' challenge. We had to create a video that would promote the challenge, and the most liked videos would be selected for a travel across Europe, using only RedBull cans as currency.",
+      "Unfortunately, we weren't selected, but it was a fun journey, from ideation and recording to sharing and promoting the video. It was fun even with all the disappointments."
+    ],
     "images": ["events/RedBull/Routine breakers.jpg", "events/RedBull/Cover.jpg"],
     "links": [{ "text": "Participation Video", "url": "https://www.youtube.com/watch?v=HHLmkttiyfI" }],
     "expandable": true
@@ -116,7 +270,12 @@
     "title": "Twitch Streams",
     "category": "personal",
     "description": "Started streaming on Twitch.",
-    "extendedDescription": "I found out one of my biggest passions this year. I was a dedicated League of Legends player, and decided to start streaming it to share the journey of my dreams: Becoming a Challenger!\n\nI was a Silver player back when I started and throughout my journey I ended up reaching Diamond and building up a strong and reasonable community that supported me.\n\n Made friends, reached an average of 15-20 viewers per stream and created a discord server where around 10 people would be joining almost every single night to chat and play together, creating amazing memories.\n\n This was also the moment where I started creating my first personal brand (TOA), I explored a lot my artistic and design skills to achieve the results I wanted for the branding of my Stream and was always complimented for the quality I delivered.",
+    "extendedDescription": [
+      "I found out one of my biggest passions this year. I was a dedicated League of Legends player and decided to start streaming it to share the journey of my dreams: becoming a Challenger!",
+      "I was a Silver player back when I started, and throughout my journey I ended up reaching Diamond and building up a strong and supportive community.",
+      "I made friends, reached an average of 15-20 viewers per stream, and created a Discord server where around 10 people would be joining almost every single night to chat and play together, creating amazing memories.",
+      "This was also the moment when I started creating my first personal brand (TOA). I explored my artistic and design skills to achieve the results I wanted for the branding of my stream and was always complimented for the quality I delivered."
+    ],
     "images": [
       "events/Streams/Toamig Twitch.jpg",
       "events/Streams/Stream is live! 3.png",
@@ -137,7 +296,10 @@
     "title": "Graduated Bachelor's Degree",
     "category": "studies",
     "description": "Completed my Software Engineering Bachelor's degree with honors.",
-    "extendedDescription": "After a few detours, a lot of work and sleepless nights... I was finally able to graduate successfully with a 13 GPA on my bachelors.\n\n Highlighting my best performance in: Algebra (17), Graphical Applications Laboratory (16), Database and Web Applications Laboratory (18) and Personal and Interpersonal Proficiency (16).",
+    "extendedDescription": [
+      "After a few detours, a lot of work, and sleepless nights... I was finally able to graduate successfully with a 13 GPA in my bachelor's.",
+      "Highlighting my best performance in Algebra (17), Graphical Applications Laboratory (16), Database and Web Applications Laboratory (18), and Personal and Interpersonal Proficiency (16)."
+    ],
     "images": [],
     "links": [{ "text": "Study Plan", "url": "https://sigarra.up.pt/feup/pt/cur_geral.cur_planos_estudos_view?pv_plano_id=31224&pv_ano_lectivo=2025&pv_tipo_cur_sigla=L&pv_origem=CUR" }],
     "documents": [
@@ -160,7 +322,11 @@
     "title": "Promoted to Lead at Saber Interactive",
     "category": "professional",
     "description": "Founded the Tools department and became the Tools Lead Programmer.",
-    "extendedDescription": "After a successful journey in the multiplayer department, I was offered the opportunity to pick up and lead the development of a core tool for the Road Kings project. \n\nThis marked the formal start of the Tools department at Saber Porto. I became in charge of closing the communication and pipeline gaps between the programmer and art teams as well as developing tools to speed up and automate processes.\n\nIt was an amazing opportunity to solidify my leadership skills and my knowledge in the field of game development.",
+    "extendedDescription": [
+      "After a successful journey in the multiplayer department, I was offered the opportunity to pick up and lead the development of a core tool for the Road Kings project.",
+      "This marked the formal start of the Tools department at Saber Porto. I became in charge of closing the communication and pipeline gaps between the programmer and art teams as well as developing tools to speed up and automate processes.",
+      "It was an amazing opportunity to solidify my leadership skills and my knowledge in the field of game development."
+    ],
     "images": ["events/ToolsLead/Facetune_03-10-2023-18-13-16.JPEG"],
     "links": [
       { "text": "Road Kings", "url": "https://store.steampowered.com/app/2141130/Road_Kings/" }
@@ -173,7 +339,12 @@
     "title": "Joined Ikonic Games",
     "category": "professional",
     "description": "Started a new chapter as a Core Software Engineer at Ikonic Games.",
-    "extendedDescription": "After a successful journey in Saber Interactive, I was offered the opportunity to join Ikonic Games as a Core Software Engineer. \n\n I was thirsty for new challenges in my career so I decided to join this new startup along with experienced friends to create exciting projects.\n\n Among many other things, I was responsible for designing and developing core gameplay systems for new action-adventure projects, being mainly focused on AI, Combat, Animation programming and Tools Development. \n\n It was an awesome journey, the teamwork spirit and the awesome office environment made this time feel amazing every day. I'm grateful for the opportunity and all the moments I lived here",
+    "extendedDescription": [
+      "After a successful journey in Saber Interactive, I was offered the opportunity to join Ikonic Games as a Core Software Engineer.",
+      "I was thirsty for new challenges in my career, so I decided to join this new startup along with experienced friends to create exciting projects.",
+      "Among many other things, I was responsible for designing and developing core gameplay systems for new action-adventure projects, being mainly focused on AI, combat, animation programming, and tools development.",
+      "It was an awesome journey. The teamwork spirit and the welcoming office environment made this time feel amazing every day. I'm grateful for the opportunity and all the moments I lived here."
+    ],
     "images": [
       "events/Ikonic/0d2161da-4256-4ede-9ae5-525394c05fa5.jpg",
       "events/Ikonic/3b2b0442-d15f-49fc-8103-363ab1e30188.jpg",
@@ -195,7 +366,7 @@
     "title": "Started Primary School",
     "category": "studies",
     "description": "Began my educational journey in primary school.",
-    "extendedDescription": "",
+    "extendedDescription": [],
     "images": [],
     "links": [],
     "expandable": false
@@ -206,7 +377,10 @@
     "title": "The Beginning",
     "category": "personal",
     "description": "The story begins! I was born and raised in Portugal.",
-    "extendedDescription": "This is where everything started. I was born in a small valley in northern Portugal, in a town called Vila Pouca de Aguiar.\n\n I grew up surrounded by much love, creativity, curiosity, and of course ... technology. Little did I know that my dream would come true and I would end up in the worlds of game development!",
+    "extendedDescription": [
+      "This is where everything started. I was born in a small valley in northern Portugal, in a town called Vila Pouca de Aguiar.",
+      "I grew up surrounded by much love, creativity, curiosity, and of course... technology. Little did I know that my dream would come true and I would end up in the worlds of game development!"
+    ],
     "images": [],
     "links": [],
     "expandable": true
