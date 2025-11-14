@@ -1,5 +1,49 @@
 [
   {
+    "id": "evt-2023-Inline",
+    "date": "2023-04",
+    "title": "Started Inline Skating",
+    "category": "personal",
+    "description": "Got myself a pair of skates and found out a new outdoor passion.",
+    "extendedDescription": [
+      "It was right after a friend's trip to ice skate in Viseu that I realized I wanted a new hobby that would get me outdoors more often.",
+      "As a child, I was always energetic and loved balancing indoor and outdoor activities, so I wanted to bring back that balance to my life.",
+      "I bought the cheapest skates I could find and a set of protective gear, and started practicing on my own. It gave me that feeling I was craving: learning something new, experimenting through trial and error, and feeling progress with every session.",
+      "After just a few months, it started to feel natural. I could move freely, brake, jump, perform manuals, and confidently tackle pipes and pools in a more aggressive style."
+    ],
+    "images": [
+      "events/inline/IMG_3620.jpg",
+      "events/inline/IMG_3625.JPEG",
+      "events/inline/IMG_3627.JPEG",
+      "events/inline/IMG_3639.JPEG",
+      "events/inline/IMG_3859.JPEG",
+      "events/inline/IMG_3861.JPEG",
+      "events/inline/IMG_4209.JPEG",
+      "events/inline/IMG_4214.JPEG"
+    ],
+    "documents": [],
+    "links": [],
+    "expandable": true
+  },
+  {
+    "id": "evt-2022-ShadowProfile",
+    "date": "2022-05",
+    "title": "Joined the Game Dev Industry",
+    "category": "professional",
+    "description": "Got my first job in the industry at Shadow Profile.",
+    "extendedDescription": [
+      "In the final phase of my master's, while I was writing my dissertation, I started looking for jobs. I knew the industry I wanted to break into was niche and competitive, so I decided to start early.",
+      "After a few months and plenty of interviews, I landed an opportunity at Shadow Profile. Back then, it was a small company providing game development services to clients and running a few internal projects.",
+      "It was such a great way to kick things off! I got access to a variety of tools and projects, which helped me grow quickly. I was able to work professionally across different genres using Unity—2D, 3D, and even VR."
+    ],
+    "images": [],
+    "documents": [],
+    "links": [
+      { "text": "Shadow Profile", "url": "https://shadowprofile.pt/en/" }
+    ],
+    "expandable": true
+  },
+  {
     "id": "evt-2022-Monography",
     "date": "2022-06",
     "title": "Delivered Monography",
@@ -179,6 +223,7 @@
     ],
     "images": [
       "events/Poland/IMG_9012.JPEG",
+      "events/Poland/IMG_9061.JPEG",
       "events/Poland/IMG_9116.JPEG",
       "events/Poland/IMG_9128.JPEG",
       "events/Poland/IMG_9132.JPEG",
