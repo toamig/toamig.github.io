@@ -1,5 +1,122 @@
 [
   {
+    "id": "evt-2023-house",
+    "date": "2023-08",
+    "title": "My First House",
+    "category": "personal",
+    "description": "Achieved a huge life milestone - Buying the first house.",
+    "extendedDescription": [],
+    "images": [
+      "events/House/IMG_4916.JPEG",
+      "events/House/IMG_4917.JPEG",
+      "events/House/IMG_4918.JPEG"
+    ],
+    "documents": [],
+    "links": [],
+    "expandable": true
+  },
+  {
+    "id": "evt-2024-Senegal",
+    "date": "2024-09",
+    "title": "Traveled to Senegal",
+    "category": "travels",
+    "description": "My first time outside Europe and first trip to Africa.",
+    "extendedDescription": [
+      "This trip was completely different from anything I had ever experienced. It was my first stepping outside of Europe, the first time using my passport, and the first time preparing for a trip with a travelers' medical consultation. I received valuable guidance about local health precautions and ended up taking four vaccines before flying out.",
+      "Arriving in Senegal was a cultural and emotional shock. The heat hit me immediately, and I quickly noticed how underdeveloped many areas were... unfinished buildings, visible poverty, and chaotic traffic. Yet, among all that, there were countless happy kids playing outside, full of energy and joy.",
+      "I stayed at the Rio Baobab resort, which ended up feeling like a spiritual retreat. The beach water was always warm, around 30°C, the nights were filled with themed activities. Local food options were limited, mostly fish-based dishes, and the incredible baobab juice.",
+      "The experiences I had were unforgettable. I went on a safari and saw rhinos, giraffes, zebras, and crocodiles roaming their natural habitat. Later, I joined an experience focused only on lions, where we stayed inside a reinforced vehicle while these majestic felines approached us closely. It was surreal!.",
+      "I also visited Gorée Island, a historically heavy place marked by Portuguese, Dutch, French, and English presence during the era of slavery. The visit to the iconic House of Slaves — now a museum — was powerful and emotional.",
+      "Another highlight was the Monument of the African Renaissance, a 49-meter-tall bronze structure that dominates the landscape. It's majestic, controversial among locals, and absolutely worth seeing up close.",
+      "Despite being so different from what I'm used to, the trip was incredible. I would absolutely do it again, especially now that I understand the local culture better, including how to negotiate with Senegalese street sellers, who really push hard!"    
+    ],
+    "images": [
+      "events/Senegal/IMG_3507.JPG",
+      "events/Senegal/IMG_3508.JPEG",
+      "events/Senegal/IMG_3522.JPG",
+      "events/Senegal/IMG_3585.JPEG",
+      "events/Senegal/IMG_3827.JPG",
+      "events/Senegal/IMG_3831.JPEG",
+      "events/Senegal/IMG_3832.JPEG",
+      "events/Senegal/IMG_3833.jpg",
+      "events/Senegal/IMG_4021.JPG",
+      "events/Senegal/IMG_4051.JPG",
+      "events/Senegal/IMG_4111.JPG",
+      "events/Senegal/IMG_4327.JPEG",
+      "events/Senegal/IMG_4328.JPG",
+      "events/Senegal/IMG_4406.JPG",
+      "events/Senegal/IMG_4431.JPG",
+      "events/Senegal/IMG_4470.JPG",
+      "events/Senegal/IMG_4471.JPEG",
+      "events/Senegal/IMG_4583.JPG",
+      "events/Senegal/IMG_4674.JPG",
+      "events/Senegal/IMG_4675.JPG",
+      "events/Senegal/IMG_4754.JPG",
+      "events/Senegal/IMG_4822.JPG",
+      "events/Senegal/IMG_4834.JPG",
+      "events/Senegal/IMG_4835.jpg",
+      "events/Senegal/IMG_4836.JPG",
+      "events/Senegal/IMG_4902.JPG",
+      "events/Senegal/IMG_5400.JPG",
+      "events/Senegal/IMG_5411.JPG",
+      "events/Senegal/IMG_5545.JPEG",
+      "events/Senegal/IMG_5652.JPEG",
+      "events/Senegal/IMG_5653.JPEG",
+      "events/Senegal/IMG_5687.JPEG",
+      "events/Senegal/IMG_5690.JPEG"
+    ],
+    "documents": [],
+    "links": [],
+    "expandable": true
+  },
+  {
+    "id": "evt-2025-Flama",
+    "date": "2025-03",
+    "title": "Joined Flama Craftworks",
+    "category": "professional",
+    "description": "Started a fully remote job working on an RTS project.",
+    "extendedDescription": [
+      "I was looking for a change in my career — to learn more, explore different paths, and especially work with people outside the circles I was already used to.",
+      "After a lot of effort during a difficult period for the game development industry, I received an amazing opportunity to join Flama Craftworks and work on their RTS project: Timefront.",
+      "The company's vision, their processes, their culture, and the project itself immediately resonated with me. Arman, my initial lead, was an incredible engineer who gave me a new perspective on many topics.",
+      "Today, I lead the gameplay team, and I continue to believe strongly in Timefront's vision and future success. I'm confident that great things will come from this journey!"    
+    ],
+    "images": [],
+    "documents": [],
+    "links": [
+      { "text": "Flama Craftworks", "url": "https://www.flamacraftworks.com/" },
+      { "text": "Timefront", "url": "https://store.steampowered.com/app/3328840/Timefront/" }
+    ],
+    "expandable": true
+  },
+  {
+    "id": "evt-2022-Cosplay",
+    "date": "2022-12",
+    "title": "My First Cosplay",
+    "category": "personal",
+    "description": "Went to Lisbon comic-con and cosplayed Roronoa Zoro.",
+    "extendedDescription": [
+      "As a pop culture fan, I've always enjoyed going to comic-con events, especially when they were held in the north of Portugal.",
+      "In 2022 the event took place in Lisbon, and I decided it was time to try something different — to cosplay one of the most iconic characters from my favourite anime: Roronoa Zoro from One Piece.",
+      "The experience was incredibly fun. I had people asking for photos, recorded some great videos, and fully embraced the atmosphere. It was my first cosplay, but definitely not my last!"
+    ],
+    "images": [
+      "events/Cosplay2022/E3DC3702-9319-4908-B754-C081F841AC83.jpg",
+      "events/Cosplay2022/IMG_2310.JPG",
+      "events/Cosplay2022/IMG_2312.JPEG",
+      "events/Cosplay2022/IMG_2314.JPEG",
+      "events/Cosplay2022/IMG_2315.JPEG",
+      "events/Cosplay2022/IMG_2321.JPEG",
+      "events/Cosplay2022/IMG_2340.JPEG",
+      "events/Cosplay2022/IMG_2341.jpg",
+      "events/Cosplay2022/IMG_2342.jpg",
+      "events/Cosplay2022/IMG_2343.jpg"
+    ],
+    "documents": [],
+    "links": [],
+    "expandable": true
+  },
+  {
     "id": "evt-2023-Inline",
     "date": "2023-04",
     "title": "Started Inline Skating",
@@ -36,7 +153,9 @@
       "After a few months and plenty of interviews, I landed an opportunity at Shadow Profile. Back then, it was a small company providing game development services to clients and running a few internal projects.",
       "It was such a great way to kick things off! I got access to a variety of tools and projects, which helped me grow quickly. I was able to work professionally across different genres using Unity—2D, 3D, and even VR."
     ],
-    "images": [],
+    "images": [
+      "events/ShadowProfile/68e911ac742746b19a5c811ff64c0acf_000.jpg"
+    ],
     "documents": [],
     "links": [
       { "text": "Shadow Profile", "url": "https://shadowprofile.pt/en/" }
@@ -88,6 +207,7 @@
     "images": [
       "events/Dakar/photo_2022-10-04_16-01-42.jpg",
       "events/Dakar/photo_2022-10-04_17-36-27.jpg",
+      "events/Dakar/photo_2022-10-04_21-43-35.JPEG",
       "events/Dakar/photo_2022-10-05_15-54-24.jpg",
       "events/Dakar/photo_2022-10-05_16-04-34.jpg",
       "events/Dakar/photo_2022-10-21_18-31-53.jpg"
@@ -119,6 +239,7 @@
       "events/Saber/IMG_1661.JPG",
       "events/Saber/IMG_1662.JPG",
       "events/Saber/IMG_1664.JPG",
+      "events/Saber/IMG_1670.png",
       "events/Saber/IMG_1880.JPEG",
       "events/Saber/IMG_1881.JPG",
       "events/Saber/IMG_2950.JPEG",
@@ -426,7 +547,9 @@
       "This is where everything started. I was born in a small valley in northern Portugal, in a town called Vila Pouca de Aguiar.",
       "I grew up surrounded by much love, creativity, curiosity, and of course... technology. Little did I know that my dream would come true and I would end up in the worlds of game development!"
     ],
-    "images": [],
+    "images": [
+      "events/Born/IMG_2737.JPEG"
+    ],
     "links": [],
     "expandable": true
   }
