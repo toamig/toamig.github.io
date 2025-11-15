@@ -1,5 +1,117 @@
 [
   {
+    "id": "evt-2022-muscleup",
+    "date": "2022-05-01",
+    "title": "Muscle Up",
+    "category": "personal",
+    "description": "Unlocked the muscle up after month of training.",
+    "extendedDescription": [
+      "🚧 WIP 🚧."
+    ],
+    "images": [],
+    "documents": [],
+    "links": [],
+    "expandable": false
+  },
+  {
+    "id": "evt-2019-driverslicense",
+    "date": "2019-02",
+    "title": "Driver's License",
+    "category": "personal",
+    "description": "Passed the practical test and completed my driver's license.",
+    "extendedDescription": [
+      "🚧 WIP 🚧."
+    ],
+    "images": [],
+    "documents": [],
+    "links": [],
+    "expandable": false
+  },
+  {
+    "id": "evt-2025-Lego",
+    "date": "2025-10",
+    "title": "Started a Lego Collection",
+    "category": "personal",
+    "description": "Revived my passion for legos as a new serious hobby.",
+    "extendedDescription": [
+      "🚧 WIP 🚧."
+    ],
+    "images": [],
+    "documents": [],
+    "links": [],
+    "expandable": false
+  },
+  {
+    "id": "evt-2025-Drone",
+    "date": "2025-09",
+    "title": "Acquired a Drone",
+    "category": "personal",
+    "description": "Found out a new hobby in recreative drone flight.",
+    "extendedDescription": [
+      "🚧 WIP 🚧."
+    ],
+    "images": [],
+    "documents": [],
+    "links": [],
+    "expandable": false
+  },
+  {
+    "id": "evt-2025-Paris",
+    "date": "2025-02-14",
+    "title": "Traveled to France",
+    "category": "travels",
+    "description": "Spent a long weekend in Paris.",
+    "extendedDescription": [
+      "🚧 WIP 🚧."
+    ],
+    "images": [],
+    "documents": [],
+    "links": [],
+    "expandable": false
+  },
+  {
+    "id": "evt-2024-Barcelona",
+    "date": "2024-09-11",
+    "title": "Traveled to Barcelona",
+    "category": "travels",
+    "description": "Spent 4 days in Barcelona with a group of inline skaters.",
+    "extendedDescription": [
+      "🚧 WIP 🚧."
+    ],
+    "images": [],
+    "documents": [],
+    "links": [],
+    "expandable": false
+  },
+  {
+    "id": "evt-2023-netherlands",
+    "date": "2023-11",
+    "title": "Traveled to Netherlands",
+    "category": "travels",
+    "description": "Went to Amsterdam in a long weekend.",
+    "extendedDescription": [
+      "🚧 WIP 🚧."
+    ],
+    "images": [],
+    "documents": [],
+    "links": [],
+    "expandable": false
+  },
+  {
+    "id": "evt-2021-gym",
+    "date": "2021-06",
+    "title": "Started Weight Training",
+    "category": "personal",
+    "description": "Signed up at the gym for a serious journey.",
+    "extendedDescription": [
+      "🚧 WIP 🚧."
+    ],
+    "images": [],
+    "documents": [],
+    "links": [],
+    "expandable": false
+  },
+  {
     "id": "evt-2023-house",
     "date": "2023-08",
     "title": "My First House",
@@ -17,7 +129,7 @@
   },
   {
     "id": "evt-2024-Senegal",
-    "date": "2024-09",
+    "date": "2024-09-15",
     "title": "Traveled to Senegal",
     "category": "travels",
     "description": "My first time outside Europe and first trip to Africa.",
@@ -267,7 +379,7 @@
   },
   {
     "id": "evt-2025-Greece",
-    "date": "2025-09",
+    "date": "2025-09-13",
     "title": "Traveled to Greece",
     "category": "travels",
     "description": "Explored Athens and Aegina.",

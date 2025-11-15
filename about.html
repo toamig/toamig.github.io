@@ -739,7 +739,7 @@
             (Array.isArray(event.extendedDescription) 
               ? event.extendedDescription.length > 0
               : (typeof event.extendedDescription === 'string' && event.extendedDescription.trim().length > 0));
-          const isExpandable = !!(hasExtendedDesc || (event.images && event.images.length) || (event.links && event.links.length) || (event.documents && event.documents.length));
+          const isExpandable = event.expandable === true;
           content.className = 'event-content';
           const h3 = document.createElement('h3'); h3.textContent = event.title || 'Untitled';
           const shortP = document.createElement('p'); shortP.className = 'event-description'; shortP.textContent = event.description || '';
