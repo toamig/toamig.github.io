@@ -1,5 +1,19 @@
 [
   {
+    "id": "evt-2024-Asturias",
+    "date": "2024-04-25",
+    "title": "Visited Asturias",
+    "category": "travels",
+    "description": "Did a nice road trip on the north of Spain, in the Asturian province.",
+    "extendedDescription": [
+      "🚧 WIP 🚧."
+    ],
+    "images": [],
+    "documents": [],
+    "links": [],
+    "expandable": false
+  },
+  {
     "id": "evt-2022-muscleup",
     "date": "2022-05-01",
     "title": "Muscle Up",
