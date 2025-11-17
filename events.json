@@ -18,7 +18,7 @@
     "date": "2022-05-01",
     "title": "Muscle Up",
     "category": "personal",
-    "description": "Unlocked the muscle up after month of training.",
+    "description": "Unlocked the muscle up after months of training.",
     "extendedDescription": [
       "🚧 WIP 🚧."
     ],
@@ -44,9 +44,9 @@
   {
     "id": "evt-2025-Lego",
     "date": "2025-10",
-    "title": "Started a Lego Collection",
+    "title": "Started a LEGO Collection",
     "category": "personal",
-    "description": "Revived my passion for legos as a new serious hobby.",
+    "description": "Revived my passion for LEGO sets as a new serious hobby.",
     "extendedDescription": [
       "🚧 WIP 🚧."
     ],
@@ -60,7 +60,7 @@
     "date": "2025-09",
     "title": "Acquired a Drone",
     "category": "personal",
-    "description": "Found out a new hobby in recreative drone flight.",
+    "description": "Found out a new hobby in recreational drone flight.",
     "extendedDescription": [
       "🚧 WIP 🚧."
     ],
@@ -148,10 +148,10 @@
     "category": "travels",
     "description": "My first time outside Europe and first trip to Africa.",
     "extendedDescription": [
-      "This trip was completely different from anything I had ever experienced. It was my first stepping outside of Europe, the first time using my passport, and the first time preparing for a trip with a travelers' medical consultation. I received valuable guidance about local health precautions and ended up taking four vaccines before flying out.",
+      "This trip was completely different from anything I had ever experienced. It was my first time stepping outside of Europe, the first time using my passport, and the first time preparing for a trip with a travelers' medical consultation. I received valuable guidance about local health precautions and ended up taking four vaccines before flying out.",
       "Arriving in Senegal was a cultural and emotional shock. The heat hit me immediately, and I quickly noticed how underdeveloped many areas were... unfinished buildings, visible poverty, and chaotic traffic. Yet, among all that, there were countless happy kids playing outside, full of energy and joy.",
       "I stayed at the Rio Baobab resort, which ended up feeling like a spiritual retreat. The beach water was always warm, around 30°C, the nights were filled with themed activities. Local food options were limited, mostly fish-based dishes, and the incredible baobab juice.",
-      "The experiences I had were unforgettable. I went on a safari and saw rhinos, giraffes, zebras, and crocodiles roaming their natural habitat. Later, I joined an experience focused only on lions, where we stayed inside a reinforced vehicle while these majestic felines approached us closely. It was surreal!.",
+      "The experiences I had were unforgettable. I went on a safari and saw rhinos, giraffes, zebras, and crocodiles roaming their natural habitat. Later, I joined an experience focused only on lions, where we stayed inside a reinforced vehicle while these majestic felines approached us closely. It was surreal!",
       "I also visited Gorée Island, a historically heavy place marked by Portuguese, Dutch, French, and English presence during the era of slavery. The visit to the iconic House of Slaves — now a museum — was powerful and emotional.",
       "Another highlight was the Monument of the African Renaissance, a 49-meter-tall bronze structure that dominates the landscape. It's majestic, controversial among locals, and absolutely worth seeing up close.",
       "Despite being so different from what I'm used to, the trip was incredible. I would absolutely do it again, especially now that I understand the local culture better, including how to negotiate with Senegalese street sellers, who really push hard!"    
@@ -399,7 +399,7 @@
     "description": "Explored Athens and Aegina.",
     "extendedDescription": [
       "I took one of my most anticipated trips and visited Athens, the city of the ancient gods, before exploring the island of Aegina.",
-      "Greece received me better than I was expecting, with sunny weather, 26°C beaches, and countless breathtaking ruins. I fell in love with the history, the people, and (of course) the amazing Freddo Espresso coffee.",
+      "Greece received me better than I was expecting, with sunny weather, 26°C beaches, and countless breathtaking ruins. I fell in love with the history, the people, and (of course) the amazing Freddo Espresso.",
       "Later on the trip, I spent a few days on Aegina and even got the chance to visit Moni Island. Incredible food, stunning views, and the crystal-clear waters of those seas made it unforgettable."
     ],
     "images": [
@@ -530,7 +530,7 @@
     "description": "Led the development of an educational rocket simulator prototype.",
     "extendedDescription": [
       "During 2021, in the context of the subject 'LGP' (Project Management Laboratory), I got the opportunity to lead a team of 8 programmers, and be the communication bridge between the team, the client and the multimedia department.",
-      "The project ended up being a success in the eyes of the team, the client and our end users, given the measure tests we did in real schools.",
+      "The project ended up being a success in the eyes of the team, the client and our end users, given the metric tests we performed in real schools.",
       "It was a huge opportunity for me to be able to lead the development of this project, not only for the leadership skills, but also for the first contact with Unity and game development in general.",
       "I ended up with a grade of 19."
     ],
