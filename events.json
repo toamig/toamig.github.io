@@ -62,12 +62,26 @@
     "category": "personal",
     "description": "Found out a new hobby in recreational drone flight.",
     "extendedDescription": [
-      "🚧 WIP 🚧."
+      "Ever since I can remember I've had the dream of being able to fly, just like a free bird or a mighty eagle. It's obviously a kid's dream, but it's something that stayed with me for a long time.",
+      "Eventually, years ago, I found that flying drones could give me the closest experience of what it feels like to soar high and see the world from above. But I just couldn't afford one back then, so I ended up delaying that passion.",
+      "This year, after knowing I was traveling to Greece, I decided to gift myself an early birthday present and finally start recording amazing footage from the skies."
     ],
-    "images": [],
+    "images": [
+      "events/Drone/DJI_0075.JPG",
+      "events/Drone/DJI_0080.JPG",
+      "events/Drone/DJI_0127.JPG",
+      "events/Drone/DJI_0145.JPG",
+      "events/Drone/DJI_0173.JPG",
+      "events/Drone/DJI_0237.JPG",
+      "events/Drone/DJI_0477.JPG",
+      "events/Drone/DJI_0635.JPG"
+    ],
     "documents": [],
-    "links": [],
-    "expandable": false
+    "links": [
+      { "text": "ToaAerials IG", "url": "https://www.instagram.com/toaaerials/" },
+      { "text": "ToaAerials YT", "url": "https://www.youtube.com/@ToaAerials" }
+    ],
+    "expandable": true
   },
   {
     "id": "evt-2025-Paris",
