@@ -8,10 +8,21 @@
     "extendedDescription": [
       "🚧 WIP 🚧."
     ],
-    "images": [],
+    "images": [
+      "events/Asturias/FullSizeRender.JPEG",
+      "events/Asturias/IMG_2341.JPEG",
+      "events/Asturias/IMG_7926.JPEG",
+      "events/Asturias/IMG_8053.JPEG",
+      "events/Asturias/IMG_8098.JPEG",
+      "events/Asturias/IMG_8251.JPEG",
+      "events/Asturias/IMG_8509.JPEG",
+      "events/Asturias/IMG_8549.JPEG",
+      "events/Asturias/IMG_8656.JPEG",
+      "events/Asturias/IMG_8849.JPEG"
+    ],
     "documents": [],
     "links": [],
-    "expandable": false
+    "expandable": true
   },
   {
     "id": "evt-2022-muscleup",
@@ -50,10 +61,18 @@
     "extendedDescription": [
       "🚧 WIP 🚧."
     ],
-    "images": [],
+    "images": [
+      "events/Lego/62B6375F-ACB6-4E65-B82B-9402127D4BF4.jpg",
+      "events/Lego/E46A6C8E-DCF5-4168-AF1B-6FA4E01154C7.jpg",
+      "events/Lego/IMG_1578.JPEG",
+      "events/Lego/IMG_1672.JPEG",
+      "events/Lego/IMG_1690.JPEG",
+      "events/Lego/IMG_1955.JPEG",
+      "events/Lego/IMG_1975.JPEG"
+    ],
     "documents": [],
     "links": [],
-    "expandable": false
+    "expandable": true
   },
   {
     "id": "evt-2025-Drone",
@@ -92,10 +111,19 @@
     "extendedDescription": [
       "🚧 WIP 🚧."
     ],
-    "images": [],
+    "images": [
+      "events/Paris/IMG_7051.JPEG",
+      "events/Paris/IMG_7053.JPEG",
+      "events/Paris/IMG_7058.JPEG",
+      "events/Paris/IMG_7062.JPEG",
+      "events/Paris/IMG_7063.JPEG",
+      "events/Paris/IMG_7935.JPEG",
+      "events/Paris/IMG_7943.JPEG",
+      "events/Paris/IMG_7983.JPEG"
+    ],
     "documents": [],
     "links": [],
-    "expandable": false
+    "expandable": true
   },
   {
     "id": "evt-2024-Barcelona",
@@ -106,10 +134,24 @@
     "extendedDescription": [
       "🚧 WIP 🚧."
     ],
-    "images": [],
+    "images": [
+      "events/Barcelona/IMG_4968.JPEG",
+      "events/Barcelona/IMG_5059.JPEG",
+      "events/Barcelona/IMG_5078.JPEG",
+      "events/Barcelona/IMG_5080.JPEG",
+      "events/Barcelona/IMG_5083.JPEG",
+      "events/Barcelona/IMG_5197.JPEG",
+      "events/Barcelona/IMG_5282.JPEG",
+      "events/Barcelona/IMG_5325.JPEG",
+      "events/Barcelona/IMG_5369.JPEG",
+      "events/Barcelona/IMG_5401.JPEG",
+      "events/Barcelona/IMG_5407.JPEG",
+      "events/Barcelona/IMG_5411.JPEG",
+      "events/Barcelona/IMG_5418.JPEG"
+    ],
     "documents": [],
     "links": [],
-    "expandable": false
+    "expandable": true
   },
   {
     "id": "evt-2023-netherlands",
@@ -120,10 +162,26 @@
     "extendedDescription": [
       "🚧 WIP 🚧."
     ],
-    "images": [],
+    "images": [
+      "events/Amsterdam/IMG_8280.JPEG",
+      "events/Amsterdam/IMG_8319.JPEG",
+      "events/Amsterdam/IMG_8323.JPEG",
+      "events/Amsterdam/IMG_8364.JPEG",
+      "events/Amsterdam/IMG_8392.JPEG",
+      "events/Amsterdam/IMG_8486.JPEG",
+      "events/Amsterdam/IMG_8518.JPEG",
+      "events/Amsterdam/IMG_8525.JPEG",
+      "events/Amsterdam/IMG_8531.JPEG",
+      "events/Amsterdam/IMG_8573.JPEG",
+      "events/Amsterdam/IMG_8590.JPEG",
+      "events/Amsterdam/IMG_8609.JPEG",
+      "events/Amsterdam/IMG_8641.JPEG",
+      "events/Amsterdam/IMG_8768.JPEG",
+      "events/Amsterdam/IMG_8781.JPEG"
+    ],
     "documents": [],
     "links": [],
-    "expandable": false
+    "expandable": true
   },
   {
     "id": "evt-2021-gym",
