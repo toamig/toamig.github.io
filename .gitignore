@@ -4,11 +4,6 @@
 *.dmg
 *.pkg
 
-# Personal/sensitive documents
-*.pdf
-!projects/*.pdf
-!experience/*.pdf
-
 # Temporary files
 *.tmp
 *.temp
