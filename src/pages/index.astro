@@ -101,7 +101,10 @@ const projects = [
         <div class="cards-container">
           {experience.map(e => (
             <a class="extended-card" href={e.href} target="_blank" rel="noopener noreferrer">
-              {e.logo && <img src={e.logo} alt={`${e.name} Logo`} class="card-logo" />}
+              {e.logo
+                ? <img src={e.logo} alt={`${e.name} Logo`} class="card-logo" />
+                : <div class="card-logo" />
+              }
               <div class="card-details">
                 <h3>{e.name}</h3>
                 <p class="role">{e.role}</p>
