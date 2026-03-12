@@ -1,0 +1,482 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout
+  title="Toamig - About"
+  description="Learn more about Miguel Vieira — game developer, traveller, and lifelong learner."
+  ogUrl="https://toamig.github.io/about"
+>
+  <!-- ── About Hero ────────────────────────────────────────────────── -->
+  <section id="about-2">
+    <div class="about-content-2">
+      <img src="/me/IMG_7.JPEG" alt="Profile Picture" class="profile-image" />
+      <div class="about-text-2">
+        <h2>About Me</h2>
+        <span class="underline"></span>
+        <p class="p1">I design systems, solve problems, and chase dreams — always choosing the edge of discomfort as my playground.</p>
+        <p class="p2">I bring structure to chaos and lead by example. Grounded in pragmatism but never blind to detail, I stay deeply committed to my responsibilities and driven by an insatiable thirst for learning.</p>
+        <p class="p3">These are the values that define me — as a person, a developer, and a leader.</p>
+      </div>
+    </div>
+    <div class="scroll-down">
+      <a href="#life-timeline"></a>
+    </div>
+  </section>
+
+  <!-- ── Life Timeline ─────────────────────────────────────────────── -->
+  <section id="life-timeline">
+    <div class="container">
+      <h2>Life Timeline</h2>
+      <span class="underline"></span>
+
+      <div class="timeline-controls">
+        <div class="filter-section">
+          <h3>Filter by Category:</h3>
+          <div class="filter-buttons">
+            <button class="filter-btn active" data-category="all">All</button>
+            <button class="filter-btn" data-category="studies">Studies</button>
+            <button class="filter-btn" data-category="personal">Personal</button>
+            <button class="filter-btn" data-category="professional">Professional</button>
+            <button class="filter-btn" data-category="travels">Travels</button>
+          </div>
+        </div>
+        <div class="date-sort-row">
+          <div class="date-filter-section">
+            <label for="year-filter-select">Filter by Date:</label>
+            <select id="year-filter-select">
+              <option value="">All Years</option>
+            </select>
+            <select id="month-filter-select" disabled>
+              <option value="">All Months</option>
+            </select>
+          </div>
+          <div class="sort-section">
+            <button class="sort-toggle-btn" id="sort-toggle" aria-label="Toggle sort order">
+              <span class="sort-label">Sort:</span>
+              <span class="sort-value" id="sort-value">Newest First</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-grid" id="timeline-grid">
+        <div class="loading-message" id="loading-message"><p>Loading events…</p></div>
+      </div>
+      <div class="no-results" id="no-results" style="display:none;">
+        <p>No events found for the selected filter.</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function escapeHtml(s: string = ''): string {
+  return String(s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function createParagraphsFromText(text: string | string[]): HTMLDivElement {
+  const container = document.createElement('div');
+  container.className = 'event-extended-description';
+  if (!text || (Array.isArray(text) && text.length === 0)) return container;
+  const parts: string[] = Array.isArray(text)
+    ? text
+    : String(text).replace(/\r\n/g, '\n').replace(/\r/g, '\n').split(/\n{2,}/g);
+  parts.forEach(pText => {
+    const p = document.createElement('p');
+    p.innerHTML = escapeHtml(pText).replace(/\n/g, '<br>');
+    container.appendChild(p);
+  });
+  return container;
+}
+
+// ── State ────────────────────────────────────────────────────────────────────
+interface LifeEvent {
+  id: string;
+  date: string;
+  title: string;
+  category?: string;
+  categories?: string[];
+  tags?: string[];
+  description?: string;
+  extendedDescription?: string | string[];
+  expandable?: boolean;
+  images?: string[];
+  links?: { text?: string; label?: string; url: string }[];
+  documents?: { text?: string; label?: string; name?: string; url: string }[];
+}
+
+let lifeEvents: LifeEvent[] = [];
+let currentFilter      = 'all';
+let currentSort        = 'date-desc';
+let currentYearFilter  = '';
+let currentMonthFilter = '';
+
+// ── Load ─────────────────────────────────────────────────────────────────────
+async function loadEvents() {
+  const loadingMsg = document.getElementById('loading-message');
+  try {
+    const resp = await fetch('/events.json', { cache: 'no-cache' });
+    if (!resp.ok) throw new Error('fetch failed');
+    const data = await resp.json();
+    if (!Array.isArray(data)) throw new Error('not an array');
+    lifeEvents = data;
+  } catch (e) {
+    console.info('events.json unavailable, using fallback', e);
+    lifeEvents = [];
+  } finally {
+    if (loadingMsg) loadingMsg.style.display = 'none';
+  }
+  initTimeline();
+}
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+function initTimeline() {
+  initLightbox();
+  renderEvents();
+  setupEventListeners();
+}
+
+// ── Dropdown helpers ──────────────────────────────────────────────────────────
+function getAvailableYears(): string[] {
+  const years = new Set<string>();
+  lifeEvents.forEach(ev => { if (ev.date?.length >= 4) years.add(ev.date.substring(0, 4)); });
+  return Array.from(years).sort((a, b) => b.localeCompare(a));
+}
+function getAvailableMonths(year: string): string[] {
+  const months = new Set<string>();
+  lifeEvents.forEach(ev => {
+    if (ev.date?.length >= 7 && ev.date.substring(0, 4) === year) months.add(ev.date.substring(5, 7));
+  });
+  return Array.from(months).sort((a, b) => a.localeCompare(b));
+}
+function populateYearDropdown() {
+  const sel = document.getElementById('year-filter-select') as HTMLSelectElement | null;
+  if (!sel) return;
+  sel.innerHTML = '<option value="">All Years</option>';
+  getAvailableYears().forEach(y => {
+    const opt = document.createElement('option');
+    opt.value = y; opt.textContent = y;
+    sel.appendChild(opt);
+  });
+}
+function populateMonthDropdown(year: string) {
+  const sel = document.getElementById('month-filter-select') as HTMLSelectElement | null;
+  if (!sel) return;
+  sel.innerHTML = '<option value="">All Months</option>';
+  const names: Record<string, string> = { '01':'January','02':'February','03':'March','04':'April','05':'May','06':'June','07':'July','08':'August','09':'September','10':'October','11':'November','12':'December' };
+  getAvailableMonths(year).forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m; opt.textContent = names[m] || m;
+    sel.appendChild(opt);
+  });
+}
+
+// ── Event listeners ───────────────────────────────────────────────────────────
+function setupEventListeners() {
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function(this: HTMLElement) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      currentFilter = this.dataset.category ?? 'all';
+      renderEvents();
+    });
+  });
+
+  const yearSel  = document.getElementById('year-filter-select')  as HTMLSelectElement | null;
+  const monthSel = document.getElementById('month-filter-select') as HTMLSelectElement | null;
+  if (yearSel) {
+    populateYearDropdown();
+    yearSel.addEventListener('change', function(this: HTMLSelectElement) {
+      currentYearFilter  = this.value;
+      currentMonthFilter = '';
+      if (monthSel) { monthSel.value = ''; }
+      if (currentYearFilter) {
+        populateMonthDropdown(currentYearFilter);
+        if (monthSel) monthSel.disabled = false;
+      } else {
+        if (monthSel) { monthSel.innerHTML = '<option value="">All Months</option>'; monthSel.disabled = true; }
+      }
+      renderEvents();
+    });
+  }
+  if (monthSel) {
+    monthSel.addEventListener('change', function(this: HTMLSelectElement) {
+      currentMonthFilter = this.value;
+      renderEvents();
+    });
+  }
+
+  const sortToggle = document.getElementById('sort-toggle');
+  const sortValue  = document.getElementById('sort-value');
+  if (sortToggle && sortValue) {
+    sortToggle.addEventListener('click', () => {
+      currentSort = currentSort === 'date-desc' ? 'date-asc' : 'date-desc';
+      sortValue.textContent = currentSort === 'date-desc' ? 'Newest First' : 'Oldest First';
+      renderEvents();
+    });
+  }
+
+  const grid = document.getElementById('timeline-grid');
+  if (grid) {
+    grid.addEventListener('keydown', (e) => {
+      const target = (e.target as Element).closest?.('.clickable-card[tabindex]') as HTMLElement | null;
+      if (!target) return;
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); target.click(); }
+    });
+  }
+}
+
+// ── Filter & sort ─────────────────────────────────────────────────────────────
+function getTags(ev: LifeEvent): string[] {
+  if (Array.isArray(ev.tags)) return ev.tags;
+  if (Array.isArray(ev.categories)) return ev.categories;
+  if (ev.category) return [ev.category];
+  return [];
+}
+function filterEvents(events: LifeEvent[]): LifeEvent[] {
+  let res = events.slice();
+  if (currentFilter && currentFilter !== 'all') res = res.filter(e => getTags(e).includes(currentFilter));
+  if (currentYearFilter) {
+    res = res.filter(e => e.date?.substring(0, 4) === currentYearFilter);
+    if (currentMonthFilter) res = res.filter(e => e.date?.length >= 7 && e.date.substring(5, 7) === currentMonthFilter);
+  }
+  return res;
+}
+function sortEvents(events: LifeEvent[]): LifeEvent[] {
+  const arr = events.slice();
+  if (currentSort === 'date-asc') return arr.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  return arr.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+}
+function formatDate(dateString: string): string {
+  if (!dateString) return '';
+  const hasDay = /^\d{4}-\d{2}-\d{2}$/.test(dateString);
+  const d = new Date(dateString);
+  if (isNaN(d.getTime())) return escapeHtml(dateString);
+  return d.toLocaleDateString('en-US', hasDay
+    ? { year: 'numeric', month: 'long', day: 'numeric' }
+    : { year: 'numeric', month: 'long' });
+}
+function getCategoryInfo(category: string): { name: string; color: string } {
+  const map: Record<string, { name: string; color: string }> = {
+    hobbies:      { name: 'Hobbies',       color: '#f9fbbf' },
+    studies:      { name: 'Studies',       color: '#b8dcff' },
+    personal:     { name: 'Personal',      color: '#f6c48a' },
+    professional: { name: 'Professional',  color: '#cbc5ff' },
+    travels:      { name: 'Travels',       color: '#c9f3b2' },
+    work:         { name: 'Work & Career', color: '#cbc5ff' },
+  };
+  return map[category] || { name: category || 'Other', color: '#dfe6e9' };
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
+function renderEvents() {
+  const grid      = document.getElementById('timeline-grid');
+  const noResults = document.getElementById('no-results');
+  if (!grid) return;
+  grid.innerHTML = '';
+
+  const sorted = sortEvents(filterEvents(lifeEvents));
+  if (sorted.length === 0) { if (noResults) noResults.style.display = 'block'; return; }
+  if (noResults) noResults.style.display = 'none';
+
+  sorted.forEach(event => {
+    const tags        = getTags(event);
+    const isExpandable = event.expandable === true;
+
+    const card = document.createElement('article');
+    card.className = 'event-card';
+
+    // Header row (tags + date)
+    const header = document.createElement('div');
+    header.className = 'event-header';
+    const tagsContainer = document.createElement('div');
+    tagsContainer.className = 'event-tags-container';
+    tags.forEach(tag => {
+      const cat = getCategoryInfo(tag);
+      const span = document.createElement('span');
+      span.className = 'event-category';
+      span.style.backgroundColor = cat.color;
+      span.textContent = cat.name;
+      tagsContainer.appendChild(span);
+    });
+    const dateSpan = document.createElement('span');
+    dateSpan.className = 'event-date';
+    dateSpan.textContent = formatDate(event.date || '');
+    header.appendChild(tagsContainer);
+    header.appendChild(dateSpan);
+
+    // Content (title + short desc)
+    const content = document.createElement('div');
+    content.className = 'event-content';
+    const h3 = document.createElement('h3');
+    h3.textContent = event.title || 'Untitled';
+    const shortP = document.createElement('p');
+    shortP.className = 'event-description';
+    shortP.textContent = event.description || '';
+    content.appendChild(h3);
+    content.appendChild(shortP);
+    if (isExpandable) {
+      const ind = document.createElement('span');
+      ind.className = 'expand-indicator';
+      ind.innerHTML = '&#9660;';
+      content.appendChild(ind);
+    }
+
+    // Expandable section
+    const expandable = document.createElement('div');
+    expandable.className = 'event-expandable';
+
+    if (event.extendedDescription) {
+      const isEmpty = Array.isArray(event.extendedDescription)
+        ? event.extendedDescription.length === 0
+        : !String(event.extendedDescription).trim();
+      if (!isEmpty) expandable.appendChild(createParagraphsFromText(event.extendedDescription as string | string[]));
+    }
+
+    if (Array.isArray(event.images) && event.images.length > 0) {
+      const imagesWrap = document.createElement('div');
+      imagesWrap.className = 'event-images';
+      event.images.forEach((imgSrc, idx) => {
+        if (!imgSrc) return;
+        const img = document.createElement('img');
+        img.className = event.images!.length === 1 ? 'event-image full' : 'event-image grid';
+        img.src = imgSrc;
+        img.alt = event.title || `image ${idx + 1}`;
+        img.dataset.eventId    = String(event.id);
+        img.dataset.imageIndex = String(idx);
+        img.addEventListener('click', (ev) => { ev.stopPropagation(); openImageLightbox(String(event.id), idx); });
+        imagesWrap.appendChild(img);
+      });
+      expandable.appendChild(imagesWrap);
+    }
+
+    if (Array.isArray(event.links) && event.links.length > 0) {
+      const linksWrap = document.createElement('div');
+      linksWrap.className = 'event-links';
+      event.links.forEach(link => {
+        if (!link?.url) return;
+        const a = document.createElement('a');
+        a.className = 'event-link';
+        a.href = link.url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.textContent = link.text || link.label || link.url;
+        a.addEventListener('click', ev => ev.stopPropagation());
+        linksWrap.appendChild(a);
+      });
+      expandable.appendChild(linksWrap);
+    }
+
+    if (Array.isArray(event.documents) && event.documents.length > 0) {
+      const docsWrap = document.createElement('div');
+      docsWrap.className = 'event-documents';
+      event.documents.forEach(doc => {
+        if (!doc?.url) return;
+        const a = document.createElement('a');
+        a.className = 'event-document';
+        a.href = doc.url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        const icon = document.createElement('span');
+        icon.className = 'document-icon';
+        icon.innerHTML = '&#128196;';
+        const text = document.createElement('span');
+        text.className = 'document-text';
+        text.textContent = doc.text || doc.label || doc.name || 'View Document';
+        a.appendChild(icon);
+        a.appendChild(text);
+        a.addEventListener('click', ev => ev.stopPropagation());
+        docsWrap.appendChild(a);
+      });
+      expandable.appendChild(docsWrap);
+    }
+
+    if (isExpandable) {
+      card.classList.add('clickable-card');
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
+      card.addEventListener('click', (e) => {
+        if ((e.target as Element).tagName === 'A' || (e.target as Element).tagName === 'IMG') return;
+        if ((e.target as Element).closest('a') || (e.target as Element).closest('img')) return;
+        card.classList.toggle('expanded');
+        const indicator = card.querySelector('.expand-indicator');
+        if (indicator) indicator.innerHTML = card.classList.contains('expanded') ? '&#9650;' : '&#9660;';
+      });
+    }
+
+    card.appendChild(header);
+    card.appendChild(content);
+    card.appendChild(expandable);
+    grid.appendChild(card);
+  });
+}
+
+// ── Lightbox ──────────────────────────────────────────────────────────────────
+let lightboxModal: HTMLElement | null = null;
+let currentEventImages: string[]     = [];
+let currentImageIndex                = 0;
+
+function initLightbox() {
+  if (document.querySelector('.image-lightbox')) {
+    lightboxModal = document.querySelector('.image-lightbox');
+    return;
+  }
+  lightboxModal = document.createElement('div');
+  lightboxModal.className = 'image-lightbox';
+  lightboxModal.innerHTML = `
+    <div class="lightbox-overlay"></div>
+    <div class="lightbox-content">
+      <button class="lightbox-close" aria-label="Close">&times;</button>
+      <button class="lightbox-nav lightbox-prev" aria-label="Previous image">&#8249;</button>
+      <button class="lightbox-nav lightbox-next" aria-label="Next image">&#8250;</button>
+      <div class="lightbox-image-container">
+        <img class="lightbox-image" src="" alt="">
+        <div class="lightbox-counter"></div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(lightboxModal);
+  lightboxModal.querySelector('.lightbox-close')!.addEventListener('click', closeLightbox);
+  lightboxModal.querySelector('.lightbox-overlay')!.addEventListener('click', closeLightbox);
+  lightboxModal.querySelector('.lightbox-prev')!.addEventListener('click', () => navigateImage(-1));
+  lightboxModal.querySelector('.lightbox-next')!.addEventListener('click', () => navigateImage(1));
+  document.addEventListener('keydown', (e) => {
+    if (!lightboxModal?.classList.contains('active')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') navigateImage(-1);
+    if (e.key === 'ArrowRight') navigateImage(1);
+  });
+}
+
+function openImageLightbox(eventId: string, imageIndex: number) {
+  const ev = lifeEvents.find(x => String(x.id) === eventId);
+  if (!ev?.images?.length) return;
+  currentEventImages = ev.images.filter(Boolean);
+  currentImageIndex  = Math.min(Math.max(0, imageIndex), currentEventImages.length - 1);
+  updateLightboxImage();
+  lightboxModal?.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  lightboxModal?.classList.remove('active');
+  document.body.style.overflow = '';
+}
+function navigateImage(delta: number) {
+  if (!currentEventImages.length) return;
+  currentImageIndex = (currentImageIndex + delta + currentEventImages.length) % currentEventImages.length;
+  updateLightboxImage();
+}
+function updateLightboxImage() {
+  if (!lightboxModal) return;
+  const imgEl     = lightboxModal.querySelector('.lightbox-image') as HTMLImageElement | null;
+  const counterEl = lightboxModal.querySelector('.lightbox-counter');
+  if (imgEl) imgEl.src = currentEventImages[currentImageIndex] || '';
+  if (counterEl) counterEl.textContent = `${currentImageIndex + 1} / ${currentEventImages.length}`;
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', loadEvents);
+</script>

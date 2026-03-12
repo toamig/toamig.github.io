@@ -1,0 +1,157 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Logo from '../components/Logo.astro';
+
+const education = [
+  { href: 'https://sigarra.up.pt/feup/en/', logo: '/education/feup-logo.png', name: 'U.Porto - FEUP', role: 'Software Engineering Bachelor', period: '2016 - 2021' },
+  { href: 'https://sigarra.up.pt/feup/en/', logo: '/education/feup-logo.png', name: 'U.Porto - FEUP', role: 'Software Engineering Masters',  period: '2021 - Ongoing' },
+];
+
+const experience = [
+  { href: 'https://www.linkedin.com/company/dive-studios-porto/', logo: '/experience/dive.jfif',         name: 'Dive Studios',      role: 'Team Leader',            period: 'Feb 2021 - Jun 2021'  },
+  { href: 'https://shadowprofile.pt/',                            logo: '/experience/shadowprofile.png', name: 'Shadow Profile',    role: 'Unity Game Developer',   period: 'May 2022 - Aug 2022'  },
+  { href: 'https://saberporto.com/',                              logo: '/experience/saber.jfif',        name: 'Saber Interactive', role: 'Tools Lead Programmer',  period: 'Aug 2022 - Jan 2024'  },
+  { href: '',                                                     logo: '/experience/ikonic.png',        name: 'Ikonic Games',      role: 'Core Software Engineer', period: 'Fev 2024 - Fev 2025'  },
+  { href: 'https://www.flamacraftworks.com/',                     logo: '/experience/flama.jpg',         name: 'Flama Craftworks',  role: 'Lead Software Engineer', period: 'Mar 2025 - Present'   },
+];
+
+const technologies = [
+  { src: '/technologies/c%23.svg',   name: 'C#'      },
+  { src: '/technologies/c++.svg',    name: 'C++'     },
+  { src: '/technologies/unity.svg',  name: 'Unity'   },
+  { src: '/technologies/unreal.svg', name: 'Unreal'  },
+  { src: '/technologies/houdini.svg',name: 'Houdini' },
+];
+
+const projects = [
+  { href: 'https://toamig.itch.io/autorocket',                                      image: '/projects/autorocket.png',        name: 'AutoRocket',          desc: 'Educative rocket simulator with visual programming.'  },
+  { href: 'https://www.meta.com/experiences/totally-basketball/6781908485204434/',  image: '/projects/totally-basketball.jpg', name: 'Totally Basketball',  desc: 'VR basketball game.'                                  },
+  { href: 'https://www.aotearoaexplorers.nz/',                                      image: '/projects/cape.jpg',              name: 'Aotearoa Explorers',  desc: 'Educative exploration game.'                          },
+  { href: 'https://store.steampowered.com/app/1839940/Dakar_Desert_Rally',          image: '/projects/dakar.jpg',             name: 'Dakar Desert Rally',  desc: 'Open world rally Dakar simulator game.'               },
+  { href: 'https://store.steampowered.com/app/2141130/Road_Kings/',                 image: '/projects/RoadKings.avif',        name: 'Road Kings',          desc: 'Adventure truck simulator.'                           },
+  { href: 'https://store.steampowered.com/app/3328840/Timefront/',                  image: '/projects/timefront.jpg',         name: 'Timefront',           desc: 'RTS game blending battle royale mechanics.'           },
+];
+---
+<BaseLayout
+  title="Toamig"
+  description="Discover my projects, skills, and experience."
+  ogUrl="https://toamig.github.io/"
+>
+  <!-- ── Hero ─────────────────────────────────────────────────────── -->
+  <div class="front-page">
+    <div class="front-page-content">
+      <div class="branding">
+        <div id="branding-placeholder">
+          <Logo class="logo" />
+        </div>
+        <h1>TOAMIG</h1>
+      </div>
+      <h1>Welcome to my <span class="strong-text">Game Developer</span> Portfolio</h1>
+      <p>Discover my projects, skills, and experience</p>
+    </div>
+    <div class="scroll-down">
+      <a href="#content"></a>
+    </div>
+  </div>
+
+  <!-- ── Sections ──────────────────────────────────────────────────── -->
+  <div id="content">
+
+    <!-- About -->
+    <section id="about">
+      <div class="container">
+        <div class="about-content">
+          <img src="/me/IMG_7.JPEG" alt="Profile Picture" class="profile-image" />
+          <div class="about-text">
+            <h2>Summary</h2>
+            <span class="underline"></span>
+            <p class="p1">My name is Miguel "Toamig" Vieira, and I'm a software engineer specialized in game development and interactive systems.</p>
+            <p class="p3">My experience spans nearly every area of game programming, including Gameplay, Multiplayer, Tools, Animation, and AI.</p>
+            <p class="p2">Currently I'm working as a Lead Software Engineer at Flama Craftworks, where I'm responsible for the gameplay development of the Timefront project.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Education -->
+    <section id="education">
+      <div class="container">
+        <h2>Education</h2>
+        <span class="underline"></span>
+        <div class="cards-container">
+          {education.map(e => (
+            <a class="extended-card" href={e.href} target="_blank" rel="noopener noreferrer">
+              <img src={e.logo} alt={`${e.name} Logo`} class="card-logo" />
+              <div class="card-details">
+                <h3>{e.name}</h3>
+                <p class="role">{e.role}</p>
+                <p class="time-period">{e.period}</p>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Experience -->
+    <section id="experience">
+      <div class="container">
+        <h2>Work Experience</h2>
+        <span class="underline"></span>
+        <div class="cards-container">
+          {experience.map(e => (
+            <a class="extended-card" href={e.href} target="_blank" rel="noopener noreferrer">
+              <img src={e.logo} alt={`${e.name} Logo`} class="card-logo" />
+              <div class="card-details">
+                <h3>{e.name}</h3>
+                <p class="role">{e.role}</p>
+                <p class="time-period">{e.period}</p>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Technologies -->
+    <section id="technologies">
+      <div class="container">
+        <h2>Professional Proficiency</h2>
+        <span class="underline"></span>
+        <div class="cards-container">
+          {technologies.map(t => (
+            <div class="tech-card">
+              <img class="tech-logo" src={t.src} alt={t.name} />
+              <h3>{t.name}</h3>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Projects -->
+    <section id="projects">
+      <div class="container">
+        <h2>Professional Projects</h2>
+        <span class="underline"></span>
+        <div class="cards-container">
+          {projects.map(p => (
+            <a
+              class="project-card"
+              style={`background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url('${p.image}')`}
+              href={p.href}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div class="project-details">
+                <h3>{p.name}</h3>
+                <p>{p.desc}</p>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+  </div>
+</BaseLayout>

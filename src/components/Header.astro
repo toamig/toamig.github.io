@@ -1,0 +1,62 @@
+---
+import Logo from './Logo.astro';
+---
+<header>
+  <nav>
+    <div id="header-placeholder">
+      <Logo class="logo-header" id="my-logo" />
+    </div>
+    <button class="hamburger" aria-label="Toggle menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="nav-menu">
+      <a href="/">Home</a>
+      <a href="/about">About</a>
+      <a href="/me/Miguel's CV.pdf" target="_blank" rel="noopener noreferrer">Resume</a>
+    </div>
+  </nav>
+</header>
+
+<script>
+  // Header scroll behaviour
+  const header = document.querySelector('header') as HTMLElement | null;
+  const logo   = document.querySelector('.logo-header') as HTMLElement | null;
+  if (header) {
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > header.clientHeight) {
+        header.classList.add('scrolled');
+        if (logo) { logo.style.visibility = 'visible'; logo.style.width = 'auto'; }
+      } else {
+        header.classList.remove('scrolled');
+        if (logo) { logo.style.visibility = 'hidden'; logo.style.width = '0'; }
+      }
+    });
+  }
+
+  // Hamburger menu
+  const hamburger = document.querySelector('.hamburger') as HTMLElement | null;
+  const navMenu   = document.querySelector('.nav-menu') as HTMLElement | null;
+  if (hamburger && navMenu) {
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('active');
+      navMenu.classList.toggle('active');
+      document.body.classList.toggle('menu-open');
+    });
+    navMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        hamburger.classList.remove('active');
+        navMenu.classList.remove('active');
+        document.body.classList.remove('menu-open');
+      });
+    });
+    document.addEventListener('click', (e) => {
+      if (!hamburger.contains(e.target as Node) && !navMenu.contains(e.target as Node)) {
+        hamburger.classList.remove('active');
+        navMenu.classList.remove('active');
+        document.body.classList.remove('menu-open');
+      }
+    });
+  }
+</script>

@@ -1,3 +1,10 @@
+# Astro build output
+dist/
+.astro/
+
+# Node
+node_modules/
+
 # Sensitive files - do not commit these
 *.exe
 *.zip

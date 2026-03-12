@@ -1,0 +1,137 @@
+---
+---
+<div class="music-player" id="musicPlayer">
+  <button class="music-toggle" id="musicToggle" aria-label="Toggle music">
+    <span class="music-icon" id="musicIcon">▶</span>
+  </button>
+  <audio id="backgroundMusic" loop>
+    <source src="/music/AC DC - Shoot To Thrill.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+</div>
+
+<script>
+  const musicPlayer = document.getElementById('backgroundMusic') as HTMLAudioElement | null;
+  const musicToggle = document.getElementById('musicToggle') as HTMLButtonElement | null;
+  const musicIcon  = document.getElementById('musicIcon')  as HTMLElement | null;
+
+  if (musicPlayer && musicToggle && musicIcon) {
+    const isNavigating     = sessionStorage.getItem('isNavigating') === 'true';
+    const navEntry         = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
+    const isReload         = navEntry?.type === 'reload';
+    const referrer         = document.referrer || '';
+    const currentOrigin    = window.location.origin;
+    const isFromSameSite   = referrer && referrer.indexOf(currentOrigin) === 0;
+    const isInternalNav    = isNavigating && isFromSameSite;
+    const isHardRefresh    = isReload && !isInternalNav;
+    const userPreference   = localStorage.getItem('musicUserPreference');
+
+    if (!isInternalNav || isHardRefresh) {
+      localStorage.removeItem('musicPlaying');
+      localStorage.removeItem('musicStopped');
+      localStorage.removeItem('musicTime');
+    }
+    sessionStorage.removeItem('isNavigating');
+    musicPlayer.volume = 0.5;
+
+    let wasPlaying = false;
+    let wasStopped = false;
+    let savedTime  = 0;
+
+    if (userPreference === 'stopped') {
+      wasStopped = true;
+    } else if (isInternalNav) {
+      wasPlaying = localStorage.getItem('musicPlaying') === 'true';
+      wasStopped = localStorage.getItem('musicStopped') === 'true';
+      savedTime  = parseFloat(localStorage.getItem('musicTime') || '0') || 0;
+    } else {
+      wasStopped = userPreference === 'stopped';
+      wasPlaying = userPreference === 'playing';
+    }
+
+    function savePlayingState() {
+      if (!musicPlayer!.paused) {
+        localStorage.setItem('musicPlaying', 'true');
+        localStorage.setItem('musicStopped', 'false');
+        localStorage.setItem('musicTime', musicPlayer!.currentTime.toString());
+        localStorage.setItem('musicUserPreference', 'playing');
+      }
+    }
+    function savePausedState() {
+      localStorage.setItem('musicStopped', 'true');
+      localStorage.setItem('musicPlaying', 'false');
+      localStorage.setItem('musicTime', musicPlayer!.currentTime.toString());
+      localStorage.setItem('musicUserPreference', 'stopped');
+    }
+
+    musicPlayer.addEventListener('loadedmetadata', () => {
+      if (wasPlaying && !wasStopped && savedTime > 0) musicPlayer!.currentTime = savedTime;
+    });
+
+    if (wasPlaying && !wasStopped) {
+      musicPlayer.addEventListener('canplaythrough', () => {
+        if (savedTime > 0) musicPlayer!.currentTime = savedTime;
+        musicPlayer!.play()
+          .then(() => { musicIcon!.textContent = '⏸'; })
+          .catch(() => { musicIcon!.textContent = '▶'; });
+      }, { once: true });
+      musicPlayer.load();
+    } else if (!wasStopped) {
+      setTimeout(() => {
+        musicPlayer!.play()
+          .then(() => { musicIcon!.textContent = '⏸'; })
+          .catch(() => { musicIcon!.textContent = '▶'; });
+      }, 100);
+    } else {
+      if (savedTime > 0) {
+        musicPlayer.addEventListener('loadedmetadata', () => { musicPlayer!.currentTime = savedTime; }, { once: true });
+        musicPlayer.load();
+      }
+      musicIcon.textContent = '▶';
+    }
+
+    musicPlayer.addEventListener('play',  () => { musicIcon!.textContent = '⏸'; savePlayingState(); });
+    musicPlayer.addEventListener('pause', () => {
+      musicIcon!.textContent = '▶';
+      if (musicPlayer!.currentTime > 0 || wasPlaying) savePausedState();
+    });
+
+    const saveInterval = setInterval(() => {
+      if (!musicPlayer!.paused) localStorage.setItem('musicTime', musicPlayer!.currentTime.toString());
+    }, 200);
+
+    musicToggle.addEventListener('click', () => {
+      if (musicPlayer!.paused) musicPlayer!.play(); else musicPlayer!.pause();
+    });
+
+    document.addEventListener('click', (e) => {
+      const link = (e.target as Element).closest('a') as HTMLAnchorElement | null;
+      if (link?.href) {
+        try {
+          const linkUrl    = new URL(link.href, window.location.href);
+          const isSameOrigin  = linkUrl.origin === window.location.origin;
+          const opensNewTab   = link.target === '_blank' || link.hasAttribute('target');
+          if (isSameOrigin && !opensNewTab) sessionStorage.setItem('isNavigating', 'true');
+          else if (!isSameOrigin) sessionStorage.removeItem('isNavigating');
+        } catch { sessionStorage.removeItem('isNavigating'); }
+      }
+    }, true);
+
+    function saveOnNav() {
+      clearInterval(saveInterval);
+      if (sessionStorage.getItem('isNavigating') === 'true') {
+        if (!musicPlayer!.paused) {
+          localStorage.setItem('musicPlaying', 'true');
+          localStorage.setItem('musicStopped', 'false');
+          localStorage.setItem('musicTime', musicPlayer!.currentTime.toString());
+        } else {
+          localStorage.setItem('musicPlaying', 'false');
+          localStorage.setItem('musicTime', musicPlayer!.currentTime.toString());
+        }
+      }
+    }
+    window.addEventListener('beforeunload', saveOnNav);
+    window.addEventListener('pagehide', saveOnNav);
+    document.addEventListener('visibilitychange', () => { if (!musicPlayer!.paused) savePlayingState(); });
+  }
+</script>

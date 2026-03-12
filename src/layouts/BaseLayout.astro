@@ -1,0 +1,60 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import MusicPlayer from '../components/MusicPlayer.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+  ogUrl?: string;
+}
+
+const {
+  title,
+  description = 'Discover my projects, skills, and experience.',
+  ogImage     = 'https://toamig.github.io/me/IMG_7.JPEG',
+  ogUrl       = 'https://toamig.github.io/',
+} = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>{title}</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/logo_head.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+    <!-- Open Graph -->
+    <meta property="og:title"       content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image"       content={ogImage} />
+    <meta property="og:url"         content={ogUrl} />
+    <meta property="og:type"        content="website" />
+  </head>
+  <body>
+    <MusicPlayer />
+    <Header />
+    <slot />
+    <Footer />
+
+    <!-- Smooth scroll for .scroll-down arrows (works on any page) -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.scroll-down a').forEach(anchor => {
+          anchor.addEventListener('click', (e) => {
+            e.preventDefault();
+            const href   = (anchor as HTMLAnchorElement).getAttribute('href');
+            const target = href ? document.querySelector(href) : null;
+            target?.scrollIntoView({ behavior: 'smooth' });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
