@@ -1,0 +1,1280 @@
+---
+// Standalone admin SPA — no BaseLayout
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Admin — Toamig Portfolio</title>
+  <link rel="icon" href="/logo_head.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" />
+  <style>
+    /* ── Variables ─────────────────────────────────────────────── */
+    :root {
+      --bg:            #f0f2f5;
+      --sidebar:       #1e2a35;
+      --sidebar-hover: #263647;
+      --sidebar-act:   #2980b9;
+      --accent:        #2980b9;
+      --accent-d:      #1d5f8b;
+      --white:         #ffffff;
+      --border:        #e1e4e8;
+      --text:          #24292e;
+      --muted:         #6a737d;
+      --danger:        #e74c3c;
+      --success:       #27ae60;
+      --warn:          #f39c12;
+      --radius:        8px;
+      --shadow:        0 1px 4px rgba(0,0,0,.1);
+      --font:          'Montserrat', sans-serif;
+    }
+    /* ── Reset ─────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow-x: hidden; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); }
+    button, input, select, textarea { font-family: var(--font); }
+    button { cursor: pointer; }
+    img { max-width: 100%; }
+
+    /* ── Login ─────────────────────────────────────────────────── */
+    .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg,#2980b9,#1d5f8b); padding: 20px; }
+    .login-card { background: var(--white); border-radius: 16px; padding: 48px 40px; width: 100%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
+    .login-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; }
+    .login-brand svg { width: 36px; height: auto; }
+    .login-brand span { font-size: 18px; font-weight: 800; color: var(--accent); letter-spacing: 1px; }
+    .login-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .login-card > p { color: var(--muted); font-size: 14px; margin-bottom: 28px; line-height: 1.6; }
+    .login-error { background: #fdf0ef; border: 1px solid #f5c6c2; color: var(--danger); border-radius: var(--radius); padding: 12px 14px; font-size: 13px; margin-bottom: 16px; }
+    .token-field { position: relative; }
+    .token-field input { width: 100%; padding: 11px 44px 11px 14px; border: 2px solid var(--border); border-radius: var(--radius); font-size: 14px; transition: border-color .2s; }
+    .token-field input:focus { outline: none; border-color: var(--accent); }
+    .token-vis { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--muted); font-size: 18px; padding: 4px; line-height: 1; }
+    .login-help { margin-top: 20px; padding: 14px; background: #f8f9fa; border-radius: var(--radius); font-size: 12px; color: var(--muted); line-height: 1.7; }
+    .login-help a { color: var(--accent); }
+
+    /* ── Buttons ───────────────────────────────────────────────── */
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; border-radius: var(--radius); border: 2px solid transparent; font-size: 13px; font-weight: 600; transition: all .2s; white-space: nowrap; }
+    .btn-primary   { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn-primary:hover { background: var(--accent-d); border-color: var(--accent-d); }
+    .btn-secondary { background: var(--white); color: var(--text); border-color: var(--border); }
+    .btn-secondary:hover { background: #f0f2f5; }
+    .btn-danger    { background: var(--danger); color: #fff; border-color: var(--danger); }
+    .btn-danger:hover { background: #c0392b; border-color: #c0392b; }
+    .btn-success   { background: var(--success); color: #fff; border-color: var(--success); }
+    .btn-ghost     { background: none; border-color: transparent; color: var(--muted); }
+    .btn-ghost:hover { background: #f0f2f5; color: var(--text); }
+    .btn-sm  { padding: 6px 12px; font-size: 12px; }
+    .btn-lg  { padding: 13px 24px; font-size: 15px; width: 100%; justify-content: center; }
+    .btn:disabled { opacity: .55; cursor: not-allowed; pointer-events: none; }
+
+    /* ── Shell ─────────────────────────────────────────────────── */
+    .shell { display: flex; min-height: 100vh; }
+
+    /* ── Sidebar ───────────────────────────────────────────────── */
+    .sidebar { width: 240px; background: var(--sidebar); color: #fff; display: flex; flex-direction: column; position: fixed; inset: 0 auto 0 0; z-index: 200; transition: transform .3s; }
+    .sidebar-brand { display: flex; align-items: center; gap: 12px; padding: 22px 20px; border-bottom: 1px solid rgba(255,255,255,.07); }
+    .sidebar-brand svg { width: 30px; height: auto; flex-shrink: 0; }
+    .sidebar-brand h1 { font-size: 15px; font-weight: 800; color: #fff; letter-spacing: .5px; line-height: 1.2; }
+    .sidebar-brand small { color: rgba(255,255,255,.4); font-size: 11px; font-weight: 500; }
+    .sidebar-nav { flex: 1; padding: 10px 0; overflow-y: auto; }
+    .nav-btn { display: flex; align-items: center; gap: 10px; width: 100%; padding: 11px 20px; background: none; border: none; border-left: 3px solid transparent; color: rgba(255,255,255,.55); font-size: 13px; font-weight: 500; text-align: left; transition: all .2s; }
+    .nav-btn .nav-icon { font-size: 16px; flex-shrink: 0; }
+    .nav-btn:hover { background: var(--sidebar-hover); color: #fff; }
+    .nav-btn.active { background: rgba(41,128,185,.2); color: #fff; border-left-color: var(--accent); }
+    .nav-btn .unsaved-dot { width: 7px; height: 7px; background: var(--warn); border-radius: 50%; margin-left: auto; flex-shrink: 0; }
+    .sidebar-footer { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,.07); }
+    .sidebar-user { font-size: 12px; color: rgba(255,255,255,.4); margin-bottom: 10px; }
+    .sidebar-user strong { display: block; font-size: 13px; color: rgba(255,255,255,.75); font-weight: 600; margin-bottom: 2px; }
+
+    /* ── Main ──────────────────────────────────────────────────── */
+    .main { flex: 1; margin-left: 240px; display: flex; flex-direction: column; min-height: 100vh; }
+    .topbar { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 28px; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; gap: 16px; }
+    .topbar-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .topbar-title { font-size: 17px; font-weight: 700; white-space: nowrap; }
+    .topbar-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; padding: 6px; }
+    .hamburger span { width: 20px; height: 2px; background: var(--text); border-radius: 2px; display: block; }
+    .unsaved-badge { background: #fff3cd; color: #856404; border: 1px solid #ffc107; border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 700; }
+    .content { padding: 28px; flex: 1; }
+
+    /* ── Section list ──────────────────────────────────────────── */
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; gap: 16px; flex-wrap: wrap; }
+    .section-header h2 { font-size: 20px; font-weight: 700; }
+    .item-list { display: flex; flex-direction: column; gap: 10px; }
+    .item-row { background: var(--white); border-radius: var(--radius); padding: 14px 18px; display: flex; align-items: center; gap: 14px; box-shadow: var(--shadow); border: 2px solid transparent; transition: border-color .2s; }
+    .item-row:hover { border-color: #d0dde8; }
+    .item-thumb { width: 52px; height: 52px; object-fit: contain; border-radius: 6px; background: #f8f9fa; flex-shrink: 0; }
+    .item-thumb-ph { width: 52px; height: 52px; border-radius: 6px; background: #f0f2f5; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #ccc; }
+    .item-info { flex: 1; min-width: 0; }
+    .item-info h3 { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .item-info p  { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .item-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .event-date-badge { background: var(--accent); color: #fff; border-radius: 12px; padding: 3px 10px; font-size: 11px; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
+    .tag-pill { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-right: 4px; }
+
+    /* ── Edit form ─────────────────────────────────────────────── */
+    .edit-card { background: var(--white); border-radius: 12px; padding: 28px; box-shadow: var(--shadow); }
+    .edit-header { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
+    .edit-header h2 { font-size: 18px; font-weight: 700; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .full { grid-column: 1/-1; }
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    .form-group label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; }
+    .form-group input, .form-group select, .form-group textarea { padding: 9px 12px; border: 2px solid var(--border); border-radius: var(--radius); font-size: 13px; transition: border-color .2s; background: #fff; color: var(--text); }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--accent); }
+    .form-group textarea { resize: vertical; min-height: 72px; line-height: 1.6; }
+    .form-section { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; margin: 24px 0 12px; padding-bottom: 8px; border-bottom: 2px solid var(--border); }
+    .form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 28px; padding-top: 20px; border-top: 2px solid var(--border); }
+
+    /* ── Tags checkboxes ───────────────────────────────────────── */
+    .tag-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag-check { display: none; }
+    .tag-label { padding: 6px 14px; border: 2px solid var(--border); border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .2s; user-select: none; }
+    .tag-check:checked + .tag-label { background: #e8f4fc; border-color: var(--accent); color: var(--accent); }
+
+    /* ── Dynamic list (paragraphs, links, docs) ────────────────── */
+    .dyn-list { display: flex; flex-direction: column; gap: 8px; }
+    .dyn-row { display: flex; gap: 8px; align-items: flex-start; }
+    .dyn-row input, .dyn-row textarea { flex: 1; min-width: 0; }
+    .dyn-row .dyn-label { font-size: 11px; font-weight: 600; color: var(--muted); padding: 6px 0 0; min-width: 32px; }
+
+    /* ── Image manager ─────────────────────────────────────────── */
+    .img-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(110px,1fr)); gap: 10px; margin-bottom: 12px; }
+    .img-item { position: relative; aspect-ratio: 1; border-radius: 8px; border: 2px solid var(--border); overflow: hidden; cursor: grab; background: #f8f9fa; transition: all .15s; }
+    .img-item:active { cursor: grabbing; }
+    .img-item.dragging { opacity: .35; transform: scale(.92); }
+    .img-item.drag-over { border-color: var(--accent); border-style: dashed; box-shadow: 0 0 0 3px rgba(41,128,185,.15); }
+    .img-item img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; display: block; }
+    .img-item-pending img { opacity: .7; }
+    .img-overlay { position: absolute; inset: 0; background: rgba(0,0,0,.45); opacity: 0; transition: opacity .2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .img-item:hover .img-overlay { opacity: 1; }
+    .img-drag-handle { position: absolute; top: 4px; left: 4px; background: rgba(0,0,0,.5); color: #fff; border-radius: 4px; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px; pointer-events: none; }
+    .img-del-btn { background: var(--danger); border: none; color: #fff; border-radius: 50%; width: 26px; height: 26px; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: transform .2s; }
+    .img-del-btn:hover { transform: scale(1.1); }
+    .img-pending-badge { position: absolute; bottom: 4px; right: 4px; background: var(--warn); color: #fff; font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 4px; }
+    .upload-zone { border: 2px dashed var(--border); border-radius: 8px; padding: 18px; text-align: center; cursor: pointer; transition: all .2s; color: var(--muted); font-size: 13px; }
+    .upload-zone:hover, .upload-zone.drag-active { border-color: var(--accent); background: #e8f4fc; color: var(--accent); }
+    .upload-zone input { display: none; }
+
+    /* ── Logo upload ───────────────────────────────────────────── */
+    .logo-upload { display: flex; align-items: center; gap: 16px; }
+    .logo-preview { width: 72px; height: 72px; object-fit: contain; border-radius: 8px; border: 2px solid var(--border); background: #f8f9fa; }
+    .logo-preview-ph { width: 72px; height: 72px; border-radius: 8px; border: 2px dashed var(--border); background: #f8f9fa; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #ccc; flex-shrink: 0; }
+
+    /* ── Toast ─────────────────────────────────────────────────── */
+    .toast { position: fixed; bottom: 28px; right: 28px; padding: 14px 20px; border-radius: 10px; color: #fff; font-size: 13px; font-weight: 600; box-shadow: 0 4px 20px rgba(0,0,0,.15); z-index: 9999; animation: toastIn .3s ease; max-width: 340px; line-height: 1.4; }
+    .toast-success { background: var(--success); }
+    .toast-error   { background: var(--danger); }
+    .toast-info    { background: var(--accent); }
+    @keyframes toastIn { from { opacity:0; transform: translateY(14px); } to { opacity:1; transform: translateY(0); } }
+
+    /* ── Loading overlay ───────────────────────────────────────── */
+    .loading-overlay { position: fixed; inset: 0; background: rgba(30,42,53,.7); backdrop-filter: blur(4px); z-index: 9998; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; color: #fff; font-size: 14px; font-weight: 600; }
+    .spinner { width: 36px; height: 36px; border: 4px solid rgba(255,255,255,.25); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Empty state ───────────────────────────────────────────── */
+    .empty { text-align: center; padding: 60px 20px; color: var(--muted); }
+    .empty-icon { font-size: 44px; margin-bottom: 12px; }
+    .empty p { font-size: 14px; margin-bottom: 18px; }
+
+    /* ── Sidebar overlay (mobile) ──────────────────────────────── */
+    .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 199; }
+    .sidebar-overlay.on { display: block; }
+
+    /* ── Responsive ────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; }
+      .topbar { padding: 0 16px; }
+      .hamburger { display: flex; }
+      .content { padding: 16px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .img-grid { grid-template-columns: repeat(auto-fill,minmax(80px,1fr)); }
+      .item-actions { gap: 4px; }
+      .login-card { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script>
+  // ═══════════════════════════════════════════════════════
+  // CONSTANTS
+  // ═══════════════════════════════════════════════════════
+  const OWNER  = 'toamig';
+  const REPO   = 'toamig.github.io';
+  const BRANCH = 'master';
+  const GH_API = 'https://api.github.com';
+
+  const FILE_MAP: Record<string, string> = {
+    events:       'public/events.json',
+    experience:   'src/data/experience.json',
+    education:    'src/data/education.json',
+    projects:     'src/data/projects.json',
+    technologies: 'src/data/technologies.json',
+  };
+
+  const IMG_FOLDER: Record<string, string> = {
+    events: 'public/events',
+    experience: 'public/experience',
+    education: 'public/education',
+    projects: 'public/projects',
+    technologies: 'public/technologies',
+  };
+
+  const SECTION_META: Record<string, { label: string; icon: string }> = {
+    events:       { label: 'Timeline Events', icon: '📅' },
+    experience:   { label: 'Work Experience', icon: '💼' },
+    education:    { label: 'Education',        icon: '🎓' },
+    projects:     { label: 'Projects',         icon: '🎮' },
+    technologies: { label: 'Technologies',     icon: '⚙️' },
+  };
+
+  const TAG_COLORS: Record<string, string> = {
+    studies:      '#b8dcff',
+    personal:     '#f6c48a',
+    professional: '#cbc5ff',
+    travels:      '#c9f3b2',
+    hobbies:      '#f9fbbf',
+    work:         '#cbc5ff',
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // STATE
+  // ═══════════════════════════════════════════════════════
+  interface AppState {
+    token: string | null;
+    user: { login: string } | null;
+    section: string;
+    data:  Record<string, any[]>;
+    sha:   Record<string, string | null>;
+    dirty: Record<string, boolean>;
+    editing: { item: any; index: number } | null;
+    pendingUploads: Record<string, { file: File; folder: string }>;
+  }
+
+  const state: AppState = {
+    token: sessionStorage.getItem('admin_token'),
+    user:  null,
+    section: 'events',
+    data:  { events: [], experience: [], education: [], projects: [], technologies: [] },
+    sha:   { events: null, experience: null, education: null, projects: null, technologies: null },
+    dirty: { events: false, experience: false, education: false, projects: false, technologies: false },
+    editing: null,
+    pendingUploads: {},
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // GITHUB API
+  // ═══════════════════════════════════════════════════════
+  async function ghReq(method: string, path: string, body?: any) {
+    const res = await fetch(`${GH_API}${path}`, {
+      method,
+      headers: {
+        Authorization: `Bearer ${state.token}`,
+        Accept: 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json',
+      },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      const error: any = new Error(err.message || `HTTP ${res.status}`);
+      error.status = res.status;
+      throw error;
+    }
+    return res.json();
+  }
+
+  async function ghGetFile(path: string) {
+    const data = await ghReq('GET', `/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(path)}?ref=${BRANCH}`);
+    return { content: (data.content as string).replace(/\n/g, ''), sha: data.sha as string };
+  }
+
+  async function ghPutFile(path: string, base64: string, sha: string | null, message: string) {
+    const body: any = { message, content: base64, branch: BRANCH };
+    if (sha) body.sha = sha;
+    return ghReq('PUT', `/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(path)}`, body);
+  }
+
+  // safe base64 encode/decode (handles UTF-8)
+  const b64enc = (s: string) => btoa(unescape(encodeURIComponent(s)));
+  const b64dec = (s: string) => decodeURIComponent(escape(atob(s)));
+
+  async function loadSection(sec: string) {
+    const { content, sha } = await ghGetFile(FILE_MAP[sec]);
+    state.data[sec] = JSON.parse(b64dec(content));
+    state.sha[sec] = sha;
+  }
+
+  async function saveSection(sec: string) {
+    const json = JSON.stringify(state.data[sec], null, 2);
+    const res  = await ghPutFile(FILE_MAP[sec], b64enc(json), state.sha[sec], `admin: update ${sec}`);
+    state.sha[sec] = res.content.sha;
+    state.dirty[sec] = false;
+  }
+
+  async function uploadImage(repoPath: string, file: File, existingSha: string | null = null): Promise<string> {
+    const base64 = await fileToBase64(file);
+    const res = await ghPutFile(repoPath, base64, existingSha, `admin: upload ${file.name}`);
+    return res.content.path as string; // e.g. "public/events/Drone/photo.jpg"
+  }
+
+  function fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload  = () => resolve((reader.result as string).split(',')[1]);
+      reader.onerror = reject;
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // RENDER ENTRY
+  // ═══════════════════════════════════════════════════════
+  function render() {
+    const app = document.getElementById('app')!;
+    if (!state.token) {
+      app.innerHTML = renderLogin();
+      attachLoginListeners();
+    } else {
+      app.innerHTML = renderShell();
+      attachShellListeners();
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // LOGIN
+  // ═══════════════════════════════════════════════════════
+  function renderLogin(err = '') {
+    return `
+    <div class="login-wrap">
+      <div class="login-card">
+        <div class="login-brand">
+          <svg viewBox="0 0 689 633" xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(0,633) scale(.1,-.1)" fill="#2980b9">
+              <path d="M507 4863c-4-3-7-152-7-330l0-323 335 0 335 0 0-1332 0-1333 330 330 330 330 0 1002 0 1003 999 0 1000 0 323 326c178 179 325 327 327 330 2 2-889 4-1981 4-1091 0-1988-3-1991-7z"/>
+              <path d="M4227 4472l-327-327-2-1005-3-1005-1000-3-1000-2-330-330-330-330 1658 0 1657 0 0 335 0 335 392-2 393-3 123-215c68-118 154-267 191-330l67-115 377-3c207-1 377 0 377 3 0 2-22 42-49 87-46 77-1130 1958-1218 2113-22 39-84 147-138 240-54 94-130 226-170 295-40 69-98 170-130 225-32 55-91 158-132 230-41 71-75 130-76 132-2 1-150-145-330-325zm375-1064c20-35 104-181 187-325 83-144 151-267 151-273 0-6-67-10-195-10l-195 0 0 335c0 184 4 335 8 335 4 0 24-28 44-62z"/>
+            </g>
+          </svg>
+          <span>TOAMIG ADMIN</span>
+        </div>
+        <h2>Sign in</h2>
+        <p>Enter your GitHub Personal Access Token to manage your portfolio content.</p>
+        ${err ? `<div class="login-error">${err}</div>` : ''}
+        <div class="form-group" style="margin-bottom:16px">
+          <label>GitHub Token</label>
+          <div class="token-field">
+            <input type="password" id="pat-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
+            <button class="token-vis" id="pat-vis" title="Show/hide">👁</button>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-lg" id="login-btn">Connect to GitHub</button>
+        <div class="login-help">
+          Need a token? Go to <a href="https://github.com/settings/tokens/new" target="_blank">GitHub → Settings → Tokens</a>,
+          create a <strong>Classic token</strong> with the <strong>repo</strong> scope checked.
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function attachLoginListeners() {
+    const input  = document.getElementById('pat-input') as HTMLInputElement;
+    const visBtn = document.getElementById('pat-vis')!;
+    const loginBtn = document.getElementById('login-btn') as HTMLButtonElement;
+
+    visBtn.addEventListener('click', () => {
+      input.type = input.type === 'password' ? 'text' : 'password';
+    });
+
+    loginBtn.addEventListener('click', async () => {
+      const token = input.value.trim();
+      if (!token) return;
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Connecting…';
+      try {
+        const res = await fetch(`${GH_API}/user`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error('Invalid token');
+        state.user = await res.json();
+        state.token = token;
+        sessionStorage.setItem('admin_token', token);
+        showLoading('Loading content…');
+        await Promise.all(Object.keys(FILE_MAP).map(loadSection));
+        hideLoading();
+        render();
+      } catch (e: any) {
+        hideLoading();
+        document.getElementById('app')!.innerHTML = renderLogin(e.message || 'Authentication failed');
+        attachLoginListeners();
+      }
+    });
+
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') loginBtn.click(); });
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // SHELL
+  // ═══════════════════════════════════════════════════════
+  function renderShell() {
+    const sec = state.section;
+    const meta = SECTION_META[sec];
+    const isEditing = !!state.editing;
+    const isDirty = state.dirty[sec];
+
+    const navItems = Object.entries(SECTION_META).map(([key, m]) =>
+      `<button class="nav-btn ${key === sec ? 'active' : ''}" data-section="${key}">
+        <span class="nav-icon">${m.icon}</span> ${m.label}
+        ${state.dirty[key] ? '<span class="unsaved-dot"></span>' : ''}
+      </button>`
+    ).join('');
+
+    const username = state.user?.login ?? '—';
+
+    return `
+    <div class="sidebar-overlay ${isMobileOpen ? 'on' : ''}" id="sidebar-overlay"></div>
+    <div class="shell">
+      <aside class="sidebar ${isMobileOpen ? 'open' : ''}" id="sidebar">
+        <div class="sidebar-brand">
+          <svg viewBox="0 0 689 633" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <g transform="translate(0,633) scale(.1,-.1)" fill="#2980b9">
+              <path d="M507 4863c-4-3-7-152-7-330l0-323 335 0 335 0 0-1332 0-1333 330 330 330 330 0 1002 0 1003 999 0 1000 0 323 326c178 179 325 327 327 330 2 2-889 4-1981 4-1091 0-1988-3-1991-7z"/>
+              <path d="M4227 4472l-327-327-2-1005-3-1005-1000-3-1000-2-330-330-330-330 1658 0 1657 0 0 335 0 335 392-2 393-3 123-215c68-118 154-267 191-330l67-115 377-3c207-1 377 0 377 3 0 2-22 42-49 87-46 77-1130 1958-1218 2113-22 39-84 147-138 240-54 94-130 226-170 295-40 69-98 170-130 225-32 55-91 158-132 230-41 71-75 130-76 132-2 1-150-145-330-325zm375-1064c20-35 104-181 187-325 83-144 151-267 151-273 0-6-67-10-195-10l-195 0 0 335c0 184 4 335 8 335 4 0 24-28 44-62z"/>
+            </g>
+          </svg>
+          <div>
+            <h1>Admin Panel</h1>
+            <small>Portfolio Manager</small>
+          </div>
+        </div>
+        <nav class="sidebar-nav">${navItems}</nav>
+        <div class="sidebar-footer">
+          <div class="sidebar-user">
+            <strong>@${username}</strong>
+            ${OWNER}/${REPO}
+          </div>
+          <button class="btn btn-secondary btn-sm" id="logout-btn" style="width:100%">Sign Out</button>
+        </div>
+      </aside>
+
+      <div class="main">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button class="hamburger" id="hamburger">
+              <span></span><span></span><span></span>
+            </button>
+            <span class="topbar-title">${meta.icon} ${isEditing ? (state.editing!.index === -1 ? 'New ' : 'Edit ') + meta.label.replace(/s$/, '') : meta.label}</span>
+            ${isDirty && !isEditing ? `<span class="unsaved-badge">Unsaved changes</span>` : ''}
+          </div>
+          <div class="topbar-right">
+            ${isEditing
+              ? `<button class="btn btn-ghost btn-sm" id="cancel-edit-btn">← Back</button>`
+              : `<button class="btn btn-primary btn-sm" id="add-btn">+ Add New</button>
+                 <button class="btn btn-success btn-sm ${!isDirty ? 'btn-ghost' : ''}" id="save-btn" ${!isDirty ? 'disabled' : ''}>💾 Save</button>`
+            }
+          </div>
+        </header>
+        <div class="content" id="content-area">
+          ${renderSectionContent()}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  let isMobileOpen = false;
+
+  function attachShellListeners() {
+    document.querySelector('.sidebar-nav')?.addEventListener('click', (e) => {
+      const btn = (e.target as Element).closest('[data-section]') as HTMLElement | null;
+      if (!btn) return;
+      if (state.dirty[state.section] && !state.editing) {
+        if (!confirm('You have unsaved changes. Switch sections anyway?')) return;
+        state.dirty[state.section] = false;
+      }
+      state.section = btn.dataset.section!;
+      state.editing = null;
+      isMobileOpen = false;
+      render();
+    });
+
+    document.getElementById('logout-btn')?.addEventListener('click', () => {
+      if (!confirm('Sign out?')) return;
+      sessionStorage.removeItem('admin_token');
+      state.token = null; state.user = null; state.editing = null;
+      Object.keys(state.dirty).forEach(k => state.dirty[k] = false);
+      render();
+    });
+
+    document.getElementById('hamburger')?.addEventListener('click', () => {
+      isMobileOpen = !isMobileOpen;
+      render();
+    });
+
+    document.getElementById('sidebar-overlay')?.addEventListener('click', () => {
+      isMobileOpen = false; render();
+    });
+
+    document.getElementById('cancel-edit-btn')?.addEventListener('click', () => {
+      state.editing = null; render();
+    });
+
+    document.getElementById('add-btn')?.addEventListener('click', () => {
+      state.editing = { item: newItem(state.section), index: -1 };
+      render();
+    });
+
+    document.getElementById('save-btn')?.addEventListener('click', async () => {
+      const btn = document.getElementById('save-btn') as HTMLButtonElement;
+      btn.disabled = true; btn.textContent = '⏳ Saving…';
+      try {
+        await saveSection(state.section);
+        showToast('Saved! Site will rebuild in ~1 minute.', 'success');
+        render();
+      } catch (e: any) {
+        showToast('Save failed: ' + e.message, 'error');
+        btn.disabled = false; btn.textContent = '💾 Save';
+      }
+    });
+
+    attachSectionListeners();
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // SECTION CONTENT
+  // ═══════════════════════════════════════════════════════
+  function renderSectionContent(): string {
+    if (state.editing) return renderEditForm();
+    const items = state.data[state.section];
+    if (!items.length) return `
+      <div class="empty">
+        <div class="empty-icon">${SECTION_META[state.section].icon}</div>
+        <p>No ${SECTION_META[state.section].label.toLowerCase()} yet.</p>
+        <button class="btn btn-primary" id="add-btn-empty">+ Add First</button>
+      </div>`;
+
+    if (state.section === 'events')       return renderEventList(items);
+    if (state.section === 'technologies') return renderTechList(items);
+    return renderCardList(items);
+  }
+
+  // ── Event list ──────────────────────────────────────────
+  function renderEventList(items: any[]) {
+    return `<div class="item-list">${items.map((ev, i) => {
+      const tags = getTags(ev);
+      const tagPills = tags.map(t => `<span class="tag-pill" style="background:${TAG_COLORS[t]||'#eee'};color:#333">${t}</span>`).join('');
+      return `<div class="item-row" data-index="${i}">
+        <span class="event-date-badge">${ev.date || '—'}</span>
+        <div class="item-info">
+          <h3>${esc(ev.title || 'Untitled')}</h3>
+          <p>${tagPills} ${esc(ev.description || '')}</p>
+        </div>
+        <div class="item-actions">
+          <button class="btn btn-secondary btn-sm edit-btn" data-index="${i}">✏️ Edit</button>
+          <button class="btn btn-danger btn-sm del-btn" data-index="${i}">🗑</button>
+        </div>
+      </div>`;
+    }).join('')}</div>`;
+  }
+
+  // ── Card list (experience, education, projects) ─────────
+  function renderCardList(items: any[]) {
+    return `<div class="item-list">${items.map((it, i) => {
+      const logo = it.logo || it.image || it.src || '';
+      const sub  = it.role || it.desc || it.name || '';
+      return `<div class="item-row" data-index="${i}">
+        ${logo
+          ? `<img class="item-thumb" src="${esc(logo)}" alt="" onerror="this.style.display='none'" />`
+          : `<div class="item-thumb-ph">🖼</div>`}
+        <div class="item-info">
+          <h3>${esc(it.name || 'Unnamed')}</h3>
+          <p>${esc(sub)}</p>
+        </div>
+        <div class="item-actions">
+          <button class="btn btn-secondary btn-sm edit-btn" data-index="${i}">✏️ Edit</button>
+          <button class="btn btn-danger btn-sm del-btn" data-index="${i}">🗑</button>
+        </div>
+      </div>`;
+    }).join('')}</div>`;
+  }
+
+  // ── Tech list ───────────────────────────────────────────
+  function renderTechList(items: any[]) {
+    return `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px">${
+      items.map((it, i) => `
+        <div style="background:var(--white);border-radius:var(--radius);padding:16px;text-align:center;box-shadow:var(--shadow);position:relative">
+          ${it.src ? `<img src="${esc(it.src)}" style="height:52px;object-fit:contain;margin-bottom:8px" onerror="this.style.display='none'" alt="">` : '<div style="height:52px;margin-bottom:8px"></div>'}
+          <div style="font-size:13px;font-weight:700">${esc(it.name)}</div>
+          <div style="display:flex;gap:6px;justify-content:center;margin-top:10px">
+            <button class="btn btn-secondary btn-sm edit-btn" data-index="${i}">✏️</button>
+            <button class="btn btn-danger btn-sm del-btn" data-index="${i}">🗑</button>
+          </div>
+        </div>`
+      ).join('')}
+    </div>`;
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // EDIT FORM
+  // ═══════════════════════════════════════════════════════
+  function renderEditForm(): string {
+    const sec = state.section;
+    if (sec === 'events')       return renderEventForm();
+    if (sec === 'technologies') return renderTechForm();
+    return renderSimpleForm();
+  }
+
+  // ── Event form (full) ───────────────────────────────────
+  function renderEventForm(): string {
+    const ev = state.editing!.item;
+    const tags = getTags(ev);
+    const allTags = ['studies','personal','professional','travels','hobbies','work'];
+    const extDesc: string[] = Array.isArray(ev.extendedDescription) ? ev.extendedDescription : (ev.extendedDescription ? [ev.extendedDescription] : []);
+    const links: any[]    = ev.links    || [];
+    const docs:  any[]    = ev.documents|| [];
+    const images: string[] = ev.images  || [];
+
+    return `<div class="edit-card">
+      <div class="edit-header">
+        <div>
+          <h2>${state.editing!.index === -1 ? 'New Event' : 'Edit Event'}</h2>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Title *</label>
+          <input id="f-title" value="${esc(ev.title||'')}" placeholder="e.g. Trip to Greece" />
+        </div>
+        <div class="form-group">
+          <label>Date *</label>
+          <input id="f-date" type="date" value="${ev.date||''}" />
+        </div>
+        <div class="form-group">
+          <label>Short Description</label>
+          <input id="f-desc" value="${esc(ev.description||'')}" placeholder="One-line summary shown in the card" />
+        </div>
+        <div class="form-group">
+          <label>Image Folder Name</label>
+          <input id="f-folder" value="${esc(ev.imageFolder||ev.title||'')}" placeholder="e.g. Greece (used for uploads)" />
+        </div>
+        <div class="form-group full">
+          <label>Categories</label>
+          <div class="tag-grid">
+            ${allTags.map(t => `
+              <label>
+                <input class="tag-check" type="checkbox" value="${t}" ${tags.includes(t) ? 'checked' : ''} />
+                <span class="tag-label" style="${tags.includes(t) ? `background:${TAG_COLORS[t]};border-color:${TAG_COLORS[t]}` : ''}">${t}</span>
+              </label>`).join('')}
+          </div>
+        </div>
+        <div class="form-group full" style="align-items:center;flex-direction:row;gap:10px">
+          <input type="checkbox" id="f-expandable" style="width:18px;height:18px;accent-color:var(--accent)" ${ev.expandable ? 'checked' : ''} />
+          <label for="f-expandable" style="text-transform:none;font-size:13px;font-weight:600;color:var(--text);cursor:pointer">Expandable card (shows extended content when clicked)</label>
+        </div>
+      </div>
+
+      <div class="form-section">Extended Description</div>
+      <div class="dyn-list" id="ext-desc-list">
+        ${extDesc.map((p, i) => `
+          <div class="dyn-row">
+            <span class="dyn-label">¶${i+1}</span>
+            <textarea class="ext-para" rows="2">${esc(p)}</textarea>
+            <button class="btn btn-ghost btn-sm dyn-del" data-i="${i}">✕</button>
+          </div>`).join('')}
+      </div>
+      <button class="btn btn-secondary btn-sm" id="add-para-btn" style="margin-top:8px">+ Add Paragraph</button>
+
+      <div class="form-section">Images</div>
+      <div class="img-grid" id="img-grid">
+        ${renderImageItems(images)}
+      </div>
+      <label class="upload-zone" id="img-upload-zone">
+        <input type="file" accept="image/*" multiple id="img-file-input" />
+        📷 Click or drag images here to upload
+      </label>
+
+      <div class="form-section">Links</div>
+      <div class="dyn-list" id="links-list">
+        ${links.map((l, i) => `
+          <div class="dyn-row">
+            <input class="link-text" value="${esc(l.text||'')}" placeholder="Label" style="flex:.4" />
+            <input class="link-url"  value="${esc(l.url||'')}"  placeholder="https://…" style="flex:.6" />
+            <button class="btn btn-ghost btn-sm dyn-del-link" data-i="${i}">✕</button>
+          </div>`).join('')}
+      </div>
+      <button class="btn btn-secondary btn-sm" id="add-link-btn" style="margin-top:8px">+ Add Link</button>
+
+      <div class="form-section">Documents</div>
+      <div class="dyn-list" id="docs-list">
+        ${docs.map((d, i) => `
+          <div class="dyn-row">
+            <input class="doc-text" value="${esc(d.text||'')}" placeholder="Label" style="flex:.4" />
+            <input class="doc-url"  value="${esc(d.url||'')}"  placeholder="Path or URL" style="flex:.6" />
+            <button class="btn btn-ghost btn-sm dyn-del-doc" data-i="${i}">✕</button>
+          </div>`).join('')}
+      </div>
+      <button class="btn btn-secondary btn-sm" id="add-doc-btn" style="margin-top:8px">+ Add Document</button>
+
+      <div class="form-actions">
+        <button class="btn btn-secondary" id="cancel-edit-btn2">Cancel</button>
+        <button class="btn btn-primary" id="save-item-btn">
+          ${state.editing!.index === -1 ? '+ Create Event' : '💾 Save Event'}
+        </button>
+      </div>
+    </div>`;
+  }
+
+  // ── Simple form (experience, education, projects) ───────
+  function renderSimpleForm(): string {
+    const sec = state.section;
+    const it  = state.editing!.item;
+    const isNew = state.editing!.index === -1;
+    const logoKey = sec === 'projects' ? 'image' : 'logo';
+    const logoVal = it[logoKey] || '';
+
+    return `<div class="edit-card">
+      <div class="edit-header">
+        <h2>${isNew ? 'New' : 'Edit'} ${SECTION_META[sec].label.replace(/s$/,'')}</h2>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Name *</label>
+          <input id="f-name" value="${esc(it.name||'')}" />
+        </div>
+        ${sec !== 'projects' ? `
+        <div class="form-group">
+          <label>${sec === 'experience' ? 'Role / Position' : 'Degree / Level'}</label>
+          <input id="f-role" value="${esc(it.role||'')}" />
+        </div>
+        <div class="form-group">
+          <label>Period</label>
+          <input id="f-period" value="${esc(it.period||'')}" placeholder="e.g. Jan 2023 - Present" />
+        </div>` : `
+        <div class="form-group full">
+          <label>Short Description</label>
+          <input id="f-desc" value="${esc(it.desc||'')}" />
+        </div>`}
+        <div class="form-group">
+          <label>Link / URL</label>
+          <input id="f-href" value="${esc(it.href||'')}" placeholder="https://…" />
+        </div>
+        <div class="form-group full">
+          <label>${sec === 'projects' ? 'Cover Image' : 'Logo / Image'}</label>
+          <div class="logo-upload">
+            ${logoVal
+              ? `<img class="logo-preview" id="logo-preview-img" src="${esc(logoVal)}" onerror="this.style.display='none'" />`
+              : `<div class="logo-preview-ph" id="logo-preview-img">🖼</div>`}
+            <div>
+              <label class="btn btn-secondary btn-sm" style="cursor:pointer">
+                📁 Choose File
+                <input type="file" accept="image/*" id="logo-file-input" style="display:none" />
+              </label>
+              <p style="font-size:11px;color:var(--muted);margin-top:6px">Or paste a path below</p>
+              <input id="f-logo" value="${esc(logoVal)}" placeholder="/experience/company.png" style="width:100%;margin-top:6px;padding:7px 10px;border:2px solid var(--border);border-radius:var(--radius);font-size:12px" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-secondary" id="cancel-edit-btn2">Cancel</button>
+        <button class="btn btn-primary" id="save-item-btn">${isNew ? '+ Create' : '💾 Save'}</button>
+      </div>
+    </div>`;
+  }
+
+  // ── Tech form ───────────────────────────────────────────
+  function renderTechForm(): string {
+    const it  = state.editing!.item;
+    const isNew = state.editing!.index === -1;
+    return `<div class="edit-card">
+      <div class="edit-header"><h2>${isNew ? 'New' : 'Edit'} Technology</h2></div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Name *</label>
+          <input id="f-name" value="${esc(it.name||'')}" />
+        </div>
+        <div class="form-group">
+          <label>Icon</label>
+          <div class="logo-upload">
+            ${it.src ? `<img class="logo-preview" id="logo-preview-img" src="${esc(it.src)}" onerror="this.style.display='none'" />` : `<div class="logo-preview-ph" id="logo-preview-img">⚙️</div>`}
+            <div>
+              <label class="btn btn-secondary btn-sm" style="cursor:pointer">
+                📁 Choose File
+                <input type="file" accept="image/*" id="logo-file-input" style="display:none" />
+              </label>
+              <input id="f-src" value="${esc(it.src||'')}" placeholder="/technologies/icon.svg" style="width:100%;margin-top:6px;padding:7px 10px;border:2px solid var(--border);border-radius:var(--radius);font-size:12px" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-secondary" id="cancel-edit-btn2">Cancel</button>
+        <button class="btn btn-primary" id="save-item-btn">${isNew ? '+ Create' : '💾 Save'}</button>
+      </div>
+    </div>`;
+  }
+
+  // ── Image items HTML ────────────────────────────────────
+  function renderImageItems(images: string[]): string {
+    return images.map((src, i) => {
+      const isPending = src.startsWith('blob:');
+      return `<div class="img-item ${isPending ? 'img-item-pending' : ''}" draggable="true" data-drag-index="${i}">
+        <img src="${esc(src)}" alt="image ${i+1}" />
+        <span class="img-drag-handle">⠿</span>
+        ${isPending ? `<span class="img-pending-badge">⏳</span>` : ''}
+        <div class="img-overlay">
+          <button class="img-del-btn img-del" data-index="${i}">✕</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // SECTION LISTENERS
+  // ═══════════════════════════════════════════════════════
+  function attachSectionListeners() {
+    const content = document.getElementById('content-area')!;
+
+    // List: edit / delete / add empty
+    content.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      const editBtn = target.closest('.edit-btn') as HTMLElement | null;
+      const delBtn  = target.closest('.del-btn')  as HTMLElement | null;
+      const addEmpty = target.closest('#add-btn-empty');
+
+      if (editBtn) {
+        const idx = parseInt(editBtn.dataset.index!);
+        state.editing = { item: deepClone(state.data[state.section][idx]), index: idx };
+        render();
+      }
+      if (delBtn) {
+        const idx = parseInt(delBtn.dataset.index!);
+        const name = state.data[state.section][idx]?.title || state.data[state.section][idx]?.name || 'this item';
+        if (!confirm(`Delete "${name}"?`)) return;
+        state.data[state.section].splice(idx, 1);
+        state.dirty[state.section] = true;
+        render();
+      }
+      if (addEmpty) {
+        state.editing = { item: newItem(state.section), index: -1 };
+        render();
+      }
+    });
+
+    if (state.editing) attachFormListeners();
+  }
+
+  function attachFormListeners() {
+    const sec = state.section;
+
+    // Cancel
+    document.getElementById('cancel-edit-btn2')?.addEventListener('click', () => {
+      state.editing = null; render();
+    });
+
+    // Save item
+    document.getElementById('save-item-btn')?.addEventListener('click', async () => {
+      await commitEditItem();
+    });
+
+    if (sec === 'events') attachEventFormListeners();
+    else attachSimpleFormListeners();
+  }
+
+  // ── Event form listeners ────────────────────────────────
+  function attachEventFormListeners() {
+    const ev = state.editing!.item;
+
+    // Image upload
+    const fileInput = document.getElementById('img-file-input') as HTMLInputElement | null;
+    const uploadZone = document.getElementById('img-upload-zone')!;
+
+    fileInput?.addEventListener('change', () => handleImageFiles(Array.from(fileInput.files || [])));
+
+    uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('drag-active'); });
+    uploadZone.addEventListener('dragleave', ()=> uploadZone.classList.remove('drag-active'));
+    uploadZone.addEventListener('drop', (e) => {
+      e.preventDefault(); uploadZone.classList.remove('drag-active');
+      handleImageFiles(Array.from(e.dataTransfer?.files || []));
+    });
+
+    // Image delete
+    document.getElementById('img-grid')?.addEventListener('click', (e) => {
+      const btn = (e.target as Element).closest('.img-del') as HTMLElement | null;
+      if (!btn) return;
+      const idx = parseInt(btn.dataset.index!);
+      const images: string[] = ev.images || [];
+      const removed = images[idx];
+      if (removed?.startsWith('blob:')) {
+        URL.revokeObjectURL(removed);
+        delete state.pendingUploads[removed];
+      }
+      images.splice(idx, 1);
+      ev.images = images;
+      refreshImgGrid();
+    });
+
+    // Drag-to-reorder images
+    attachImageDragSort();
+
+    // Add paragraph
+    document.getElementById('add-para-btn')?.addEventListener('click', () => {
+      const list = document.getElementById('ext-desc-list')!;
+      const count = list.querySelectorAll('.ext-para').length;
+      const row = document.createElement('div');
+      row.className = 'dyn-row';
+      row.innerHTML = `<span class="dyn-label">¶${count+1}</span>
+        <textarea class="ext-para" rows="2"></textarea>
+        <button class="btn btn-ghost btn-sm dyn-del" data-i="${count}">✕</button>`;
+      list.appendChild(row);
+      attachParaDeleteListeners();
+    });
+    attachParaDeleteListeners();
+
+    // Add link
+    document.getElementById('add-link-btn')?.addEventListener('click', () => {
+      const list = document.getElementById('links-list')!;
+      const row = document.createElement('div');
+      row.className = 'dyn-row';
+      row.innerHTML = `<input class="link-text" placeholder="Label" style="flex:.4" />
+        <input class="link-url" placeholder="https://…" style="flex:.6" />
+        <button class="btn btn-ghost btn-sm dyn-del-link">✕</button>`;
+      list.appendChild(row);
+      attachLinkDeleteListeners();
+    });
+    attachLinkDeleteListeners();
+
+    // Add document
+    document.getElementById('add-doc-btn')?.addEventListener('click', () => {
+      const list = document.getElementById('docs-list')!;
+      const row = document.createElement('div');
+      row.className = 'dyn-row';
+      row.innerHTML = `<input class="doc-text" placeholder="Label" style="flex:.4" />
+        <input class="doc-url" placeholder="Path or URL" style="flex:.6" />
+        <button class="btn btn-ghost btn-sm dyn-del-doc">✕</button>`;
+      list.appendChild(row);
+      attachDocDeleteListeners();
+    });
+    attachDocDeleteListeners();
+  }
+
+  function attachParaDeleteListeners() {
+    document.getElementById('ext-desc-list')?.querySelectorAll('.dyn-del').forEach(btn => {
+      btn.replaceWith(btn.cloneNode(true));
+    });
+    document.getElementById('ext-desc-list')?.querySelectorAll('.dyn-del').forEach(btn => {
+      btn.addEventListener('click', () => {
+        (btn as HTMLElement).closest('.dyn-row')!.remove();
+        document.getElementById('ext-desc-list')?.querySelectorAll('.dyn-label').forEach((el, i) => { el.textContent = `¶${i+1}`; });
+      });
+    });
+  }
+
+  function attachLinkDeleteListeners() {
+    document.getElementById('links-list')?.querySelectorAll('.dyn-del-link').forEach(btn => {
+      btn.replaceWith(btn.cloneNode(true));
+    });
+    document.getElementById('links-list')?.querySelectorAll('.dyn-del-link').forEach(btn => {
+      btn.addEventListener('click', () => (btn as HTMLElement).closest('.dyn-row')!.remove());
+    });
+  }
+
+  function attachDocDeleteListeners() {
+    document.getElementById('docs-list')?.querySelectorAll('.dyn-del-doc').forEach(btn => {
+      btn.replaceWith(btn.cloneNode(true));
+    });
+    document.getElementById('docs-list')?.querySelectorAll('.dyn-del-doc').forEach(btn => {
+      btn.addEventListener('click', () => (btn as HTMLElement).closest('.dyn-row')!.remove());
+    });
+  }
+
+  // ── Image drag sort ─────────────────────────────────────
+  let dragSrc: number | null = null;
+
+  function attachImageDragSort() {
+    const grid = document.getElementById('img-grid');
+    if (!grid) return;
+
+    grid.querySelectorAll('[data-drag-index]').forEach(item => {
+      item.addEventListener('dragstart', (e) => {
+        dragSrc = parseInt((item as HTMLElement).dataset.dragIndex!);
+        (e as DragEvent).dataTransfer!.effectAllowed = 'move';
+        setTimeout(() => item.classList.add('dragging'), 0);
+      });
+      item.addEventListener('dragend', () => {
+        item.classList.remove('dragging');
+        grid.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+      });
+      item.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        grid.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+        item.classList.add('drag-over');
+      });
+      item.addEventListener('dragleave', (e) => {
+        if (!(item as HTMLElement).contains((e as DragEvent).relatedTarget as Node)) {
+          item.classList.remove('drag-over');
+        }
+      });
+      item.addEventListener('drop', (e) => {
+        e.preventDefault();
+        item.classList.remove('drag-over');
+        const overIdx = parseInt((item as HTMLElement).dataset.dragIndex!);
+        if (dragSrc === null || dragSrc === overIdx) return;
+        const images: string[] = state.editing!.item.images || [];
+        const [moved] = images.splice(dragSrc, 1);
+        images.splice(overIdx, 0, moved);
+        state.editing!.item.images = images;
+        dragSrc = null;
+        refreshImgGrid();
+      });
+    });
+  }
+
+  function refreshImgGrid() {
+    const grid = document.getElementById('img-grid');
+    if (!grid) return;
+    const images: string[] = state.editing!.item.images || [];
+    grid.innerHTML = renderImageItems(images);
+    attachImageDragSort();
+    // re-attach delete listeners
+    grid.querySelectorAll('.img-del').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const idx = parseInt((btn as HTMLElement).dataset.index!);
+        const images: string[] = state.editing!.item.images || [];
+        const removed = images[idx];
+        if (removed?.startsWith('blob:')) { URL.revokeObjectURL(removed); delete state.pendingUploads[removed]; }
+        images.splice(idx, 1);
+        state.editing!.item.images = images;
+        refreshImgGrid();
+      });
+    });
+  }
+
+  // ── Handle image file selection ─────────────────────────
+  function handleImageFiles(files: File[]) {
+    const ev = state.editing!.item;
+    if (!ev.images) ev.images = [];
+    files.filter(f => f.type.startsWith('image/')).forEach(file => {
+      const blobUrl = URL.createObjectURL(file);
+      const folder  = (document.getElementById('f-folder') as HTMLInputElement)?.value.trim() || ev.title || 'uploads';
+      state.pendingUploads[blobUrl] = { file, folder };
+      ev.images.push(blobUrl);
+    });
+    refreshImgGrid();
+  }
+
+  // ── Simple form listeners (logo upload) ─────────────────
+  function attachSimpleFormListeners() {
+    const fileInput = document.getElementById('logo-file-input') as HTMLInputElement | null;
+    fileInput?.addEventListener('change', async () => {
+      const file = fileInput.files?.[0];
+      if (!file) return;
+      // preview immediately
+      const blobUrl = URL.createObjectURL(file);
+      const preview = document.getElementById('logo-preview-img') as HTMLImageElement;
+      if (preview) { preview.tagName === 'IMG' ? (preview.src = blobUrl) : (() => { const img = document.createElement('img'); img.className = 'logo-preview'; img.id = 'logo-preview-img'; img.src = blobUrl; preview.replaceWith(img); })(); }
+      const logoInput = document.getElementById('f-logo') as HTMLInputElement || document.getElementById('f-src') as HTMLInputElement;
+      const sec = state.section;
+      const folder = IMG_FOLDER[sec];
+      const repoPath = `${folder}/${file.name}`;
+      try {
+        showLoading('Uploading image…');
+        await uploadImage(repoPath, file);
+        hideLoading();
+        const publicPath = '/' + repoPath.replace('public/', '');
+        if (logoInput) logoInput.value = publicPath;
+        URL.revokeObjectURL(blobUrl);
+        showToast('Image uploaded!', 'success');
+      } catch (e: any) {
+        hideLoading();
+        showToast('Upload failed: ' + e.message, 'error');
+      }
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // COLLECT & COMMIT EDIT ITEM
+  // ═══════════════════════════════════════════════════════
+  async function commitEditItem() {
+    const sec = state.section;
+    const btn = document.getElementById('save-item-btn') as HTMLButtonElement;
+    btn.disabled = true; btn.textContent = '⏳ Saving…';
+
+    try {
+      let item: any;
+      if (sec === 'events') {
+        item = collectEventForm();
+        // upload pending images
+        if (item.images?.some((s: string) => s.startsWith('blob:'))) {
+          showLoading('Uploading images…');
+          const folder = item.imageFolder || item.title || 'uploads';
+          const resolved: string[] = [];
+          for (const src of item.images) {
+            if (src.startsWith('blob:')) {
+              const pending = state.pendingUploads[src];
+              if (pending) {
+                const repoPath = `public/events/${folder}/${pending.file.name}`;
+                await uploadImage(repoPath, pending.file);
+                resolved.push(`events/${folder}/${pending.file.name}`);
+                URL.revokeObjectURL(src);
+                delete state.pendingUploads[src];
+              }
+            } else {
+              resolved.push(src);
+            }
+          }
+          item.images = resolved;
+          hideLoading();
+        }
+        delete item.imageFolder;
+      } else if (sec === 'technologies') {
+        item = collectTechForm();
+      } else {
+        item = collectSimpleForm();
+      }
+
+      const idx = state.editing!.index;
+      if (idx === -1) {
+        state.data[sec].push(item);
+      } else {
+        state.data[sec][idx] = item;
+      }
+      state.dirty[sec] = true;
+      state.editing = null;
+
+      // auto-save
+      showLoading('Saving to GitHub…');
+      await saveSection(sec);
+      hideLoading();
+      showToast('Saved! Site will rebuild shortly.', 'success');
+      render();
+    } catch (e: any) {
+      hideLoading();
+      showToast('Error: ' + e.message, 'error');
+      btn.disabled = false; btn.textContent = '💾 Save';
+    }
+  }
+
+  function collectEventForm(): any {
+    const get = (id: string) => (document.getElementById(id) as HTMLInputElement)?.value.trim() || '';
+    const tags = Array.from(document.querySelectorAll<HTMLInputElement>('.tag-check:checked')).map(c => c.value);
+    const extDesc = Array.from(document.querySelectorAll<HTMLTextAreaElement>('.ext-para')).map(t => t.value.trim()).filter(Boolean);
+    const links = Array.from(document.querySelectorAll('#links-list .dyn-row')).map(row => ({
+      text: (row.querySelector('.link-text') as HTMLInputElement)?.value.trim() || '',
+      url:  (row.querySelector('.link-url')  as HTMLInputElement)?.value.trim() || '',
+    })).filter(l => l.url);
+    const docs = Array.from(document.querySelectorAll('#docs-list .dyn-row')).map(row => ({
+      text: (row.querySelector('.doc-text') as HTMLInputElement)?.value.trim() || '',
+      url:  (row.querySelector('.doc-url')  as HTMLInputElement)?.value.trim() || '',
+    })).filter(d => d.url);
+    const title = get('f-title');
+    const existingId = state.editing!.index !== -1 ? state.editing!.item.id : null;
+    return {
+      id: existingId || `evt-${get('f-date').substring(0,7)}-${slugify(title)}`,
+      date: get('f-date'),
+      title,
+      tags,
+      description: get('f-desc'),
+      extendedDescription: extDesc,
+      expandable: (document.getElementById('f-expandable') as HTMLInputElement)?.checked ?? true,
+      images: state.editing!.item.images || [],
+      links,
+      documents: docs,
+      imageFolder: get('f-folder'),
+    };
+  }
+
+  function collectSimpleForm(): any {
+    const get = (id: string) => (document.getElementById(id) as HTMLInputElement)?.value.trim() || '';
+    const sec = state.section;
+    if (sec === 'projects') {
+      return { href: get('f-href'), image: get('f-logo'), name: get('f-name'), desc: get('f-desc') };
+    }
+    return { href: get('f-href'), logo: get('f-logo'), name: get('f-name'), role: get('f-role'), period: get('f-period') };
+  }
+
+  function collectTechForm(): any {
+    const get = (id: string) => (document.getElementById(id) as HTMLInputElement)?.value.trim() || '';
+    return { src: get('f-src'), name: get('f-name') };
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // HELPERS
+  // ═══════════════════════════════════════════════════════
+  function getTags(ev: any): string[] {
+    if (Array.isArray(ev.tags)) return ev.tags;
+    if (Array.isArray(ev.categories)) return ev.categories;
+    if (ev.category) return [ev.category];
+    return [];
+  }
+
+  function newItem(sec: string): any {
+    if (sec === 'events')       return { id: '', date: '', title: '', tags: [], description: '', extendedDescription: [], expandable: true, images: [], links: [], documents: [] };
+    if (sec === 'technologies') return { src: '', name: '' };
+    if (sec === 'projects')     return { href: '', image: '', name: '', desc: '' };
+    return { href: '', logo: '', name: '', role: '', period: '' };
+  }
+
+  function deepClone<T>(obj: T): T { return JSON.parse(JSON.stringify(obj)); }
+  function esc(s: string): string {
+    return String(s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  function slugify(s: string): string { return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
+
+  // ═══════════════════════════════════════════════════════
+  // TOAST & LOADING
+  // ═══════════════════════════════════════════════════════
+  let toastTimer: ReturnType<typeof setTimeout> | null = null;
+  function showToast(msg: string, type: 'success'|'error'|'info' = 'success') {
+    document.querySelector('.toast')?.remove();
+    const t = document.createElement('div');
+    t.className = `toast toast-${type}`;
+    t.textContent = msg;
+    document.body.appendChild(t);
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.remove(), 4500);
+  }
+
+  function showLoading(msg = 'Loading…') {
+    document.querySelector('.loading-overlay')?.remove();
+    const el = document.createElement('div');
+    el.className = 'loading-overlay';
+    el.innerHTML = `<div class="spinner"></div><span>${msg}</span>`;
+    document.body.appendChild(el);
+  }
+  function hideLoading() { document.querySelector('.loading-overlay')?.remove(); }
+
+  // ═══════════════════════════════════════════════════════
+  // INIT
+  // ═══════════════════════════════════════════════════════
+  async function init() {
+    if (!state.token) { render(); return; }
+    showLoading('Loading content…');
+    try {
+      const userRes = await fetch(`${GH_API}/user`, { headers: { Authorization: `Bearer ${state.token}` } });
+      if (!userRes.ok) throw Object.assign(new Error('Token expired'), { status: 401 });
+      state.user = await userRes.json();
+      await Promise.all(Object.keys(FILE_MAP).map(loadSection));
+      hideLoading();
+      render();
+    } catch (e: any) {
+      hideLoading();
+      if (e.status === 401) { sessionStorage.removeItem('admin_token'); state.token = null; }
+      render();
+      if (e.status === 401) showToast('Session expired. Please sign in again.', 'error');
+    }
+  }
+
+  init();
+  </script>
+</body>
+</html>

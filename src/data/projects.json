@@ -1,0 +1,38 @@
+[
+  {
+    "href": "https://toamig.itch.io/autorocket",
+    "image": "/projects/autorocket.png",
+    "name": "AutoRocket",
+    "desc": "Educative rocket simulator with visual programming."
+  },
+  {
+    "href": "https://www.meta.com/experiences/totally-basketball/6781908485204434/",
+    "image": "/projects/totally-basketball.jpg",
+    "name": "Totally Basketball",
+    "desc": "VR basketball game."
+  },
+  {
+    "href": "https://www.aotearoaexplorers.nz/",
+    "image": "/projects/cape.jpg",
+    "name": "Aotearoa Explorers",
+    "desc": "Educative exploration game."
+  },
+  {
+    "href": "https://store.steampowered.com/app/1839940/Dakar_Desert_Rally",
+    "image": "/projects/dakar.jpg",
+    "name": "Dakar Desert Rally",
+    "desc": "Open world rally Dakar simulator game."
+  },
+  {
+    "href": "https://store.steampowered.com/app/2141130/Road_Kings/",
+    "image": "/projects/RoadKings.avif",
+    "name": "Road Kings",
+    "desc": "Adventure truck simulator."
+  },
+  {
+    "href": "https://store.steampowered.com/app/3328840/Timefront/",
+    "image": "/projects/timefront.jpg",
+    "name": "Timefront",
+    "desc": "RTS game blending battle royale mechanics."
+  }
+]

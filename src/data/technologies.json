@@ -1,0 +1,7 @@
+[
+  { "src": "/technologies/csharp.svg", "name": "C#" },
+  { "src": "/technologies/c++.svg",    "name": "C++" },
+  { "src": "/technologies/unity.svg",  "name": "Unity" },
+  { "src": "/technologies/unreal.svg", "name": "Unreal" },
+  { "src": "/technologies/houdini.svg","name": "Houdini" }
+]

@@ -1,0 +1,37 @@
+[
+  {
+    "href": "https://www.linkedin.com/company/dive-studios-porto/",
+    "logo": "/experience/dive.jfif",
+    "name": "Dive Studios",
+    "role": "Team Leader",
+    "period": "Feb 2021 - Jun 2021"
+  },
+  {
+    "href": "https://shadowprofile.pt/",
+    "logo": "/experience/shadowprofile.png",
+    "name": "Shadow Profile",
+    "role": "Unity Game Developer",
+    "period": "May 2022 - Aug 2022"
+  },
+  {
+    "href": "https://saberporto.com/",
+    "logo": "/experience/saber.jfif",
+    "name": "Saber Interactive",
+    "role": "Tools Lead Programmer",
+    "period": "Aug 2022 - Jan 2024"
+  },
+  {
+    "href": "",
+    "logo": "",
+    "name": "Ikonic Games",
+    "role": "Core Software Engineer",
+    "period": "Fev 2024 - Fev 2025"
+  },
+  {
+    "href": "https://www.flamacraftworks.com/",
+    "logo": "/experience/flama.jpg",
+    "name": "Flama Craftworks",
+    "role": "Lead Software Engineer",
+    "period": "Mar 2025 - Present"
+  }
+]

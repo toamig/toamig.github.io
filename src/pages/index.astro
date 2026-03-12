@@ -1,36 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Logo from '../components/Logo.astro';
-
-const education = [
-  { href: 'https://sigarra.up.pt/feup/en/', logo: '/education/feup-logo.png', name: 'U.Porto - FEUP', role: 'Software Engineering Bachelor', period: '2016 - 2021' },
-  { href: 'https://sigarra.up.pt/feup/en/', logo: '/education/feup-logo.png', name: 'U.Porto - FEUP', role: 'Software Engineering Masters',  period: '2021 - Ongoing' },
-];
-
-const experience = [
-  { href: 'https://www.linkedin.com/company/dive-studios-porto/', logo: '/experience/dive.jfif',         name: 'Dive Studios',      role: 'Team Leader',            period: 'Feb 2021 - Jun 2021'  },
-  { href: 'https://shadowprofile.pt/',                            logo: '/experience/shadowprofile.png', name: 'Shadow Profile',    role: 'Unity Game Developer',   period: 'May 2022 - Aug 2022'  },
-  { href: 'https://saberporto.com/',                              logo: '/experience/saber.jfif',        name: 'Saber Interactive', role: 'Tools Lead Programmer',  period: 'Aug 2022 - Jan 2024'  },
-  { href: '',                                                     logo: '',                              name: 'Ikonic Games',      role: 'Core Software Engineer', period: 'Fev 2024 - Fev 2025'  },
-  { href: 'https://www.flamacraftworks.com/',                     logo: '/experience/flama.jpg',         name: 'Flama Craftworks',  role: 'Lead Software Engineer', period: 'Mar 2025 - Present'   },
-];
-
-const technologies = [
-  { src: '/technologies/csharp.svg', name: 'C#'      },
-  { src: '/technologies/c++.svg',    name: 'C++'     },
-  { src: '/technologies/unity.svg',  name: 'Unity'   },
-  { src: '/technologies/unreal.svg', name: 'Unreal'  },
-  { src: '/technologies/houdini.svg',name: 'Houdini' },
-];
-
-const projects = [
-  { href: 'https://toamig.itch.io/autorocket',                                      image: '/projects/autorocket.png',        name: 'AutoRocket',          desc: 'Educative rocket simulator with visual programming.'  },
-  { href: 'https://www.meta.com/experiences/totally-basketball/6781908485204434/',  image: '/projects/totally-basketball.jpg', name: 'Totally Basketball',  desc: 'VR basketball game.'                                  },
-  { href: 'https://www.aotearoaexplorers.nz/',                                      image: '/projects/cape.jpg',              name: 'Aotearoa Explorers',  desc: 'Educative exploration game.'                          },
-  { href: 'https://store.steampowered.com/app/1839940/Dakar_Desert_Rally',          image: '/projects/dakar.jpg',             name: 'Dakar Desert Rally',  desc: 'Open world rally Dakar simulator game.'               },
-  { href: 'https://store.steampowered.com/app/2141130/Road_Kings/',                 image: '/projects/RoadKings.avif',        name: 'Road Kings',          desc: 'Adventure truck simulator.'                           },
-  { href: 'https://store.steampowered.com/app/3328840/Timefront/',                  image: '/projects/timefront.jpg',         name: 'Timefront',           desc: 'RTS game blending battle royale mechanics.'           },
-];
+import education    from '../data/education.json';
+import experience   from '../data/experience.json';
+import technologies from '../data/technologies.json';
+import projects     from '../data/projects.json';
 ---
 <BaseLayout
   title="Toamig"
