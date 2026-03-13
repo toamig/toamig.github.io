@@ -343,7 +343,7 @@ function renderEvents() {
         if (!imgSrc) return;
         const img = document.createElement('img');
         img.className = event.images!.length === 1 ? 'event-image full' : 'event-image grid';
-        img.src = imgSrc;
+        img.src = imgSrc.startsWith('/') ? imgSrc : `/${imgSrc}`;
         img.alt = event.title || `image ${idx + 1}`;
         img.dataset.eventId    = String(event.id);
         img.dataset.imageIndex = String(idx);
@@ -473,7 +473,8 @@ function updateLightboxImage() {
   if (!lightboxModal) return;
   const imgEl     = lightboxModal.querySelector('.lightbox-image') as HTMLImageElement | null;
   const counterEl = lightboxModal.querySelector('.lightbox-counter');
-  if (imgEl) imgEl.src = currentEventImages[currentImageIndex] || '';
+  const rawSrc = currentEventImages[currentImageIndex] || '';
+  if (imgEl) imgEl.src = rawSrc && !rawSrc.startsWith('/') ? `/${rawSrc}` : rawSrc;
   if (counterEl) counterEl.textContent = `${currentImageIndex + 1} / ${currentEventImages.length}`;
 }
 
