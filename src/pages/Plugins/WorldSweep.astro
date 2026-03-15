@@ -2,6 +2,7 @@
 import PluginLayout from '../../layouts/PluginLayout.astro';
 
 // Drop your assets into public/plugins/worldsweep/
+// Colors derived from the WorldSweep logo: cyan crystal + globe palette
 // - cover.png  (Full HD cover image)
 // - logo.png   (Plugin logo)
 // - Set fabUrl once your Fab listing is live
@@ -612,3 +613,94 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
   </section>
 
 </PluginLayout>
+
+<style is:global>
+  /* ── WorldSweep cyan theme — overrides PluginLayout blue vars ─── */
+  :root {
+    --pl-blue:   #0e9fd4;
+    --pl-blue-l: #22d4f8;
+    --pl-border-h: rgba(34,212,248,.45);
+    --pl-code-bg:  #040f18;
+    --pl-bg:       #060f1a;
+    --pl-surface:  #091522;
+    --pl-surface-2:#0c1e30;
+  }
+
+  /* Topbar Fab button */
+  .topbar-fab { background: #0e9fd4; }
+  .topbar-fab:hover { background: #22d4f8; box-shadow: 0 4px 16px rgba(34,212,248,.3); }
+
+  /* Active nav link */
+  .nav-group a.active {
+    color: #22d4f8;
+    background: rgba(34,212,248,.08);
+    border-color: rgba(34,212,248,.2);
+  }
+  .nav-group a:hover { color: #22d4f8; }
+
+  /* Section icons */
+  .section-icon {
+    background: rgba(34,212,248,.1);
+    border-color: rgba(34,212,248,.2);
+    color: #22d4f8;
+  }
+
+  /* Section divider */
+  .section-divider {
+    background: linear-gradient(90deg, #22d4f8, #0e9fd4);
+  }
+
+  /* Subsection title bar */
+  .doc-subsection-title::before { background: #22d4f8; }
+
+  /* Feature icons */
+  .feature-icon {
+    background: rgba(34,212,248,.1);
+    border-color: rgba(34,212,248,.18);
+    color: #22d4f8;
+  }
+  .feature-card:hover {
+    border-color: rgba(34,212,248,.3);
+    background: rgba(34,212,248,.04);
+  }
+
+  /* Step numbers */
+  .step-num {
+    background: rgba(34,212,248,.1);
+    border-color: rgba(34,212,248,.3);
+    color: #22d4f8;
+  }
+
+  /* Table header */
+  .prop-table thead th { background: rgba(34,212,248,.07); }
+  .prop-name { color: #22d4f8; }
+
+  /* Badges — blue variant becomes cyan */
+  .badge-blue { background: rgba(34,212,248,.1); color: #22d4f8; border-color: rgba(34,212,248,.2); }
+
+  /* Script props */
+  .script-prop-name { color: #22d4f8; }
+  .script-card:hover { border-color: rgba(34,212,248,.28); }
+
+  /* Info callout */
+  .callout-info {
+    background: rgba(34,212,248,.06);
+    border-color: rgba(34,212,248,.18);
+  }
+
+  /* Code tokens */
+  .code-cmd { color: #22d4f8; }
+  .code-flag { color: #a5d6ff; }
+  .code-val  { color: #7ee8fa; }
+
+  /* Hero gradient tint */
+  .plugin-hero-overlay {
+    background:
+      linear-gradient(to right, rgba(6,15,26,.92) 0%, rgba(6,15,26,.55) 60%, rgba(6,15,26,.3) 100%),
+      linear-gradient(to top, rgba(6,15,26,.75) 0%, transparent 50%);
+  }
+
+  /* Mode cards */
+  .mode-card { border-color: rgba(34,212,248,.08); }
+  .mode-card:hover { border-color: rgba(34,212,248,.25); }
+</style>
