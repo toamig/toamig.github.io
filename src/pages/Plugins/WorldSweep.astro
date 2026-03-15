@@ -1,0 +1,614 @@
+---
+import PluginLayout from '../../layouts/PluginLayout.astro';
+
+// Drop your assets into public/plugins/worldsweep/
+// - cover.png  (Full HD cover image)
+// - logo.png   (Plugin logo)
+// - Set fabUrl once your Fab listing is live
+---
+<PluginLayout
+  title="WorldSweep — UE5 Batch Scripting for World Partition"
+  description="A batch scripting system for executing custom operations across large UE5 World Partition maps, cell by cell."
+  pluginName="WorldSweep"
+  version="1.0"
+  coverImage="/plugins/worldsweep/cover.png"
+  logoImage="/plugins/worldsweep/logo.png"
+  fabUrl="#"
+>
+
+  <!-- ── Sidebar nav ─────────────────────────────────────────────── -->
+  <nav slot="sidebar-nav">
+    <div class="nav-group">
+      <span class="nav-group-label">Introduction</span>
+      <a href="#overview">Overview</a>
+      <a href="#getting-started">Getting Started</a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-group-label">Core Concepts</span>
+      <a href="#batch-asset">Batch Asset</a>
+      <a href="#sweep-script">Sweep Script</a>
+      <a href="#sweep-modes">Sweep Modes</a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-group-label">Built-in Scripts</span>
+      <a href="#scripts" class="sub">Actor Logger</a>
+      <a href="#scripts" class="sub">Actor Replacer</a>
+      <a href="#scripts" class="sub">Cell Load Timer</a>
+      <a href="#scripts" class="sub">Collision Profile Setter</a>
+      <a href="#scripts" class="sub">Naming Convention Checker</a>
+      <a href="#scripts" class="sub">Nanite Auditor</a>
+      <a href="#scripts" class="sub">Null Mesh Auditor</a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-group-label">Automation</span>
+      <a href="#commandline">Command Line</a>
+    </div>
+  </nav>
+
+  <!-- ── Overview ───────────────────────────────────────────────── -->
+  <section class="doc-section" id="overview" data-section="overview">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </span>
+      Overview
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      <strong>WorldSweep</strong> is an Unreal Engine 5 editor plugin that lets you run custom batch operations across your entire world — regardless of how large it is. Instead of manually iterating through levels or writing boilerplate asset tooling, WorldSweep handles all the cell loading, unloading, and iteration for you. You define what to do; WorldSweep figures out how to do it efficiently.
+    </p>
+    <p class="doc-p">
+      It works with <strong>World Partition maps</strong>, <strong>Streaming Level setups</strong>, and <strong>flat single-level worlds</strong> — detected automatically. From auditing actor names to mass-replacing classes or enforcing Nanite standards, any repeatable world operation becomes a clean, cancellable, resumable batch job.
+    </p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+          </svg>
+        </div>
+        <p class="feature-title">Cell-by-Cell Iteration</p>
+        <p class="feature-desc">Automatically partitions any world into cells and processes them one at a time — no memory spikes, no editor freezes.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+          </svg>
+        </div>
+        <p class="feature-title">Blueprint &amp; C++ Scripts</p>
+        <p class="feature-desc">Write batch logic in Blueprint or C++. Subclass <code style="font-family:var(--pl-mono);font-size:12px;color:var(--pl-blue-l)">WorldSweepScript</code> and implement only the events you need.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <p class="feature-title">Audit Before You Apply</p>
+        <p class="feature-desc">Every built-in script ships with a dry-run mode. See exactly what would change before committing a single modification.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </div>
+        <p class="feature-title">CI/CD Ready</p>
+        <p class="feature-desc">Run any batch headlessly from the command line. Integrate world validation or mass-update pipelines directly into your build process.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/>
+          </svg>
+        </div>
+        <p class="feature-title">World-Type Auto-Detection</p>
+        <p class="feature-desc">No setup needed. WorldSweep detects whether your world uses World Partition, Streaming Levels, or is a flat level and adapts automatically.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+          </svg>
+        </div>
+        <p class="feature-title">Priority-Based Passes</p>
+        <p class="feature-desc">Scripts with the same priority share a cell pass, minimising load/unload cycles. Fine-tune execution order when scripts depend on each other.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+          </svg>
+        </div>
+        <p class="feature-title">Auto-Save &amp; Source Control</p>
+        <p class="feature-desc">Optionally auto-save modified packages per cell. Automatically attempts checkout when source control is active.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+          </svg>
+        </div>
+        <p class="feature-title">Visual Map View</p>
+        <p class="feature-desc">Dedicated editor panel shows a live grid of your sweep area with cell-by-cell progress as the batch runs.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Getting Started ────────────────────────────────────────── -->
+  <section class="doc-section" id="getting-started" data-section="getting-started">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="5 3 19 12 5 21 5 3"/>
+        </svg>
+      </span>
+      Getting Started
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">Running your first sweep takes five steps. No configuration files, no project settings — just a data asset and your script.</p>
+    <div class="steps">
+      <div class="step">
+        <span class="step-num">1</span>
+        <div class="step-body">
+          <p class="step-title">Enable the plugin</p>
+          <p class="step-desc">In the editor go to <strong>Edit → Plugins</strong>, search for <strong>WorldSweep</strong>, enable it, and restart the editor. The WorldSweep panel will appear under the Tools menu.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">2</span>
+        <div class="step-body">
+          <p class="step-title">Create a Batch Asset</p>
+          <p class="step-desc">Right-click in the Content Browser and choose <strong>Miscellaneous → Data Asset → WorldSweepBatch</strong>. Name it to describe the operation, e.g. <code style="font-family:var(--pl-mono);font-size:12px;color:var(--pl-blue-l)">DA_AuditNanite</code>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">3</span>
+        <div class="step-body">
+          <p class="step-title">Add scripts to the batch</p>
+          <p class="step-desc">Open the batch asset. In the <strong>Scripts</strong> array, add one or more <strong>WorldSweepScript</strong> instances — choose from the built-in scripts or your own custom ones. Configure each script's properties.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">4</span>
+        <div class="step-body">
+          <p class="step-title">Define the sweep area</p>
+          <p class="step-desc">Open the <strong>WorldSweep</strong> panel (Tools menu), select your batch asset, and set the sweep bounds. Click <strong>Use Entire World</strong> to cover the full map automatically.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">5</span>
+        <div class="step-body">
+          <p class="step-title">Run and review</p>
+          <p class="step-desc">Click <strong>Run</strong>. A progress dialog shows cells processed and actors visited in real-time. You can cancel at any point. Results and any warnings are written to the <strong>WorldSweep</strong> message log.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Core Concepts ──────────────────────────────────────────── -->
+  <section class="doc-section" id="batch-asset" data-section="batch-asset">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+        </svg>
+      </span>
+      Batch Asset
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      A <strong>WorldSweepBatch</strong> is a data asset you create in the Content Browser. It acts as the recipe for a batch run — it holds which scripts to execute, how the world should be partitioned, and whether changes should be saved automatically. Create one per logical operation and reuse them as needed.
+    </p>
+    <table class="prop-table">
+      <thead>
+        <tr>
+          <th>Property</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="prop-name">Scripts</td>
+          <td class="prop-type">Array</td>
+          <td class="prop-desc">The scripts to execute. Scripts run in array order within the same priority group for each cell.</td>
+          <td class="prop-default">—</td>
+        </tr>
+        <tr>
+          <td class="prop-name">CellSize</td>
+          <td class="prop-type">float (cm)</td>
+          <td class="prop-desc">Size of each sweep cell in world units. Smaller values give finer iteration at the cost of more load/unload cycles. Match your World Partition streaming cell size for best results.</td>
+          <td class="prop-default">WP default</td>
+        </tr>
+        <tr>
+          <td class="prop-name">ActorClassFilter</td>
+          <td class="prop-type">Class</td>
+          <td class="prop-desc">Optional. When set, only actors of this class or subclasses are passed to any script's <code style="font-family:var(--pl-mono);font-size:12px;color:var(--pl-blue-l)">OnActorFound</code>. Leave empty to process all actors.</td>
+          <td class="prop-default">None</td>
+        </tr>
+        <tr>
+          <td class="prop-name">SweepMode</td>
+          <td class="prop-type">Enum</td>
+          <td class="prop-desc">The iteration strategy to use. <span class="badge badge-green">Auto</span> is recommended — it detects the correct mode from the world type at runtime.</td>
+          <td class="prop-default">Auto</td>
+        </tr>
+        <tr>
+          <td class="prop-name">bSaveModifications</td>
+          <td class="prop-type">bool</td>
+          <td class="prop-desc">Auto-saves packages dirtied by scripts. In World Partition / Streaming Levels mode, packages are saved per cell before GC. In Flat Level mode, at the end of the batch. Attempts source control checkout automatically.</td>
+          <td class="prop-default">false</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── Sweep Script ────────────────────────────────────────────── -->
+  <section class="doc-section" id="sweep-script" data-section="sweep-script">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+        </svg>
+      </span>
+      Sweep Script
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      A <strong>WorldSweepScript</strong> is the unit of work in WorldSweep. Subclass it in C++ or Blueprint to implement any batch operation. Each script declares which lifecycle events it participates in via its <strong>Scope</strong>, allowing the runner to skip unnecessary cell loads when no actor iteration is needed.
+    </p>
+
+    <div class="doc-subsection" id="script-scopes" data-section="script-scopes">
+      <h3 class="doc-subsection-title">Execution Scopes</h3>
+      <p class="doc-p">The scope controls which events your script receives and drives execution optimisation — scripts that don't need actor data can skip cell loading entirely.</p>
+      <div class="mode-grid">
+        <div class="mode-card">
+          <p class="mode-card-name"><span class="badge badge-purple">BatchOnly</span></p>
+          <p class="mode-card-desc">Only <code style="font-family:var(--pl-mono);font-size:12px">OnBatchStarted</code> and <code style="font-family:var(--pl-mono);font-size:12px">OnBatchCompleted</code>. No cell iteration or actor loading.</p>
+        </div>
+        <div class="mode-card">
+          <p class="mode-card-name"><span class="badge badge-amber">CellOnly</span></p>
+          <p class="mode-card-desc">Cell lifecycle events only — <code style="font-family:var(--pl-mono);font-size:12px">OnPreCellLoad</code>, <code style="font-family:var(--pl-mono);font-size:12px">OnCellStarted</code>, <code style="font-family:var(--pl-mono);font-size:12px">OnCellCompleted</code>. No actor callbacks.</p>
+        </div>
+        <div class="mode-card">
+          <p class="mode-card-name"><span class="badge badge-blue">ActorsOnly</span></p>
+          <p class="mode-card-desc">Receives <code style="font-family:var(--pl-mono);font-size:12px">OnActorFound</code> for every matching actor per cell. No cell lifecycle events.</p>
+        </div>
+        <div class="mode-card">
+          <p class="mode-card-name"><span class="badge badge-green">CellAndActors</span></p>
+          <p class="mode-card-desc">Full scope — receives all cell lifecycle events and per-actor callbacks. Use when you need to prepare per-cell state before iterating actors.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Lifecycle Events</h3>
+      <table class="prop-table">
+        <thead>
+          <tr>
+            <th>Event</th>
+            <th>Scope Required</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="prop-name">OnBatchStarted</td>
+            <td><span class="badge badge-green">All</span></td>
+            <td class="prop-desc">Called once before the batch begins, after all script instances are initialised.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">OnPreCellLoad</td>
+            <td><span class="badge badge-amber">Cell</span></td>
+            <td class="prop-desc">Called before a cell loads. Use to record timestamps or prepare per-cell state.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">OnCellStarted</td>
+            <td><span class="badge badge-amber">Cell</span></td>
+            <td class="prop-desc">Called after a cell loads and before actors are processed.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">OnActorFound</td>
+            <td><span class="badge badge-blue">Actors</span></td>
+            <td class="prop-desc">Called for each actor found in the current cell. Respects <code style="font-family:var(--pl-mono);font-size:12px;color:var(--pl-blue-l)">ActorTagFilter</code> and the batch's <code style="font-family:var(--pl-mono);font-size:12px;color:var(--pl-blue-l)">ActorClassFilter</code>.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">OnCellCompleted</td>
+            <td><span class="badge badge-amber">Cell</span></td>
+            <td class="prop-desc">Called after all cell actors are processed, before the cell unloads. Ideal for applying deferred modifications.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">OnBatchCompleted</td>
+            <td><span class="badge badge-green">All</span></td>
+            <td class="prop-desc">Called once after the entire batch finishes or is cancelled. Receives the total cells processed.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Script Properties</h3>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Property</th><th>Type</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="prop-name">Scope</td>
+            <td class="prop-type">Enum</td>
+            <td class="prop-desc">Declares which lifecycle events this script receives. Setting the minimum required scope enables execution optimisations.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">ActorTagFilter</td>
+            <td class="prop-type">Array&lt;Tag&gt;</td>
+            <td class="prop-desc">If non-empty, <code style="font-family:var(--pl-mono);font-size:12px;color:var(--pl-blue-l)">OnActorFound</code> is only called for actors that have at least one of these tags.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">Priority</td>
+            <td class="prop-type">int32</td>
+            <td class="prop-desc">Lower values run first. Scripts sharing the same priority run in the same pass, sharing a single cell load/unload cycle.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">World</td>
+            <td class="prop-type">UWorld*</td>
+            <td class="prop-desc">The world being swept. Set by the runner before <code style="font-family:var(--pl-mono);font-size:12px;color:var(--pl-blue-l)">OnBatchStarted</code>. Use to query or spawn actors during the batch.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── Sweep Modes ─────────────────────────────────────────────── -->
+  <section class="doc-section" id="sweep-modes" data-section="sweep-modes">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/>
+        </svg>
+      </span>
+      Sweep Modes
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      WorldSweep supports three world architectures, each with a dedicated execution strategy. Setting the batch's <code style="font-family:var(--pl-mono);font-size:12.5px;color:var(--pl-blue-l)">SweepMode</code> to <span class="badge badge-green">Auto</span> detects the correct mode automatically — you only need to override this manually in edge cases.
+    </p>
+    <div class="mode-grid" style="grid-template-columns: repeat(auto-fill, minmax(220px,1fr))">
+      <div class="mode-card">
+        <p class="mode-card-name"><span class="badge badge-green">Auto</span></p>
+        <p class="mode-card-desc">Detects the world type at runtime and selects the appropriate strategy. Recommended for all projects.</p>
+      </div>
+      <div class="mode-card">
+        <p class="mode-card-name"><span class="badge badge-blue">World Partition</span></p>
+        <p class="mode-card-desc">For UE5 World Partition maps. Iterates cells within the defined sweep area and streams each cell on demand.</p>
+      </div>
+      <div class="mode-card">
+        <p class="mode-card-name"><span class="badge badge-amber">Streaming Levels</span></p>
+        <p class="mode-card-desc">For worlds composed of streaming sub-levels. Each sub-level is treated as a cell and processed individually.</p>
+      </div>
+      <div class="mode-card">
+        <p class="mode-card-name"><span class="badge badge-purple">Flat Level</span></p>
+        <p class="mode-card-desc">For traditional single-level worlds. All actors are processed in one pass; packages are saved at the end of the batch.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Built-in Scripts ───────────────────────────────────────── -->
+  <section class="doc-section" id="scripts" data-section="scripts">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+        </svg>
+      </span>
+      Built-in Scripts
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      WorldSweep ships with seven ready-to-use scripts covering the most common world auditing and maintenance tasks. Every script that modifies data includes a <code style="font-family:var(--pl-mono);font-size:12.5px;color:var(--pl-blue-l)">bApplyChanges</code> toggle — leave it off to run a safe dry-run first and review what would change.
+    </p>
+    <div class="script-grid">
+
+      <!-- Actor Logger -->
+      <div class="script-card">
+        <div class="script-card-header">
+          <span class="script-card-name">Actor Logger</span>
+          <span class="badge badge-blue">Audit</span>
+        </div>
+        <div class="script-card-body">
+          <p class="script-card-desc">Logs every actor found in each cell to the WorldSweep message log. Use as a starting point for building your own custom scripts, or to get a full inventory of actors in a region.</p>
+          <div class="script-props">
+            <div class="script-prop">
+              <span class="script-prop-name">bLogActorLocation</span>
+              <span class="script-prop-desc">When enabled, appends the world-space location of each actor alongside its name in the log output.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actor Replacer -->
+      <div class="script-card">
+        <div class="script-card-header">
+          <span class="script-card-name">Actor Replacer</span>
+          <span class="badge badge-amber">Modify</span>
+        </div>
+        <div class="script-card-body">
+          <p class="script-card-desc">Replaces all actors of a given class with actors of another class, preserving their transform. Changes are collected during iteration and applied after the cell is fully processed to avoid modifying the iterator mid-flight.</p>
+          <div class="script-props">
+            <div class="script-prop"><span class="script-prop-name">SourceClass</span><span class="script-prop-desc">The class of actors to find and replace.</span></div>
+            <div class="script-prop"><span class="script-prop-name">TargetClass</span><span class="script-prop-desc">The class to spawn in place of each matched actor.</span></div>
+            <div class="script-prop"><span class="script-prop-name">bMatchExactClass</span><span class="script-prop-desc">When enabled, only exact class matches are replaced. When disabled, subclasses of SourceClass are also matched.</span></div>
+            <div class="script-prop"><span class="script-prop-name">bCopyTags</span><span class="script-prop-desc">Copies actor tags from the source actor to its replacement.</span></div>
+            <div class="script-prop"><span class="script-prop-name">bCopyLabel</span><span class="script-prop-desc">Copies the actor's display name (label) to its replacement.</span></div>
+            <div class="script-prop"><span class="script-prop-name">bApplyChanges</span><span class="script-prop-desc">When disabled (default), logs what would be replaced without modifying anything. Enable to apply replacements.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cell Load Timer -->
+      <div class="script-card">
+        <div class="script-card-header">
+          <span class="script-card-name">Cell Load Timer</span>
+          <span class="badge badge-purple">Performance</span>
+        </div>
+        <div class="script-card-body">
+          <p class="script-card-desc">Measures and logs how long each cell takes to stream in. After the batch completes, reports the minimum, maximum, and average load times across all cells — helping you identify slow-loading regions before they become runtime streaming hitches.</p>
+          <p class="use-case-tag">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            No configuration required — add it to any batch and it runs automatically.
+          </p>
+        </div>
+      </div>
+
+      <!-- Collision Profile Setter -->
+      <div class="script-card">
+        <div class="script-card-header">
+          <span class="script-card-name">Collision Profile Setter</span>
+          <span class="badge badge-amber">Modify</span>
+        </div>
+        <div class="script-card-body">
+          <p class="script-card-desc">Audits or sets the collision profile on all primitive components of every actor visited. Ensures collision standards are consistent across a world that may have been modified by multiple team members over time.</p>
+          <div class="script-props">
+            <div class="script-prop"><span class="script-prop-name">CollisionProfileName</span><span class="script-prop-desc">The collision profile name to check for — or to apply to — all primitive components.</span></div>
+            <div class="script-prop"><span class="script-prop-name">bApplyChanges</span><span class="script-prop-desc">When disabled, logs components that don't use the target profile. When enabled, applies the profile and marks the package dirty.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Naming Convention Checker -->
+      <div class="script-card">
+        <div class="script-card-header">
+          <span class="script-card-name">Naming Convention Checker</span>
+          <span class="badge badge-blue">Audit</span>
+        </div>
+        <div class="script-card-body">
+          <p class="script-card-desc">Validates actor display names against a configurable regular expression. Logs a warning for every actor whose label does not match the pattern, making it easy to enforce naming standards across an entire world.</p>
+          <div class="script-props">
+            <div class="script-prop">
+              <span class="script-prop-name">Pattern</span>
+              <span class="script-prop-desc">Regular expression matched against each actor's display name. Example: <code style="font-family:var(--pl-mono);font-size:12px;color:var(--pl-blue-l)">^SM_</code> flags any actor whose label does not start with <code style="font-family:var(--pl-mono);font-size:12px;color:var(--pl-blue-l)">SM_</code>.</span>
+            </div>
+            <div class="script-prop"><span class="script-prop-name">bLogMatchingActors</span><span class="script-prop-desc">When enabled, also logs actors that do match the pattern — useful for a full inventory rather than just violations.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nanite Auditor -->
+      <div class="script-card">
+        <div class="script-card-header">
+          <span class="script-card-name">Nanite Auditor</span>
+          <span class="badge badge-amber">Modify</span>
+        </div>
+        <div class="script-card-body">
+          <p class="script-card-desc">Audits or toggles Nanite on static mesh assets referenced by actors in the world. Automatically deduplicates by asset path so each mesh is evaluated exactly once, regardless of how many actors reference it.</p>
+          <div class="script-props">
+            <div class="script-prop"><span class="script-prop-name">bEnableNanite</span><span class="script-prop-desc">The target Nanite state. Enable to turn Nanite on for non-conforming meshes; disable to turn it off.</span></div>
+            <div class="script-prop"><span class="script-prop-name">bApplyChanges</span><span class="script-prop-desc">When disabled, audit mode — logs meshes that don't match the target state. When enabled, applies the change and marks packages dirty.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Null Mesh Auditor -->
+      <div class="script-card">
+        <div class="script-card-header">
+          <span class="script-card-name">Null Mesh Auditor</span>
+          <span class="badge badge-blue">Audit</span>
+        </div>
+        <div class="script-card-body">
+          <p class="script-card-desc">Scans actors for Static Mesh or Skeletal Mesh components that have no mesh asset assigned. Unset mesh references are a common source of invisible geometry and silent runtime errors — this script surfaces them all in a single pass.</p>
+          <div class="script-props">
+            <div class="script-prop"><span class="script-prop-name">bCheckStaticMeshes</span><span class="script-prop-desc">Audits UStaticMeshComponent instances for null mesh assets.</span></div>
+            <div class="script-prop"><span class="script-prop-name">bCheckSkeletalMeshes</span><span class="script-prop-desc">Audits USkeletalMeshComponent instances for null mesh assets.</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── Command Line ────────────────────────────────────────────── -->
+  <section class="doc-section" id="commandline" data-section="commandline">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/>
+        </svg>
+      </span>
+      Command Line
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      WorldSweep includes a commandlet for running batches headlessly — ideal for automating world validation, mass-updates, or QA checks in CI/CD pipelines without opening the editor UI.
+    </p>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b97d3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </span>
+      <span>The commandlet uses the same <strong>WorldSweepBatch</strong> data assets as the editor UI. Any batch you've built and tested in the editor can be run headlessly without changes.</span>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Usage</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">shell</span></div>
+        <pre><span class="code-cmd">UnrealEditor.exe</span> <span class="code-val">&lt;Project&gt;.uproject</span> <span class="code-val">&lt;MapPath&gt;</span> \
+  <span class="code-flag">-run=WorldSweep</span> \
+  <span class="code-flag">-Batch=</span><span class="code-val">/Game/WorldSweep/Batches/MyBatch</span> \
+  <span class="code-flag">-SweepMinX=</span><span class="code-val">-100000</span> <span class="code-flag">-SweepMinY=</span><span class="code-val">-100000</span> \
+  <span class="code-flag">-SweepMaxX=</span><span class="code-val">100000</span>  <span class="code-flag">-SweepMaxY=</span><span class="code-val">100000</span></pre>
+      </div>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Arguments</h3>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Argument</th><th>Required</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="prop-name">-Batch=&lt;path&gt;</td>
+            <td><span class="badge badge-amber">Required</span></td>
+            <td class="prop-desc">Soft object path to the WorldSweepBatch asset. Example: <code style="font-family:var(--pl-mono);font-size:12px;color:var(--pl-blue-l)">/Game/WorldSweep/Batches/MyBatch</code></td>
+          </tr>
+          <tr>
+            <td class="prop-name">-SweepMinX / -SweepMinY</td>
+            <td><span class="badge badge-blue">Optional</span></td>
+            <td class="prop-desc">Minimum X/Y bounds of the sweep area in world units (cm). Required for World Partition mode; acts as a spatial filter in other modes.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">-SweepMaxX / -SweepMaxY</td>
+            <td><span class="badge badge-blue">Optional</span></td>
+            <td class="prop-desc">Maximum X/Y bounds of the sweep area in world units (cm).</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Exit Codes</h3>
+      <div class="mode-grid" style="grid-template-columns: repeat(3, 1fr)">
+        <div class="mode-card">
+          <p class="mode-card-name"><span class="badge badge-green">0</span></p>
+          <p class="mode-card-desc">Batch completed successfully.</p>
+        </div>
+        <div class="mode-card">
+          <p class="mode-card-name"><span class="badge badge-amber">1</span></p>
+          <p class="mode-card-desc">Invalid or missing arguments.</p>
+        </div>
+        <div class="mode-card">
+          <p class="mode-card-name" style="color:rgba(255,80,80,.8)"><span class="badge" style="background:rgba(220,50,50,.15);color:#f08080;border:1px solid rgba(220,50,50,.25)">2</span></p>
+          <p class="mode-card-desc">Batch was cancelled before completion.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</PluginLayout>
