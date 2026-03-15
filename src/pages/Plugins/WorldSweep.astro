@@ -32,13 +32,13 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
     </div>
     <div class="nav-group">
       <span class="nav-group-label">Built-in Scripts</span>
-      <a href="#scripts" class="sub">Actor Logger</a>
-      <a href="#scripts" class="sub">Actor Replacer</a>
-      <a href="#scripts" class="sub">Cell Load Timer</a>
-      <a href="#scripts" class="sub">Collision Profile Setter</a>
-      <a href="#scripts" class="sub">Naming Convention Checker</a>
-      <a href="#scripts" class="sub">Nanite Auditor</a>
-      <a href="#scripts" class="sub">Null Mesh Auditor</a>
+      <a href="#script-logger"    class="sub">Actor Logger</a>
+      <a href="#script-replacer"  class="sub">Actor Replacer</a>
+      <a href="#script-timer"     class="sub">Cell Load Timer</a>
+      <a href="#script-collision" class="sub">Collision Profile Setter</a>
+      <a href="#script-naming"    class="sub">Naming Convention Checker</a>
+      <a href="#script-nanite"    class="sub">Nanite Auditor</a>
+      <a href="#script-null"      class="sub">Null Mesh Auditor</a>
     </div>
     <div class="nav-group">
       <span class="nav-group-label">Automation</span>
@@ -415,7 +415,7 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
     <div class="script-grid">
 
       <!-- Actor Logger -->
-      <div class="script-card">
+      <div class="script-card" id="script-logger" data-section="script-logger">
         <div class="script-card-header">
           <span class="script-card-name">Actor Logger</span>
           <span class="badge badge-blue">Audit</span>
@@ -432,7 +432,7 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
       </div>
 
       <!-- Actor Replacer -->
-      <div class="script-card">
+      <div class="script-card" id="script-replacer" data-section="script-replacer">
         <div class="script-card-header">
           <span class="script-card-name">Actor Replacer</span>
           <span class="badge badge-amber">Modify</span>
@@ -451,7 +451,7 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
       </div>
 
       <!-- Cell Load Timer -->
-      <div class="script-card">
+      <div class="script-card" id="script-timer" data-section="script-timer">
         <div class="script-card-header">
           <span class="script-card-name">Cell Load Timer</span>
           <span class="badge badge-purple">Performance</span>
@@ -466,7 +466,7 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
       </div>
 
       <!-- Collision Profile Setter -->
-      <div class="script-card">
+      <div class="script-card" id="script-collision" data-section="script-collision">
         <div class="script-card-header">
           <span class="script-card-name">Collision Profile Setter</span>
           <span class="badge badge-amber">Modify</span>
@@ -481,7 +481,7 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
       </div>
 
       <!-- Naming Convention Checker -->
-      <div class="script-card">
+      <div class="script-card" id="script-naming" data-section="script-naming">
         <div class="script-card-header">
           <span class="script-card-name">Naming Convention Checker</span>
           <span class="badge badge-blue">Audit</span>
@@ -499,7 +499,7 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
       </div>
 
       <!-- Nanite Auditor -->
-      <div class="script-card">
+      <div class="script-card" id="script-nanite" data-section="script-nanite">
         <div class="script-card-header">
           <span class="script-card-name">Nanite Auditor</span>
           <span class="badge badge-amber">Modify</span>
@@ -514,7 +514,7 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
       </div>
 
       <!-- Null Mesh Auditor -->
-      <div class="script-card">
+      <div class="script-card" id="script-null" data-section="script-null">
         <div class="script-card-header">
           <span class="script-card-name">Null Mesh Auditor</span>
           <span class="badge badge-blue">Audit</span>

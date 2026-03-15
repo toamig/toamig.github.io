@@ -124,17 +124,23 @@ const og = ogImage ?? coverImage;
       const sections = document.querySelectorAll('[data-section]');
       const navLinks = document.querySelectorAll('.sidebar-nav a[href^="#"]');
 
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            navLinks.forEach(a => a.classList.remove('active'));
-            const id = entry.target.getAttribute('data-section');
-            document.querySelector(`.sidebar-nav a[href="#${id}"]`)?.classList.add('active');
+      // Scroll-based active detection — reliable across all section sizes
+      function updateActive() {
+        const scrollY = window.scrollY + 120;
+        let current = '';
+        sections.forEach(section => {
+          if ((section as HTMLElement).offsetTop <= scrollY) {
+            current = section.getAttribute('data-section') || '';
           }
         });
-      }, { rootMargin: '-20% 0px -70% 0px' });
+        navLinks.forEach(a => a.classList.remove('active'));
+        if (current) {
+          document.querySelector(`.sidebar-nav a[href="#${current}"]`)?.classList.add('active');
+        }
+      }
 
-      sections.forEach(s => observer.observe(s));
+      window.addEventListener('scroll', updateActive, { passive: true });
+      updateActive();
 
       // Smooth scroll
       document.querySelectorAll('.sidebar-nav a[href^="#"]').forEach(anchor => {
@@ -428,8 +434,10 @@ body {
 }
 
 /* ── Section ─────────────────────────────────────────────────────── */
+/* Reset global CSS section padding that would otherwise add 90px top/bottom */
+.docs-body section { padding: 0; overflow-x: visible; width: auto; }
 .doc-section {
-  margin-bottom: 72px;
+  margin-bottom: 56px;
   scroll-margin-top: 80px;
 }
 .doc-section-title {
@@ -648,6 +656,7 @@ body {
   border-radius: 14px;
   overflow: hidden;
   transition: border-color .2s;
+  scroll-margin-top: 80px;
 }
 .script-card:hover { border-color: rgba(41,128,185,.3); }
 .script-card-header {
