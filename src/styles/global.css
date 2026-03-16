@@ -109,6 +109,17 @@ header nav a:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 16px rgba(41,128,185,.3);
 }
+header nav a.nav-plugins {
+  background-color: rgba(99,102,241,.15);
+  border-color: rgba(99,102,241,.35);
+  color: #c4b5fd;
+}
+header nav a.nav-plugins:hover {
+  background-color: rgba(99,102,241,.35);
+  border-color: rgba(99,102,241,.6);
+  color: #ede9fe;
+  box-shadow: 0 4px 16px rgba(99,102,241,.25);
+}
 header nav a.nav-resume {
   background-color: rgba(41,128,185,.18);
   border-color: rgba(41,128,185,.4);
