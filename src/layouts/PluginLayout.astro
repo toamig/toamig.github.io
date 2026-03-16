@@ -53,7 +53,9 @@ const og = ogImage ?? coverImage;
         migueltechlead.pt
       </a>
       <span class="topbar-sep">/</span>
-      <span class="topbar-current">Plugins / {pluginName}</span>
+      <a href="/Plugins" class="topbar-crumb">Plugins</a>
+      <span class="topbar-sep">/</span>
+      <span class="topbar-current">{pluginName}</span>
       <a href={fabUrl} target="_blank" rel="noopener noreferrer" class="topbar-fab" id="fab-btn">
         Get on Fab
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -216,6 +218,8 @@ body {
   transition: color .2s;
 }
 .topbar-home:hover { color: var(--pl-text); }
+.topbar-crumb { color: var(--pl-muted); text-decoration: none; font-size: 13px; font-weight: 500; transition: color .2s; }
+.topbar-crumb:hover { color: var(--pl-text); }
 .topbar-sep { color: var(--pl-border); font-size: 16px; user-select: none; }
 .topbar-current { font-size: 13px; color: var(--pl-text); font-weight: 600; }
 .topbar-fab {
