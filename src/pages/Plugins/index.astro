@@ -1,5 +1,4 @@
 ---
-import Logo from '../../components/Logo.astro';
 import '../../styles/global.css';
 
 interface Plugin {
@@ -71,7 +70,7 @@ const statusMeta: Record<Plugin['status'], { label: string; color: string }> = {
     <header class="plugins-header" id="plugins-header">
       <nav class="plugins-nav">
         <a href="/" class="nav-brand" aria-label="Home">
-          <Logo class="nav-logo" firstPathStyle="fill:#6366f1" />
+          <img src="/logo_head.svg" class="nav-logo" alt="Logo" />
           <span class="nav-brand-name">Miguel Techlead</span>
         </a>
 
@@ -190,6 +189,10 @@ const statusMeta: Record<Plugin['status'], { label: string; color: string }> = {
   });
 </script>
 
+<style is:global>
+.plugins-body section { padding: 0 !important; overflow-x: visible !important; width: auto !important; }
+</style>
+
 <style>
 /* ── Reset for this page ─────────────────────────────────────────────── */
 .plugins-body {
@@ -199,7 +202,6 @@ const statusMeta: Record<Plugin['status'], { label: string; color: string }> = {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
-.plugins-body section { padding: 0; overflow-x: visible; width: auto; }
 
 /* ── Header ──────────────────────────────────────────────────────────── */
 .plugins-header {
