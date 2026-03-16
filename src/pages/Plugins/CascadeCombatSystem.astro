@@ -1,0 +1,847 @@
+---
+import PluginLayout from '../../layouts/PluginLayout.astro';
+// Colors from logo: orange #f07820 (CASCADE text/fire) + electric blue #4ab8f0 (glowing eye)
+---
+<PluginLayout
+  title="Cascade Combat System — Modular Multiplayer Combat Framework for UE5"
+  description="A node-based combo framework for UE5. Build branching combat sequences, handle any input system, and ship multiplayer-ready combat without writing replication code."
+  pluginName="Cascade Combat System"
+  version="1.0"
+  coverImage="/plugins/cascadecombatsystem/CascadeCombatSystemCover.png"
+  logoImage="/plugins/cascadecombatsystem/CascadeCombatSystem.png"
+  fabUrl="#"
+>
+
+  <!-- ── Sidebar nav ─────────────────────────────────────────────── -->
+  <nav slot="sidebar-nav">
+    <div class="nav-group">
+      <span class="nav-group-label">Introduction</span>
+      <a href="#overview">Overview</a>
+      <a href="#getting-started">Getting Started</a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-group-label">Combo System</span>
+      <a href="#combo-nodes">Combo Nodes</a>
+      <a href="#combo-definition">Combo Definition</a>
+      <a href="#ability-system-component">Ability System Component</a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-group-label">Abilities</span>
+      <a href="#melee-attack">Melee Attack</a>
+      <a href="#charged-attack">Charged Attack</a>
+      <a href="#projectile-ability">Projectile</a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-group-label">Animation</span>
+      <a href="#damage-window">Damage Window</a>
+      <a href="#combo-window">Combo Window</a>
+      <a href="#other-notifies">Other Notifies</a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-group-label">Systems</span>
+      <a href="#targeting">Targeting</a>
+      <a href="#input-system">Input System</a>
+      <a href="#reactions">Reaction System</a>
+      <a href="#runtime-builder">Runtime Builder</a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-group-label">Multiplayer</span>
+      <a href="#multiplayer">Replication</a>
+    </div>
+  </nav>
+
+  <!-- ── Overview ───────────────────────────────────────────────── -->
+  <section class="doc-section" id="overview" data-section="overview">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </span>
+      Overview
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      <strong>Cascade Combat System</strong> is a production-ready, node-based combo framework for Unreal Engine 5. Where traditional combo systems use rigid linear arrays, Cascade uses a <strong>tree structure</strong> — enabling branching paths, conditional routes, and any combat pattern you can imagine, all driven from data assets without touching C++.
+    </p>
+    <p class="doc-p">
+      The plugin handles the hard parts — hit detection context, input buffering, combo state, and multiplayer replication — while leaving <strong>damage formulas and reactions entirely to your project</strong>. Drop it into any character, wire up your input, and have a working combat system in minutes.
+    </p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><line x1="3" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="21" y2="12"/><line x1="12" y1="3" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="21"/></svg>
+        </div>
+        <p class="feature-title">Node-Based Combo Trees</p>
+        <p class="feature-desc">Not arrays. Build linear chains, branching paths, conditional routes, or any custom pattern as a visual tree of nodes.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <p class="feature-title">Input Agnostic</p>
+        <p class="feature-desc">Built-in adapter for Enhanced Input. Plug in any system — Legacy, mobile touch, AI commands — via a one-interface implementation.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <p class="feature-title">Multiplayer Ready</p>
+        <p class="feature-desc">FastArray replication with delta compression baked in. ~20 bytes per state change. Server-authoritative with client prediction support.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </div>
+        <p class="feature-title">Designer Friendly</p>
+        <p class="feature-desc">Combos are data assets. Create and iterate without writing a line of C++. Designers own the combat flow.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <p class="feature-title">Damage-Agnostic Design</p>
+        <p class="feature-desc">The plugin provides hit context — who, what, with which tags. Your project owns the damage formula. No overriding the plugin to fit your math.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        </div>
+        <p class="feature-title">Runtime Combo Builder</p>
+        <p class="feature-desc">Let players build and save their own combos from ability templates at runtime — perfect for action RPGs and customization systems.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <p class="feature-title">Performant</p>
+        <p class="feature-desc">~0.01ms combo evaluation. Supports 100+ simultaneous combos. Built to scale from indie to AAA workloads.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        </div>
+        <p class="feature-title">Visual Node Editor</p>
+        <p class="feature-desc">Dedicated editor toolkit with a drag-and-drop graph for building combo trees visually, with real-time validation and error reporting.</p>
+      </div>
+    </div>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </span>
+      <span>Cascade Combat System is built on top of Unreal Engine's <strong>Gameplay Ability System (GAS)</strong>. Your project needs GAS enabled to use this plugin.</span>
+    </div>
+  </section>
+
+  <!-- ── Getting Started ────────────────────────────────────────── -->
+  <section class="doc-section" id="getting-started" data-section="getting-started">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      </span>
+      Getting Started
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">A full combat system is up and running in five steps. The fastest path uses the <strong>Combat Setup asset</strong> — a single data asset that bundles input mappings, ability grants, and combo registration into one call.</p>
+    <div class="steps">
+      <div class="step">
+        <span class="step-num">1</span>
+        <div class="step-body">
+          <p class="step-title">Add CascadeAbilitySystemComponent to your character</p>
+          <p class="step-desc">Replace or extend your existing ASC with <strong>CascadeAbilitySystemComponent</strong>. It inherits from UAbilitySystemComponent so existing GAS setup remains compatible. Set <strong>DamageEffectClass</strong> to your project's damage GameplayEffect.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">2</span>
+        <div class="step-body">
+          <p class="step-title">Create an Input Mapping Config asset</p>
+          <p class="step-desc">In the Content Browser, create a <strong>CascadeInputMappingConfig</strong> data asset. Map your semantic gameplay tags to Enhanced Input actions — e.g. <code style="font-family:var(--pl-mono);font-size:12px">Game.Combat.Input.LightAttack</code> → <code style="font-family:var(--pl-mono);font-size:12px">IA_LightAttack</code>. This decouples combat logic from raw input.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">3</span>
+        <div class="step-body">
+          <p class="step-title">Create your Ability blueprints</p>
+          <p class="step-desc">Create Blueprint subclasses of <strong>CascadeMeleeAttackAbility</strong> (or <strong>CascadeChargedAbility</strong> / <strong>CascadeProjectileAbility</strong>). Assign your attack montage, hit tags, and any per-ability configuration. No code required.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">4</span>
+        <div class="step-body">
+          <p class="step-title">Build your Combo Definition assets</p>
+          <p class="step-desc">Create <strong>CascadeComboDefinition</strong> data assets and build your combo trees using the visual node editor. Chain <strong>Ability</strong> nodes for linear combos, add <strong>Branch</strong> nodes for input-driven splits, or use <strong>Conditional</strong> nodes for tag-based routing.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">5</span>
+        <div class="step-body">
+          <p class="step-title">Wire it up with a Combat Setup asset</p>
+          <p class="step-desc">Create a <strong>CascadeCombatSetup</strong> asset that references your Input Mapping Config and Combo Definitions. Call <strong>InitializeCombat</strong> on your ASC at BeginPlay — one call handles everything: adapter setup, ability grants, and combo registration.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Combo Nodes ─────────────────────────────────────────────── -->
+  <section class="doc-section" id="combo-nodes" data-section="combo-nodes">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><line x1="3" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="21" y2="12"/><line x1="12" y1="3" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="21"/></svg>
+      </span>
+      Combo Nodes
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      Every combo is a tree of <strong>nodes</strong>. Each node decides what happens at its step — which ability to activate, which input to expect, and where the tree can go next. Three built-in node types cover the full range of combat patterns, and you can subclass any of them in Blueprint or C++ for custom logic.
+    </p>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Node Types</h3>
+      <div class="mode-grid" style="grid-template-columns: repeat(auto-fill, minmax(240px,1fr))">
+        <div class="mode-card">
+          <p class="mode-card-name"><span class="badge" style="background:rgba(240,120,32,.12);color:#f07820;border:1px solid rgba(240,120,32,.25)">Ability Node</span></p>
+          <p class="mode-card-desc">Activates a GameplayAbility when a specific input is received. The workhorse of any combo chain. Chains to <code style="font-family:var(--pl-mono);font-size:12px">NextNodes</code> on completion.</p>
+        </div>
+        <div class="mode-card">
+          <p class="mode-card-name"><span class="badge badge-blue">Branch Node</span></p>
+          <p class="mode-card-desc">Routes to different nodes based on which input the player pressed. One node — multiple possible continuations depending on player choice.</p>
+        </div>
+        <div class="mode-card">
+          <p class="mode-card-name"><span class="badge badge-green">Conditional Node</span></p>
+          <p class="mode-card-desc">Evaluates a set of Gameplay Tags. Routes to a success path if all tags are present, or a failure path if any are missing — enabling state-aware combos.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Ability Node Properties</h3>
+      <table class="prop-table">
+        <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td class="prop-name">AbilityClass</td><td class="prop-type">Class</td><td class="prop-desc">The GameplayAbility to activate when this node executes.</td></tr>
+          <tr><td class="prop-name">ExpectedInput</td><td class="prop-type">GameplayTag</td><td class="prop-desc">The input tag that triggers this node. Must match what the player pressed during the combo window.</td></tr>
+          <tr><td class="prop-name">GracePeriod</td><td class="prop-type">float (s)</td><td class="prop-desc">How long after the ability ends before the combo resets if no follow-up input arrives. Gives players a moment to continue without precise timing.</td></tr>
+          <tr><td class="prop-name">NextNodes</td><td class="prop-type">Array</td><td class="prop-desc">Possible nodes this step can advance to. Multiple entries allow the combo to branch based on the next input received.</td></tr>
+          <tr><td class="prop-name">NodeTag</td><td class="prop-type">GameplayTag</td><td class="prop-desc">Semantic identifier for this node. Used for debugging and custom logic targeting specific steps.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Combo Patterns</h3>
+      <p class="doc-p">Any combat pattern is achievable by composing the three node types:</p>
+      <div class="pattern-grid">
+        <div class="pattern-card">
+          <p class="pattern-label"><span class="badge" style="background:rgba(240,120,32,.1);color:#f07820;border:1px solid rgba(240,120,32,.2)">Linear</span></p>
+          <p class="pattern-flow">Light → Light → Light</p>
+          <p class="feature-desc">Chain Ability nodes via NextNodes. The simplest pattern for basic attack strings.</p>
+        </div>
+        <div class="pattern-card">
+          <p class="pattern-label"><span class="badge badge-blue">Branching</span></p>
+          <p class="pattern-flow">Light → Branch → Light <em>or</em> Heavy</p>
+          <p class="feature-desc">Add a Branch node after any Ability node. The player's next input determines which path fires.</p>
+        </div>
+        <div class="pattern-card">
+          <p class="pattern-label"><span class="badge badge-green">Conditional</span></p>
+          <p class="pattern-flow">Attack → [Has Mana?] → Powerful <em>or</em> Normal</p>
+          <p class="feature-desc">Insert a Conditional node to route based on character state — buffs, stances, resource levels.</p>
+        </div>
+        <div class="pattern-card">
+          <p class="pattern-label"><span class="badge badge-purple">Custom</span></p>
+          <p class="pattern-flow">Attack → [Your Logic] → …</p>
+          <p class="feature-desc">Subclass any node type in Blueprint or C++ and override <code style="font-family:var(--pl-mono);font-size:12px">EvaluateNode</code> for fully custom routing.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Combo Definition ────────────────────────────────────────── -->
+  <section class="doc-section" id="combo-definition" data-section="combo-definition">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      </span>
+      Combo Definition
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      A <strong>CascadeComboDefinition</strong> is a data asset that packages a complete combo — its tree of nodes, its unique tag identifier, and the conditions under which it can activate. Create one per distinct combo in your game.
+    </p>
+    <table class="prop-table">
+      <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="prop-name">ComboTag</td><td class="prop-type">GameplayTag</td><td class="prop-desc">Unique identifier for this combo. Used to register, query, and end it at runtime. Example: <code style="font-family:var(--pl-mono);font-size:12px">Combo.LightAttack.Basic</code>.</td></tr>
+        <tr><td class="prop-name">RootNode</td><td class="prop-type">ComboNode</td><td class="prop-desc">The entry point of the combo tree. The first node evaluated when this combo activates.</td></tr>
+        <tr><td class="prop-name">RequiredTagsToStart</td><td class="prop-type">TagContainer</td><td class="prop-desc">Gameplay Tags that must be active on the instigator for this combo to be eligible. Use for stance requirements, buffs, or unlock conditions.</td></tr>
+        <tr><td class="prop-name">BlockedTags</td><td class="prop-type">TagContainer</td><td class="prop-desc">Gameplay Tags that prevent this combo from starting. Use to block combos during stun, death, or other states.</td></tr>
+        <tr><td class="prop-name">Priority</td><td class="prop-type">int32</td><td class="prop-desc">When multiple combos match the same input, higher priority wins. Use to layer contextual overrides on top of default combos.</td></tr>
+        <tr><td class="prop-name">bCanBeCancelled</td><td class="prop-type">bool</td><td class="prop-desc">Whether this combo can be interrupted mid-execution. Disable for unbreakable finisher animations.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── ASC ─────────────────────────────────────────────────────── -->
+  <section class="doc-section" id="ability-system-component" data-section="ability-system-component">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+      </span>
+      Ability System Component
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      <strong>CascadeAbilitySystemComponent</strong> is the central hub of the plugin — it extends the standard GAS ASC with combo management, input routing, and state tracking. Add it to any character that needs combat.
+    </p>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Key Properties</h3>
+      <table class="prop-table">
+        <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td class="prop-name">DamageEffectClass</td><td class="prop-type">Class</td><td class="prop-desc">The GameplayEffect applied when a hit is confirmed. This is your project's damage formula — the plugin doesn't prescribe it.</td></tr>
+          <tr><td class="prop-name">InputBufferDuration</td><td class="prop-type">float (s)</td><td class="prop-desc">How long an input pressed before a combo window opens is held in the buffer. Shorter values reward precise timing; longer values feel more forgiving.</td></tr>
+          <tr><td class="prop-name">InputBufferMode</td><td class="prop-type">Enum</td><td class="prop-desc"><span class="badge" style="background:rgba(240,120,32,.1);color:#f07820;border:1px solid rgba(240,120,32,.2)">SingleInput</span> — only the last input is buffered (Genshin-style). <span class="badge badge-blue">FullCombo</span> — a queue of inputs is buffered (Spider-Man-style).</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Runtime Functions</h3>
+      <table class="prop-table">
+        <thead><tr><th>Function</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td class="prop-name">InitializeCombat</td><td class="prop-desc">One-call setup using a <strong>CascadeCombatSetup</strong> asset. Handles adapter creation, ability grants, and all combo registrations.</td></tr>
+          <tr><td class="prop-name">RegisterCombo</td><td class="prop-desc">Registers a CascadeComboDefinition at runtime. Combos can be added or removed dynamically — useful for equipping weapons or unlocking abilities.</td></tr>
+          <tr><td class="prop-name">UnregisterCombo</td><td class="prop-desc">Removes a combo by tag. Immediately prevents it from activating on the next input.</td></tr>
+          <tr><td class="prop-name">IsComboActive</td><td class="prop-desc">Returns whether a specific combo is currently in-progress for this character.</td></tr>
+          <tr><td class="prop-name">EndCombo / CancelCombo</td><td class="prop-desc"><strong>End</strong> waits for the grace period before resetting. <strong>Cancel</strong> immediately stops the combo and its active ability.</td></tr>
+          <tr><td class="prop-name">ApplyHitPause</td><td class="prop-desc">Freezes attacker and/or victim for a short duration on hit impact. Configurable duration and time-dilation factor for slow-motion feel.</td></tr>
+          <tr><td class="prop-name">SetAirborneState</td><td class="prop-desc">Manually flags the character as airborne. Use for non-Character actors or custom movement. Call <strong>EnableAirborneTracking</strong> to auto-detect from the Character Movement Component instead.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Events (Delegates)</h3>
+      <table class="prop-table">
+        <thead><tr><th>Event</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td class="prop-name">OnComboStateChanged</td><td class="prop-desc">Fires whenever the active combo advances to a new step. Provides the combo tag, new step index, and current node — useful for UI feedback.</td></tr>
+          <tr><td class="prop-name">OnComboWindowChanged</td><td class="prop-desc">Fires when an input acceptance window opens or closes. Use to drive UI indicators that show players when to press next.</td></tr>
+          <tr><td class="prop-name">OnHitDetected</td><td class="prop-desc">Fires when a hit is confirmed during a damage window or from a projectile impact. Provides full <strong>FCascadeHitData</strong> context — your project uses this to apply damage.</td></tr>
+          <tr><td class="prop-name">OnDamageTaken</td><td class="prop-desc">Fires on the receiving character when damage is applied. Provides hit data and the final damage value — use to trigger reactions, screen effects, or sound.</td></tr>
+          <tr><td class="prop-name">OnComboStepActivated</td><td class="prop-desc">Fires each time an ability within a combo activates. Provides the combo tag, step index, and ability class — useful for analytics or audio cues.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── Melee Attack ────────────────────────────────────────────── -->
+  <section class="doc-section" id="melee-attack" data-section="melee-attack">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      </span>
+      Melee Attack Ability
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      <strong>CascadeMeleeAttackAbility</strong> is the base class for all animation-driven melee attacks. Subclass it in Blueprint, assign a montage, configure your hit context, and it's ready to be placed in a combo tree. Hit detection is handled automatically by the <strong>Damage Window</strong> animation notify placed on the montage.
+    </p>
+    <table class="prop-table">
+      <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="prop-name">AttackMontage</td><td class="prop-type">AnimMontage</td><td class="prop-desc">The animation montage played when this ability activates.</td></tr>
+        <tr><td class="prop-name">MontageSectionName</td><td class="prop-type">Name</td><td class="prop-desc">Specific montage section to jump to. Useful for sharing a single montage across multiple abilities with different sections.</td></tr>
+        <tr><td class="prop-name">PlayRate</td><td class="prop-type">float</td><td class="prop-desc">Animation playback speed multiplier. Values above 1.0 speed up the attack; values below 1.0 slow it down.</td></tr>
+        <tr><td class="prop-name">HitTags</td><td class="prop-type">TagContainer</td><td class="prop-desc">Semantic descriptors attached to every hit produced by this ability. Examples: <code style="font-family:var(--pl-mono);font-size:12px">Damage.Type.Slash</code>, <code style="font-family:var(--pl-mono);font-size:12px">Hit.Strength.Heavy</code>. Your project reads these to determine damage type, reactions, and effects.</td></tr>
+        <tr><td class="prop-name">HitCustomData</td><td class="prop-type">Map&lt;Name, float&gt;</td><td class="prop-desc">Project-specific numeric context passed with every hit. Use for charge level, stance bonus, skill rank — anything your damage formula needs.</td></tr>
+        <tr><td class="prop-name">HitPauseDuration</td><td class="prop-type">float (s)</td><td class="prop-desc">Duration to freeze both attacker and victim on a confirmed hit. Creates the satisfying "impact feel" in melee combat.</td></tr>
+        <tr><td class="prop-name">HitPauseTimeDilation</td><td class="prop-type">float</td><td class="prop-desc">Time dilation applied during the hit pause. Values below 1.0 create a slow-motion effect on impact.</td></tr>
+        <tr><td class="prop-name">bUseFlyingModeForRootMotion</td><td class="prop-type">bool</td><td class="prop-desc">Temporarily sets the Character Movement Component to Flying mode during the ability. Fixes Z-axis root motion issues on attacks that lift the character off the ground.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── Charged Attack ─────────────────────────────────────────── -->
+  <section class="doc-section" id="charged-attack" data-section="charged-attack">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      </span>
+      Charged Attack Ability
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      <strong>CascadeChargedAbility</strong> extends the melee attack with hold-to-charge mechanics. The longer the player holds the input, the higher the charge level — exposed as a <code style="font-family:var(--pl-mono);font-size:12.5px">GetChargePercentage()</code> float you can read in your damage formula or feed into animation blend spaces.
+    </p>
+    <table class="prop-table">
+      <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="prop-name">MinChargeTime</td><td class="prop-type">float (s)</td><td class="prop-desc">Hold duration before the attack is considered "charged". Releasing before this threshold executes at minimum charge.</td></tr>
+        <tr><td class="prop-name">MaxChargeTime</td><td class="prop-type">float (s)</td><td class="prop-desc">Hold duration at which charge reaches 100%. Holding beyond this does not increase damage further.</td></tr>
+        <tr><td class="prop-name">MinChargeDamageMultiplier</td><td class="prop-type">float</td><td class="prop-desc">Damage multiplier applied at minimum charge. Passed through <strong>HitCustomData</strong> for your formula to use.</td></tr>
+        <tr><td class="prop-name">MaxChargeDamageMultiplier</td><td class="prop-type">float</td><td class="prop-desc">Damage multiplier at full charge. Interpolated linearly between min and max based on hold time.</td></tr>
+        <tr><td class="prop-name">ChargeMontage</td><td class="prop-type">AnimMontage</td><td class="prop-desc">Optional animation played during the charge hold phase — typically a looping wind-up animation.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout callout-info">
+      <span class="callout-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </span>
+      <span>Call <code style="font-family:var(--pl-mono);font-size:12px">GetChargePercentage()</code> at any time during the ability to get the current [0, 1] value — useful for driving charge VFX, UI fill bars, or blend spaces.</span>
+    </div>
+  </section>
+
+  <!-- ── Projectile Ability ──────────────────────────────────────── -->
+  <section class="doc-section" id="projectile-ability" data-section="projectile-ability">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </span>
+      Projectile Ability
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      <strong>CascadeProjectileAbility</strong> spawns a <strong>CascadeProjectile</strong> actor at the moment of an animation notify (<strong>AN_SpawnProjectile</strong>). The projectile travels through the world and broadcasts <code style="font-family:var(--pl-mono);font-size:12.5px">OnHitDetected</code> on the owning character's ASC when it impacts a target — the same hit data pipeline as melee attacks.
+    </p>
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Projectile Properties</h3>
+      <table class="prop-table">
+        <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td class="prop-name">CollisionRadius</td><td class="prop-type">float</td><td class="prop-desc">Sphere collision size for hit detection.</td></tr>
+          <tr><td class="prop-name">PierceCount</td><td class="prop-type">int32</td><td class="prop-desc">Number of actors the projectile passes through before destroying. Set to 0 for single-hit; higher values enable piercing shots.</td></tr>
+          <tr><td class="prop-name">bDestroyOnEnvironmentHit</td><td class="prop-type">bool</td><td class="prop-desc">Destroy the projectile when it hits static geometry. Disable for bounceable or persistent projectiles.</td></tr>
+          <tr><td class="prop-name">Lifetime</td><td class="prop-type">float (s)</td><td class="prop-desc">Auto-destroy timer. Set to 0 for no limit.</td></tr>
+          <tr><td class="prop-name">DefaultHitTags</td><td class="prop-type">TagContainer</td><td class="prop-desc">Tags always present on this projectile's hit data — merged with any tags set on the spawning notify.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Aim Modes</h3>
+      <div class="mode-grid">
+        <div class="mode-card">
+          <p class="mode-card-name"><span class="badge" style="background:rgba(240,120,32,.1);color:#f07820;border:1px solid rgba(240,120,32,.2)">SocketDirection</span></p>
+          <p class="mode-card-desc">Fires in the direction the spawn socket is pointing. Use for weapons with clear directional facing.</p>
+        </div>
+        <div class="mode-card">
+          <p class="mode-card-name"><span class="badge badge-blue">OwnerForward</span></p>
+          <p class="mode-card-desc">Fires along the owner's forward vector. Reliable for character-aligned shots.</p>
+        </div>
+        <div class="mode-card">
+          <p class="mode-card-name"><span class="badge badge-green">CameraTrace</span></p>
+          <p class="mode-card-desc">Fires toward the camera's aim point. Best for player-controlled projectiles where camera aim should guide the shot.</p>
+        </div>
+        <div class="mode-card">
+          <p class="mode-card-name"><span class="badge badge-purple">TargetLocation</span></p>
+          <p class="mode-card-desc">Fires toward a target's location. Ideal for AI characters aiming at a specific actor.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Damage Window ───────────────────────────────────────────── -->
+  <section class="doc-section" id="damage-window" data-section="damage-window">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </span>
+      Damage Window Notify
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      <strong>ANS_DamageWindow</strong> is an AnimNotifyState that activates trace-based hit detection for its entire duration in the animation timeline. Place it over the frames where your weapon actually makes contact. Every tick inside the window, Cascade traces from socket to socket along the weapon and fires <code style="font-family:var(--pl-mono);font-size:12.5px">OnHitDetected</code> for each new actor entered — automatically skipping already-hit actors within the same window.
+    </p>
+    <table class="prop-table">
+      <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="prop-name">StartSocketName</td><td class="prop-type">Name</td><td class="prop-desc">Socket at the start of the trace. Typically the base of the weapon — e.g. <code style="font-family:var(--pl-mono);font-size:12px">Blade_Root</code>.</td></tr>
+        <tr><td class="prop-name">EndSocketName</td><td class="prop-type">Name</td><td class="prop-desc">Socket at the end of the trace. Typically the tip of the weapon — e.g. <code style="font-family:var(--pl-mono);font-size:12px">Blade_Tip</code>.</td></tr>
+        <tr><td class="prop-name">TraceShape</td><td class="prop-type">Enum</td><td class="prop-desc">Hit detection shape: <span class="badge" style="background:rgba(240,120,32,.1);color:#f07820;border:1px solid rgba(240,120,32,.2)">Line</span> <span class="badge badge-blue">Sphere</span> <span class="badge badge-green">Capsule</span> <span class="badge badge-purple">Box</span>. Use Sphere or Capsule for forgiving melee; Line for precise stabbing weapons.</td></tr>
+        <tr><td class="prop-name">TraceRadius</td><td class="prop-type">float</td><td class="prop-desc">Radius for Sphere and Capsule shapes.</td></tr>
+        <tr><td class="prop-name">TraceChannel</td><td class="prop-type">Enum</td><td class="prop-desc">Collision channel to query. Match this to your project's hit-response setup.</td></tr>
+        <tr><td class="prop-name">HitTags</td><td class="prop-type">TagContainer</td><td class="prop-desc">Tags added to hit data for every hit within this window. Merged with the ability's own HitTags.</td></tr>
+        <tr><td class="prop-name">bShowPreviewShapes</td><td class="prop-type">bool</td><td class="prop-desc">Shows a live preview of the trace shape in the animation editor viewport. Essential for lining up windows precisely.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── Combo Window ────────────────────────────────────────────── -->
+  <section class="doc-section" id="combo-window" data-section="combo-window">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg>
+      </span>
+      Combo Window Notify
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      <strong>ANS_ComboWindow</strong> opens and closes the input acceptance window within an animation. While the window is open, buffered inputs are consumed and the combo tree advances to the next node. Place this in the latter portion of each attack montage — typically from 70–90% through — to give players a natural feel for when to press next.
+    </p>
+    <table class="prop-table">
+      <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="prop-name">WindowOpenTag</td><td class="prop-type">GameplayTag</td><td class="prop-desc">Event tag fired when the window opens. Listen to this to show UI feedback (e.g. a combo prompt appearing).</td></tr>
+        <tr><td class="prop-name">WindowCloseTag</td><td class="prop-type">GameplayTag</td><td class="prop-desc">Event tag fired when the window closes.</td></tr>
+        <tr><td class="prop-name">bApplyComboWindowTag</td><td class="prop-type">bool</td><td class="prop-desc">When enabled, applies a temporary gameplay tag to the character for the duration of the open window — useful for tag-based conditional nodes that check if the player is mid-combo.</td></tr>
+        <tr><td class="prop-name">ComboWindowActiveTag</td><td class="prop-type">GameplayTag</td><td class="prop-desc">The tag applied while the window is open (requires bApplyComboWindowTag).</td></tr>
+      </tbody>
+    </table>
+    <div class="callout callout-info">
+      <span class="callout-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </span>
+      <span>The <strong>InputBufferDuration</strong> on the ASC determines how early a player can press the next input before the window opens. This "pre-buffering" is what makes combos feel responsive even at high play speeds.</span>
+    </div>
+  </section>
+
+  <!-- ── Other Notifies ──────────────────────────────────────────── -->
+  <section class="doc-section" id="other-notifies" data-section="other-notifies">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      </span>
+      Other Notifies
+    </h2>
+    <div class="section-divider"></div>
+    <div class="script-grid">
+      <div class="script-card" id="notify-applydamage" data-section="notify-applydamage">
+        <div class="script-card-header">
+          <span class="script-card-name">AN_ApplyDamage</span>
+          <span class="badge" style="background:rgba(240,120,32,.1);color:#f07820;border:1px solid rgba(240,120,32,.2)">Single Frame</span>
+        </div>
+        <div class="script-card-body">
+          <p class="script-card-desc">A point-in-time AnimNotify (not a state) that fires hit detection at a single animation frame. Use for precise, frame-accurate hits — a punch landing, a tail swipe, a stomp — where a continuous window would be too broad.</p>
+          <div class="script-props">
+            <div class="script-prop"><span class="script-prop-name">TraceRange</span><span class="script-prop-desc">Distance forward from the character for the hit trace.</span></div>
+            <div class="script-prop"><span class="script-prop-name">TraceRadius</span><span class="script-prop-desc">Sphere radius for the detection volume.</span></div>
+            <div class="script-prop"><span class="script-prop-name">SocketName</span><span class="script-prop-desc">Mesh socket to use as the trace origin.</span></div>
+            <div class="script-prop"><span class="script-prop-name">DamageEventTag / HitGameplayCueTag</span><span class="script-prop-desc">Gameplay event and cue tags broadcast on a confirmed hit.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="script-card" id="notify-cancelcombo" data-section="notify-cancelcombo">
+        <div class="script-card-header">
+          <span class="script-card-name">ANS_CancelCombo</span>
+          <span class="badge badge-purple">State</span>
+        </div>
+        <div class="script-card-body">
+          <p class="script-card-desc">Immediately cancels the active combo and its running ability when the notify fires. Place at the end of an animation that should always hard-stop the combo — e.g. a knockback recovery or a failed parry. No grace period; state is cleared instantly.</p>
+        </div>
+      </div>
+
+      <div class="script-card" id="notify-endcombo" data-section="notify-endcombo">
+        <div class="script-card-header">
+          <span class="script-card-name">ANS_EndCombo</span>
+          <span class="badge badge-purple">State</span>
+        </div>
+        <div class="script-card-body">
+          <p class="script-card-desc">Gracefully ends the combo when the notify fires, entering the configured grace period before fully resetting state. Use for the final hit of a sequence to give players a natural feel for the combo completing — as an alternative to configuring GracePeriod per node.</p>
+        </div>
+      </div>
+
+      <div class="script-card" id="notify-dragtarget" data-section="notify-dragtarget">
+        <div class="script-card-header">
+          <span class="script-card-name">ANS_DragTarget</span>
+          <span class="badge badge-blue">State</span>
+        </div>
+        <div class="script-card-body">
+          <p class="script-card-desc">Pulls a target toward the attacker over the duration of the notify. Used for cinematic grab-and-slam finishers, keeping the victim within melee range throughout a long animation sequence.</p>
+        </div>
+      </div>
+
+      <div class="script-card" id="notify-targetstick" data-section="notify-targetstick">
+        <div class="script-card-header">
+          <span class="script-card-name">ANS_TargetStick</span>
+          <span class="badge badge-blue">State</span>
+        </div>
+        <div class="script-card-body">
+          <p class="script-card-desc">Locks the character's rotation to face its current target for the duration of the notify. Prevents awkward sideways or backward-facing attacks when the character and target are at an angle mid-combo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Targeting ───────────────────────────────────────────────── -->
+  <section class="doc-section" id="targeting" data-section="targeting">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>
+      </span>
+      Targeting System
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      Targeting queries resolve which actors are affected by an ability before it executes. Assign a query to an ability to control how it selects its targets — point-and-click single targets, AoE spheres, ground placement, or self-targeting buffs.
+    </p>
+    <div class="mode-grid" style="grid-template-columns: repeat(auto-fill, minmax(220px,1fr))">
+      <div class="mode-card">
+        <p class="mode-card-name"><span class="badge" style="background:rgba(240,120,32,.1);color:#f07820;border:1px solid rgba(240,120,32,.2)">Self</span></p>
+        <p class="mode-card-desc">Returns only the ability's owner. Use for self-buffs, heals, and stance changes.</p>
+      </div>
+      <div class="mode-card">
+        <p class="mode-card-name"><span class="badge badge-blue">Single Actor</span></p>
+        <p class="mode-card-desc">Resolves a single target from the player's focus or reticle. Standard for targeted special moves.</p>
+      </div>
+      <div class="mode-card">
+        <p class="mode-card-name"><span class="badge badge-green">Hitscan</span></p>
+        <p class="mode-card-desc">Raycasts in the owner's facing direction and returns the first hit actor. Efficient for fast, directional attacks.</p>
+      </div>
+      <div class="mode-card">
+        <p class="mode-card-name"><span class="badge badge-amber">AOE</span></p>
+        <p class="mode-card-desc">Sphere overlap from the owner's position. Returns all actors within radius filtered by team. Use for ground slams, shockwaves, and area attacks.</p>
+      </div>
+      <div class="mode-card">
+        <p class="mode-card-name"><span class="badge badge-purple">Ground Location</span></p>
+        <p class="mode-card-desc">Targets a point on the ground. Supports a confirmation step where the player places the indicator before committing.</p>
+      </div>
+    </div>
+    <table class="prop-table" style="margin-top:20px">
+      <thead><tr><th>Common Property</th><th>Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="prop-name">TeamFilter</td><td class="prop-type">Enum</td><td class="prop-desc">Filters results by team relationship: <span class="badge badge-blue">All</span> <span class="badge badge-amber">Enemies</span> <span class="badge badge-green">Allies</span> <span class="badge" style="background:rgba(240,120,32,.1);color:#f07820;border:1px solid rgba(240,120,32,.2)">Self</span>.</td></tr>
+        <tr><td class="prop-name">bRequiresConfirmation</td><td class="prop-type">bool</td><td class="prop-desc">When enabled, the targeting query enters a "preview" tick until the player confirms — used for placement abilities and aimed shots.</td></tr>
+        <tr><td class="prop-name">TraceChannel</td><td class="prop-type">Enum</td><td class="prop-desc">Collision channel used for all trace-based queries.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── Input System ────────────────────────────────────────────── -->
+  <section class="doc-section" id="input-system" data-section="input-system">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      </span>
+      Input System
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      Cascade is fully decoupled from any specific input system through an adapter interface. The built-in <strong>CascadeEnhancedInputAdapter</strong> wires up UE5's Enhanced Input. If your project uses a different system — Legacy input, mobile touch, custom AI commands — implement the adapter interface once and plug it in.
+    </p>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Input Mapping Config</h3>
+      <p class="doc-p">A <strong>CascadeInputMappingConfig</strong> data asset maps semantic <strong>Gameplay Tags</strong> to <strong>InputAction</strong> assets. This decouples combat logic from raw button presses — you can swap control schemes without touching ability or combo code.</p>
+      <table class="prop-table">
+        <thead><tr><th>Example Mapping</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td class="prop-name">Game.Combat.Input.LightAttack</td><td class="prop-desc">Maps to <code style="font-family:var(--pl-mono);font-size:12px">IA_LightAttack</code> — the semantic tag used everywhere in combo trees and ability bindings.</td></tr>
+          <tr><td class="prop-name">Game.Combat.Input.HeavyAttack</td><td class="prop-desc">Maps to <code style="font-family:var(--pl-mono);font-size:12px">IA_HeavyAttack</code>.</td></tr>
+          <tr><td class="prop-name">Game.Combat.Input.Special</td><td class="prop-desc">Maps to <code style="font-family:var(--pl-mono);font-size:12px">IA_SpecialAttack</code>.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Combat Setup Asset</h3>
+      <p class="doc-p">
+        <strong>CascadeCombatSetup</strong> is an optional convenience asset that bundles your Input Mapping Config, standalone ability bindings, and combo definitions into a single asset. Pass it to <code style="font-family:var(--pl-mono);font-size:12.5px">InitializeCombat</code> and everything is configured in one call — the recommended path for most projects.
+      </p>
+      <table class="prop-table">
+        <thead><tr><th>Property</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td class="prop-name">AdapterClass</td><td class="prop-desc">The input adapter class to instantiate. Defaults to <strong>CascadeEnhancedInputAdapter</strong>.</td></tr>
+          <tr><td class="prop-name">InputEntries</td><td class="prop-desc">Map of input tags to InputAction assets, with an optional standalone ability per entry for non-combo inputs.</td></tr>
+          <tr><td class="prop-name">Combos</td><td class="prop-desc">Array of CascadeComboDefinition assets to register on initialization.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── Reactions ───────────────────────────────────────────────── -->
+  <section class="doc-section" id="reactions" data-section="reactions">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      </span>
+      Reaction System
+    </h2>
+    <div class="section-divider"></div>
+    <div class="callout callout-info">
+      <span class="callout-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </span>
+      <span>The reaction system is <strong>optional</strong>. If your project already handles hit responses and death, simply listen to <strong>OnDamageTaken</strong> on the ASC and drive your existing system from there.</span>
+    </div>
+    <p class="doc-p">
+      <strong>CascadeReactionComponent</strong> provides a data-driven hit response pipeline. Attach it to characters and assign a <strong>CascadeReactionSetup</strong> asset to define how that character reacts to different types of hits — different montages for light vs heavy hits, a death sequence, a stagger reaction. The framework evaluates handlers in priority order; the first matching handler wins.
+    </p>
+    <table class="prop-table">
+      <thead><tr><th>Event</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="prop-name">OnHitReactionExecuted</td><td class="prop-desc">Fires after a hit reaction handler plays. Provides the handler that ran and the full hit data.</td></tr>
+        <tr><td class="prop-name">OnDeathReactionExecuted</td><td class="prop-desc">Fires when the death reaction handler completes.</td></tr>
+        <tr><td class="prop-name">OnNoReactionFound</td><td class="prop-desc">Fires if no handler in the setup matched the incoming hit. Use as a fallback to handle unrecognised hit types in your own code.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── Runtime Builder ─────────────────────────────────────────── -->
+  <section class="doc-section" id="runtime-builder" data-section="runtime-builder">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      </span>
+      Runtime Combo Builder
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      <strong>CascadeRuntimeComboBuilder</strong> lets players construct and save their own combos at runtime from a pre-defined template — enabling the kind of combo customization found in action RPGs and fighting games.
+    </p>
+    <p class="doc-p">
+      Define a <strong>CascadeComboTemplate</strong> asset that specifies available slots, which abilities can fill each slot, and unlock conditions per slot. The builder validates any configuration before registering it, and all combo configs can be serialized for save/load.
+    </p>
+    <table class="prop-table">
+      <thead><tr><th>Template Property</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="prop-name">AvailableSlots</td><td class="prop-desc">Array of FCascadeComboSlot entries that define each position in the player-built combo — name, description, and which abilities are allowed or blocked per slot.</td></tr>
+        <tr><td class="prop-name">RequiredTagsToUse</td><td class="prop-desc">Tags that must be present on the character to activate combos built from this template — use for weapon type or class restrictions.</td></tr>
+        <tr><td class="prop-name">DefaultTimeout</td><td class="prop-desc">Input window timeout for all combos built from this template.</td></tr>
+        <tr><td class="prop-name">bCanBeInterrupted</td><td class="prop-desc">Whether player-built combos using this template can be cancelled mid-execution.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── Multiplayer ─────────────────────────────────────────────── -->
+  <section class="doc-section" id="multiplayer" data-section="multiplayer">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </span>
+      Multiplayer & Replication
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      Multiplayer support is built into the plugin — there is no separate networking layer to configure. Active combo state replicates automatically via <strong>FastArraySerializer</strong> with delta compression, sending only what changed rather than the full state every frame.
+    </p>
+    <div class="feature-grid" style="grid-template-columns: repeat(auto-fill, minmax(200px,1fr))">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <p class="feature-title">Server Authority</p>
+        <p class="feature-desc">All combo logic and hit detection is validated server-side. Clients cannot manipulate combo state.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <p class="feature-title">Client Prediction</p>
+        <p class="feature-desc">Clients can locally predict combo visuals for responsiveness. Server validates and corrects as needed.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <p class="feature-title">~20 bytes / update</p>
+        <p class="feature-desc">Delta-compressed FastArraySerializer sends only changed state. Efficient across 100+ simultaneous combos.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <p class="feature-title">Zero Setup</p>
+        <p class="feature-desc">No manual replication calls needed. The ASC handles all combo state sync automatically on authority and simulated proxies.</p>
+      </div>
+    </div>
+  </section>
+
+</PluginLayout>
+
+<style is:global>
+  /* ── Cascade Combat System — orange + electric blue theme ─────── */
+  :root {
+    --pl-blue:      #d4600a;
+    --pl-blue-l:    #f07820;
+    --pl-border-h:  rgba(240,120,32,.45);
+    --pl-code-bg:   #090608;
+    --pl-bg:        #090808;
+    --pl-surface:   #100c08;
+    --pl-surface-2: #180f08;
+  }
+
+  /* Topbar */
+  .topbar-fab { background: #d4600a; }
+  .topbar-fab:hover { background: #f07820; box-shadow: 0 4px 16px rgba(240,120,32,.35); }
+
+  /* Nav */
+  .nav-group a.active {
+    color: #f07820;
+    background: rgba(240,120,32,.08);
+    border-color: rgba(240,120,32,.2);
+  }
+  .nav-group a:hover { color: #f07820; }
+
+  /* Section icons */
+  .section-icon { background: rgba(240,120,32,.1); border-color: rgba(240,120,32,.2); color: #f07820; }
+
+  /* Divider */
+  .section-divider { background: linear-gradient(90deg, #f07820, #d4600a); }
+
+  /* Subsection bar */
+  .doc-subsection-title::before { background: #f07820; }
+
+  /* Feature icons + cards */
+  .feature-icon { background: rgba(240,120,32,.1); border-color: rgba(240,120,32,.18); color: #f07820; }
+  .feature-card:hover { border-color: rgba(240,120,32,.3); background: rgba(240,120,32,.04); }
+
+  /* Steps */
+  .step-num { background: rgba(240,120,32,.1); border-color: rgba(240,120,32,.3); color: #f07820; }
+
+  /* Tables */
+  .prop-table thead th { background: rgba(240,120,32,.07); }
+  .prop-name { color: #f07820; }
+
+  /* Blue badge → electric blue (from logo eye) */
+  .badge-blue { background: rgba(74,184,240,.1); color: #4ab8f0; border-color: rgba(74,184,240,.2); }
+
+  /* Script / notify cards */
+  .script-prop-name { color: #f07820; }
+  .script-card:hover { border-color: rgba(240,120,32,.28); }
+
+  /* Callout */
+  .callout-info { background: rgba(240,120,32,.06); border-color: rgba(240,120,32,.18); }
+  .callout-info svg { stroke: #f07820; }
+
+  /* Code */
+  .code-cmd { color: #f07820; }
+  .code-flag { color: #ffa050; }
+  .code-val  { color: #ffd090; }
+
+  /* Hero overlay */
+  .plugin-hero-overlay {
+    background:
+      linear-gradient(to right, rgba(9,8,8,.94) 0%, rgba(9,8,8,.6) 55%, rgba(9,8,8,.25) 100%),
+      linear-gradient(to top, rgba(9,8,8,.8) 0%, transparent 50%);
+  }
+
+  /* Mode cards */
+  .mode-card:hover { border-color: rgba(240,120,32,.25); }
+
+  /* Pattern grid */
+  .pattern-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  .pattern-card {
+    padding: 16px 18px;
+    border-radius: 10px;
+    background: rgba(255,255,255,.03);
+    border: 1px solid rgba(255,255,255,.07);
+    transition: border-color .2s;
+  }
+  .pattern-card:hover { border-color: rgba(240,120,32,.25); }
+  .pattern-label { margin-bottom: 8px; }
+  .pattern-flow {
+    font-family: var(--pl-mono);
+    font-size: 12.5px;
+    color: rgba(255,255,255,.6);
+    margin-bottom: 8px;
+    font-style: italic;
+  }
+  .pattern-flow em { color: rgba(240,120,32,.7); font-style: normal; }
+</style>
