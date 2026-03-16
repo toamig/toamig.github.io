@@ -10,6 +10,14 @@ interface Props {
   logoImage: string;
   fabUrl?: string;
   ogImage?: string;
+  // Theme colours — set here so they're always inline on <body>, never
+  // overridden by stylesheet injection order
+  accent?:      string;
+  accentLight?: string;
+  bg?:          string;
+  surface?:     string;
+  surface2?:    string;
+  codeBg?:      string;
 }
 
 const {
@@ -21,9 +29,24 @@ const {
   logoImage,
   fabUrl = '#',
   ogImage,
+  accent      = '#2980b9',
+  accentLight = '#3b97d3',
+  bg          = '#07111e',
+  surface     = '#0a1628',
+  surface2    = '#0f1f38',
+  codeBg      = '#050d1a',
 } = Astro.props;
 
 const og = ogImage ?? coverImage;
+
+const themeVars = [
+  `--pl-blue:${accent}`,
+  `--pl-blue-l:${accentLight}`,
+  `--pl-bg:${bg}`,
+  `--pl-surface:${surface}`,
+  `--pl-surface-2:${surface2}`,
+  `--pl-code-bg:${codeBg}`,
+].join(';');
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -41,7 +64,7 @@ const og = ogImage ?? coverImage;
     <meta property="og:image"       content={og} />
     <meta property="og:type"        content="website" />
   </head>
-  <body>
+  <body style={themeVars}>
 
     <!-- ── Top Bar ─────────────────────────────────────────────────── -->
     <header class="plugin-topbar">
@@ -176,16 +199,10 @@ const og = ogImage ?? coverImage;
 <style is:global>
 /* ── Plugin layout variables ─────────────────────────────────────── */
 :root {
-  --pl-bg:        #07111e;
-  --pl-surface:   #0a1628;
-  --pl-surface-2: #0f1f38;
   --pl-border:    rgba(255,255,255,.07);
   --pl-border-h:  color-mix(in srgb, var(--pl-blue) 50%, transparent);
-  --pl-blue:      #2980b9;
-  --pl-blue-l:    #3b97d3;
   --pl-text:      rgba(255,255,255,.88);
   --pl-muted:     rgba(255,255,255,.45);
-  --pl-code-bg:   #050d1a;
   --pl-topbar-h:  52px;
   --pl-sidebar-w: 264px;
   --pl-font:      'Inter', -apple-system, sans-serif;
