@@ -1,5 +1,5 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import DarkLayout from '../../layouts/DarkLayout.astro';
 
 interface Plugin {
   name: string;
@@ -52,9 +52,10 @@ const statusMeta: Record<Plugin['status'], { label: string; color: string }> = {
 };
 ---
 
-<BaseLayout
+<DarkLayout
   title="Plugins — Miguel Techlead"
   description="Unreal Engine 5 plugins for world-building, combat, and tooling."
+  activeNav="plugins"
 >
   <main class="plugins-page">
 
@@ -118,7 +119,7 @@ const statusMeta: Record<Plugin['status'], { label: string; color: string }> = {
     </section>
 
   </main>
-</BaseLayout>
+</DarkLayout>
 
 <style>
 /* ── Page shell ──────────────────────────────────────────────────────── */
