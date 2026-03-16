@@ -753,75 +753,42 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
 <style is:global>
   /* ── Cascade Combat System — orange + electric blue theme ─────── */
   :root {
-    --pl-blue-rgb:  212, 96, 10;
     --pl-blue:      #d4600a;
     --pl-blue-l:    #f07820;
-    --pl-border-h:  rgba(var(--pl-blue-rgb),.45);
     --pl-code-bg:   #090608;
     --pl-bg:        #090808;
     --pl-surface:   #100c08;
     --pl-surface-2: #180f08;
   }
 
-  /* Topbar */
-  .topbar-fab { background: #d4600a; }
-  .topbar-fab:hover { background: #f07820; box-shadow: 0 4px 16px rgba(240,120,32,.35); }
+  /* Nav hover — orange tint instead of plain white */
+  .nav-group a:hover { color: var(--pl-blue-l); }
 
-  /* Nav */
-  .nav-group a.active {
-    color: #f07820;
-    background: rgba(240,120,32,.08);
-    border-color: rgba(240,120,32,.2);
-  }
-  .nav-group a:hover { color: #f07820; }
+  /* Section divider — warm gradient direction */
+  .section-divider { background: linear-gradient(90deg, var(--pl-blue-l), var(--pl-blue)); }
 
-  /* Section icons */
-  .section-icon { background: rgba(240,120,32,.1); border-color: rgba(240,120,32,.2); color: #f07820; }
-
-  /* Divider */
-  .section-divider { background: linear-gradient(90deg, #f07820, #d4600a); }
-
-  /* Subsection bar */
-  .doc-subsection-title::before { background: #f07820; }
-
-  /* Feature icons + cards */
-  .feature-icon { background: rgba(240,120,32,.1); border-color: rgba(240,120,32,.18); color: #f07820; }
-  .feature-card:hover { border-color: rgba(240,120,32,.3); background: rgba(240,120,32,.04); }
-
-  /* Steps */
-  .step-num { background: rgba(240,120,32,.1); border-color: rgba(240,120,32,.3); color: #f07820; }
-
-  /* Tables */
-  .prop-table thead th { background: rgba(240,120,32,.07); }
-  .prop-name { color: #f07820; }
-
-  /* Blue badge → electric blue (from logo eye) */
+  /* Blue badge → electric blue accent from logo */
   .badge-blue { background: rgba(74,184,240,.1); color: #4ab8f0; border-color: rgba(74,184,240,.2); }
 
-  /* Script / notify cards */
-  .script-prop-name { color: #f07820; }
-  .script-card:hover { border-color: rgba(240,120,32,.28); }
+  /* Callout icon stroke */
+  .callout-info svg { stroke: var(--pl-blue-l); }
 
-  /* Callout */
-  .callout-info { background: rgba(240,120,32,.06); border-color: rgba(240,120,32,.18); }
-  .callout-info svg { stroke: #f07820; }
-
-  /* Code */
-  .code-cmd { color: #f07820; }
+  /* Code syntax */
+  .code-cmd { color: var(--pl-blue-l); }
   .code-flag { color: #ffa050; }
   .code-val  { color: #ffd090; }
 
-  /* Hero overlay */
+  /* Hero overlay — warm dark tones */
   .plugin-hero-overlay {
     background:
       linear-gradient(to right, rgba(9,8,8,.94) 0%, rgba(9,8,8,.6) 55%, rgba(9,8,8,.25) 100%),
       linear-gradient(to top, rgba(9,8,8,.8) 0%, transparent 50%);
   }
 
-  /* Mode cards */
-  .mode-card:hover { border-color: rgba(240,120,32,.25); }
+  /* Mode card hover (not in base layout) */
+  .mode-card:hover { border-color: color-mix(in srgb, var(--pl-blue) 25%, transparent); }
 
-  /* Pattern grid */
+  /* Pattern grid (Cascade-specific layout) */
   .pattern-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
@@ -835,7 +802,7 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
     border: 1px solid rgba(255,255,255,.07);
     transition: border-color .2s;
   }
-  .pattern-card:hover { border-color: rgba(240,120,32,.25); }
+  .pattern-card:hover { border-color: color-mix(in srgb, var(--pl-blue) 25%, transparent); }
   .pattern-label { margin-bottom: 8px; }
   .pattern-flow {
     font-family: var(--pl-mono);
@@ -844,5 +811,5 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
     margin-bottom: 8px;
     font-style: italic;
   }
-  .pattern-flow em { color: rgba(240,120,32,.7); font-style: normal; }
+  .pattern-flow em { color: color-mix(in srgb, var(--pl-blue) 70%, transparent); font-style: normal; }
 </style>
