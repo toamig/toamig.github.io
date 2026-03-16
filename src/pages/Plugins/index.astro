@@ -1,0 +1,338 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+interface Plugin {
+  name: string;
+  slug: string;
+  tagline: string;
+  version: string;
+  logo: string;
+  cover: string;
+  accent: string;         // primary colour (hex)
+  accentLight: string;    // lighter tint for text
+  status: 'live' | 'pre-launch' | 'in-development' | 'coming-soon';
+  docsUrl: string | null; // null = no docs yet
+  fabUrl: string | null;  // null = not on Fab yet
+}
+
+const plugins: Plugin[] = [
+  {
+    name: 'WorldSweep',
+    slug: 'worldsweep',
+    tagline: 'Batch scripting for UE5 World Partition — sweep entire maps, cell by cell.',
+    version: '1.0',
+    logo: '/plugins/worldsweep/WorldSweep.png',
+    cover: '/plugins/worldsweep/WorldSweepCover.png',
+    accent: '#0e9fd4',
+    accentLight: '#22d4f8',
+    status: 'pre-launch',
+    docsUrl: '/Plugins/WorldSweep',
+    fabUrl: null,
+  },
+  {
+    name: 'Cascade Combat System',
+    slug: 'cascadecombatsystem',
+    tagline: 'Node-based combo trees, GAS integration, and data-driven melee — in one plugin.',
+    version: '1.0',
+    logo: '/plugins/cascadecombatsystem/CascadeCombatSystem.png',
+    cover: '/plugins/cascadecombatsystem/CascadeCombatSystemCover.png',
+    accent: '#d4600a',
+    accentLight: '#f07820',
+    status: 'pre-launch',
+    docsUrl: '/Plugins/CascadeCombatSystem',
+    fabUrl: null,
+  },
+];
+
+const statusMeta: Record<Plugin['status'], { label: string; color: string }> = {
+  live:          { label: 'Live on Fab',       color: '#22c55e' },
+  'pre-launch':  { label: 'Pre-Launch',         color: '#f59e0b' },
+  'in-development': { label: 'In Development', color: '#6b7280' },
+  'coming-soon': { label: 'Coming Soon',        color: '#8b5cf6' },
+};
+---
+
+<BaseLayout
+  title="Plugins — Miguel Techlead"
+  description="Unreal Engine 5 plugins for world-building, combat, and tooling."
+>
+  <main class="plugins-page">
+
+    <!-- ── Hero ──────────────────────────────────────────────────────── -->
+    <section class="hero">
+      <div class="hero-inner">
+        <p class="hero-eyebrow">Unreal Engine 5</p>
+        <h1>Plugins</h1>
+        <p class="hero-sub">
+          Production-grade tools for world-building, combat systems, and pipeline automation.
+          Built for scale, designed to ship.
+        </p>
+      </div>
+    </section>
+
+    <!-- ── Grid ──────────────────────────────────────────────────────── -->
+    <section class="grid-section">
+      <div class="plugin-grid">
+        {plugins.map(p => {
+          const meta = statusMeta[p.status];
+          return (
+            <article class="plugin-card" style={`--accent:${p.accent};--accent-l:${p.accentLight};`}>
+
+              <!-- cover -->
+              <div class="card-cover">
+                <img src={p.cover} alt={`${p.name} cover`} loading="lazy" />
+                <div class="cover-fade" />
+                <span
+                  class="status-badge"
+                  style={`--s:${meta.color};`}
+                >{meta.label}</span>
+              </div>
+
+              <!-- body -->
+              <div class="card-body">
+                <div class="card-header">
+                  <img src={p.logo} alt={`${p.name} logo`} class="plugin-logo" />
+                  <div>
+                    <h2>{p.name}</h2>
+                    <span class="version">v{p.version}</span>
+                  </div>
+                </div>
+
+                <p class="card-tagline">{p.tagline}</p>
+
+                <div class="card-actions">
+                  {p.docsUrl && (
+                    <a href={p.docsUrl} class="btn btn-primary">Documentation</a>
+                  )}
+                  {p.fabUrl
+                    ? <a href={p.fabUrl} class="btn btn-fab" target="_blank" rel="noopener">Get on Fab ↗</a>
+                    : <span class="btn btn-fab btn-disabled">Not on Fab yet</span>
+                  }
+                </div>
+              </div>
+
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+  </main>
+</BaseLayout>
+
+<style>
+/* ── Page shell ──────────────────────────────────────────────────────── */
+.plugins-page {
+  min-height: 100vh;
+  background: #06090f;
+  color: #e2e8f0;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Hero ────────────────────────────────────────────────────────────── */
+.hero {
+  padding: 120px 24px 64px;
+  text-align: center;
+  background:
+    radial-gradient(ellipse 70% 40% at 50% 0%, rgba(99,102,241,.12) 0%, transparent 70%),
+    #06090f;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.hero-inner { max-width: 680px; margin: 0 auto; }
+
+.hero-eyebrow {
+  font-size: .75rem;
+  font-weight: 600;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: #6366f1;
+  margin: 0 0 16px;
+}
+
+.hero h1 {
+  font-size: clamp(2.4rem, 6vw, 3.6rem);
+  font-weight: 800;
+  line-height: 1.1;
+  margin: 0 0 20px;
+  background: linear-gradient(135deg, #fff 30%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  font-size: 1.05rem;
+  color: #94a3b8;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ── Grid section ────────────────────────────────────────────────────── */
+.grid-section {
+  padding: 64px 24px 96px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.plugin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 32px;
+}
+
+/* ── Card ────────────────────────────────────────────────────────────── */
+.plugin-card {
+  background: #0d1117;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+  display: flex;
+  flex-direction: column;
+}
+.plugin-card:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  box-shadow: 0 16px 48px color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+/* cover */
+.card-cover {
+  position: relative;
+  aspect-ratio: 16 / 7;
+  overflow: hidden;
+}
+.card-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform .4s ease;
+}
+.plugin-card:hover .card-cover img {
+  transform: scale(1.04);
+}
+.cover-fade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 40%, #0d1117 100%);
+}
+
+/* status badge */
+.status-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--s);
+  background: color-mix(in srgb, var(--s) 14%, #06090f);
+  border: 1px solid color-mix(in srgb, var(--s) 35%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+/* body */
+.card-body {
+  padding: 20px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.plugin-logo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: rgba(255,255,255,.04);
+  padding: 4px;
+  flex-shrink: 0;
+}
+
+.card-header h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin: 0 0 2px;
+  line-height: 1.2;
+}
+
+.version {
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--accent-l);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  padding: 2px 8px;
+  border-radius: 99px;
+  display: inline-block;
+}
+
+.card-tagline {
+  font-size: .9rem;
+  color: #94a3b8;
+  line-height: 1.65;
+  margin: 0 0 20px;
+  flex: 1;
+}
+
+/* actions */
+.card-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: .85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity .15s, background .15s;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+.btn-primary:hover { opacity: .85; }
+
+.btn-fab {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,.15);
+  color: #94a3b8;
+}
+.btn-fab:not(.btn-disabled):hover {
+  border-color: rgba(255,255,255,.35);
+  color: #e2e8f0;
+}
+
+.btn-disabled {
+  opacity: .45;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .plugin-grid { grid-template-columns: 1fr; }
+  .hero { padding: 100px 16px 48px; }
+  .grid-section { padding: 40px 16px 64px; }
+}
+</style>
