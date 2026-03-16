@@ -109,6 +109,15 @@ header nav a:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 16px rgba(41,128,185,.3);
 }
+header nav a.nav-resume {
+  background-color: rgba(41,128,185,.18);
+  border-color: rgba(41,128,185,.4);
+  color: rgba(255,255,255,.9);
+}
+header nav a.nav-resume:hover {
+  background-color: rgba(41,128,185,.55);
+  border-color: rgba(41,128,185,.7);
+}
 
 /* ─── Hamburger ──────────────────────────────────────────────────────────────── */
 .hamburger {

@@ -22,12 +22,6 @@ import projects     from '../data/projects.json';
       </div>
       <h1>Welcome to my <span class="strong-text">Game Developer</span> Portfolio</h1>
       <p>Discover my projects, skills, and experience</p>
-      <a href="/Plugins" class="plugins-btn">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-        </svg>
-        UE5 Plugins
-      </a>
     </div>
     <div class="scroll-down">
       <a href="#content"></a>
@@ -139,28 +133,3 @@ import projects     from '../data/projects.json';
   </div>
 </BaseLayout>
 
-<style>
-.plugins-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 22px;
-  border-radius: 10px;
-  background: rgba(255,255,255,.08);
-  border: 1px solid rgba(255,255,255,.18);
-  color: rgba(255,255,255,.85);
-  font-size: .9rem;
-  font-weight: 600;
-  text-decoration: none;
-  letter-spacing: .01em;
-  backdrop-filter: blur(8px);
-  transition: background .18s, border-color .18s, color .18s, transform .18s;
-  animation: fadeInUp 1s ease 0.8s both;
-}
-.plugins-btn:hover {
-  background: rgba(41,128,185,.35);
-  border-color: rgba(41,128,185,.55);
-  color: #fff;
-  transform: translateY(-2px);
-}
-</style>
