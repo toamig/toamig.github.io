@@ -129,12 +129,20 @@ const og = ogImage ?? coverImage;
       // Scroll-based active detection — reliable across all section sizes
       function updateActive() {
         const scrollY = window.scrollY + 120;
+        const atBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 40;
         let current = '';
-        sections.forEach(section => {
-          if ((section as HTMLElement).offsetTop <= scrollY) {
-            current = section.getAttribute('data-section') || '';
-          }
-        });
+
+        if (atBottom && sections.length) {
+          // At the bottom of the page — force the last section active
+          current = (sections[sections.length - 1] as HTMLElement).getAttribute('data-section') || '';
+        } else {
+          sections.forEach(section => {
+            if ((section as HTMLElement).offsetTop <= scrollY) {
+              current = section.getAttribute('data-section') || '';
+            }
+          });
+        }
+
         navLinks.forEach(a => a.classList.remove('active'));
         if (current) {
           document.querySelector(`.sidebar-nav a[href="#${current}"]`)?.classList.add('active');
@@ -144,11 +152,14 @@ const og = ogImage ?? coverImage;
       window.addEventListener('scroll', updateActive, { passive: true });
       updateActive();
 
-      // Smooth scroll
+      // Smooth scroll + immediate active on click
       document.querySelectorAll('.sidebar-nav a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', e => {
           e.preventDefault();
           const id = (anchor as HTMLAnchorElement).getAttribute('href')!.slice(1);
+          // Set active immediately — don't wait for scroll event
+          navLinks.forEach(a => a.classList.remove('active'));
+          (anchor as HTMLElement).classList.add('active');
           document.querySelector(`[data-section="${id}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
           sidebar?.classList.remove('open');
         });
