@@ -753,9 +753,10 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
 <style is:global>
   /* ── Cascade Combat System — orange + electric blue theme ─────── */
   :root {
+    --pl-blue-rgb:  212, 96, 10;
     --pl-blue:      #d4600a;
     --pl-blue-l:    #f07820;
-    --pl-border-h:  rgba(240,120,32,.45);
+    --pl-border-h:  rgba(var(--pl-blue-rgb),.45);
     --pl-code-bg:   #090608;
     --pl-bg:        #090808;
     --pl-surface:   #100c08;
