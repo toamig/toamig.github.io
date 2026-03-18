@@ -1,0 +1,803 @@
+---
+import PluginLayout from '../../layouts/PluginLayout.astro';
+// Colors from logo: gold #f0aa22 (gear/coins), deep amber #c47c0a (frame), blue gem #4ab8f0 (accent gems)
+---
+<PluginLayout
+  title="GearFlow — Modular Inventory & Crafting Plugin for UE5"
+  description="A fully modular inventory, crafting, and equipment system for Unreal Engine 5. Data-driven items, recipe graphs, and gear slots — multiplayer-ready and extensible per project."
+  pluginName="GearFlow"
+  version="1.0"
+  coverImage="/plugins/gearflow/GearFlowCover.png"
+  logoImage="/plugins/gearflow/GearFlow.png"
+  fabUrl="#"
+  accent="#c47c0a"
+  accentLight="#f0aa22"
+  bg="#0a0802"
+  surface="#130e04"
+  surface2="#1c1508"
+  codeBg="#080601"
+>
+
+  <!-- ── Sidebar nav ─────────────────────────────────────────────── -->
+  <nav slot="sidebar-nav">
+    <div class="nav-group">
+      <span class="nav-group-label">Introduction</span>
+      <a href="#overview">Overview</a>
+      <a href="#getting-started">Getting Started</a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-group-label">Items</span>
+      <a href="#item-definition">Item Definition</a>
+      <a href="#item-fragments">Item Fragments</a>
+      <a href="#item-instance">Item Instance</a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-group-label">Inventory</span>
+      <a href="#inventory-component">Inventory Component</a>
+      <a href="#inventory-queries">Queries & Filters</a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-group-label">Crafting</span>
+      <a href="#crafting-component">Crafting Component</a>
+      <a href="#recipes">Recipes</a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-group-label">Equipment</span>
+      <a href="#equipment-component">Equipment Component</a>
+      <a href="#gear-slots">Gear Slots</a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-group-label">Multiplayer</span>
+      <a href="#multiplayer">Replication</a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-group-label">Extending</span>
+      <a href="#extending">Custom Fragments</a>
+    </div>
+  </nav>
+
+  <!-- ── Overview ───────────────────────────────────────────────── -->
+  <section class="doc-section" id="overview" data-section="overview">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </span>
+      Overview
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      <strong>GearFlow</strong> is a production-ready, modular inventory and crafting framework for Unreal Engine 5. Rather than forcing a single monolithic inventory model onto your project, GearFlow is built around a <strong>fragment system</strong> — each item is a lightweight definition composed of only the fragments it needs. No bloated base classes, no wasted memory on fields your items never use.
+    </p>
+    <p class="doc-p">
+      The plugin ships three focused components — <strong>Inventory</strong>, <strong>Crafting</strong>, and <strong>Equipment</strong> — that you can mix and match per actor. All three replicate correctly out of the box with delta-compressed FastArrays, so multiplayer games work without any extra replication code on your end.
+    </p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <p class="feature-title">Fragment-Based Items</p>
+        <p class="feature-desc">Items are data assets composed of fragments. A sword has a stats fragment and an equippable fragment. A potion has a consumable fragment. Nothing more.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+        </div>
+        <p class="feature-title">Modular Components</p>
+        <p class="feature-desc">Add only what each actor needs. A chest uses Inventory. A player uses Inventory + Equipment. A workbench uses Crafting. Each component is self-contained.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <p class="feature-title">Multiplayer Ready</p>
+        <p class="feature-desc">FastArray replication with delta compression on all three components. Server-authoritative with client prediction support. Works with Listen and Dedicated servers.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </div>
+        <p class="feature-title">Designer Friendly</p>
+        <p class="feature-desc">All items and recipes are data assets. Designers create, tune, and iterate without writing C++. Blueprint-complete API for all runtime operations.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+        </div>
+        <p class="feature-title">Project-Agnostic</p>
+        <p class="feature-desc">GearFlow owns storage and transfer logic. Your project owns item behavior via custom fragments. No forking the plugin to add new item types.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        </div>
+        <p class="feature-title">Crafting System</p>
+        <p class="feature-desc">Data-driven recipes with ingredient requirements, output quantities, and optional crafting time. Supports ingredient consumption, partial crafts, and prerequisite checks.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <p class="feature-title">Equipment Slots</p>
+        <p class="feature-desc">Define any number of named gear slots via Gameplay Tags. Items declare which slot they occupy via their Equippable fragment. Query equipped stats at any time.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        </div>
+        <p class="feature-title">Visual Item Editor</p>
+        <p class="feature-desc">In-editor item preview panel showing all fragments, computed stats, and crafting relationships at a glance. Spot-check any item definition without running the game.</p>
+      </div>
+    </div>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </span>
+      <span>GearFlow does not depend on the Gameplay Ability System. It integrates well with GAS via the <strong>Stats Fragment</strong> and <strong>Attribute Modifier</strong> helpers, but GAS is entirely optional.</span>
+    </div>
+  </section>
+
+  <!-- ── Getting Started ────────────────────────────────────────── -->
+  <section class="doc-section" id="getting-started" data-section="getting-started">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      </span>
+      Getting Started
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">Add the plugin to your project and enable it in the <strong>.uproject</strong> file, then follow these steps to get a working inventory in under five minutes.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <p class="step-title">Enable the plugin</p>
+          <p class="step-desc">In the Unreal Editor, open <strong>Edit → Plugins</strong>, search for <em>GearFlow</em>, and enable it. Restart the editor when prompted. The plugin module <code>GearFlow</code> will be available in your Build.cs dependencies.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <p class="step-title">Add the dependency</p>
+          <p class="step-desc">Open your project's <strong>Build.cs</strong> and add <code>"GearFlow"</code> to your <code>PublicDependencyModuleNames</code>. This gives you access to all GearFlow C++ headers in your own modules.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <p class="step-title">Add a component to your character</p>
+          <p class="step-desc">Add <strong>UGFInventoryComponent</strong> to your character class (or in Blueprint, add the <em>GF Inventory Component</em>). Set <code>SlotCount</code> to the number of inventory slots you want. That's it — no additional setup required.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <p class="step-title">Create your first item</p>
+          <p class="step-desc">Right-click in the Content Browser, select <strong>GearFlow → Item Definition</strong>. Name it, open it, and add fragments via the <em>Add Fragment</em> button. Add a <strong>Display Fragment</strong> for name/icon and a <strong>Stack Fragment</strong> if the item should stack. Save the asset.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <p class="step-title">Give the item to your character</p>
+          <p class="step-desc">Call <code>GiveItem</code> on the Inventory Component, passing your Item Definition and a quantity. The function returns a <strong>UGFItemInstance</strong> handle you can use to query or modify the item at runtime. On a server this replicates automatically to all clients.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Item Definition ────────────────────────────────────────── -->
+  <section class="doc-section" id="item-definition" data-section="item-definition">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      </span>
+      Item Definition
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      A <strong>UGFItemDefinition</strong> is an immutable data asset describing everything that is <em>true of the item type itself</em> — not of any particular instance. It is never modified at runtime; it is the template from which item instances are created.
+    </p>
+    <p class="doc-p">
+      Definitions are composed of <strong>fragments</strong>, small data objects each responsible for one concern. A sword definition might have a Display Fragment (name, icon, description), a Stack Fragment (max stack of 1), an Equippable Fragment (slot tag <code>Equipment.Weapon.MainHand</code>), and a Stats Fragment (10 base attack). A health potion has a Display Fragment, a Stack Fragment (max 20), and a Consumable Fragment (restores 50 HP). Nothing more is allocated.
+    </p>
+
+    <table class="prop-table">
+      <thead>
+        <tr>
+          <th>Property</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="prop-name">ItemId</td>
+          <td class="prop-type">FGameplayTag</td>
+          <td class="prop-desc">Unique tag identifier for this item type. Used for save/load, crafting recipe references, and queries.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">Fragments</td>
+          <td class="prop-type">TArray&lt;UGFItemFragment*&gt;</td>
+          <td class="prop-desc">The ordered list of fragments that compose this item. Only the fragments present here are allocated on instances.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">bCanBeDropped</td>
+          <td class="prop-type">bool</td>
+          <td class="prop-desc">Whether the item can be dropped from the inventory into the world. The plugin fires a delegate; drop actor spawning is your project's responsibility.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">bIsUnique</td>
+          <td class="prop-type">bool</td>
+          <td class="prop-desc">If true, the inventory will reject a second instance of this definition. Useful for key items and quest objects.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── Item Fragments ─────────────────────────────────────────── -->
+  <section class="doc-section" id="item-fragments" data-section="item-fragments">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </span>
+      Item Fragments
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">GearFlow ships the following built-in fragments. You can create custom fragments for any project-specific data by subclassing <code>UGFItemFragment</code>.</p>
+
+    <div class="script-grid">
+      <div class="script-card">
+        <div class="script-card-header">
+          <span class="script-card-name">Display Fragment</span>
+          <span class="badge badge-blue">Required</span>
+        </div>
+        <div class="script-card-body">
+          <p class="script-card-desc">Human-readable identity of the item. Every item should have one. Contains the display name, short description, icon texture, and an optional world mesh for dropped-item actors.</p>
+          <div class="script-props">
+            <div class="script-prop"><span class="script-prop-name">DisplayName</span><span class="script-prop-desc">FText shown in inventory UI.</span></div>
+            <div class="script-prop"><span class="script-prop-name">Description</span><span class="script-prop-desc">FText tooltip or detail panel text.</span></div>
+            <div class="script-prop"><span class="script-prop-name">Icon</span><span class="script-prop-desc">UTexture2D used in the inventory grid slot.</span></div>
+            <div class="script-prop"><span class="script-prop-name">WorldMesh</span><span class="script-prop-desc">Optional UStaticMesh for dropped-item actors.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="script-card">
+        <div class="script-card-header">
+          <span class="script-card-name">Stack Fragment</span>
+          <span class="badge badge-amber">Optional</span>
+        </div>
+        <div class="script-card-body">
+          <p class="script-card-desc">Makes the item stackable. Without this fragment the item has an implicit max stack of 1 and cannot be stacked. Setting MaxStackSize to 1 while keeping the fragment explicitly declares it as a non-stacking item.</p>
+          <div class="script-props">
+            <div class="script-prop"><span class="script-prop-name">MaxStackSize</span><span class="script-prop-desc">int32 — maximum units per inventory slot.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="script-card">
+        <div class="script-card-header">
+          <span class="script-card-name">Equippable Fragment</span>
+          <span class="badge badge-amber">Optional</span>
+        </div>
+        <div class="script-card-body">
+          <p class="script-card-desc">Marks the item as equippable and declares which gear slot it targets. The Equipment Component checks for this fragment when an equip request is made and rejects items that lack it.</p>
+          <div class="script-props">
+            <div class="script-prop"><span class="script-prop-name">SlotTag</span><span class="script-prop-desc">FGameplayTag — the gear slot this item occupies (e.g. <code>Equipment.Weapon.MainHand</code>).</span></div>
+            <div class="script-prop"><span class="script-prop-name">GrantedAbilities</span><span class="script-prop-desc">Optional TArray of Gameplay Ability classes granted when equipped (requires GAS).</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="script-card">
+        <div class="script-card-header">
+          <span class="script-card-name">Stats Fragment</span>
+          <span class="badge badge-amber">Optional</span>
+        </div>
+        <div class="script-card-body">
+          <p class="script-card-desc">Declares a flat list of tag-to-float stat values for the item. The Equipment Component aggregates stats from all currently equipped items and exposes the total via <code>GetEquippedStats</code>.</p>
+          <div class="script-props">
+            <div class="script-prop"><span class="script-prop-name">Stats</span><span class="script-prop-desc">TMap&lt;FGameplayTag, float&gt; — stat tag to base value pairs.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="script-card">
+        <div class="script-card-header">
+          <span class="script-card-name">Consumable Fragment</span>
+          <span class="badge badge-amber">Optional</span>
+        </div>
+        <div class="script-card-body">
+          <p class="script-card-desc">Marks an item as usable. Calling <code>UseItem</code> on the Inventory Component fires the <code>OnItemUsed</code> delegate with the item instance and the using actor. The plugin removes one stack count; your project applies the effect.</p>
+          <div class="script-props">
+            <div class="script-prop"><span class="script-prop-name">bConsumeOnUse</span><span class="script-prop-desc">If true, the item count is decremented by 1 after use. Set false for reusable items like tools.</span></div>
+            <div class="script-prop"><span class="script-prop-name">CooldownDuration</span><span class="script-prop-desc">float — optional per-item use cooldown in seconds.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Item Instance ─────────────────────────────────────────── -->
+  <section class="doc-section" id="item-instance" data-section="item-instance">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
+      </span>
+      Item Instance
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      A <strong>UGFItemInstance</strong> is the runtime handle for a particular item living in an inventory slot. It holds a pointer to its <em>immutable</em> definition, a current stack count, and an optional <strong>instance data map</strong> for any per-instance state your fragments need (e.g. durability, enchantment level, custom metadata).
+    </p>
+    <p class="doc-p">
+      Instances are owned by the Inventory Component and replicated as part of its FastArray. You never construct them manually — always interact with them through the component API.
+    </p>
+
+    <table class="prop-table">
+      <thead>
+        <tr>
+          <th>Function</th>
+          <th>Returns</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="prop-name">GetDefinition()</td>
+          <td class="prop-type">UGFItemDefinition*</td>
+          <td class="prop-desc">Returns the immutable definition asset this instance was created from.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">GetStackCount()</td>
+          <td class="prop-type">int32</td>
+          <td class="prop-desc">Current number of units in this stack.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">FindFragment&lt;T&gt;()</td>
+          <td class="prop-type">T*</td>
+          <td class="prop-desc">Type-safe lookup of a fragment on the definition. Returns nullptr if the fragment is not present.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">GetInstanceData(Tag)</td>
+          <td class="prop-type">FInstanceValue</td>
+          <td class="prop-desc">Reads a per-instance float or object value stored under a Gameplay Tag key.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">SetInstanceData(Tag, Value)</td>
+          <td class="prop-type">void</td>
+          <td class="prop-desc">Writes a per-instance value. Only call from the server — value is replicated automatically.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── Inventory Component ────────────────────────────────────── -->
+  <section class="doc-section" id="inventory-component" data-section="inventory-component">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+      </span>
+      Inventory Component
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      <strong>UGFInventoryComponent</strong> is the core storage component. It manages a flat array of <code>UGFItemInstance</code> objects up to a configurable slot limit, handles stacking logic automatically, and fires delegates for all state changes so your UI stays in sync without polling.
+    </p>
+
+    <table class="prop-table">
+      <thead>
+        <tr>
+          <th>Function</th>
+          <th>Returns</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="prop-name">GiveItem(Definition, Count)</td>
+          <td class="prop-type">UGFItemInstance*</td>
+          <td class="prop-desc">Adds Count units of Definition. Fills existing stacks first, then creates new slots. Returns the primary instance. Server only.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">RemoveItem(Instance, Count)</td>
+          <td class="prop-type">bool</td>
+          <td class="prop-desc">Removes Count units from the given instance. Destroys the instance if count reaches zero. Returns false if Count exceeds available units.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">TransferTo(Target, Instance, Count)</td>
+          <td class="prop-type">bool</td>
+          <td class="prop-desc">Moves Count units from this inventory to the Target inventory. Handles stacking at the destination automatically. Server only.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">UseItem(Instance)</td>
+          <td class="prop-type">void</td>
+          <td class="prop-desc">Fires the OnItemUsed delegate and decrements the stack if the item has a Consumable Fragment with bConsumeOnUse set.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">HasItem(ItemId, Count)</td>
+          <td class="prop-type">bool</td>
+          <td class="prop-desc">Returns true if the inventory contains at least Count units of the item identified by ItemId tag.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">GetAllItems()</td>
+          <td class="prop-type">TArray&lt;UGFItemInstance*&gt;</td>
+          <td class="prop-desc">Returns a snapshot of all item instances currently in the inventory. Safe to call on client.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">GetTotalCount(ItemId)</td>
+          <td class="prop-type">int32</td>
+          <td class="prop-desc">Sums the stack counts of all instances matching ItemId. Useful for crafting requirement checks.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </span>
+      <span>All mutating functions (<code>GiveItem</code>, <code>RemoveItem</code>, <code>TransferTo</code>) are server-authoritative. Calling them on a client has no effect. Broadcast delegates fire on both server and client after replication.</span>
+    </div>
+  </section>
+
+  <!-- ── Inventory Queries ──────────────────────────────────────── -->
+  <section class="doc-section" id="inventory-queries" data-section="inventory-queries">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </span>
+      Queries & Filters
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      <code>GetAllItems()</code> returns every instance in the inventory. For more targeted reads, use <strong>GFInventoryQuery</strong> — a chainable filter object that runs a single pass over the item array.
+    </p>
+
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-lang">C++</span></div>
+      <pre><code><span class="code-comment">// Find all equipped weapons the player can use</span>
+FGFInventoryQuery Query;
+Query.RequireFragment&lt;UGFEquippableFragment&gt;();
+Query.RequireTag(TAG_Item_Type_Weapon);
+Query.SetMinStackCount(1);
+
+TArray&lt;UGFItemInstance*&gt; Weapons = InventoryComp-&gt;RunQuery(Query);</code></pre>
+    </div>
+
+    <table class="prop-table">
+      <thead>
+        <tr>
+          <th>Filter</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="prop-name">RequireFragment&lt;T&gt;()</td>
+          <td class="prop-desc">Only include items whose definition contains fragment type T.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">RequireTag(Tag)</td>
+          <td class="prop-desc">Only include items whose ItemId exactly matches or is a child of the given tag.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">SetMinStackCount(N)</td>
+          <td class="prop-desc">Only include items with at least N units in the stack.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">ExcludeEquipped()</td>
+          <td class="prop-desc">Skips instances currently occupying a slot in the actor's Equipment Component.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── Crafting Component ─────────────────────────────────────── -->
+  <section class="doc-section" id="crafting-component" data-section="crafting-component">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      </span>
+      Crafting Component
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      <strong>UGFCraftingComponent</strong> manages a list of known recipes and handles the full craft cycle: requirement validation, ingredient removal, output delivery, and optional timed crafting. It can be placed on the player character (personal crafting), a workbench actor (station crafting), or both.
+    </p>
+
+    <table class="prop-table">
+      <thead>
+        <tr>
+          <th>Function</th>
+          <th>Returns</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="prop-name">CanCraft(Recipe, Inventory)</td>
+          <td class="prop-type">EGFCraftResult</td>
+          <td class="prop-desc">Validates all ingredient requirements against the given inventory without consuming anything. Returns a result enum indicating success or the first failing condition.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">CraftItem(Recipe, Inventory)</td>
+          <td class="prop-type">bool</td>
+          <td class="prop-desc">Runs CanCraft, then removes ingredients from Inventory and delivers outputs. If the recipe has CraftingTime &gt; 0, starts a timed craft instead and returns true immediately. Server only.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">CancelCraft()</td>
+          <td class="prop-type">void</td>
+          <td class="prop-desc">Cancels an in-progress timed craft and returns consumed ingredients to the source inventory. Server only.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">GetKnownRecipes()</td>
+          <td class="prop-type">TArray&lt;UGFRecipe*&gt;</td>
+          <td class="prop-desc">Returns all recipes currently available on this component.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">LearnRecipe(Recipe)</td>
+          <td class="prop-type">void</td>
+          <td class="prop-desc">Adds a recipe to the known list at runtime. Use for recipe discovery systems.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── Recipes ────────────────────────────────────────────────── -->
+  <section class="doc-section" id="recipes" data-section="recipes">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      </span>
+      Recipes
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      A <strong>UGFRecipe</strong> is a data asset that declares what items are consumed and what is produced. Recipes reference items by their <code>ItemId</code> tag, so renaming or moving item definition assets never breaks recipe references.
+    </p>
+
+    <table class="prop-table">
+      <thead>
+        <tr>
+          <th>Property</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="prop-name">Ingredients</td>
+          <td class="prop-type">TArray&lt;FGFIngredient&gt;</td>
+          <td class="prop-desc">List of required items. Each entry has an ItemId tag and a required quantity.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">Outputs</td>
+          <td class="prop-type">TArray&lt;FGFOutput&gt;</td>
+          <td class="prop-desc">List of items produced. Supports multiple outputs (e.g. crafting returns a byproduct).</td>
+        </tr>
+        <tr>
+          <td class="prop-name">CraftingTime</td>
+          <td class="prop-type">float</td>
+          <td class="prop-desc">Seconds to complete the craft. 0 means instant. Non-zero triggers the timed craft path and fires progress delegates.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">RequiredStationTag</td>
+          <td class="prop-type">FGameplayTag</td>
+          <td class="prop-desc">If set, the CraftingComponent must have a matching station tag for the craft to be allowed. Use to enforce workbench requirements.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">Prerequisites</td>
+          <td class="prop-type">TArray&lt;FGameplayTag&gt;</td>
+          <td class="prop-desc">Optional tags the crafting actor must have before this recipe can be used — for tech-tree or skill-gate systems.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── Equipment Component ───────────────────────────────────── -->
+  <section class="doc-section" id="equipment-component" data-section="equipment-component">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </span>
+      Equipment Component
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      <strong>UGFEquipmentComponent</strong> manages a set of named gear slots and tracks which item instance occupies each one. It aggregates stats from all currently equipped items on demand, fires delegates on equip/unequip events, and grants GAS abilities if the Equippable Fragment declares any.
+    </p>
+
+    <table class="prop-table">
+      <thead>
+        <tr>
+          <th>Function</th>
+          <th>Returns</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="prop-name">EquipItem(Instance)</td>
+          <td class="prop-type">bool</td>
+          <td class="prop-desc">Attempts to equip the item to the slot declared in its Equippable Fragment. Unequips the current occupant first if one exists. Server only.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">UnequipSlot(SlotTag)</td>
+          <td class="prop-type">UGFItemInstance*</td>
+          <td class="prop-desc">Unequips the item in the given slot and returns the instance. Does not remove it from the inventory.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">GetEquippedItem(SlotTag)</td>
+          <td class="prop-type">UGFItemInstance*</td>
+          <td class="prop-desc">Returns the item currently in the given slot, or nullptr if empty.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">GetEquippedStat(StatTag)</td>
+          <td class="prop-type">float</td>
+          <td class="prop-desc">Sums the given stat across all equipped items that have a Stats Fragment. Result is cached and invalidated on any equip/unequip event.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">IsSlotOccupied(SlotTag)</td>
+          <td class="prop-type">bool</td>
+          <td class="prop-desc">Returns true if there is an item in the given slot.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── Gear Slots ─────────────────────────────────────────────── -->
+  <section class="doc-section" id="gear-slots" data-section="gear-slots">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+      </span>
+      Gear Slots
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      Gear slots are defined by <strong>Gameplay Tags</strong> under a <code>Equipment.*</code> parent tag of your choosing. There is no hardcoded slot list — you define whatever slots your game needs in your project's tag table and reference them in the Equipment Component's <code>DefinedSlots</code> array.
+    </p>
+
+    <div class="mode-grid">
+      <div class="mode-card">
+        <p class="mode-card-name">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          Weapon Slots
+        </p>
+        <p class="mode-card-desc"><code>Equipment.Weapon.MainHand</code>, <code>Equipment.Weapon.OffHand</code></p>
+      </div>
+      <div class="mode-card">
+        <p class="mode-card-name">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Armour Slots
+        </p>
+        <p class="mode-card-desc"><code>Equipment.Armour.Head</code>, <code>Equipment.Armour.Chest</code>, <code>Equipment.Armour.Legs</code>, <code>Equipment.Armour.Feet</code></p>
+      </div>
+      <div class="mode-card">
+        <p class="mode-card-name">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+          Accessory Slots
+        </p>
+        <p class="mode-card-desc"><code>Equipment.Accessory.Ring</code>, <code>Equipment.Accessory.Amulet</code></p>
+      </div>
+      <div class="mode-card">
+        <p class="mode-card-name">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          Custom
+        </p>
+        <p class="mode-card-desc">Add any tag under your chosen parent. The plugin has no restrictions on tag hierarchy depth or naming.</p>
+      </div>
+    </div>
+
+    <div class="callout callout-warn">
+      <span class="callout-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </span>
+      <span>Only tags listed in the Equipment Component's <strong>DefinedSlots</strong> array are considered valid slots. Attempting to equip an item whose SlotTag is not in DefinedSlots will fail with <code>EGFEquipResult::SlotNotDefined</code>.</span>
+    </div>
+  </section>
+
+  <!-- ── Multiplayer ────────────────────────────────────────────── -->
+  <section class="doc-section" id="multiplayer" data-section="multiplayer">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </span>
+      Replication
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      All three GearFlow components use <strong>FastArray replication</strong> with delta compression. Only changed item entries are transmitted per frame — a 100-slot inventory that receives one item generates roughly <strong>20–30 bytes</strong> of replication traffic, not a full array snapshot.
+    </p>
+    <p class="doc-p">
+      The replication model is <strong>server-authoritative</strong>. All mutating operations must originate on the server. Client-side Blueprint calls to GiveItem, EquipItem, etc., are silently ignored. The pattern to follow is: client sends an RPC to the server → server validates and mutates → FastArray replicates the change to relevant clients → delegates fire on client with the new state.
+    </p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <p class="feature-title">Delta Compression</p>
+        <p class="feature-desc">FastArray sends only the entries that changed since the last ACK. Full-inventory snapshots are never sent after the initial connection.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <p class="feature-title">Server Authoritative</p>
+        <p class="feature-desc">Inventory state lives on the server. Clients receive replicated copies. No client can forge an item grant or craft result.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <p class="feature-title">Timed Craft Sync</p>
+        <p class="feature-desc">Timed craft progress is replicated as a start timestamp + duration pair. Clients reconstruct the progress bar locally without per-tick RPCs.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+        </div>
+        <p class="feature-title">Listen & Dedicated</p>
+        <p class="feature-desc">Tested on both listen-server and dedicated-server configurations. No net-mode-specific code paths in your project required.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Extending ──────────────────────────────────────────────── -->
+  <section class="doc-section" id="extending" data-section="extending">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      </span>
+      Custom Fragments
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      The fragment system is the primary extension point. If GearFlow's built-in fragments don't cover a requirement, create a new one by subclassing <strong>UGFItemFragment</strong> in your own module. The plugin never needs to know about your fragment; you simply add it to item definitions and query for it at runtime.
+    </p>
+
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-lang">C++ — Custom Fragment</span></div>
+      <pre><code><span class="code-comment">// MyProject/Items/Fragments/GFDurabilityFragment.h</span>
+UCLASS()
+class MYPROJECT_API UGFDurabilityFragment : public UGFItemFragment
+{
+    GENERATED_BODY()
+public:
+    <span class="code-comment">/** Base durability for items of this definition */</span>
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(ClampMin=1))
+    int32 MaxDurability = 100;
+};</code></pre>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-lang">C++ — Runtime Usage</span></div>
+      <pre><code><span class="code-comment">// Query the fragment from any item instance</span>
+if (const UGFDurabilityFragment* Frag = Instance-&gt;FindFragment&lt;UGFDurabilityFragment&gt;())
+{
+    int32 MaxDur = Frag-&gt;MaxDurability;
+
+    <span class="code-comment">// Per-instance current durability stored in instance data</span>
+    float CurrentDur = Instance-&gt;GetInstanceData(TAG_Item_Durability).AsFloat();
+}</code></pre>
+    </div>
+
+    <p class="doc-p">
+      Because fragments are plain UObjects, you can add UPROPERTY fields of any type, implement editor-time validation overrides, and use them from Blueprint without any additional registration. The plugin discovers them automatically when they appear in a definition's Fragments array.
+    </p>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </span>
+      <span>Custom fragment classes should live in your project module, not inside the plugin. This ensures you can update GearFlow independently of your project-specific item data.</span>
+    </div>
+  </section>
+
+</PluginLayout>
