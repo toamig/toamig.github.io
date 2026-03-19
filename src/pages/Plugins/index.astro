@@ -82,9 +82,22 @@ const statusMeta: Record<Plugin['status'], { label: string; color: string }> = {
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" />
-  <meta property="og:title" content="Plugins — Miguel Techlead" />
-  <meta property="og:description" content="Unreal Engine 5 plugins for world-building, combat, and tooling." />
-  <meta property="og:type" content="website" />
+  <!-- Open Graph (Facebook, LinkedIn, Discord, Slack, iMessage, WhatsApp) -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:url"         content="https://toamig.github.io/Plugins" />
+  <meta property="og:site_name"   content="Miguel Techlead" />
+  <meta property="og:title"       content="Modular Plugins — Miguel Techlead" />
+  <meta property="og:description" content="Production-grade UE5 plugins for inventory, combat, dialog, and world-building. Fragment-based, multiplayer-ready, extensible per project." />
+  <meta property="og:image"       content="https://toamig.github.io/og-plugins.png" />
+  <meta property="og:image:width"  content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt"   content="Modular Plugins — Unreal Engine 5" />
+  <!-- Twitter / X -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content="Modular Plugins — Miguel Techlead" />
+  <meta name="twitter:description" content="Production-grade UE5 plugins for inventory, combat, dialog, and world-building." />
+  <meta name="twitter:image"       content="https://toamig.github.io/og-plugins.png" />
+  <meta name="twitter:image:alt"   content="Modular Plugins — Unreal Engine 5" />
 </head>
 <body>
 
@@ -98,6 +111,7 @@ const statusMeta: Record<Plugin['status'], { label: string; color: string }> = {
 
   <!-- ── Hero ─────────────────────────────────────────────────────────── -->
   <section class="hero">
+    <canvas id="hero-circuits" aria-hidden="true"></canvas>
     <p class="eyebrow">Unreal Engine 5</p>
     <h1>Plugins</h1>
     <p class="sub">Production-grade tools for world-building, combat systems, and pipeline automation.</p>
@@ -137,6 +151,166 @@ const statusMeta: Record<Plugin['status'], { label: string; color: string }> = {
       })}
     </div>
   </section>
+
+
+<script>
+(function () {
+  function rng(seed) {
+    let s = seed >>> 0;
+    return () => {
+      s ^= s << 13; s ^= s >>> 17; s ^= s << 5;
+      return (s >>> 0) / 4294967296;
+    };
+  }
+
+  const canvas = document.getElementById('hero-circuits');
+  const hero   = canvas.parentElement;
+
+  function draw() {
+    const W = hero.offsetWidth;
+    const H = hero.offsetHeight;
+    canvas.width  = W;
+    canvas.height = H;
+
+    const ctx  = canvas.getContext('2d');
+    const rand = rng(6487);
+
+    const STEP   = 26;
+    const OX     = W / 2;
+    const OY     = H * 0.26;   // grid origin — upper hero, where the glow is
+    const FOLD_Y = H * 0.64;   // where the wall surface folds into the floor
+    const R_FOLD = Math.round((FOLD_Y - OY) / STEP); // grid row at the fold
+    const CAM    = 190;        // perspective camera distance — higher = gentler
+    const VS     = 0.52;       // floor vertical scale (< 1 = floor recedes at angle, not straight down)
+
+    // Dual projection: flat wall above fold, perspective floor below
+    function project(c, r) {
+      const flatY = OY + r * STEP;
+      if (flatY <= FOLD_Y) {
+        // Wall — straight H/V
+        return { x: OX + c * STEP, y: flatY };
+      }
+      // Floor — perspective diverging away from centre as depth grows
+      const depth  = r - R_FOLD;                        // steps below the fold
+      const spread = 1 + (depth * STEP) / CAM;          // grows with depth → traces fan outward
+      return {
+        x: OX + c * STEP * spread,
+        y: FOLD_Y + depth * STEP * VS,
+      };
+    }
+
+    // 4 dirs: R / D / L / U
+    const DC      = [ 1,  0, -1,  0];
+    const DR      = [ 0,  1,  0, -1];
+    const REVERSE = [ 2,  3,  0,  1];
+
+    const visited  = new Set();
+    const segments = [];
+    const dots     = [];
+
+    function walk(c, r, dir, energy) {
+      if (energy <= 0) return;
+
+      const steps = 3 + Math.floor(rand() * 7);
+      let pc = c, pr = r, walked = 0;
+
+      for (let i = 0; i < steps; i++) {
+        const nc = pc + DC[dir];
+        const nr = pr + DR[dir];
+        const nk = `${nc},${nr}`;
+        if (visited.has(nk)) break;
+        const sp = project(nc, nr);
+        if (sp.x < -STEP || sp.x > W + STEP || sp.y < -STEP || sp.y > H + STEP) break;
+        visited.add(nk);
+        segments.push({ c1: pc, r1: pr, c2: nc, r2: nr });
+        pc = nc; pr = nr;
+        walked++;
+      }
+
+      if (walked === 0) return;
+
+      const nextEnergy = energy - walked * 2 - rand() * 4;
+      const { x: sx } = project(pc, pr);
+
+      if (nextEnergy < 6) {
+        dots.push({ c: pc, r: pr });
+        return;
+      }
+
+      const distFromCenter = Math.abs(sx - OX) / (W / 2); // 0 = centre, 1 = edge
+      const options = [];
+      for (let d = 0; d < 4; d++) {
+        if (d === REVERSE[dir]) continue;
+        let w = 1;
+        // Strong outward push — near centre gets no boost, edges get heavy boost
+        const goesRight = DC[d] > 0, goesLeft = DC[d] < 0;
+        if (goesRight && sx > OX) w += 1 + Math.round(distFromCenter * 4);
+        if (goesLeft  && sx < OX) w += 1 + Math.round(distFromCenter * 4);
+        if (DR[d] > 0)            w += 1;
+        for (let j = 0; j < w; j++) options.push(d);
+      }
+
+      const nd = options[Math.floor(rand() * options.length)];
+      dots.push({ c: pc, r: pr });
+      walk(pc, pr, nd, nextEnergy);
+
+      // Branch more eagerly and at lower energy threshold
+      if (rand() < 0.55 && nextEnergy > 14) {
+        const others = options.filter(d => d !== nd);
+        if (others.length)
+          walk(pc, pr, others[Math.floor(rand() * others.length)], nextEnergy * 0.6);
+      }
+    }
+
+    // Seeds: cluster around the grid origin
+    const seeds = 20 + Math.floor(rand() * 6);
+    for (let i = 0; i < seeds; i++) {
+      const c = Math.round((rand() - 0.5) * 20);
+      const r = Math.round((rand() - 0.5) * 6);
+      visited.add(`${c},${r}`);
+      walk(c, r, Math.floor(rand() * 4), 95 + rand() * 95);
+    }
+
+    // ── Glow pass ─────────────────────────────────────────────────────────
+    ctx.lineWidth   = 4;
+    ctx.lineCap     = 'round';
+    ctx.strokeStyle = 'rgba(99,102,241,0.07)';
+    ctx.beginPath();
+    for (const s of segments) {
+      const p1 = project(s.c1, s.r1), p2 = project(s.c2, s.r2);
+      ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y);
+    }
+    ctx.stroke();
+
+    // ── Main traces ───────────────────────────────────────────────────────
+    ctx.lineWidth   = 1;
+    ctx.lineCap     = 'square';
+    ctx.strokeStyle = 'rgba(109,112,251,0.30)';
+    ctx.beginPath();
+    for (const s of segments) {
+      const p1 = project(s.c1, s.r1), p2 = project(s.c2, s.r2);
+      ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y);
+    }
+    ctx.stroke();
+
+    // ── Junction dots ─────────────────────────────────────────────────────
+    for (const d of dots) {
+      const p = project(d.c, d.r);
+      ctx.fillStyle = 'rgba(129,140,248,0.18)';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 4.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(160,168,255,0.65)';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 1.8, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  draw();
+  window.addEventListener('resize', draw);
+})();
+</script>
 
 </body>
 </html>
@@ -182,10 +356,35 @@ body {
 
 /* ── Hero ────────────────────────────────────────────────────────────── */
 .hero {
+  position: relative;
   padding: 120px 24px 56px;
   text-align: center;
   background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(99,102,241,.1) 0%, transparent 70%);
   border-bottom: 1px solid rgba(255,255,255,.05);
+  overflow: hidden;
+}
+
+#hero-circuits {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0;
+  animation: circuits-fadein 1.2s ease forwards;
+  -webkit-mask-image: linear-gradient(to bottom, black 35%, transparent 92%);
+  mask-image: linear-gradient(to bottom, black 35%, transparent 92%);
+}
+
+@keyframes circuits-fadein {
+  to { opacity: 1; }
+}
+
+.hero .eyebrow,
+.hero h1,
+.hero .sub {
+  position: relative;
+  z-index: 1;
 }
 
 .eyebrow {
