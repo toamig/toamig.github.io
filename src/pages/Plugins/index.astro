@@ -274,7 +274,7 @@ const statusMeta: Record<Plugin['status'], { label: string; color: string }> = {
     // ── Glow pass ─────────────────────────────────────────────────────────
     ctx.lineWidth   = 4;
     ctx.lineCap     = 'round';
-    ctx.strokeStyle = 'rgba(99,102,241,0.07)';
+    ctx.strokeStyle = 'rgba(99,102,241,0.05)';
     ctx.beginPath();
     for (const s of segments) {
       const p1 = project(s.c1, s.r1), p2 = project(s.c2, s.r2);
@@ -285,7 +285,7 @@ const statusMeta: Record<Plugin['status'], { label: string; color: string }> = {
     // ── Main traces ───────────────────────────────────────────────────────
     ctx.lineWidth   = 1;
     ctx.lineCap     = 'square';
-    ctx.strokeStyle = 'rgba(109,112,251,0.30)';
+    ctx.strokeStyle = 'rgba(109,112,251,0.22)';
     ctx.beginPath();
     for (const s of segments) {
       const p1 = project(s.c1, s.r1), p2 = project(s.c2, s.r2);
@@ -300,11 +300,21 @@ const statusMeta: Record<Plugin['status'], { label: string; color: string }> = {
       ctx.beginPath();
       ctx.arc(p.x, p.y, 4.5, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillStyle = 'rgba(160,168,255,0.65)';
+      ctx.fillStyle = 'rgba(160,168,255,0.50)';
       ctx.beginPath();
       ctx.arc(p.x, p.y, 1.8, 0, Math.PI * 2);
       ctx.fill();
     }
+
+    // ── Radial centre fade — dissolves wires behind title/description ──────
+    ctx.globalCompositeOperation = 'destination-out';
+    const radial = ctx.createRadialGradient(OX, OY, W * 0.04, OX, OY, W * 0.38);
+    radial.addColorStop(0,    'rgba(0,0,0,0.68)');
+    radial.addColorStop(0.25, 'rgba(0,0,0,0)');
+    radial.addColorStop(1,    'rgba(0,0,0,0)');
+    ctx.fillStyle = radial;
+    ctx.fillRect(0, 0, W, H);
+    ctx.globalCompositeOperation = 'source-over';
   }
 
   draw();
