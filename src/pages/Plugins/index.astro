@@ -12,10 +12,17 @@ interface Plugin {
   fabUrl: string | null;
 }
 
-const plugins: Plugin[] = [
+const STATUS_ORDER: Record<Plugin['status'], number> = {
+  'live': 0,
+  'pre-launch': 1,
+  'in-development': 2,
+  'coming-soon': 3,
+};
+
+const plugins: Plugin[] = ([
   {
     name: 'Cascade Combat System',
-    tagline: 'Node-based combo trees, GAS integration, and data-driven melee — in one plugin.',
+    tagline: 'Branching combo trees built on GAS — input-agnostic, damage-agnostic, and multiplayer-ready without writing replication code.',
     version: '1.0',
     logo: '/plugins/cascadecombatsystem/CascadeCombatSystem.png',
     cover: '/plugins/cascadecombatsystem/CascadeCombatSystemCover.png',
@@ -27,7 +34,7 @@ const plugins: Plugin[] = [
   },
   {
     name: 'WorldSweep',
-    tagline: 'Batch scripting for UE5 World Partition — sweep entire maps, cell by cell.',
+    tagline: 'Batch scripting for any UE5 world — sweep World Partition, Streaming Levels, or flat maps cell by cell.',
     version: '1.0',
     logo: '/plugins/worldsweep/WorldSweep.png',
     cover: '/plugins/worldsweep/WorldSweepCover.png',
@@ -51,7 +58,7 @@ const plugins: Plugin[] = [
   },
   {
     name: 'GearFlow',
-    tagline: 'Modular inventory, crafting & equipment for UE5 — fragment-based items, multiplayer-ready out of the box.',
+    tagline: 'Modular inventory, crafting & equipment for UE5 — fragment-free data assets, tag-driven slots, multiplayer-ready out of the box.',
     version: '1.0',
     logo: '/plugins/gearflow/GearFlow.png',
     cover: '/plugins/gearflow/GearFlowCover.png',
@@ -61,7 +68,11 @@ const plugins: Plugin[] = [
     docsUrl: '/Plugins/GearFlow',
     fabUrl: null,
   },
-];
+] as Plugin[]).sort((a, b) => {
+  const s = STATUS_ORDER[a.status] - STATUS_ORDER[b.status];
+  if (s !== 0) return s;
+  return (b.docsUrl ? 1 : 0) - (a.docsUrl ? 1 : 0);
+});
 
 const statusMeta: Record<Plugin['status'], { label: string; color: string }> = {
   live:             { label: 'Live on Fab',     color: '#22c55e' },

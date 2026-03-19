@@ -3,8 +3,8 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
 // Colors from logo: gold #f0aa22 (gear/coins), deep amber #c47c0a (frame)
 ---
 <PluginLayout
-  title="GearFlow — Modular Inventory & Crafting Plugin for UE5"
-  description="A fully modular inventory, crafting, and equipment system for Unreal Engine 5. Data-driven items, recipe graphs, and gear slots — multiplayer-ready and extensible per project."
+  title="GearFlow — Modular Inventory, Equipment & Crafting Plugin for UE5"
+  description="A fully modular inventory, equipment, and crafting system for Unreal Engine 5. Data-driven items with opt-in fragments, flat recipe data assets, and tag-driven gear slots — multiplayer-ready and extensible per project."
   pluginName="GearFlow"
   version="1.0"
   coverImage="/plugins/gearflow/GearFlowCover.png"
@@ -64,7 +64,7 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>GearFlow</strong> is a modular inventory, equipment, and crafting framework for Unreal Engine 5. Items are <strong>UGearItemDataAsset</strong> data assets — flat, self-contained definitions with slot tags that declare where they can be stored or equipped. There is no fragment system and no base class to subclass for new item types; a sword is an asset with a name, icon, and an <code>AcceptedSlotTypes</code> tag container. Nothing more is allocated.
+      <strong>GearFlow</strong> is a modular inventory, equipment, and crafting framework for Unreal Engine 5. Items are <strong>UGearItemDefinition</strong> data assets — a small core of flat fields (name, description, icon) plus an opt-in <strong>Fragments</strong> array. Each fragment owns one concern: stacking rules live on <code>UGearStackFragment</code>, equipment slot data on <code>UGearEquipmentFragment</code>, purchase cost on <code>UGearCostFragment</code>, and world pickup visuals on <code>UGearPickupFragment</code>. A simple sword asset carries only the fragments it actually needs — nothing more is allocated.
     </p>
     <p class="doc-p">
       Three storage components — <strong>Inventory</strong>, <strong>Equipment</strong>, and <strong>Wallet</strong> — extend a shared <strong>UGearStorageComponent</strong> base that owns the replicated slot array and the full Add/Remove/Query API. A world-facing layer of pickup actors, loot tables, and a unified <strong>TransferItem</strong> model covers every item-movement pattern without custom code. GAS is optional.
@@ -75,8 +75,8 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
         <div class="feature-icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
         </div>
-        <p class="feature-title">Fragment-Free Items</p>
-        <p class="feature-desc">Every item is a plain UPrimaryDataAsset. No fragment composition, no allocating sub-objects you don't need — just properties on the asset.</p>
+        <p class="feature-title">Fragment System</p>
+        <p class="feature-desc">Item behaviour is composed via opt-in fragments — stacking, equipment slots, cost, and world pickups each live on their own fragment class. Add only what each item needs; nothing extra is allocated.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">
@@ -118,14 +118,14 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </div>
         <p class="feature-title">Equipment Slots</p>
-        <p class="feature-desc">Tag-driven named gear slots. Items declare accepted slot types; the Equipment Component matches and spawns the visual actor when equipped.</p>
+        <p class="feature-desc">Tag-driven named gear slots. Items carry a <code>UGearEquipmentFragment</code> that declares accepted slot types and an optional visual actor class; the Equipment Component matches and spawns it on equip.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
         </div>
         <p class="feature-title">World Pickup Actors</p>
-        <p class="feature-desc">AGearPickupActor async-loads the item mesh, auto-picks up on overlap, and supports Timed or Persistent lifetimes. Spawn via UGearFunctionLibrary::DropItem.</p>
+        <p class="feature-desc">Items with a <code>UGearPickupFragment</code> can be dropped into the world. <code>UGearFunctionLibrary::DropItem</code> spawns the configured pickup actor class, auto-picks up on overlap, and supports Timed or Persistent lifetimes.</p>
       </div>
     </div>
 
@@ -133,7 +133,7 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
       <span class="callout-icon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       </span>
-      <span>GearFlow does not require the Gameplay Ability System. It integrates well with GAS — the Equipment Component's <strong>EquippedVisualClass</strong> and the optional <strong>EquipmentRule</strong> object are GAS-friendly extension points — but GAS is entirely optional.</span>
+      <span>GearFlow does not require the Gameplay Ability System. It integrates well with GAS — the optional <strong>EquipmentRule</strong> object and custom fragment subclasses are natural GAS extension points — but GAS is entirely optional.</span>
     </div>
   </section>
 
@@ -166,8 +166,8 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
       <div class="step">
         <span class="step-num">3</span>
         <div class="step-body">
-          <p class="step-title">Create an Item Data Asset</p>
-          <p class="step-desc">Right-click in the Content Browser and select <strong>GearFlow → Item Data Asset</strong>. Open the asset and set <strong>DisplayName</strong>, <strong>Icon</strong>, and <strong>AcceptedSlotTypes</strong> (the Gameplay Tags that declare which storage slots can accept this item).</p>
+          <p class="step-title">Create an Item Definition</p>
+          <p class="step-desc">Right-click in the Content Browser and select <strong>GearFlow → Item Definition</strong>. Open the asset and set <strong>DisplayName</strong> and <strong>Icon</strong>. Add fragments to the <strong>Fragments</strong> array as needed — for example, a <code>UGearEquipmentFragment</code> to make the item equippable, or a <code>UGearStackFragment</code> to allow stacking.</p>
         </div>
       </div>
       <div class="step">
@@ -181,7 +181,7 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
         <span class="step-num">5</span>
         <div class="step-body">
           <p class="step-title">Add an item</p>
-          <p class="step-desc">Call <code>AddItem(ItemDataAsset, Count)</code> on the component from the server. The item fills existing stacks first, then creates new slots. Replication to clients is automatic — no extra RPC code needed.</p>
+          <p class="step-desc">Call <code>AddItem(ItemDefinition, Count)</code> on the component from the server. The item fills existing stacks first (for stackable items), then creates new slots. Replication to clients is automatic — no extra RPC code needed.</p>
         </div>
       </div>
     </div>
@@ -197,7 +197,7 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>UGearItemDataAsset</strong> extends <code>UPrimaryDataAsset</code> and is the immutable definition for an item type. It is never modified at runtime — it is the template from which instances are created. All properties are set in the editor and loaded on demand via soft references.
+      <strong>UGearItemDefinition</strong> extends <code>UPrimaryDataAsset</code> and is the immutable definition for an item type. It is never modified at runtime — it is the template from which instances are created. A small set of flat fields is present on every item; all optional behaviour is added via the <strong>Fragments</strong> array.
     </p>
 
     <table class="prop-table">
@@ -221,37 +221,59 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
           <td class="prop-desc">Inventory slot icon. Soft reference — loaded on demand, not held in memory when the item is not displayed.</td>
         </tr>
         <tr>
-          <td class="prop-name">Mesh</td>
-          <td class="prop-type">TSoftObjectPtr&lt;UStaticMesh&gt;</td>
-          <td class="prop-desc">Optional world mesh used by the pickup actor. Async-loaded when the pickup spawns.</td>
-        </tr>
-        <tr>
-          <td class="prop-name">AcceptedSlotTypes</td>
-          <td class="prop-type">FGameplayTagContainer</td>
-          <td class="prop-desc">Tags matched against a slot's <code>SlotFilter</code>. An item fits a slot when at least one tag in this container matches the slot's filter. An empty slot filter accepts anything.</td>
-        </tr>
-        <tr>
-          <td class="prop-name">bStackable</td>
-          <td class="prop-type">bool</td>
-          <td class="prop-desc">Whether multiple units of this item share one slot.</td>
-        </tr>
-        <tr>
-          <td class="prop-name">MaxStackSize</td>
-          <td class="prop-type">int32</td>
-          <td class="prop-desc">Maximum units per slot. Treated as 1 when <code>bStackable</code> is false.</td>
-        </tr>
-        <tr>
-          <td class="prop-name">Cost</td>
-          <td class="prop-type">TMap&lt;FGameplayTag, int32&gt;</td>
-          <td class="prop-desc">Optional currency cost expressed as tag → amount pairs. Used by <code>TransferItem</code> when a wallet component is provided — the transfer fails if the wallet cannot cover all entries.</td>
-        </tr>
-        <tr>
-          <td class="prop-name">EquippedVisualClass</td>
-          <td class="prop-type">TSoftClassPtr&lt;AActor&gt;</td>
-          <td class="prop-desc">Actor class spawned and attached to the character when this item is equipped via UGearEquipmentComponent (e.g. a weapon actor). Replicated to all clients.</td>
+          <td class="prop-name">Fragments</td>
+          <td class="prop-type">TArray&lt;UGearItemFragment*&gt;</td>
+          <td class="prop-desc">Instanced fragment objects that attach optional behaviour to this item — stacking, equipment slots, cost, pickup visuals, or any custom fragment defined in your project.</td>
         </tr>
       </tbody>
     </table>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Fragment Types</h3>
+      <p class="doc-p" style="margin-bottom:12px">Each fragment is an instanced <code>UGearItemFragment</code> subclass added to the <strong>Fragments</strong> array in the editor. The absence of a fragment means the item simply does not have that capability — no stub code, no null-checks on unused properties.</p>
+
+      <table class="prop-table">
+        <thead>
+          <tr><th>Fragment Class</th><th>Property</th><th>Type</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="prop-name" rowspan="1">UGearStackFragment</td>
+            <td class="prop-name">MaxStackSize</td>
+            <td class="prop-type">int32</td>
+            <td class="prop-desc">Maximum units allowed per inventory slot. Minimum 2. Absence of this fragment means the item is non-stackable — each unit gets its own instance.</td>
+          </tr>
+          <tr>
+            <td class="prop-name" rowspan="2">UGearEquipmentFragment</td>
+            <td class="prop-name">AcceptedSlotTypes</td>
+            <td class="prop-type">FGameplayTagContainer</td>
+            <td class="prop-desc">Tags matched against a slot's <code>SlotFilter</code>. An item fits a slot when at least one tag matches. Absence of this fragment means the item cannot be equipped.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">EquippedVisualClass</td>
+            <td class="prop-type">TSoftClassPtr&lt;AActor&gt;</td>
+            <td class="prop-desc">Actor class spawned and attached to the character when this item is equipped. Null means no visual is spawned. Replicated to all clients.</td>
+          </tr>
+          <tr>
+            <td class="prop-name" rowspan="1">UGearCostFragment</td>
+            <td class="prop-name">Cost</td>
+            <td class="prop-type">TMap&lt;FGameplayTag, int32&gt;</td>
+            <td class="prop-desc">Currency tag → amount pairs. Used by <code>TransferItem</code> when a wallet is provided — the transfer fails atomically if the wallet cannot cover all entries. Absence means the item transfers freely.</td>
+          </tr>
+          <tr>
+            <td class="prop-name" rowspan="2">UGearPickupFragment</td>
+            <td class="prop-name">PickupActorClass</td>
+            <td class="prop-type">TSoftClassPtr&lt;AGearPickupActor&gt;</td>
+            <td class="prop-desc">Actor class spawned when this item is dropped. Null uses the built-in <code>AGearStaticMeshPickupActor</code>. Override with a project subclass for custom visuals or behaviour. Absence of this fragment means the item cannot be dropped.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">WorldMesh</td>
+            <td class="prop-type">TSoftObjectPtr&lt;UStaticMesh&gt;</td>
+            <td class="prop-desc">Mesh applied to <code>AGearStaticMeshPickupActor</code> when dropped. Ignored if <code>PickupActorClass</code> is set to a custom actor.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </section>
 
   <!-- ── Item Instance ─────────────────────────────────────────── -->
@@ -264,7 +286,7 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>UGearItemInstance</strong> is the runtime handle for an item occupying a slot. It holds a pointer to the immutable data asset. Non-stackable items have one instance per unit; stackable items share one instance per slot with the count tracked separately in the slot struct. Instances are owned and replicated by the storage component — never construct one manually, always interact through the component API. The class is Blueprint-subclassable for per-item state such as durability or enchantments.
+      <strong>UGearItemInstance</strong> is the runtime handle for an item occupying a slot. It holds a pointer to the immutable definition. Stackable items share one instance per slot with the count tracked separately in the slot struct; non-stackable items have one instance per unit so each can carry individual state. Instances are owned and replicated by the storage component — never construct one manually, always interact through the component API. The class is Blueprint-subclassable for per-item state such as durability or enchantments.
     </p>
 
     <table class="prop-table">
@@ -273,8 +295,8 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
       </thead>
       <tbody>
         <tr>
-          <td class="prop-name">DataAsset</td>
-          <td class="prop-type">UGearItemDataAsset*</td>
+          <td class="prop-name">Definition</td>
+          <td class="prop-type">UGearItemDefinition*</td>
           <td class="prop-desc">The definition this instance was created from. Replicated.</td>
         </tr>
       </tbody>
@@ -286,19 +308,24 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
       </thead>
       <tbody>
         <tr>
-          <td class="prop-name">GetDataAsset()</td>
-          <td class="prop-type">UGearItemDataAsset*</td>
+          <td class="prop-name">GetDefinition()</td>
+          <td class="prop-type">UGearItemDefinition*</td>
           <td class="prop-desc">Inline getter for the definition.</td>
         </tr>
         <tr>
           <td class="prop-name">IsStackable()</td>
           <td class="prop-type">bool</td>
-          <td class="prop-desc">Whether this item can stack, forwarded from the data asset.</td>
+          <td class="prop-desc">Whether this item can stack — true when the definition carries a <code>UGearStackFragment</code>.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">FindFragmentByClass(FragmentClass)</td>
+          <td class="prop-type">UGearItemFragment*</td>
+          <td class="prop-desc">Convenience passthrough to <code>Definition->FindFragmentByClass</code>. Use in Blueprint graphs to access fragment data from an instance.</td>
         </tr>
         <tr>
           <td class="prop-name">OnInstanceCreated()</td>
           <td class="prop-type">Blueprint event</td>
-          <td class="prop-desc">Called after <code>DataAsset</code> is assigned. Override to initialize per-instance state such as randomized durability on first creation.</td>
+          <td class="prop-desc">Called once after <code>Definition</code> is assigned. Override to initialize per-instance state such as randomized durability on first creation.</td>
         </tr>
         <tr>
           <td class="prop-name">GetInstanceSaveData(out TMap&lt;FString,FString&gt;)</td>
@@ -337,7 +364,7 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
           <tr>
             <td class="prop-name">SlotFilter</td>
             <td class="prop-type">FGameplayTag</td>
-            <td class="prop-desc">Matched against the item's <code>AcceptedSlotTypes</code>. An empty tag accepts any item.</td>
+            <td class="prop-desc">Matched against the item's <code>UGearEquipmentFragment.AcceptedSlotTypes</code>. An empty tag accepts any item.</td>
           </tr>
           <tr>
             <td class="prop-name">Instance</td>
@@ -370,21 +397,21 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
           <tr><th>Function</th><th>Description</th></tr>
         </thead>
         <tbody>
-          <tr><td class="prop-name">AddItem(DataAsset, Count)</td><td class="prop-desc">Adds Count units; fills existing stacks first, then new slots. Returns the amount actually added. Server only.</td></tr>
+          <tr><td class="prop-name">AddItem(Definition, Count)</td><td class="prop-desc">Adds Count units; fills existing stacks first, then new slots. Returns the amount actually added. Server only.</td></tr>
           <tr><td class="prop-name">AddItemInstance(Instance)</td><td class="prop-desc">Places a pre-created instance into the first available matching slot. Server only.</td></tr>
-          <tr><td class="prop-name">RemoveItem(DataAsset, Count)</td><td class="prop-desc">Removes Count units by item type. Returns false if insufficient. Server only.</td></tr>
+          <tr><td class="prop-name">RemoveItem(Definition, Count)</td><td class="prop-desc">Removes Count units by item type. Returns false if insufficient. Server only.</td></tr>
           <tr><td class="prop-name">RemoveItemInstance(Instance)</td><td class="prop-desc">Removes a specific instance. Server only.</td></tr>
           <tr><td class="prop-name">ClearAllItems()</td><td class="prop-desc">Removes all items from all slots. Server only.</td></tr>
-          <tr><td class="prop-name">RestoreSlotState(SlotIndex, DataAsset, Count)</td><td class="prop-desc">Reconstructs a slot from save data without going through the normal add path.</td></tr>
+          <tr><td class="prop-name">RestoreSlotState(SlotIndex, Definition, Count)</td><td class="prop-desc">Reconstructs a slot from save data without going through the normal add path.</td></tr>
           <tr><td class="prop-name">SwapSlots(IndexA, IndexB)</td><td class="prop-desc">Swaps two slots within this component.</td></tr>
           <tr><td class="prop-name">SwapSlotsBetween(IndexA, OtherComponent, IndexB)</td><td class="prop-desc">Swaps a slot in this component with a slot in another component.</td></tr>
           <tr><td class="prop-name">ConsolidateStacks()</td><td class="prop-desc">Merges split stacks of the same item where possible, freeing slots.</td></tr>
-          <tr><td class="prop-name">GetItemCount(DataAsset)</td><td class="prop-desc">Returns total units of an item across all slots.</td></tr>
-          <tr><td class="prop-name">HasItem(DataAsset, Count)</td><td class="prop-desc">Returns true if at least Count units of the item are present.</td></tr>
-          <tr><td class="prop-name">CanAddItem(DataAsset, Count)</td><td class="prop-desc">Returns true if there is room to add Count units without losing any.</td></tr>
-          <tr><td class="prop-name">GetItemInstance(DataAsset)</td><td class="prop-desc">Returns the first instance of the given item type, or nullptr.</td></tr>
+          <tr><td class="prop-name">GetItemCount(Definition)</td><td class="prop-desc">Returns total units of an item across all slots.</td></tr>
+          <tr><td class="prop-name">HasItem(Definition, Count)</td><td class="prop-desc">Returns true if at least Count units of the item are present.</td></tr>
+          <tr><td class="prop-name">CanAddItem(Definition, Count)</td><td class="prop-desc">Returns true if there is room to add Count units without losing any.</td></tr>
+          <tr><td class="prop-name">GetItemInstance(Definition)</td><td class="prop-desc">Returns the first instance of the given item type, or nullptr.</td></tr>
           <tr><td class="prop-name">GetSlots()</td><td class="prop-desc">Returns all slots as an array snapshot. Safe to call on client.</td></tr>
-          <tr><td class="prop-name">FindAvailableSlotIndex(DataAsset)</td><td class="prop-desc">Returns the index of the first available slot for the item, or -1 if none.</td></tr>
+          <tr><td class="prop-name">FindAvailableSlotIndex(Definition)</td><td class="prop-desc">Returns the index of the first available slot for the item, or -1 if none.</td></tr>
         </tbody>
       </table>
     </div>
@@ -456,7 +483,7 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
       <span class="callout-icon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       </span>
-      <span>All mutating functions from <code>UGearStorageComponent</code> — <code>AddItem</code>, <code>RemoveItem</code>, <code>SwapSlots</code> — are available on this component. Calling them from a client has no effect; always call from the server or via a Server RPC.</span>
+      <span>All mutating functions from <code>UGearStorageComponent</code> — <code>AddItem</code>, <code>RemoveItem</code>, <code>SwapSlots</code> — are available on this component. Calling them from a non-authority client has no effect; always call from the server or use the provided Server RPCs (<code>Server_AddItem</code>, <code>Server_RemoveItem</code>).</span>
     </div>
   </section>
 
@@ -470,7 +497,7 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>UGearEquipmentComponent</strong> extends <code>UGearStorageComponent</code> and manages named gear slots — one item per slot. When an item is equipped, the component spawns the item's <code>EquippedVisualClass</code> actor server-side, attaches it to the specified socket on the <code>VisualAttachTarget</code>, and replicates the visual actor to all clients. Unequipping destroys the visual actor and returns the instance to a caller-specified storage component.
+      <strong>UGearEquipmentComponent</strong> extends <code>UGearStorageComponent</code> and manages named gear slots — one item per slot. Only items that carry a <code>UGearEquipmentFragment</code> can be equipped; the fragment's <code>AcceptedSlotTypes</code> is matched against the slot tag. When an item is equipped, the component spawns the fragment's <code>EquippedVisualClass</code> actor server-side, attaches it to the specified socket on <code>VisualAttachTarget</code>, and replicates the visual actor to all clients. Unequipping destroys the visual actor.
     </p>
 
     <div class="doc-subsection">
@@ -511,16 +538,16 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
           <tr><th>Function</th><th>Description</th></tr>
         </thead>
         <tbody>
-          <tr><td class="prop-name">EquipItem(DataAsset, SlotTag)</td><td class="prop-desc">Equips by data asset; creates an instance. Unequips the current occupant if needed. Server only.</td></tr>
+          <tr><td class="prop-name">EquipItem(Definition, SlotTag)</td><td class="prop-desc">Equips by item definition; creates a new instance. Requires a <code>UGearEquipmentFragment</code> with a matching slot tag. Unequips the current occupant if needed. Server only.</td></tr>
           <tr><td class="prop-name">EquipItemInstance(Instance, SlotTag)</td><td class="prop-desc">Equips a pre-existing instance into the specified slot. Server only.</td></tr>
           <tr><td class="prop-name">UnequipSlot(SlotTag)</td><td class="prop-desc">Removes the item from the slot; does not destroy the instance. Server only.</td></tr>
-          <tr><td class="prop-name">UnequipItem(DataAsset)</td><td class="prop-desc">Finds and unequips the first slot holding this item type. Server only.</td></tr>
+          <tr><td class="prop-name">UnequipItem(Definition)</td><td class="prop-desc">Finds and unequips the first slot holding this item type. Server only.</td></tr>
           <tr><td class="prop-name">UnequipItemInstance(Instance)</td><td class="prop-desc">Unequips a specific instance. Server only.</td></tr>
-          <tr><td class="prop-name">GetItemInSlot(SlotTag)</td><td class="prop-desc">Returns the <code>UGearItemDataAsset*</code> in that slot, or nullptr if empty.</td></tr>
+          <tr><td class="prop-name">GetItemInSlot(SlotTag)</td><td class="prop-desc">Returns the <code>UGearItemDefinition*</code> in that slot, or nullptr if empty.</td></tr>
           <tr><td class="prop-name">GetItemInstanceInSlot(SlotTag)</td><td class="prop-desc">Returns the <code>UGearItemInstance*</code> in that slot, or nullptr.</td></tr>
           <tr><td class="prop-name">IsSlotOccupied(SlotTag)</td><td class="prop-desc">Returns true if the slot has an item.</td></tr>
-          <tr><td class="prop-name">GetEquippedItems()</td><td class="prop-desc">Returns a <code>TMap&lt;FGameplayTag, UGearItemDataAsset*&gt;</code> of all occupied slots.</td></tr>
-          <tr><td class="prop-name">GetSlotVisual(SlotTag)</td><td class="prop-desc">Returns the live spawned visual actor for that slot, or nullptr if the slot is empty or the item has no visual class.</td></tr>
+          <tr><td class="prop-name">GetEquippedItems()</td><td class="prop-desc">Returns a <code>TMap&lt;FGameplayTag, UGearItemDefinition*&gt;</code> of all occupied slots.</td></tr>
+          <tr><td class="prop-name">GetSlotVisual(SlotTag)</td><td class="prop-desc">Returns the live spawned visual actor for that slot, or nullptr if the slot is empty or the item's <code>UGearEquipmentFragment</code> has no <code>EquippedVisualClass</code>.</td></tr>
         </tbody>
       </table>
     </div>
@@ -680,7 +707,7 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      A <strong>UGearCraftingRecipeDataAsset</strong> declares what is consumed and what is produced. Items are referenced by direct data asset pointer — not by tag — so renaming or moving assets never breaks recipe references. Multiple outputs allow byproduct modeling (e.g. smelting ore yields ingots and slag).
+      A <strong>UGearCraftingRecipeDataAsset</strong> declares what is consumed and what is produced. Items are referenced by direct <code>UGearItemDefinition</code> pointer — not by tag — so renaming or moving assets never breaks recipe references. Multiple outputs allow byproduct modelling (e.g. smelting ore yields ingots and slag).
     </p>
 
     <table class="prop-table">
@@ -723,7 +750,7 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
         <tr>
           <td class="prop-name">Entries</td>
           <td class="prop-type">TArray&lt;FGearLootEntry&gt;</td>
-          <td class="prop-desc">Each entry has: <strong>Item</strong> (UGearItemDataAsset*), <strong>Weight</strong> (float), <strong>MinQuantity</strong> (int32), <strong>MaxQuantity</strong> (int32). Higher weight increases the chance of being selected on each roll.</td>
+          <td class="prop-desc">Each entry has: <strong>Item</strong> (UGearItemDefinition*), <strong>Weight</strong> (float), <strong>MinQuantity</strong> (int32), <strong>MaxQuantity</strong> (int32). Higher weight increases the chance of being selected on each roll.</td>
         </tr>
         <tr>
           <td class="prop-name">RollCount</td>
@@ -744,7 +771,7 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>AGearPickupActor</strong> is the world-space item drop. It async-loads the item's mesh when spawned, triggers pickup on overlap or on an explicit call, and supports configurable lifetimes. Spawn it via <code>UGearFunctionLibrary::DropItem</code> or place it in the editor and call <code>InitializePickup</code> at BeginPlay.
+      <strong>AGearPickupActor</strong> is the world-space item drop. The pickup actor class and world mesh are configured per item via <code>UGearPickupFragment</code>. It triggers pickup on overlap or on an explicit call and supports configurable lifetimes. Spawn it via <code>UGearFunctionLibrary::DropItem</code> — items without a <code>UGearPickupFragment</code> cannot be dropped. Place a subclass in the editor and call <code>InitializePickup</code> at BeginPlay for pre-placed world pickups.
     </p>
 
     <div class="doc-subsection">
@@ -795,7 +822,7 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
           <tr><th>Function</th><th>Description</th></tr>
         </thead>
         <tbody>
-          <tr><td class="prop-name">InitializePickup(DataAsset, Count)</td><td class="prop-desc">Creates a new instance from the data asset and sets it on the actor. Use when spawning fresh drops.</td></tr>
+          <tr><td class="prop-name">InitializePickup(Definition, Count)</td><td class="prop-desc">Creates a new instance from the definition and sets it on the actor. Use when spawning fresh drops.</td></tr>
           <tr><td class="prop-name">InitializePickupFromInstance(Instance, Count)</td><td class="prop-desc">Uses a pre-created instance — preserves per-instance state such as durability or enchantments when dropping equipped items.</td></tr>
           <tr><td class="prop-name">Pickup(Instigator)</td><td class="prop-desc">Adds the item to the first <code>UGearStorageComponent</code> found on the Instigator actor. Destroys the pickup on success.</td></tr>
         </tbody>
@@ -856,19 +883,19 @@ UGearFunctionLibrary::DropItem(WorldContext, PlayerInventory, Item, 1, DropTrans
       <tbody>
         <tr>
           <td class="prop-name">TransferItem(From, To, Item, Count, Wallet)</td>
-          <td class="prop-desc">Moves Count units from <code>From</code> to <code>To</code>. If <code>Wallet</code> is provided, deducts the item's <code>Cost</code> map first — the transfer fails atomically if the wallet cannot cover all currencies. Server only.</td>
+          <td class="prop-desc">Moves Count units from <code>From</code> to <code>To</code>. If <code>Wallet</code> is provided and the item carries a <code>UGearCostFragment</code>, deducts the cost map first — the transfer fails atomically if the wallet cannot cover all currencies. Server only.</td>
         </tr>
         <tr>
           <td class="prop-name">PopulateFromLootTable(Storage, LootTable)</td>
-          <td class="prop-desc">Rolls the loot table and adds results to <code>Storage</code>. Returns an array of the items actually added.</td>
+          <td class="prop-desc">Rolls the loot table and adds results to <code>Storage</code>. Returns the number of items actually added.</td>
         </tr>
         <tr>
           <td class="prop-name">DropItem(WorldContext, Storage, Item, Count, Transform)</td>
-          <td class="prop-desc">Removes the item from <code>Storage</code> and spawns an <code>AGearPickupActor</code> at <code>Transform</code>.</td>
+          <td class="prop-desc">Removes the item from <code>Storage</code> and spawns a pickup actor at <code>Transform</code>. The actor class is determined by the item's <code>UGearPickupFragment</code>. Returns nullptr if the item has no <code>UGearPickupFragment</code>.</td>
         </tr>
         <tr>
           <td class="prop-name">DropItemInstance(WorldContext, Storage, Instance, Transform)</td>
-          <td class="prop-desc">Drops a specific instance — preserves per-instance state (durability, enchantments, etc.) on the spawned pickup actor.</td>
+          <td class="prop-desc">Drops a specific instance — preserves per-instance state (durability, enchantments, etc.) on the spawned pickup actor. Returns nullptr if the item has no <code>UGearPickupFragment</code>.</td>
         </tr>
       </tbody>
     </table>
