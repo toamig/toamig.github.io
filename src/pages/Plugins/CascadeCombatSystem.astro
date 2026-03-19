@@ -54,6 +54,14 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
       <span class="nav-group-label">Multiplayer</span>
       <a href="#multiplayer">Replication</a>
     </div>
+    <div class="nav-group">
+      <span class="nav-group-label">Weapon</span>
+      <a href="#weapon-actor">Weapon Actor</a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-group-label">Debug</span>
+      <a href="#debug">Debug & Logging</a>
+    </div>
   </nav>
 
   <!-- ── Overview ───────────────────────────────────────────────── -->
@@ -216,6 +224,14 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
           <p class="mode-card-name"><span class="badge badge-green">Conditional Node</span></p>
           <p class="mode-card-desc">Evaluates a set of Gameplay Tags. Routes to a success path if all tags are present, or a failure path if any are missing — enabling state-aware combos.</p>
         </div>
+        <div class="mode-card">
+          <p class="mode-card-name"><span class="badge badge-amber">Loop Node</span></p>
+          <p class="mode-card-desc">Routes execution back to an earlier node in the tree. Use for infinitely-repeating combos or capped loops. Configurable <code style="font-family:var(--pl-mono);font-size:12px">MaxIterations</code> (0 = unlimited).</p>
+        </div>
+        <div class="mode-card">
+          <p class="mode-card-name"><span class="badge" style="background:rgba(56,161,105,.12);color:#6bd4a0;border:1px solid rgba(56,161,105,.2)">Random Node</span></p>
+          <p class="mode-card-desc">Picks one child at random using weighted probabilities. Use for unpredictable enemy patterns or randomised finishers. Each entry is a weight + target node pair.</p>
+        </div>
       </div>
     </div>
 
@@ -277,11 +293,13 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
       <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
       <tbody>
         <tr><td class="prop-name">ComboTag</td><td class="prop-type">GameplayTag</td><td class="prop-desc">Unique identifier for this combo. Used to register, query, and end it at runtime. Example: <code style="font-family:var(--pl-mono);font-size:12px">Combo.LightAttack.Basic</code>.</td></tr>
+        <tr><td class="prop-name">DisplayName</td><td class="prop-type">FText</td><td class="prop-desc">Human-readable name shown in debug UI and the Runtime Combo Builder.</td></tr>
         <tr><td class="prop-name">RootNode</td><td class="prop-type">ComboNode</td><td class="prop-desc">The entry point of the combo tree. The first node evaluated when this combo activates.</td></tr>
         <tr><td class="prop-name">RequiredTagsToStart</td><td class="prop-type">TagContainer</td><td class="prop-desc">Gameplay Tags that must be active on the instigator for this combo to be eligible. Use for stance requirements, buffs, or unlock conditions.</td></tr>
         <tr><td class="prop-name">BlockedTags</td><td class="prop-type">TagContainer</td><td class="prop-desc">Gameplay Tags that prevent this combo from starting. Use to block combos during stun, death, or other states.</td></tr>
         <tr><td class="prop-name">Priority</td><td class="prop-type">int32</td><td class="prop-desc">When multiple combos match the same input, higher priority wins. Use to layer contextual overrides on top of default combos.</td></tr>
-        <tr><td class="prop-name">bCanBeCancelled</td><td class="prop-type">bool</td><td class="prop-desc">Whether this combo can be interrupted mid-execution. Disable for unbreakable finisher animations.</td></tr>
+        <tr><td class="prop-name">GlobalTimeout</td><td class="prop-type">float (s)</td><td class="prop-desc">Seconds between combo steps before the combo resets automatically. 0 = no timeout. Overrides per-node GracePeriod for the whole combo.</td></tr>
+        <tr><td class="prop-name">bCanBeInterrupted</td><td class="prop-type">bool</td><td class="prop-desc">Whether this combo can be interrupted mid-execution. Disable for unbreakable finisher animations.</td></tr>
       </tbody>
     </table>
   </section>
@@ -321,6 +339,9 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
           <tr><td class="prop-name">UnregisterCombo</td><td class="prop-desc">Removes a combo by tag. Immediately prevents it from activating on the next input.</td></tr>
           <tr><td class="prop-name">IsComboActive</td><td class="prop-desc">Returns whether a specific combo is currently in-progress for this character.</td></tr>
           <tr><td class="prop-name">EndCombo / CancelCombo</td><td class="prop-desc"><strong>End</strong> waits for the grace period before resetting. <strong>Cancel</strong> immediately stops the combo and its active ability.</td></tr>
+          <tr><td class="prop-name">EndAllCombos</td><td class="prop-desc">Ends all currently active combos on this component gracefully (grace period applies to each).</td></tr>
+          <tr><td class="prop-name">CancelAllCombos</td><td class="prop-desc">Immediately stops all active combos and their abilities.</td></tr>
+          <tr><td class="prop-name">GrantCombatAbilities(CombatSetup)</td><td class="prop-desc">Grants standalone abilities from a CombatSetup asset without registering combo definitions. Use when you want abilities but not combos.</td></tr>
           <tr><td class="prop-name">ApplyHitPause</td><td class="prop-desc">Freezes attacker and/or victim for a short duration on hit impact. Configurable duration and time-dilation factor for slow-motion feel.</td></tr>
           <tr><td class="prop-name">SetAirborneState</td><td class="prop-desc">Manually flags the character as airborne. Use for non-Character actors or custom movement. Call <strong>EnableAirborneTracking</strong> to auto-detect from the Character Movement Component instead.</td></tr>
         </tbody>
@@ -469,6 +490,8 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
         <tr><td class="prop-name">TraceChannel</td><td class="prop-type">Enum</td><td class="prop-desc">Collision channel to query. Match this to your project's hit-response setup.</td></tr>
         <tr><td class="prop-name">HitTags</td><td class="prop-type">TagContainer</td><td class="prop-desc">Tags added to hit data for every hit within this window. Merged with the ability's own HitTags.</td></tr>
         <tr><td class="prop-name">bShowPreviewShapes</td><td class="prop-type">bool</td><td class="prop-desc">Shows a live preview of the trace shape in the animation editor viewport. Essential for lining up windows precisely.</td></tr>
+        <tr><td class="prop-name">bUseWeaponMesh</td><td class="prop-type">bool</td><td class="prop-desc">When enabled, runs the trace on the equipped weapon's mesh (identified by WeaponAttachSocket) instead of the character mesh. Essential for dual-wield setups.</td></tr>
+        <tr><td class="prop-name">WeaponAttachSocket</td><td class="prop-type">FName</td><td class="prop-desc">Socket name used to identify which weapon actor to trace against when bUseWeaponMesh is enabled.</td></tr>
       </tbody>
     </table>
   </section>
@@ -710,6 +733,48 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
     </table>
   </section>
 
+  <!-- ── Weapon Actor ────────────────────────────────────────────── -->
+<section class="doc-section" id="weapon-actor" data-section="weapon-actor">
+  <h2 class="doc-section-title">
+    <span class="section-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+    </span>
+    Weapon Actor
+  </h2>
+  <div class="section-divider"></div>
+  <p class="doc-p">
+    <strong>ACascadeWeaponActor</strong> is a blueprintable base actor that pairs with GearFlow's <code style="font-family:var(--pl-mono);font-size:12.5px">UGearEquipmentComponent</code>. When a weapon item is equipped, GearFlow spawns this actor, attaches it to the configured socket, and Cascade automatically finds the owner's ASC to grant abilities and register combos. There is <strong>no cross-plugin dependency</strong> — GearFlow only knows <code>AActor</code>, and the weapon actor finds the ASC itself via <code>IAbilitySystemInterface</code>.
+  </p>
+  <table class="prop-table">
+    <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td class="prop-name">WeaponMesh</td><td class="prop-type">USkeletalMeshComponent*</td><td class="prop-desc">Optional skeletal mesh component. Subclass and add your own mesh type if preferred.</td></tr>
+      <tr><td class="prop-name">DrawnSocket</td><td class="prop-type">FName</td><td class="prop-desc">Socket the weapon attaches to when drawn. NAME_None to skip re-attachment.</td></tr>
+      <tr><td class="prop-name">SheathSocket</td><td class="prop-type">FName</td><td class="prop-desc">Socket the weapon attaches to when sheathed (holstered).</td></tr>
+      <tr><td class="prop-name">CombatSetup</td><td class="prop-type">UCascadeCombatSetup*</td><td class="prop-desc">Optional. Grants abilities and registers combos on BeginPlay (authority). Revoked on EndPlay — combos and abilities are automatically cleaned up on unequip.</td></tr>
+      <tr><td class="prop-name">EquipEffect</td><td class="prop-type">TSubclassOf&lt;UGameplayEffect&gt;</td><td class="prop-desc">Optional Infinite-duration GE applied as a passive on equip (e.g. stat bonus). Removed automatically on unequip via stored handle.</td></tr>
+    </tbody>
+  </table>
+  <div class="doc-subsection">
+    <h3 class="doc-subsection-title">Functions</h3>
+    <table class="prop-table">
+      <thead><tr><th>Function</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="prop-name">DrawWeapon()</td><td class="prop-desc">Blueprint event. Default re-attaches root component to DrawnSocket. Override for custom draw animations.</td></tr>
+        <tr><td class="prop-name">SheathWeapon()</td><td class="prop-desc">Blueprint event. Default re-attaches to SheathSocket. Override for custom sheath animations.</td></tr>
+        <tr><td class="prop-name">IsDrawn()</td><td class="prop-desc">Returns whether the weapon is currently in the drawn state. Replicated via OnRep_IsDrawn.</td></tr>
+        <tr><td class="prop-name">FindDrawnWeaponMesh(Owner, Socket)</td><td class="prop-desc">Static helper. Finds the drawn weapon actor on Owner and returns its mesh component — used by damage notifies to drive traces on the weapon rather than the character.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout callout-info">
+    <span class="callout-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </span>
+    <span>Point GearFlow's <code style="font-family:var(--pl-mono);font-size:12px">UGearItemDataAsset.EquippedVisualClass</code> to a Blueprint subclass of <strong>ACascadeWeaponActor</strong>. Configure <code>CombatSetup</code> and <code>EquipEffect</code> on the Blueprint. GearFlow handles spawn and attachment; Cascade handles abilities and combos. No plugin code needed in between.</span>
+  </div>
+</section>
+
   <!-- ── Multiplayer ─────────────────────────────────────────────── -->
   <section class="doc-section" id="multiplayer" data-section="multiplayer">
     <h2 class="doc-section-title">
@@ -753,6 +818,55 @@ import PluginLayout from '../../layouts/PluginLayout.astro';
       </div>
     </div>
   </section>
+
+  <!-- ── Debug & Logging ─────────────────────────────────────────── -->
+<section class="doc-section" id="debug" data-section="debug">
+  <h2 class="doc-section-title">
+    <span class="section-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </span>
+    Debug &amp; Logging
+  </h2>
+  <div class="section-divider"></div>
+  <p class="doc-p">Cascade ships dedicated log categories and console variables for diagnosing combat issues without modifying plugin source.</p>
+
+  <div class="doc-subsection">
+    <h3 class="doc-subsection-title">Log Categories</h3>
+    <table class="prop-table">
+      <thead><tr><th>Category</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="prop-name">LogCascadeCombo</td><td class="prop-desc">Combo lifecycle — registration, tree traversal, timeouts, state changes.</td></tr>
+        <tr><td class="prop-name">LogCascadeInput</td><td class="prop-desc">Input adapter activity — binding, press/release routing, buffer events.</td></tr>
+        <tr><td class="prop-name">LogCascadeHit</td><td class="prop-desc">Hit detection — traces, confirmed hits, damage applied.</td></tr>
+        <tr><td class="prop-name">LogCascadeWeapon</td><td class="prop-desc">Weapon actor activity — ability grants, combat setup initialisation, sheath/draw events.</td></tr>
+      </tbody>
+    </table>
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-lang">console</span></div>
+      <pre><span class="code-comment">// Enable verbose combo logging at runtime</span>
+<span class="code-cmd">log</span> <span class="code-val">LogCascadeCombo Verbose</span></pre>
+    </div>
+  </div>
+
+  <div class="doc-subsection">
+    <h3 class="doc-subsection-title">Console Variables</h3>
+    <table class="prop-table">
+      <thead><tr><th>CVar</th><th>Default</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="prop-name">Cascade.Debug.DrawHitShapes</td><td class="prop-type">0</td><td class="prop-desc">Draws the hit detection shapes (capsule/sphere/line/box) from ANS_DamageWindow each tick it is active. Requires a non-shipping build.</td></tr>
+        <tr><td class="prop-name">Cascade.Debug.DrawImpactPoints</td><td class="prop-type">0</td><td class="prop-desc">Draws a sphere at each confirmed impact point and logs the victim actor name.</td></tr>
+        <tr><td class="prop-name">Cascade.Debug.DrawTargetStick</td><td class="prop-type">0</td><td class="prop-desc">Draws the rotation arc applied by ANS_TargetStick each tick, showing the angular delta being applied to the character.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="doc-subsection">
+    <h3 class="doc-subsection-title">Visual Logger</h3>
+    <p class="doc-p">
+      Cascade logs to Unreal's <strong>Visual Logger</strong> for timeline-based replay of combat events. Enable via <strong>Tools → Visual Logger</strong> in the editor. Logged data includes per-tick trace shapes from DamageWindow, hit and impact points, and TargetStick movement deltas — useful for diagnosing hitbox misalignment or rotation issues after the fact.
+    </p>
+  </div>
+</section>
 
 </PluginLayout>
 
