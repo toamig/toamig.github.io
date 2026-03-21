@@ -1,17 +1,19 @@
 ---
 import PluginLayout from '../../layouts/PluginLayout.astro';
+import pluginsData from '../../data/plugins.json';
 // Colors from logo: orange #f07820 (CASCADE text/fire) + electric blue #4ab8f0 (glowing eye)
+const p = pluginsData.find(x => x.name === 'Cascade Combat System')!;
 ---
 <PluginLayout
   title="Cascade Combat System — Modular Multiplayer Combat Framework for UE5"
   description="A node-based combo framework for UE5. Build branching combat sequences, handle any input system, and ship multiplayer-ready combat without writing replication code."
   pluginName="Cascade Combat System"
-  version="1.0"
-  coverImage="/plugins/cascadecombatsystem/CascadeCombatSystemCover.png"
-  logoImage="/plugins/cascadecombatsystem/CascadeCombatSystem.png"
-  fabUrl="#"
-  accent="#d4600a"
-  accentLight="#f07820"
+  version={p.version}
+  coverImage={p.cover}
+  logoImage={p.logo}
+  fabUrl={p.fabUrl ?? '#'}
+  accent={p.accent}
+  accentLight={p.accentLight}
   bg="#090808"
   surface="#100c08"
   surface2="#180f08"

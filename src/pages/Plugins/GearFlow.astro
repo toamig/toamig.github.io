@@ -1,17 +1,19 @@
 ---
 import PluginLayout from '../../layouts/PluginLayout.astro';
+import pluginsData from '../../data/plugins.json';
 // Colors from logo: gold #f0aa22 (gear/coins), deep amber #c47c0a (frame)
+const p = pluginsData.find(x => x.name === 'GearFlow')!;
 ---
 <PluginLayout
   title="GearFlow — Modular Inventory, Equipment & Crafting Plugin for UE5"
   description="A fully modular inventory, equipment, and crafting system for Unreal Engine 5. Data-driven items with opt-in fragments, flat recipe data assets, and tag-driven gear slots — multiplayer-ready and extensible per project."
   pluginName="GearFlow"
-  version="1.0"
-  coverImage="/plugins/gearflow/GearFlowCover.png"
-  logoImage="/plugins/gearflow/GearFlow.png"
-  fabUrl="#"
-  accent="#c47c0a"
-  accentLight="#f0aa22"
+  version={p.version}
+  coverImage={p.cover}
+  logoImage={p.logo}
+  fabUrl={p.fabUrl ?? '#'}
+  accent={p.accent}
+  accentLight={p.accentLight}
   bg="#0a0802"
   surface="#130e04"
   surface2="#1c1508"

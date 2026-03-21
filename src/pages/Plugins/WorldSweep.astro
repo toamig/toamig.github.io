@@ -1,22 +1,18 @@
 ---
 import PluginLayout from '../../layouts/PluginLayout.astro';
-
-// Drop your assets into public/plugins/worldsweep/
-// Colors derived from the WorldSweep logo: cyan crystal + globe palette
-// - cover.png  (Full HD cover image)
-// - logo.png   (Plugin logo)
-// - Set fabUrl once your Fab listing is live
+import pluginsData from '../../data/plugins.json';
+const p = pluginsData.find(x => x.name === 'WorldSweep')!;
 ---
 <PluginLayout
   title="WorldSweep — UE5 Batch Scripting for World Partition"
   description="A batch scripting system for executing custom operations across large UE5 World Partition maps, cell by cell."
   pluginName="WorldSweep"
-  version="1.0"
-  coverImage="/plugins/worldsweep/WorldSweepCover.png"
-  logoImage="/plugins/worldsweep/WorldSweep.png"
-  fabUrl="#"
-  accent="#0e9fd4"
-  accentLight="#22d4f8"
+  version={p.version}
+  coverImage={p.cover}
+  logoImage={p.logo}
+  fabUrl={p.fabUrl ?? '#'}
+  accent={p.accent}
+  accentLight={p.accentLight}
   bg="#060f1a"
   surface="#091522"
   surface2="#0c1e30"
