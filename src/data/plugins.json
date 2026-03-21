@@ -1,0 +1,54 @@
+[
+  {
+    "name": "Cascade Combat System",
+    "tagline": "Branching combo trees built on GAS. Input-agnostic, damage-agnostic, and multiplayer-ready without writing replication code.",
+    "version": "1.0",
+    "logo": "/plugins/cascadecombatsystem/CascadeCombatSystem.png",
+    "cover": "/plugins/cascadecombatsystem/CascadeCombatSystemCover.png",
+    "accent": "#d4600a",
+    "accentLight": "#f07820",
+    "status": "pre-launch",
+    "docsUrl": "/Plugins/CascadeCombatSystem",
+    "fabUrl": null,
+    "hidden": false
+  },
+  {
+    "name": "WorldSweep",
+    "tagline": "Batch scripting for any UE5 world. Sweep World Partition, Streaming Levels, or flat maps cell by cell.",
+    "version": "1.0",
+    "logo": "/plugins/worldsweep/WorldSweep.png",
+    "cover": "/plugins/worldsweep/WorldSweepCover.png",
+    "accent": "#0e9fd4",
+    "accentLight": "#22d4f8",
+    "status": "pre-launch",
+    "docsUrl": "/Plugins/WorldSweep",
+    "fabUrl": null,
+    "hidden": false
+  },
+  {
+    "name": "StoryGraph",
+    "tagline": "Modular dialog and quest system with a visual graph editor. Multiplayer-ready and extensible per project.",
+    "version": "1.0",
+    "logo": "/plugins/storygraph/StoryGraph.png",
+    "cover": "/plugins/storygraph/StoryGraphCover.png",
+    "accent": "#6d28d9",
+    "accentLight": "#c084fc",
+    "status": "in-development",
+    "docsUrl": null,
+    "fabUrl": null,
+    "hidden": false
+  },
+  {
+    "name": "GearFlow",
+    "tagline": "Modular inventory, crafting & equipment for UE5. Items are composed from opt-in fragments, with tag-driven gear slots and multiplayer-ready storage.",
+    "version": "1.0",
+    "logo": "/plugins/gearflow/GearFlow.png",
+    "cover": "/plugins/gearflow/GearFlowCover.png",
+    "accent": "#c47c0a",
+    "accentLight": "#f0aa22",
+    "status": "in-development",
+    "docsUrl": "/Plugins/GearFlow",
+    "fabUrl": null,
+    "hidden": false
+  }
+]

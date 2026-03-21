@@ -327,6 +327,7 @@
   const GH_API = 'https://api.github.com';
 
   const FILE_MAP: Record<string, string> = {
+    plugins:      'src/data/plugins.json',
     events:       'public/events.json',
     experience:   'src/data/experience.json',
     education:    'src/data/education.json',
@@ -335,14 +336,16 @@
   };
 
   const IMG_FOLDER: Record<string, string> = {
-    events: 'public/events',
+    plugins:    'public/plugins',
+    events:     'public/events',
     experience: 'public/experience',
-    education: 'public/education',
-    projects: 'public/projects',
+    education:  'public/education',
+    projects:   'public/projects',
     technologies: 'public/technologies',
   };
 
   const SECTION_META: Record<string, { label: string; icon: string }> = {
+    plugins:      { label: 'Plugins',          icon: '🧩' },
     events:       { label: 'Timeline Events', icon: '📅' },
     experience:   { label: 'Work Experience', icon: '💼' },
     education:    { label: 'Education',        icon: '🎓' },
@@ -376,10 +379,10 @@
   const state: AppState = {
     token: sessionStorage.getItem('admin_token'),
     user:  null,
-    section: 'events',
-    data:  { events: [], experience: [], education: [], projects: [], technologies: [] },
-    sha:   { events: null, experience: null, education: null, projects: null, technologies: null },
-    dirty: { events: false, experience: false, education: false, projects: false, technologies: false },
+    section: 'plugins',
+    data:  { plugins: [], events: [], experience: [], education: [], projects: [], technologies: [] },
+    sha:   { plugins: null, events: null, experience: null, education: null, projects: null, technologies: null },
+    dirty: { plugins: false, events: false, experience: false, education: false, projects: false, technologies: false },
     editing: null,
     pendingUploads: {},
   };
@@ -673,6 +676,7 @@
         <button class="btn btn-primary" id="add-btn-empty">+ Add First</button>
       </div>`;
 
+    if (state.section === 'plugins')      return renderPluginList(items);
     if (state.section === 'events')       return renderEventList(items);
     if (state.section === 'technologies') return renderTechList(items);
     return renderCardList(items);
@@ -734,11 +738,47 @@
     </div>`;
   }
 
+  // ── Plugin list ─────────────────────────────────────────
+  const PLUGIN_STATUS_LABELS: Record<string, string> = {
+    'live':           'Live on Fab',
+    'pre-launch':     'Pre-Launch',
+    'in-development': 'In Development',
+    'coming-soon':    'Coming Soon',
+  };
+  const PLUGIN_STATUS_COLORS: Record<string, string> = {
+    'live':           '#22c55e',
+    'pre-launch':     '#f59e0b',
+    'in-development': '#6b7280',
+    'coming-soon':    '#8b5cf6',
+  };
+
+  function renderPluginList(items: any[]) {
+    return `<div class="item-list">${items.map((p, i) => {
+      const color  = PLUGIN_STATUS_COLORS[p.status] || '#6b7280';
+      const label  = PLUGIN_STATUS_LABELS[p.status]  || p.status;
+      const hidden = p.hidden ? ' 🙈 Hidden' : '';
+      return `<div class="item-row" data-index="${i}">
+        ${p.logo
+          ? `<img class="item-thumb" src="${esc(p.logo)}" alt="" onerror="this.style.display='none'" style="background:${esc(p.accent||'#111')}" />`
+          : `<div class="item-thumb-ph">🧩</div>`}
+        <div class="item-info">
+          <h3>${esc(p.name || 'Unnamed')} <span style="font-size:11px;font-weight:600;color:${esc(color)};background:${esc(color)}1a;border:1px solid ${esc(color)}4d;padding:1px 8px;border-radius:99px;vertical-align:middle">${esc(label)}</span>${hidden ? `<span style="font-size:11px;color:#9ca3af;margin-left:6px">${hidden}</span>` : ''}</h3>
+          <p>v${esc(p.version || '?')} · ${esc(p.tagline?.substring(0, 80) || '')}${(p.tagline?.length || 0) > 80 ? '…' : ''}</p>
+        </div>
+        <div class="item-actions">
+          <button class="btn btn-secondary btn-sm edit-btn" data-index="${i}">✏️ Edit</button>
+          <button class="btn btn-danger btn-sm del-btn" data-index="${i}">🗑</button>
+        </div>
+      </div>`;
+    }).join('')}</div>`;
+  }
+
   // ═══════════════════════════════════════════════════════
   // EDIT FORM
   // ═══════════════════════════════════════════════════════
   function renderEditForm(): string {
     const sec = state.section;
+    if (sec === 'plugins')      return renderPluginForm();
     if (sec === 'events')       return renderEventForm();
     if (sec === 'technologies') return renderTechForm();
     return renderSimpleForm();
@@ -935,6 +975,112 @@
     </div>`;
   }
 
+  // ── Plugin form ─────────────────────────────────────────
+  function renderPluginForm(): string {
+    const p = state.editing!.item;
+    const isNew = state.editing!.index === -1;
+    const statusOptions = ['live','pre-launch','in-development','coming-soon'].map(s =>
+      `<option value="${s}" ${p.status === s ? 'selected' : ''}>${PLUGIN_STATUS_LABELS[s]}</option>`
+    ).join('');
+
+    return `<div class="edit-card">
+      <div class="edit-header">
+        <h2>${isNew ? 'New Plugin' : 'Edit Plugin'}</h2>
+      </div>
+
+      <div class="form-section">Identity</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Name *</label>
+          <input id="f-name" value="${esc(p.name||'')}" placeholder="e.g. GearFlow" />
+        </div>
+        <div class="form-group">
+          <label>Version *</label>
+          <input id="f-version" value="${esc(p.version||'1.0')}" placeholder="1.0" />
+        </div>
+        <div class="form-group full">
+          <label>Tagline</label>
+          <textarea id="f-tagline" rows="2">${esc(p.tagline||'')}</textarea>
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="f-status">${statusOptions}</select>
+        </div>
+        <div class="form-group" style="align-items:center;flex-direction:row;gap:10px;padding-top:22px">
+          <input type="checkbox" id="f-hidden" style="width:18px;height:18px;accent-color:var(--accent)" ${p.hidden ? 'checked' : ''} />
+          <label for="f-hidden" style="text-transform:none;font-size:13px;font-weight:600;color:var(--text);cursor:pointer">Hidden (not shown on Plugins page)</label>
+        </div>
+      </div>
+
+      <div class="form-section">Links</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Docs URL</label>
+          <input id="f-docsUrl" value="${esc(p.docsUrl||'')}" placeholder="/Plugins/MyPlugin" />
+        </div>
+        <div class="form-group">
+          <label>Fab URL</label>
+          <input id="f-fabUrl" value="${esc(p.fabUrl||'')}" placeholder="https://fab.com/listings/…" />
+        </div>
+      </div>
+
+      <div class="form-section">Branding</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Logo Image</label>
+          <div class="logo-upload">
+            ${p.logo
+              ? `<img class="logo-preview" id="logo-preview-img" src="${esc(p.logo)}" onerror="this.style.display='none'" />`
+              : `<div class="logo-preview-ph" id="logo-preview-img">🧩</div>`}
+            <div>
+              <label class="btn btn-secondary btn-sm" style="cursor:pointer">
+                📁 Choose File
+                <input type="file" accept="image/*" id="logo-file-input" data-target="f-logo" style="display:none" />
+              </label>
+              <p style="font-size:11px;color:var(--muted);margin-top:6px">Or paste a path below</p>
+              <input id="f-logo" value="${esc(p.logo||'')}" placeholder="/plugins/myplugin/Logo.png" style="width:100%;margin-top:6px;padding:7px 10px;border:2px solid var(--border);border-radius:var(--radius);font-size:12px" />
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Cover Image</label>
+          <div class="logo-upload">
+            ${p.cover
+              ? `<img class="logo-preview" id="cover-preview-img" src="${esc(p.cover)}" onerror="this.style.display='none'" style="object-fit:cover" />`
+              : `<div class="logo-preview-ph" id="cover-preview-img">🖼</div>`}
+            <div>
+              <label class="btn btn-secondary btn-sm" style="cursor:pointer">
+                📁 Choose File
+                <input type="file" accept="image/*" id="cover-file-input" data-target="f-cover" style="display:none" />
+              </label>
+              <p style="font-size:11px;color:var(--muted);margin-top:6px">Or paste a path below</p>
+              <input id="f-cover" value="${esc(p.cover||'')}" placeholder="/plugins/myplugin/Cover.png" style="width:100%;margin-top:6px;padding:7px 10px;border:2px solid var(--border);border-radius:var(--radius);font-size:12px" />
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Accent Color</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input type="color" id="f-accent-picker" value="${esc(p.accent||'#6366f1')}" style="width:44px;height:36px;border:1.5px solid var(--border);border-radius:var(--radius);cursor:pointer;padding:2px" />
+            <input id="f-accent" value="${esc(p.accent||'#6366f1')}" placeholder="#6366f1" style="flex:1" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Accent Light Color</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input type="color" id="f-accentLight-picker" value="${esc(p.accentLight||'#818cf8')}" style="width:44px;height:36px;border:1.5px solid var(--border);border-radius:var(--radius);cursor:pointer;padding:2px" />
+            <input id="f-accentLight" value="${esc(p.accentLight||'#818cf8')}" placeholder="#818cf8" style="flex:1" />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-secondary" id="cancel-edit-btn2">Cancel</button>
+        <button class="btn btn-primary" id="save-item-btn">${isNew ? '+ Create Plugin' : '💾 Save Plugin'}</button>
+      </div>
+    </div>`;
+  }
+
   // ── Image items HTML ────────────────────────────────────
   function renderImageItems(images: string[]): string {
     return images.map((src, i) => {
@@ -998,8 +1144,79 @@
       await commitEditItem();
     });
 
-    if (sec === 'events') attachEventFormListeners();
+    if (sec === 'plugins')  attachPluginFormListeners();
+    else if (sec === 'events') attachEventFormListeners();
     else attachSimpleFormListeners();
+  }
+
+  // ── Plugin form listeners ───────────────────────────────
+  function attachPluginFormListeners() {
+    // Sync color pickers ↔ text inputs
+    const syncColor = (pickerId: string, textId: string) => {
+      const picker = document.getElementById(pickerId) as HTMLInputElement | null;
+      const text   = document.getElementById(textId)   as HTMLInputElement | null;
+      if (!picker || !text) return;
+      picker.addEventListener('input', () => { text.value = picker.value; });
+      text.addEventListener('input', () => {
+        if (/^#[0-9a-fA-F]{6}$/.test(text.value)) picker.value = text.value;
+      });
+    };
+    syncColor('f-accent-picker', 'f-accent');
+    syncColor('f-accentLight-picker', 'f-accentLight');
+
+    // Image uploads (logo + cover)
+    const handlePluginImageUpload = async (inputId: string, previewId: string, textInputId: string) => {
+      const fileInput = document.getElementById(inputId) as HTMLInputElement | null;
+      if (!fileInput) return;
+      fileInput.addEventListener('change', async () => {
+        const file = fileInput.files?.[0];
+        if (!file) return;
+        const blobUrl = URL.createObjectURL(file);
+        // update preview
+        const preview = document.getElementById(previewId);
+        if (preview) {
+          if (preview.tagName === 'IMG') { (preview as HTMLImageElement).src = blobUrl; }
+          else { const img = document.createElement('img'); img.className = 'logo-preview'; img.id = previewId; img.src = blobUrl; preview.replaceWith(img); }
+        }
+        const nameInput = document.getElementById('f-name') as HTMLInputElement;
+        const pluginSlug = (nameInput?.value || 'plugin').toLowerCase().replace(/[^a-z0-9]+/g, '');
+        const repoPath = `public/plugins/${pluginSlug}/${file.name}`;
+        try {
+          showLoading('Uploading image…');
+          await uploadImage(repoPath, file);
+          hideLoading();
+          const publicPath = '/' + repoPath.replace('public/', '');
+          const textInput = document.getElementById(textInputId) as HTMLInputElement | null;
+          if (textInput) textInput.value = publicPath;
+          URL.revokeObjectURL(blobUrl);
+          showToast('Image uploaded!', 'success');
+        } catch (e: any) {
+          hideLoading();
+          showToast('Upload failed: ' + e.message, 'error');
+        }
+      });
+    };
+
+    handlePluginImageUpload('logo-file-input', 'logo-preview-img', 'f-logo');
+    handlePluginImageUpload('cover-file-input', 'cover-preview-img', 'f-cover');
+  }
+
+  function collectPluginForm(): any {
+    const get = (id: string) => (document.getElementById(id) as HTMLInputElement)?.value.trim() || '';
+    const checked = (id: string) => (document.getElementById(id) as HTMLInputElement)?.checked ?? false;
+    return {
+      name:        get('f-name'),
+      tagline:     get('f-tagline'),
+      version:     get('f-version') || '1.0',
+      logo:        get('f-logo')    || null,
+      cover:       get('f-cover')   || null,
+      accent:      get('f-accent'),
+      accentLight: get('f-accentLight'),
+      status:      get('f-status') || 'in-development',
+      docsUrl:     get('f-docsUrl') || null,
+      fabUrl:      get('f-fabUrl')  || null,
+      hidden:      checked('f-hidden'),
+    };
   }
 
   // ── Event form listeners ────────────────────────────────
@@ -1224,7 +1441,9 @@
 
     try {
       let item: any;
-      if (sec === 'events') {
+      if (sec === 'plugins') {
+        item = collectPluginForm();
+      } else if (sec === 'events') {
         item = collectEventForm();
         // upload pending images
         if (item.images?.some((s: string) => s.startsWith('blob:'))) {
@@ -1331,6 +1550,7 @@
   }
 
   function newItem(sec: string): any {
+    if (sec === 'plugins')      return { name: '', tagline: '', version: '1.0', logo: null, cover: null, accent: '#6366f1', accentLight: '#818cf8', status: 'in-development', docsUrl: null, fabUrl: null, hidden: true };
     if (sec === 'events')       return { id: '', date: '', title: '', tags: [], description: '', extendedDescription: [], expandable: true, images: [], links: [], documents: [] };
     if (sec === 'technologies') return { src: '', name: '' };
     if (sec === 'projects')     return { href: '', image: '', name: '', desc: '' };
