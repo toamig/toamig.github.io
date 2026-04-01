@@ -33,6 +33,7 @@ jobs:
         with:
           repository: ${{ github.event.client_payload.plugin_repo }}
           path: plugin-source
+          token: ${{ secrets.DOCS_DISPATCH_TOKEN }}
           sparse-checkout: |
             Source
             CHANGELOG.md
