@@ -341,14 +341,25 @@ function renderEvents() {
       imagesWrap.className = 'event-images';
       event.images.forEach((imgSrc, idx) => {
         if (!imgSrc) return;
+        const wrap = document.createElement('div');
+        wrap.className = 'img-wrap';
+
+        const shimmer = document.createElement('div');
+        shimmer.className = 'img-shimmer';
+
         const img = document.createElement('img');
-        img.className = event.images!.length === 1 ? 'event-image full' : 'event-image grid';
+        img.className = 'event-image';
         img.src = imgSrc.startsWith('/') ? imgSrc : `/${imgSrc}`;
         img.alt = event.title || `image ${idx + 1}`;
+        img.loading = 'lazy';
         img.dataset.eventId    = String(event.id);
         img.dataset.imageIndex = String(idx);
+        img.addEventListener('load', () => { img.classList.add('loaded'); shimmer.remove(); });
         img.addEventListener('click', (ev) => { ev.stopPropagation(); openImageLightbox(String(event.id), idx); });
-        imagesWrap.appendChild(img);
+
+        wrap.appendChild(shimmer);
+        wrap.appendChild(img);
+        imagesWrap.appendChild(wrap);
       });
       expandable.appendChild(imagesWrap);
     }
