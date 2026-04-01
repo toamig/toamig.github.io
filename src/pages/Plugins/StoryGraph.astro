@@ -1,0 +1,549 @@
+---
+import PluginLayout from '../../layouts/PluginLayout.astro';
+import pluginsData from '../../data/plugins.json';
+// Colors from logo: violet #6d28d9, light purple #c084fc → cool, deep near-blacks
+const p = pluginsData.find(x => x.name === 'StoryGraph')!;
+---
+<PluginLayout
+  title="StoryGraph — Node-Based Dialogue & Narrative Plugin for UE5"
+  description="A node-based story graph system for Unreal Engine 5. Author branching dialogue and narrative flows in a visual graph editor, then play them back at runtime via a simple component API — no C++ required for designers."
+  pluginName="StoryGraph"
+  version={p.version}
+  coverImage={p.cover}
+  logoImage={p.logo}
+  fabUrl={p.fabUrl ?? '#'}
+  accent={p.accent}
+  accentLight={p.accentLight}
+  bg="#060509"
+  surface="#0d0b14"
+  codeBg="#04030a"
+  surface2="#130f1d"
+>
+
+  <!-- ── Sidebar nav ─────────────────────────────────────────────── -->
+  <nav slot="sidebar-nav">
+    <div class="nav-group">
+      <span class="nav-group-label">Introduction</span>
+      <a href="#overview">Overview</a>
+      <a href="#getting-started">Getting Started</a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-group-label">Graph Authoring</span>
+      <a href="#story-graph-asset">Story Graph Asset</a>
+      <a href="#node-types">Node Types</a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-group-label">Speakers</span>
+      <a href="#speakers">Speaker Data Asset</a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-group-label">Playback</span>
+      <a href="#playback-component">Story Graph Component</a>
+      <a href="#delegates">Delegates</a>
+      <a href="#condition-handling">Condition Handling</a>
+    </div>
+  </nav>
+
+  <!-- ── Overview ───────────────────────────────────────────────── -->
+  <section class="doc-section" id="overview" data-section="overview">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </span>
+      Overview
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      <strong>StoryGraph</strong> is a node-based dialogue and narrative system for Unreal Engine 5. Stories are authored as visual graphs in a dedicated asset editor — designers connect Dialogue, Choice, Condition, Event, and Jump nodes to build branching conversations without writing code. At runtime, a single <strong>UStoryGraphComponent</strong> drives playback through a delegate-based API: your UI binds to events, advances through lines, and presents choices — StoryGraph handles traversal state.
+    </p>
+    <p class="doc-p">
+      The runtime graph is compiled from the editor graph at save time and stored in a <strong>UStoryGraphAsset</strong>. Each <code>PlayStory()</code> call clones the compiled data so multiple components can run the same asset simultaneously without sharing state. Speaker metadata — portrait, voice, and name color — lives in reusable <strong>UStoryGraphSpeakerDataAsset</strong> data assets loaded on demand.
+    </p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><circle cx="5" cy="19" r="3"/><circle cx="19" cy="19" r="3"/><line x1="12" y1="8" x2="5" y2="16"/><line x1="12" y1="8" x2="19" y2="16"/></svg>
+        </div>
+        <p class="feature-title">Visual Graph Editor</p>
+        <p class="feature-desc">Author branching dialogue entirely in the graph editor. Connect node types to build conversations with choices, conditions, events, and loops — no code required for designers.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </div>
+        <p class="feature-title">Delegate-Based Playback</p>
+        <p class="feature-desc">Bind <code>OnDialogueLine</code>, <code>OnChoicesPresented</code>, <code>OnEventFired</code>, and <code>OnStoryComplete</code> to drive your UI. StoryGraph handles all traversal — your code only reacts to events.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <p class="feature-title">Data Asset Workflow</p>
+        <p class="feature-desc">Stories are <code>UStoryGraphAsset</code> data assets. Speaker portraits, voice, and name colors live in reusable <code>UStoryGraphSpeakerDataAsset</code> assets loaded as soft references.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <p class="feature-title">Isolated Playback</p>
+        <p class="feature-desc">Each <code>PlayStory()</code> call clones the compiled runtime, so multiple NPCs can run the same story asset simultaneously without interfering with each other's traversal state.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        </div>
+        <p class="feature-title">Game-Driven Conditions</p>
+        <p class="feature-desc">Condition nodes fire a named event to your game code. You evaluate the condition and call <code>SelectChoice(0)</code> for true or <code>SelectChoice(1)</code> for false — the graph branches accordingly.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
+        </div>
+        <p class="feature-title">Jump Loops</p>
+        <p class="feature-desc">Jump nodes resolve to any labeled node at compile time — use them to loop back to earlier dialogue, implement repeatable NPC lines, or redirect branches across distant graph regions.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Getting Started ────────────────────────────────────────── -->
+  <section class="doc-section" id="getting-started" data-section="getting-started">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      </span>
+      Getting Started
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">A story running on an NPC is up in five steps. No C++ is required beyond adding the module dependency if you're using Blueprints.</p>
+
+    <div class="steps">
+      <div class="step">
+        <span class="step-num">1</span>
+        <div class="step-body">
+          <p class="step-title">Enable the plugin</p>
+          <p class="step-desc">Open <strong>Edit → Plugins</strong>, search for <em>StoryGraph</em>, enable it, and restart the editor.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">2</span>
+        <div class="step-body">
+          <p class="step-title">Create a Story Graph asset</p>
+          <p class="step-desc">Right-click in the Content Browser and select <strong>StoryGraph → Story Graph</strong>. Double-click the asset to open the graph editor. Add a <strong>Dialogue</strong> node as your starting line and connect it to a <strong>Choice</strong> node or more dialogue.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">3</span>
+        <div class="step-body">
+          <p class="step-title">Create a Speaker asset</p>
+          <p class="step-desc">Right-click and select <strong>StoryGraph → Speaker</strong>. Set <strong>DisplayName</strong> and optionally a <strong>Portrait</strong> texture. Assign this speaker asset to Dialogue nodes in your graph.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">4</span>
+        <div class="step-body">
+          <p class="step-title">Add UStoryGraphComponent to your NPC</p>
+          <p class="step-desc">In your NPC Blueprint or C++, add a <strong>StoryGraphComponent</strong>. In BeginPlay, bind the delegates you need: at minimum <code>OnDialogueLine</code> and <code>OnStoryComplete</code>. For branching stories, also bind <code>OnChoicesPresented</code>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">5</span>
+        <div class="step-body">
+          <p class="step-title">Start the story</p>
+          <p class="step-desc">Call <code>PlayStory(StoryAsset)</code> to begin. When <code>OnDialogueLine</code> fires, display the text. On player input, call <code>AdvanceToNextNode()</code>. When <code>OnChoicesPresented</code> fires, show the choices and call <code>SelectChoice(Index)</code> with the player's pick.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Minimal C++ wiring</h3>
+      <pre class="code-block"><code>// In your NPC .h
+UPROPERTY(VisibleAnywhere)
+TObjectPtr&lt;UStoryGraphComponent&gt; StoryComp;
+
+UFUNCTION()
+void OnDialogueLine(const FText&amp; DialogueText, const FString&amp; SpeakerName);
+
+UFUNCTION()
+void OnStoryComplete();</code></pre>
+
+      <pre class="code-block"><code>// In BeginPlay
+StoryComp->OnDialogueLine.AddDynamic(this, &amp;AMyNPC::OnDialogueLine);
+StoryComp->OnStoryComplete.AddDynamic(this, &amp;AMyNPC::OnStoryComplete);
+
+// When the player interacts with the NPC
+StoryComp->PlayStory(StoryAsset);</code></pre>
+    </div>
+  </section>
+
+  <!-- ── Story Graph Asset ─────────────────────────────────────── -->
+  <section class="doc-section" id="story-graph-asset" data-section="story-graph-asset">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      </span>
+      Story Graph Asset
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      <strong>UStoryGraphAsset</strong> is the top-level data asset for a story. It stores the visual editor graph (<code>EditorGraph</code>) and the compiled runtime data (<code>RuntimeGraph</code>). The runtime graph is compiled from the editor graph each time you save the asset — you never author <code>RuntimeGraph</code> directly. Assign a <code>UStoryGraphAsset</code> reference to any actor that needs to play it, then pass it to <code>UStoryGraphComponent::PlayStory()</code>.
+    </p>
+
+    <table class="prop-table">
+      <thead>
+        <tr><th>Property</th><th>Type</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="prop-name">RuntimeGraph</td>
+          <td class="prop-type">UStoryGraphRuntime*</td>
+          <td class="prop-desc">Compiled runtime data. Written by the editor on save. Read by <code>UStoryGraphComponent</code> on <code>PlayStory()</code>.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">EditorGraph</td>
+          <td class="prop-type">UEdGraph* (editor only)</td>
+          <td class="prop-desc">Visual graph shown in the graph editor. Stripped from non-editor builds.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </span>
+      <span>Save the asset after editing the graph to trigger a recompile. <code>RuntimeGraph</code> will be <code>null</code> until the asset has been saved at least once.</span>
+    </div>
+  </section>
+
+  <!-- ── Node Types ────────────────────────────────────────────── -->
+  <section class="doc-section" id="node-types" data-section="node-types">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><circle cx="5" cy="19" r="3"/><circle cx="19" cy="19" r="3"/><line x1="12" y1="8" x2="5" y2="16"/><line x1="12" y1="8" x2="19" y2="16"/></svg>
+      </span>
+      Node Types
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      StoryGraph provides five node types that cover all branching dialogue patterns. Every node inherits from <code>UStoryGraphNode</code>, which exposes a <strong>NodeLabel</strong> property — an optional name used by Jump nodes to locate their target at compile time.
+    </p>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Dialogue</h3>
+      <p class="doc-p">
+        A single spoken line. At runtime, <code>UStoryGraphRuntime</code> fires <code>OnDialogueLine</code> with the line text and speaker name, then waits for <code>AdvanceToNextNode()</code>. Assign a <strong>Speaker</strong> asset to identify who is speaking; the speaker's display name, portrait, and voice are loaded on demand from the soft reference.
+      </p>
+      <table class="prop-table">
+        <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="prop-name">DialogueText</td>
+            <td class="prop-type">FText</td>
+            <td class="prop-desc">The line of dialogue to display or speak.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">Speaker</td>
+            <td class="prop-type">TSoftObjectPtr&lt;UStoryGraphSpeakerDataAsset&gt;</td>
+            <td class="prop-desc">The character delivering this line. Resolved at runtime via <code>GetCurrentSpeakerAsset()</code>.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Choice</h3>
+      <p class="doc-p">
+        Presents the player with multiple branches. Each entry in the <strong>Choices</strong> array produces one output pin on the node and one entry in the <code>OnChoicesPresented</code> delegate payload. Call <code>SelectChoice(index)</code> with the player's pick to continue traversal. Index maps directly to the output pin order.
+      </p>
+      <table class="prop-table">
+        <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="prop-name">Choices</td>
+            <td class="prop-type">TArray&lt;FStoryChoiceOption&gt;</td>
+            <td class="prop-desc">Each entry has a <code>ChoiceText</code> field shown in your choice UI. Adding or removing entries updates the node's output pins automatically.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Condition</h3>
+      <p class="doc-p">
+        A two-branch gate evaluated by your game code. At runtime, <code>OnConditionRequested</code> fires with the <strong>ConditionName</strong>. Your handler evaluates the named condition against game state, then calls <code>SelectChoice(0)</code> for true or <code>SelectChoice(1)</code> for false. The graph advances on the matching branch.
+      </p>
+      <table class="prop-table">
+        <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="prop-name">ConditionName</td>
+            <td class="prop-type">FName</td>
+            <td class="prop-desc">Identifier sent to <code>OnConditionRequested</code>. Use descriptive names like <code>"HasKey"</code> or <code>"QuestComplete"</code>.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Event</h3>
+      <p class="doc-p">
+        Fires a named event and advances automatically — no player input needed. Use it to trigger side effects mid-conversation: give an item, start an animation, set a quest flag, or play a sound. At runtime, <code>OnEventFired</code> fires with the <strong>EventName</strong>, then the graph continues to the next node without waiting.
+      </p>
+      <table class="prop-table">
+        <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="prop-name">EventName</td>
+            <td class="prop-type">FName</td>
+            <td class="prop-desc">Identifier sent to <code>OnEventFired</code>. Use descriptive names like <code>"GiveQuestItem"</code> or <code>"PlayCutscene"</code>.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Jump</h3>
+      <p class="doc-p">
+        Jumps unconditionally to another node identified by its <strong>NodeLabel</strong>. Has no output pin — the target is resolved at compile time. Use Jump nodes to create loops (e.g. repeat a greeting), merge converging branches, or redirect flow across distant graph regions. Set <strong>NodeLabel</strong> on the destination node and <strong>TargetLabel</strong> on the Jump node to the same value, then save to compile.
+      </p>
+      <table class="prop-table">
+        <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="prop-name">TargetLabel</td>
+            <td class="prop-type">FName</td>
+            <td class="prop-desc">Must match the <code>NodeLabel</code> of the destination node. Resolved at compile time; unresolved jumps are flagged as errors in the editor.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── Speakers ──────────────────────────────────────────────── -->
+  <section class="doc-section" id="speakers" data-section="speakers">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      </span>
+      Speaker Data Asset
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      <strong>UStoryGraphSpeakerDataAsset</strong> defines a character that speaks in a story graph. Create one asset per NPC or player character and assign it to Dialogue nodes in the graph editor. All media properties use soft references — portrait textures and voice audio are only loaded into memory when that speaker is actively displayed.
+    </p>
+
+    <table class="prop-table">
+      <thead>
+        <tr><th>Property</th><th>Type</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="prop-name">DisplayName</td>
+          <td class="prop-type">FText</td>
+          <td class="prop-desc">The name shown in the dialogue UI name plate.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">Portrait</td>
+          <td class="prop-type">TSoftObjectPtr&lt;UTexture2D&gt;</td>
+          <td class="prop-desc">Portrait texture displayed during this speaker's lines. Loaded on demand and released when the speaker is no longer active.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">VoiceSound</td>
+          <td class="prop-type">TSoftObjectPtr&lt;USoundBase&gt;</td>
+          <td class="prop-desc">Optional audio played when this speaker's line is shown. Null means no audio plays. Loaded on demand.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">NameColor</td>
+          <td class="prop-type">FLinearColor</td>
+          <td class="prop-desc">Tint applied to the speaker's name in the dialogue UI. Defaults to white.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="doc-p">
+      Retrieve the current speaker asset during playback via <code>UStoryGraphComponent::GetCurrentSpeakerAsset()</code>. The returned soft reference can be async-loaded to access portrait and voice without blocking the game thread.
+    </p>
+  </section>
+
+  <!-- ── Playback Component ─────────────────────────────────────── -->
+  <section class="doc-section" id="playback-component" data-section="playback-component">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      </span>
+      Story Graph Component
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      <strong>UStoryGraphComponent</strong> is the primary runtime interface. Add it to any actor — an NPC, player controller, or trigger volume. It wraps <code>UStoryGraphRuntime</code>, clones the compiled graph on each <code>PlayStory()</code> call, and routes runtime events to its own delegates. Bind your UI and game logic to these delegates in BeginPlay; then control playback with the four core functions.
+    </p>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Playback API</h3>
+      <table class="prop-table">
+        <thead><tr><th>Function</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="prop-name">PlayStory(UStoryGraphAsset*)</td>
+            <td class="prop-desc">Begin playing the given story asset. Clones the compiled runtime for isolated playback. If a story is already active it is ended first.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">AdvanceToNextNode()</td>
+            <td class="prop-desc">Move linearly to the next node (first output branch). Use this to step through Dialogue nodes on player input.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">SelectChoice(int32 ChoiceIndex)</td>
+            <td class="prop-desc">Branch to a specific output. For Choice nodes, pass the player's selection index. For Condition nodes, pass <code>0</code> for true and <code>1</code> for false.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">EndStory()</td>
+            <td class="prop-desc">Immediately terminate the active story and fire <code>OnStoryComplete</code>. Use for skip or interrupt flows.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">State queries</h3>
+      <table class="prop-table">
+        <thead><tr><th>Function</th><th>Returns</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="prop-name">IsPlaying()</td>
+            <td class="prop-type">bool</td>
+            <td class="prop-desc">True if a story is currently active.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">HasChoices()</td>
+            <td class="prop-type">bool</td>
+            <td class="prop-desc">True if the current node is a Choice node.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">IsWaitingForCondition()</td>
+            <td class="prop-type">bool</td>
+            <td class="prop-desc">True if the current node is a Condition node waiting for game code to call <code>SelectChoice</code>.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">GetChoiceCount()</td>
+            <td class="prop-type">int32</td>
+            <td class="prop-desc">Number of output branches on the current node.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">GetChoiceTexts()</td>
+            <td class="prop-type">TArray&lt;FText&gt;</td>
+            <td class="prop-desc">Display labels for the current Choice node's branches.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">GetCurrentDialogueText()</td>
+            <td class="prop-type">FText</td>
+            <td class="prop-desc">Dialogue text of the current node.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">GetCurrentSpeakerName()</td>
+            <td class="prop-type">FString</td>
+            <td class="prop-desc">Speaker display name of the current node, compiled from the speaker asset.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">GetCurrentSpeakerAsset()</td>
+            <td class="prop-type">TSoftObjectPtr&lt;UStoryGraphSpeakerDataAsset&gt;</td>
+            <td class="prop-desc">Soft reference to the current speaker asset. Use this to async-load the portrait and voice for your UI.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── Delegates ─────────────────────────────────────────────── -->
+  <section class="doc-section" id="delegates" data-section="delegates">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+      </span>
+      Delegates
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      All runtime events are surfaced as <code>BlueprintAssignable</code> dynamic multicast delegates on <code>UStoryGraphComponent</code>. Bind them in BeginPlay — Blueprint or C++ — and react to the events your UI and game logic need. The graph waits at Dialogue and Choice nodes until your code calls <code>AdvanceToNextNode()</code> or <code>SelectChoice()</code>; Event and Jump nodes advance automatically.
+    </p>
+
+    <table class="prop-table">
+      <thead>
+        <tr><th>Delegate</th><th>Parameters</th><th>When it fires</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="prop-name">OnDialogueLine</td>
+          <td class="prop-type">FText DialogueText, FString SpeakerName</td>
+          <td class="prop-desc">A Dialogue node is reached. Display the line in your UI, then call <code>AdvanceToNextNode()</code> on player input.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">OnChoicesPresented</td>
+          <td class="prop-type">TArray&lt;FText&gt; Choices</td>
+          <td class="prop-desc">A Choice node is reached. Show the choices, then call <code>SelectChoice(index)</code> with the player's pick.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">OnConditionRequested</td>
+          <td class="prop-type">FName ConditionName</td>
+          <td class="prop-desc">A Condition node is reached. Evaluate the condition and call <code>SelectChoice(0)</code> for true, <code>SelectChoice(1)</code> for false.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">OnEventFired</td>
+          <td class="prop-type">FName EventName</td>
+          <td class="prop-desc">An Event node is reached. React to the named event — give items, start animations, set flags. The graph advances automatically.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">OnStoryComplete</td>
+          <td class="prop-type">(none)</td>
+          <td class="prop-desc">The graph has no more nodes to process, or <code>EndStory()</code> was called. Close your dialogue UI here.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── Condition Handling ────────────────────────────────────── -->
+  <section class="doc-section" id="condition-handling" data-section="condition-handling">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      </span>
+      Condition Handling
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      Condition nodes bridge the story graph and your game state. The graph fires <code>OnConditionRequested</code> with a named condition, halts, and waits. Your handler reads game state for that condition name and calls <code>SelectChoice</code> to branch. This keeps condition logic in your game code — the graph itself has no knowledge of quests, inventory, or game variables.
+    </p>
+
+    <pre class="code-block"><code>// In your NPC header
+UFUNCTION()
+void HandleCondition(FName ConditionName);
+
+// In BeginPlay
+StoryComp->OnConditionRequested.AddDynamic(this, &amp;AMyNPC::HandleCondition);
+
+// Handler — evaluate and branch
+void AMyNPC::HandleCondition(FName ConditionName)
+{
+    bool bResult = false;
+
+    if (ConditionName == "HasKey")
+    {
+        bResult = PlayerInventory->HasItem(KeyItemDefinition);
+    }
+    else if (ConditionName == "QuestComplete")
+    {
+        bResult = QuestManager->IsComplete(FName("MainQuest"));
+    }
+
+    // 0 = True branch, 1 = False branch
+    StoryComp->SelectChoice(bResult ? 0 : 1);
+}</code></pre>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </span>
+      <span>You must call <code>SelectChoice()</code> in your <code>OnConditionRequested</code> handler — the graph will not advance until it receives a branch selection. Failing to call it will leave the story stalled at the Condition node.</span>
+    </div>
+  </section>
+
+</PluginLayout>

@@ -28,13 +28,13 @@
   {
     "name": "StoryGraph",
     "tagline": "Modular dialog and quest system with a visual graph editor. Multiplayer-ready and extensible per project.",
-    "version": "1.0",
+    "version": "0.1",
     "logo": "/plugins/storygraph/StoryGraph.png",
     "cover": "/plugins/storygraph/StoryGraphCover.png",
     "accent": "#6d28d9",
     "accentLight": "#c084fc",
     "status": "in-development",
-    "docsUrl": null,
+    "docsUrl": "/Plugins/StoryGraph",
     "fabUrl": null,
     "hidden": false
   },
