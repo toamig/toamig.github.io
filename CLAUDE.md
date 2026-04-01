@@ -157,7 +157,28 @@ Do not write exhaustive API references. Document the 20% developers will use 80%
 - **Blueprint-first.** Most users are Blueprint developers. Show Blueprint usage before C++ when both are relevant.
 - **No pseudocode.** If you're unsure of the exact API, leave the example out rather than inventing it.
 - **One example per section** unless two approaches (Blueprint vs C++) genuinely differ in setup.
-- **Escape curly braces in code blocks.** Astro treats `{` and `}` as expression delimiters even inside `<pre><code>`. Always write them as `&#123;` and `&#125;` in C++ code blocks — failing to do so causes a build error.
+
+#### Code block HTML format
+
+Always use the styled `div` wrapper — never a bare `<pre>`. The layout provides all CSS for `.code-block`, `.code-block-header`, `.code-lang`, `.code-comment`, `.code-cmd`, `.code-flag`, and `.code-val`.
+
+```html
+<div class="code-block">
+  <div class="code-block-header"><span class="code-lang">C++</span></div>
+  <pre><code><span class="code-comment">// comment</span>
+ActualCode->Here();</code></pre>
+</div>
+```
+
+**Language label** (`code-lang`): use `C++`, `shell`, or `console` depending on content.
+
+**Syntax spans** (optional but preferred):
+- `<span class="code-comment">// ...</span>` — comments (dimmed italic)
+- `<span class="code-cmd">word</span>` — commands / primary identifiers (blue)
+- `<span class="code-flag">-Flag</span>` — flags / keywords (purple)
+- `<span class="code-val">value</span>` — values / arguments (light blue)
+
+**Escape curly braces.** Astro treats `{` and `}` as expression delimiters even inside `<pre><code>`. Always write them as `&#123;` and `&#125;` — failing to do so causes a build error.
 
 ---
 
