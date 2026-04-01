@@ -352,6 +352,7 @@ function renderEvents() {
         img.src = imgSrc.startsWith('/') ? imgSrc : `/${imgSrc}`;
         img.alt = event.title || `image ${idx + 1}`;
         img.loading = 'lazy';
+        img.decoding = 'async';
         img.dataset.eventId    = String(event.id);
         img.dataset.imageIndex = String(idx);
         img.addEventListener('load', () => { spinner.remove(); img.classList.add('loaded'); });
