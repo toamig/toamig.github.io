@@ -1,5 +1,7 @@
 # Triggered when a plugin repo dispatches a "plugin-released" event.
-# Updates plugins.json version, then uses Claude Code to update the plugin's .astro page.
+# Two modes driven by client_payload.mode:
+#   full        — rewrites the entire docs page from source (pre-release and 1.0)
+#   incremental — updates only sections changed in this version (1.1 and beyond)
 # The existing deploy.yml takes over after this pushes to master.
 #
 # Required secrets:
@@ -53,7 +55,6 @@ jobs:
 
           matched = False
           for p in plugins:
-              # Strip spaces so "Cascade Combat System" matches "CascadeCombatSystem"
               if p["name"].replace(" ", "") == plugin_name or p["name"] == plugin_name:
                   p["version"] = version
                   matched = True
@@ -83,24 +84,36 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           PLUGIN_NAME:       ${{ github.event.client_payload.plugin_name }}
           VERSION:           ${{ github.event.client_payload.version }}
+          MODE:              ${{ github.event.client_payload.mode }}
         run: |
+          if [ "$MODE" = "full" ]; then
+            TASK="Fully regenerate the documentation page for the $PLUGIN_NAME plugin (version $VERSION).
+
+          The API may have changed significantly since the last version.
+          Rewrite the entire page from scratch using the current source headers as the source of truth.
+          Do not preserve existing page content — treat this as a fresh first-time write.
+          Use plugin-source/CHANGELOG.md ## [1.0] section to understand what the plugin ships with.
+          Use plugin-source/Source/ .h headers for all class names, function signatures, and enums.
+          Use src/pages/Plugins/GearFlow.astro as the structural and visual template.
+
+          This is FULL REGENERATION mode. Read CLAUDE.md for all writing rules."
+          else
+            TASK="Update the documentation page for the $PLUGIN_NAME plugin (version $VERSION).
+
+          Read plugin-source/CHANGELOG.md — find the ## [$VERSION] section.
+          Update only the sections that correspond to entries in that version's changelog.
+          Preserve all existing content that has no corresponding changelog entry.
+          Add new sections for new systems. Update existing sections only if behavior changed.
+
+          This is INCREMENTAL mode. Read CLAUDE.md for all writing rules."
+          fi
+
           claude --dangerously-skip-permissions --print "
-          Update the documentation page for the $PLUGIN_NAME plugin, version $VERSION.
+          $TASK
 
           Plugin source:  plugin-source/
           Changelog:      plugin-source/CHANGELOG.md
           Docs page:      src/pages/Plugins/$PLUGIN_NAME.astro
-
-          Steps:
-          1. Read plugin-source/CHANGELOG.md — find the ## [$VERSION] section
-          2. Read .h headers in plugin-source/Source/ for class and function names
-          3. Read src/pages/Plugins/$PLUGIN_NAME.astro if it exists
-
-          If the page EXISTS: update only what the changelog says changed for v$VERSION.
-          If the page does NOT EXIST: create it from scratch using GearFlow.astro as the template.
-
-          All writing rules, quality standards, and structural guidelines are in CLAUDE.md.
-          Read it before writing anything.
           "
 
       # ── 6. Commit and push — existing deploy.yml handles the rest ─────────

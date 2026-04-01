@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /c/Users/Miguel/Documents/GitHub/toamig.github.io -type f | grep -E \"\\\\.\\(html|css|js|json\\)$\")",
+      "Bash(ls -la /c/Users/Miguel/Documents/GitHub/toamig.github.io/*.json)",
+      "Bash(cd \"C:\\\\Users\\\\Miguel\\\\Documents\\\\GitHub\\\\toamig.github.io\" && npm install 2>&1)",
+      "Bash(cd \"C:\\\\Users\\\\Miguel\\\\Documents\\\\GitHub\\\\toamig.github.io\" && npm run build 2>&1)",
+      "Bash(cd \"C:\\\\Users\\\\Miguel\\\\Documents\\\\GitHub\\\\toamig.github.io\" && rm -f index.html about.html styles.css about.css headerscript.js && echo \"Removed old files\")",
+      "Bash(cd \"C:\\\\Users\\\\Miguel\\\\Documents\\\\GitHub\\\\toamig.github.io\" && npm run build 2>&1 | tail -8)",
+      "Bash(cd \"C:\\\\Users\\\\Miguel\\\\Documents\\\\GitHub\\\\toamig.github.io\" && npm run build 2>&1 | tail -4)",
+      "Bash(npm run:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "WebSearch",
+      "WebFetch(domain:docs.github.com)",
+      "WebFetch(domain:git-zen.com)",
+      "WebFetch(domain:github.blog)",
+      "WebFetch(domain:dev.to)",
+      "Bash(grep -o \"\\\\.btn-primary{\" dist/_astro/*.css | head -3)",
+      "Bash(find /c/Users/Miguel/Documents/GitHub/toamig.github.io/src -type f -name \"*.astro\" | xargs grep -l \"event\" 2>/dev/null)",
+      "Bash(sed s/\"\"//g)",
+      "Read(//tmp/**)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(git revert:*)",
+      "Bash(git mv:*)",
+      "Bash(gh run:*)",
+      "Bash(mkdir -p \"C:/Users/Miguel/Documents/GitHub/toamig.github.io/public/plugins/storygraph\")",
+      "Bash(touch \"C:/Users/Miguel/Documents/GitHub/toamig.github.io/public/plugins/storygraph/.gitkeep\")",
+      "Bash(xargs grep:*)",
+      "Bash(grep -r \"hidden\\\\|disabled\\\\|unrevealed\" /c/Users/Miguel/Documents/GitHub/toamig.github.io/src --include=*.ts --include=*.js)",
+      "Bash(grep:*)",
+      "Read(//c/Projects/ElementalBlades/Plugins/**)"
+    ]
+  }
+}

@@ -184,6 +184,29 @@ Injected automatically by `PluginLayout` via the `version` prop. Do not write it
 
 ---
 
+## Full Regeneration Mode (pre-release tags and v1.0)
+
+Triggered when a plugin is in pre-release (0.x) or when v1.0 ships.
+The entire page is rewritten — do not try to preserve or merge with existing content.
+
+**Why full regeneration:** Pre-1.0 APIs are volatile. Classes get renamed, systems get added or removed.
+Incremental updates would accumulate stale content. A clean rewrite from current source is always more accurate.
+
+**Process:**
+1. Read `plugin-source/CHANGELOG.md` — the `## [1.0]` section lists everything the plugin ships with
+2. Read ALL `.h` headers in `plugin-source/Source/` — these are the source of truth
+3. Ignore the existing `.astro` page entirely — you are replacing it, not updating it
+4. Write the page as if documenting the plugin for the first time
+5. Every class, system, and feature in the headers that is also in the changelog belongs in the docs
+
+**What changes vs incremental:**
+- You read the full source, not just the changed sections
+- You write every section fresh, not just the ones that changed
+- If the existing page had wrong or outdated content, this is where it gets fixed
+- The resulting page should reflect the plugin's current complete state
+
+---
+
 ## Creating a New Plugin Page (1.0 release)
 
 1. Read `plugin-source/CHANGELOG.md` — the 1.0 entry lists everything the plugin ships with
