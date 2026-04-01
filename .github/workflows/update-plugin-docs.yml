@@ -1,0 +1,137 @@
+# Triggered when a plugin repo dispatches a "plugin-released" event.
+# Updates plugins.json version, then uses Claude Code to update the plugin's .astro page.
+# The existing deploy.yml takes over after this pushes to master.
+#
+# Required secrets:
+#   ANTHROPIC_API_KEY   — for the Claude Code docs-writing step
+
+name: Update Plugin Docs
+
+on:
+  repository_dispatch:
+    types: [plugin-released]
+
+permissions:
+  contents: write
+
+jobs:
+  update-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── 1. Checkout docs repo ─────────────────────────────────────────────
+      - name: Checkout docs repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # ── 2. Sparse-checkout the plugin's source + changelog ────────────────
+      - name: Checkout plugin source
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.client_payload.plugin_repo }}
+          path: plugin-source
+          sparse-checkout: |
+            Source
+            CHANGELOG.md
+          sparse-checkout-cone-mode: false
+
+      # ── 3. Update version in plugins.json ────────────────────────────────
+      - name: Update plugins.json version
+        env:
+          PLUGIN_NAME: ${{ github.event.client_payload.plugin_name }}
+          VERSION:     ${{ github.event.client_payload.version }}
+        run: |
+          python3 << 'PYEOF'
+          import json, os
+
+          plugin_name = os.environ["PLUGIN_NAME"]
+          version     = os.environ["VERSION"]
+
+          with open("src/data/plugins.json") as f:
+              plugins = json.load(f)
+
+          matched = False
+          for p in plugins:
+              # Strip spaces so "Cascade Combat System" matches "CascadeCombatSystem"
+              if p["name"].replace(" ", "") == plugin_name or p["name"] == plugin_name:
+                  p["version"] = version
+                  matched = True
+                  print(f"Updated '{p['name']}' to v{version}")
+                  break
+
+          if not matched:
+              print(f"WARNING: '{plugin_name}' not found in plugins.json — version not updated")
+
+          with open("src/data/plugins.json", "w") as f:
+              json.dump(plugins, f, indent=2)
+              f.write("\n")
+          PYEOF
+
+      # ── 4. Install Claude Code CLI ────────────────────────────────────────
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      # ── 5. Claude Code updates the plugin's .astro docs page ─────────────
+      - name: Update docs page
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          PLUGIN_NAME:       ${{ github.event.client_payload.plugin_name }}
+          VERSION:           ${{ github.event.client_payload.version }}
+        run: |
+          claude --dangerously-skip-permissions --print "
+          You are updating the documentation website for the Unreal Engine 5 plugin: $PLUGIN_NAME, version $VERSION.
+
+          SITE STRUCTURE:
+          - Astro + Tailwind project
+          - Plugin pages live at: src/pages/Plugins/{PluginName}.astro
+          - Plugin metadata lives at: src/data/plugins.json (version already updated — do not modify it)
+          - All plugin pages use PluginLayout from src/layouts/PluginLayout.astro
+          - Colors, logo, cover, accent are read from plugins.json via: pluginsData.find(x => x.name === '{Name}')
+          - Sidebar nav uses slot='sidebar-nav' with nav-group divs and anchor links
+          - Sections use id anchors matching the sidebar links
+
+          PLUGIN SOURCE:
+          - Headers: plugin-source/Source/
+          - Changelog: plugin-source/CHANGELOG.md
+
+          YOUR TASKS:
+          1. Read plugin-source/CHANGELOG.md
+             - Find the ## [$VERSION] section — this is your authoritative list of what changed
+          2. Read the .h files in plugin-source/Source/ for class names, function signatures, and enums
+          3. Read src/pages/Plugins/$PLUGIN_NAME.astro if it exists
+
+          THEN:
+          - If the page EXISTS: add or update only the sections mentioned in the v$VERSION changelog.
+            Do not rewrite existing sections unless the changelog says something changed there.
+          - If the page DOES NOT EXIST: create it from scratch, following the exact structure of
+            src/pages/Plugins/GearFlow.astro as your template. Document every system in the plugin.
+
+          WRITING RULES:
+          - Section content must use real class and function names from the source headers
+          - Code examples should show actual usage patterns, not pseudocode
+          - Sidebar nav must link to every h2 section on the page
+          - Match the visual and structural patterns of existing pages exactly
+          - The changelog filtered out internal changes — trust it, do not add extra sections for things not in it
+          "
+
+      # ── 6. Commit and push — existing deploy.yml handles the rest ─────────
+      - name: Commit and push
+        env:
+          PLUGIN_NAME: ${{ github.event.client_payload.plugin_name }}
+          VERSION:     ${{ github.event.client_payload.version }}
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/
+          if git diff --cached --quiet; then
+            echo "Nothing to commit"
+            exit 0
+          fi
+          git commit -m "docs: $PLUGIN_NAME v$VERSION"
+          git push origin master
