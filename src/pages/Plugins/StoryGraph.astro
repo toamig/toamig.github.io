@@ -522,21 +522,21 @@ StoryComp->OnConditionRequested.AddDynamic(this, &amp;AMyNPC::HandleCondition);
 
 // Handler — evaluate and branch
 void AMyNPC::HandleCondition(FName ConditionName)
-{
+&#123;
     bool bResult = false;
 
     if (ConditionName == "HasKey")
-    {
+    &#123;
         bResult = PlayerInventory->HasItem(KeyItemDefinition);
-    }
+    &#125;
     else if (ConditionName == "QuestComplete")
-    {
+    &#123;
         bResult = QuestManager->IsComplete(FName("MainQuest"));
-    }
+    &#125;
 
     // 0 = True branch, 1 = False branch
     StoryComp->SelectChoice(bResult ? 0 : 1);
-}</code></pre>
+&#125;</code></pre>
 
     <div class="callout callout-info">
       <span class="callout-icon">
