@@ -85,39 +85,22 @@ jobs:
           VERSION:           ${{ github.event.client_payload.version }}
         run: |
           claude --dangerously-skip-permissions --print "
-          You are updating the documentation website for the Unreal Engine 5 plugin: $PLUGIN_NAME, version $VERSION.
+          Update the documentation page for the $PLUGIN_NAME plugin, version $VERSION.
 
-          SITE STRUCTURE:
-          - Astro + Tailwind project
-          - Plugin pages live at: src/pages/Plugins/{PluginName}.astro
-          - Plugin metadata lives at: src/data/plugins.json (version already updated — do not modify it)
-          - All plugin pages use PluginLayout from src/layouts/PluginLayout.astro
-          - Colors, logo, cover, accent are read from plugins.json via: pluginsData.find(x => x.name === '{Name}')
-          - Sidebar nav uses slot='sidebar-nav' with nav-group divs and anchor links
-          - Sections use id anchors matching the sidebar links
+          Plugin source:  plugin-source/
+          Changelog:      plugin-source/CHANGELOG.md
+          Docs page:      src/pages/Plugins/$PLUGIN_NAME.astro
 
-          PLUGIN SOURCE:
-          - Headers: plugin-source/Source/
-          - Changelog: plugin-source/CHANGELOG.md
-
-          YOUR TASKS:
-          1. Read plugin-source/CHANGELOG.md
-             - Find the ## [$VERSION] section — this is your authoritative list of what changed
-          2. Read the .h files in plugin-source/Source/ for class names, function signatures, and enums
+          Steps:
+          1. Read plugin-source/CHANGELOG.md — find the ## [$VERSION] section
+          2. Read .h headers in plugin-source/Source/ for class and function names
           3. Read src/pages/Plugins/$PLUGIN_NAME.astro if it exists
 
-          THEN:
-          - If the page EXISTS: add or update only the sections mentioned in the v$VERSION changelog.
-            Do not rewrite existing sections unless the changelog says something changed there.
-          - If the page DOES NOT EXIST: create it from scratch, following the exact structure of
-            src/pages/Plugins/GearFlow.astro as your template. Document every system in the plugin.
+          If the page EXISTS: update only what the changelog says changed for v$VERSION.
+          If the page does NOT EXIST: create it from scratch using GearFlow.astro as the template.
 
-          WRITING RULES:
-          - Section content must use real class and function names from the source headers
-          - Code examples should show actual usage patterns, not pseudocode
-          - Sidebar nav must link to every h2 section on the page
-          - Match the visual and structural patterns of existing pages exactly
-          - The changelog filtered out internal changes — trust it, do not add extra sections for things not in it
+          All writing rules, quality standards, and structural guidelines are in CLAUDE.md.
+          Read it before writing anything.
           "
 
       # ── 6. Commit and push — existing deploy.yml handles the rest ─────────
