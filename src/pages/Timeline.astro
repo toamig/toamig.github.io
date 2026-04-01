@@ -344,8 +344,8 @@ function renderEvents() {
         const wrap = document.createElement('div');
         wrap.className = 'img-wrap';
 
-        const shimmer = document.createElement('div');
-        shimmer.className = 'img-shimmer';
+        const spinner = document.createElement('div');
+        spinner.className = 'img-spinner';
 
         const img = document.createElement('img');
         img.className = 'event-image';
@@ -354,10 +354,11 @@ function renderEvents() {
         img.loading = 'lazy';
         img.dataset.eventId    = String(event.id);
         img.dataset.imageIndex = String(idx);
-        img.addEventListener('load', () => { img.classList.add('loaded'); shimmer.remove(); });
+        img.addEventListener('load', () => { spinner.remove(); img.classList.add('loaded'); });
+        img.addEventListener('error', () => { spinner.remove(); });
         img.addEventListener('click', (ev) => { ev.stopPropagation(); openImageLightbox(String(event.id), idx); });
 
-        wrap.appendChild(shimmer);
+        wrap.appendChild(spinner);
         wrap.appendChild(img);
         imagesWrap.appendChild(wrap);
       });
