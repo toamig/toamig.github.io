@@ -148,8 +148,9 @@ jobs:
       # ── 6. Commit and push — existing deploy.yml handles the rest ─────────
       - name: Commit and push
         env:
-          PLUGIN_NAME: ${{ github.event.client_payload.plugin_name }}
-          VERSION:     ${{ github.event.client_payload.version }}
+          PLUGIN_NAME:         ${{ github.event.client_payload.plugin_name }}
+          VERSION:             ${{ github.event.client_payload.version }}
+          DOCS_DISPATCH_TOKEN: ${{ secrets.DOCS_DISPATCH_TOKEN }}
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -159,4 +160,6 @@ jobs:
             exit 0
           fi
           git commit -m "docs: $PLUGIN_NAME v$VERSION"
-          git push origin master
+          # Push with PAT so the push event triggers deploy.yml
+          # (pushes made with GITHUB_TOKEN are intentionally blocked from triggering workflows)
+          git push "https://x-access-token:${DOCS_DISPATCH_TOKEN}@github.com/toamig/toamig.github.io.git" master
