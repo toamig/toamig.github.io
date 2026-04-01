@@ -157,6 +157,7 @@ Do not write exhaustive API references. Document the 20% developers will use 80%
 - **Blueprint-first.** Most users are Blueprint developers. Show Blueprint usage before C++ when both are relevant.
 - **No pseudocode.** If you're unsure of the exact API, leave the example out rather than inventing it.
 - **One example per section** unless two approaches (Blueprint vs C++) genuinely differ in setup.
+- **Escape curly braces in code blocks.** Astro treats `{` and `}` as expression delimiters even inside `<pre><code>`. Always write them as `&#123;` and `&#125;` in C++ code blocks — failing to do so causes a build error.
 
 ---
 
