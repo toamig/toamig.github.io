@@ -344,9 +344,6 @@ function renderEvents() {
         const wrap = document.createElement('div');
         wrap.className = 'img-wrap';
 
-        const spinner = document.createElement('div');
-        spinner.className = 'img-spinner';
-
         const img = document.createElement('img');
         img.className = 'event-image';
         img.src = imgSrc.startsWith('/') ? imgSrc : `/${imgSrc}`;
@@ -355,11 +352,8 @@ function renderEvents() {
         img.decoding = 'async';
         img.dataset.eventId    = String(event.id);
         img.dataset.imageIndex = String(idx);
-        img.addEventListener('load', () => { spinner.remove(); img.classList.add('loaded'); });
-        img.addEventListener('error', () => { spinner.remove(); });
         img.addEventListener('click', (ev) => { ev.stopPropagation(); openImageLightbox(String(event.id), idx); });
 
-        wrap.appendChild(spinner);
         wrap.appendChild(img);
         imagesWrap.appendChild(wrap);
       });
