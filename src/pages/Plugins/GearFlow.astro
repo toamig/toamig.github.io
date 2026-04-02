@@ -6,7 +6,7 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
 ---
 <PluginLayout
   title="GearFlow — Modular Inventory, Equipment & Crafting Plugin for UE5"
-  description="A fully modular inventory, equipment, and crafting system for Unreal Engine 5. Data-driven items with opt-in fragments, flat recipe data assets, and tag-driven gear slots — multiplayer-ready and extensible per project."
+  description="A fully modular inventory, equipment, and crafting system for Unreal Engine 5. Fragment-based item definitions, tag-driven gear slots, categorized inventory, timed crafting queues, and built-in save serialization — multiplayer-ready out of the box."
   pluginName="GearFlow"
   version={p.version}
   coverImage={p.cover}
@@ -30,6 +30,7 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
     <div class="nav-group">
       <span class="nav-group-label">Items</span>
       <a href="#item-definition">Item Definition</a>
+      <a href="#fragments">Fragments</a>
       <a href="#item-instance">Item Instance</a>
     </div>
     <div class="nav-group">
@@ -47,8 +48,13 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
     <div class="nav-group">
       <span class="nav-group-label">World</span>
       <a href="#loot-tables">Loot Tables</a>
-      <a href="#pickup-actor">Pickup Actor</a>
-      <a href="#transfer-system">Transfer System</a>
+      <a href="#world-pickups">World Pickups</a>
+      <a href="#item-transfer">Item Transfer</a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-group-label">Systems</span>
+      <a href="#save-system">Save System</a>
+      <a href="#debug-tools">Debug Tools</a>
     </div>
     <div class="nav-group">
       <span class="nav-group-label">Multiplayer</span>
@@ -66,10 +72,10 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>GearFlow</strong> is a modular inventory, equipment, and crafting framework for Unreal Engine 5. Items are <strong>UGearItemDefinition</strong> data assets — a small core of flat fields (name, description, icon) plus an opt-in <strong>Fragments</strong> array. Each fragment owns one concern: stacking rules live on <code>UGearStackFragment</code>, equipment slot data on <code>UGearEquipmentFragment</code>, purchase cost on <code>UGearCostFragment</code>, and world pickup visuals on <code>UGearPickupFragment</code>. A simple sword asset carries only the fragments it actually needs — nothing more is allocated.
+      <strong>GearFlow</strong> is a modular inventory, equipment, and crafting framework for Unreal Engine 5. Items are <strong>UGearItemDefinition</strong> data assets — a small set of flat fields (name, description, icon) plus an opt-in <strong>Fragments</strong> array. Each fragment owns one concern: stacking lives on <code>UGearStackFragment</code>, equipment slot data on <code>UGearEquipmentFragment</code>, purchase cost on <code>UGearCostFragment</code>, world pickup visuals on <code>UGearPickupFragment</code>, and inventory category on <code>UGearCategoryFragment</code>. An item carries only the fragments it needs.
     </p>
     <p class="doc-p">
-      Three storage components — <strong>Inventory</strong>, <strong>Equipment</strong>, and <strong>Wallet</strong> — extend a shared <strong>UGearStorageComponent</strong> base that owns the replicated slot array and the full Add/Remove/Query API. A world-facing layer of pickup actors, loot tables, and a unified <strong>TransferItem</strong> model covers every item-movement pattern without custom code. GAS is optional.
+      Three storage components — <strong>Inventory</strong>, <strong>Equipment</strong>, and <strong>Wallet</strong> — extend a shared <strong>UGearStorageComponent</strong> base that owns the replicated slot array and the full Add/Remove/Query API. Crafting supports both immediate execution and a timed queue. A save library serializes and restores all three component types. A world-facing layer of pickup actors and loot tables covers every item-movement pattern without custom code. GAS is optional.
     </p>
 
     <div class="feature-grid">
@@ -78,56 +84,56 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
         </div>
         <p class="feature-title">Fragment System</p>
-        <p class="feature-desc">Item behaviour is composed via opt-in fragments — stacking, equipment slots, cost, and world pickups each live on their own fragment class. Add only what each item needs; nothing extra is allocated.</p>
+        <p class="feature-desc">Item behaviour is composed via opt-in fragments. Shared, Instanced, and InstancedReplicated policies control how fragment data is owned and replicated. Lifecycle hooks fire on equip, unequip, create, and destroy.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
         </div>
         <p class="feature-title">Modular Components</p>
-        <p class="feature-desc">Add only what each actor needs. A chest uses Inventory. A player adds Equipment. A shop NPC adds Wallet. Each component is self-contained.</p>
+        <p class="feature-desc">Add only what each actor needs. A chest uses Inventory. A player adds Equipment. A shop NPC adds Wallet. Each component is self-contained and independently replicated.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         </div>
         <p class="feature-title">Multiplayer Ready</p>
-        <p class="feature-desc">FastArray replication with delta compression on all storage components. Server-authoritative. Works with Listen and Dedicated servers out of the box.</p>
+        <p class="feature-desc">FastArray replication with delta compression on all storage components. Server-authoritative. Works with Listen and Dedicated servers out of the box. InstancedReplicated fragments replicate per-instance state automatically.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
         </div>
         <p class="feature-title">Designer Friendly</p>
-        <p class="feature-desc">All items, recipes, and loot tables are data assets. Designers create and iterate entirely in the Content Browser, no C++ required.</p>
+        <p class="feature-desc">All items, recipes, and loot tables are data assets. Designers create and iterate entirely in the Content Browser. Built-in gameplay tags cover equipment slots, item types, and currencies out of the box.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3m8 0h3a2 2 0 0 0 2-2v-3"/></svg>
         </div>
         <p class="feature-title">Transfer Model</p>
-        <p class="feature-desc">All item movement — looting, buying, dropping — runs through UGearFunctionLibrary. One unified path, one set of delegates, no custom movement code.</p>
+        <p class="feature-desc">All item movement — looting, buying, dropping — runs through <code>UGearFunctionLibrary</code>. One unified path, one set of delegates, no custom movement code required in your project.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
         </div>
         <p class="feature-title">Crafting System</p>
-        <p class="feature-desc">Data-driven recipes with multi-output support. A CraftingRule object handles custom validation — positional grids, skill gates, or anything else.</p>
+        <p class="feature-desc">Data-driven recipes with multi-output support. Instant crafting via <code>UGearCraftingComponent</code> or time-queued crafting via <code>UGearTimedCraftingComponent</code>. Custom validation rules for skill gates and positional grids.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </div>
         <p class="feature-title">Equipment Slots</p>
-        <p class="feature-desc">Tag-driven named gear slots. Items carry a <code>UGearEquipmentFragment</code> that declares accepted slot types and an optional visual actor class; the Equipment Component matches and spawns it on equip.</p>
+        <p class="feature-desc">Tag-driven named gear slots. <code>UGearEquipmentFragment</code> declares accepted slot types and an array of visual entries — each entry provides an actor class and optional socket override for multi-mesh weapon setups.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
         </div>
-        <p class="feature-title">World Pickup Actors</p>
-        <p class="feature-desc">Items with a <code>UGearPickupFragment</code> can be dropped into the world. <code>UGearFunctionLibrary::DropItem</code> spawns the configured pickup actor class, auto-picks up on overlap, and supports Timed or Persistent lifetimes.</p>
+        <p class="feature-title">Save System</p>
+        <p class="feature-desc"><code>UGearSaveLibrary</code> serializes inventory, equipment, and wallet state to structured save data types. Per-instance save hooks let custom fragments persist their own state alongside the slot data.</p>
       </div>
     </div>
 
@@ -135,7 +141,7 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
       <span class="callout-icon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       </span>
-      <span>GearFlow does not require the Gameplay Ability System. It integrates well with GAS — the optional <strong>EquipmentRule</strong> object and custom fragment subclasses are natural GAS extension points — but GAS is entirely optional.</span>
+      <span>GearFlow does not require the Gameplay Ability System. The optional <strong>EquipmentRule</strong> and <strong>CraftingRule</strong> objects and custom fragment subclasses are natural GAS extension points, but GAS is entirely optional.</span>
     </div>
   </section>
 
@@ -169,7 +175,7 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
         <span class="step-num">3</span>
         <div class="step-body">
           <p class="step-title">Create an Item Definition</p>
-          <p class="step-desc">Right-click in the Content Browser and select <strong>GearFlow → Item Definition</strong>. Open the asset and set <strong>DisplayName</strong> and <strong>Icon</strong>. Add fragments to the <strong>Fragments</strong> array as needed — for example, a <code>UGearEquipmentFragment</code> to make the item equippable, or a <code>UGearStackFragment</code> to allow stacking.</p>
+          <p class="step-desc">Right-click in the Content Browser and select <strong>GearFlow → Item Definition</strong>. Open the asset and set <strong>DisplayName</strong> and <strong>Icon</strong>. Add fragments to the <strong>Fragments</strong> array as needed — for example, a <code>UGearStackFragment</code> to allow stacking, or a <code>UGearEquipmentFragment</code> to make the item equippable.</p>
         </div>
       </div>
       <div class="step">
@@ -183,7 +189,7 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
         <span class="step-num">5</span>
         <div class="step-body">
           <p class="step-title">Add an item</p>
-          <p class="step-desc">Call <code>AddItem(ItemDefinition, Count)</code> on the component from the server. The item fills existing stacks first (for stackable items), then creates new slots. Replication to clients is automatic — no extra RPC code needed.</p>
+          <p class="step-desc">Call <code>AddItem(ItemDefinition, Count)</code> on the component from the server. The item fills existing stacks first for stackable items, then creates new slots. Replication to clients is automatic.</p>
         </div>
       </div>
     </div>
@@ -199,7 +205,7 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>UGearItemDefinition</strong> extends <code>UPrimaryDataAsset</code> and is the immutable definition for an item type. It is never modified at runtime — it is the template from which instances are created. A small set of flat fields is present on every item; all optional behaviour is added via the <strong>Fragments</strong> array.
+      <strong>UGearItemDefinition</strong> extends <code>UPrimaryDataAsset</code> and is the immutable template for an item type. It is never modified at runtime — all runtime state lives on the <code>UGearItemInstance</code>. A small set of flat fields is present on every item; all optional behaviour is added via the <strong>Fragments</strong> array.
     </p>
 
     <table class="prop-table">
@@ -225,56 +231,159 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
         <tr>
           <td class="prop-name">Fragments</td>
           <td class="prop-type">TArray&lt;UGearItemFragment*&gt;</td>
-          <td class="prop-desc">Instanced fragment objects that attach optional behaviour to this item — stacking, equipment slots, cost, pickup visuals, or any custom fragment defined in your project.</td>
+          <td class="prop-desc">Instanced fragment objects that attach optional behaviour to this item. Absence of a fragment means the item simply does not have that capability.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">InstanceClass</td>
+          <td class="prop-type">TSubclassOf&lt;UGearItemInstance&gt;</td>
+          <td class="prop-desc">Custom instance class override. Leave unset to use the default <code>UGearItemInstance</code>. Override when you need Blueprint-subclassed instances with per-item state (durability, enchantments).</td>
         </tr>
       </tbody>
     </table>
 
     <div class="doc-subsection">
-      <h3 class="doc-subsection-title">Fragment Types</h3>
-      <p class="doc-p" style="margin-bottom:12px">Each fragment is an instanced <code>UGearItemFragment</code> subclass added to the <strong>Fragments</strong> array in the editor. The absence of a fragment means the item simply does not have that capability — no stub code, no null-checks on unused properties.</p>
-
+      <h3 class="doc-subsection-title">Fragment access</h3>
       <table class="prop-table">
         <thead>
-          <tr><th>Fragment Class</th><th>Property</th><th>Type</th><th>Description</th></tr>
+          <tr><th>Function</th><th>Description</th></tr>
         </thead>
         <tbody>
           <tr>
-            <td class="prop-name" rowspan="1">UGearStackFragment</td>
-            <td class="prop-name">MaxStackSize</td>
-            <td class="prop-type">int32</td>
-            <td class="prop-desc">Maximum units allowed per inventory slot. Minimum 2. Absence of this fragment means the item is non-stackable — each unit gets its own instance.</td>
+            <td class="prop-name">FindFragment&lt;T&gt;()</td>
+            <td class="prop-desc">Template accessor returning the first fragment of type T, or nullptr. Use in C++.</td>
           </tr>
           <tr>
-            <td class="prop-name" rowspan="2">UGearEquipmentFragment</td>
-            <td class="prop-name">AcceptedSlotTypes</td>
-            <td class="prop-type">FGameplayTagContainer</td>
-            <td class="prop-desc">Tags matched against a slot's <code>SlotFilter</code>. An item fits a slot when at least one tag matches. Absence of this fragment means the item cannot be equipped.</td>
-          </tr>
-          <tr>
-            <td class="prop-name">EquippedVisualClass</td>
-            <td class="prop-type">TSoftClassPtr&lt;AActor&gt;</td>
-            <td class="prop-desc">Actor class spawned and attached to the character when this item is equipped. Null means no visual is spawned. Replicated to all clients.</td>
-          </tr>
-          <tr>
-            <td class="prop-name" rowspan="1">UGearCostFragment</td>
-            <td class="prop-name">Cost</td>
-            <td class="prop-type">TMap&lt;FGameplayTag, int32&gt;</td>
-            <td class="prop-desc">Currency tag → amount pairs. Used by <code>TransferItem</code> when a wallet is provided — the transfer fails atomically if the wallet cannot cover all entries. Absence means the item transfers freely.</td>
-          </tr>
-          <tr>
-            <td class="prop-name" rowspan="2">UGearPickupFragment</td>
-            <td class="prop-name">PickupActorClass</td>
-            <td class="prop-type">TSoftClassPtr&lt;AGearPickupActor&gt;</td>
-            <td class="prop-desc">Actor class spawned when this item is dropped. Null uses the built-in <code>AGearStaticMeshPickupActor</code>. Override with a project subclass for custom visuals or behaviour. Absence of this fragment means the item cannot be dropped.</td>
-          </tr>
-          <tr>
-            <td class="prop-name">WorldMesh</td>
-            <td class="prop-type">TSoftObjectPtr&lt;UStaticMesh&gt;</td>
-            <td class="prop-desc">Mesh applied to <code>AGearStaticMeshPickupActor</code> when dropped. Ignored if <code>PickupActorClass</code> is set to a custom actor.</td>
+            <td class="prop-name">FindFragmentByClass(Class)</td>
+            <td class="prop-desc">Blueprint-accessible equivalent. Pass the fragment class and cast the result.</td>
           </tr>
         </tbody>
       </table>
+    </div>
+  </section>
+
+  <!-- ── Fragments ──────────────────────────────────────────────── -->
+  <section class="doc-section" id="fragments" data-section="fragments">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </span>
+      Fragments
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      <strong>UGearItemFragment</strong> is the base class for all item fragments. Every fragment declares a <strong>policy</strong> that controls how the fragment is owned and replicated at runtime. Add your own fragment subclasses in Blueprint or C++ to attach custom per-item data without modifying the definition asset itself.
+    </p>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">EGearFragmentPolicy</h3>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Value</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="prop-name">Shared</td>
+            <td class="prop-desc">Fragment data is read directly from the definition asset. No per-instance copy is made. Use for read-only data that all instances share (e.g. display name overrides, category tags).</td>
+          </tr>
+          <tr>
+            <td class="prop-name">Instanced</td>
+            <td class="prop-desc">A copy of the fragment is made per instance, owned locally on the server. Use for mutable per-instance data that does not need to reach clients (server-only durability tracking).</td>
+          </tr>
+          <tr>
+            <td class="prop-name">InstancedReplicated</td>
+            <td class="prop-desc">A copy is made per instance and replicated to clients. Use for data that must be visible to clients — ability charges, enchantment level, or any state the UI reads.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Lifecycle hooks</h3>
+      <p class="doc-p" style="margin-bottom:12px">Override these in your fragment subclass to react to item events. All hooks run server-side.</p>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Hook</th><th>When it fires</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="prop-name">OnCreated(Instance)</td>
+            <td class="prop-desc">After the item instance is created and the definition is assigned. Use for one-time initialization — roll random stats, set initial charges.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">OnDestroyed(Instance)</td>
+            <td class="prop-desc">Before the instance is destroyed (item removed from all storage). Use to clean up side effects or grant replacement items.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">OnEquipped(Instance, SlotTag)</td>
+            <td class="prop-desc">After the item is placed in a gear slot. Use to apply passive stat modifiers or grant abilities.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">OnUnequipped(Instance, SlotTag)</td>
+            <td class="prop-desc">After the item is removed from a gear slot. Use to revoke any effects applied by <code>OnEquipped</code>.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Built-in fragment classes</h3>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Class</th><th>Key Property</th><th>Purpose</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="prop-name">UGearStackFragment</td>
+            <td class="prop-type">MaxStackSize: int32</td>
+            <td class="prop-desc">Makes the item stackable. Maximum units per slot. Absence means one unit per slot, each with its own instance.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">UGearEquipmentFragment</td>
+            <td class="prop-type">AcceptedSlotTypes: FGameplayTagContainer</td>
+            <td class="prop-desc">Makes the item equippable. Declares which slot tags accept this item. Also holds <code>EquippedVisuals</code> — an array of visual entries, each with an actor class and optional socket override for multi-mesh setups.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">UGearCostFragment</td>
+            <td class="prop-type">Cost: TMap&lt;FGameplayTag, int32&gt;</td>
+            <td class="prop-desc">Attaches a purchase price. Currency tag → amount pairs. Used by <code>TransferItem</code> when a wallet is provided — the transfer fails atomically if the wallet cannot cover all entries.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">UGearPickupFragment</td>
+            <td class="prop-type">PickupActorClass, WorldMesh</td>
+            <td class="prop-desc">Makes the item droppable. Specifies the pickup actor class (null uses the built-in static mesh pickup) and the mesh to display. Absence means the item cannot be dropped.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">UGearCategoryFragment</td>
+            <td class="prop-type">CategoryTag: FGameplayTag</td>
+            <td class="prop-desc">Tags the item with an inventory category. Matched against <code>FGearInventoryCategory.ItemTypeFilter</code> to route the item into the correct category slots when added to a categorized inventory.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Custom fragment example</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">C++</span></div>
+        <pre><code><span class="code-comment">// Declare a replicated, per-instance durability fragment</span>
+UCLASS()
+class UDurabilityFragment : public UGearItemFragment
+&#123;
+    GENERATED_BODY()
+public:
+    UPROPERTY(EditDefaultsOnly)
+    float MaxDurability = 100.f;
+
+    UPROPERTY(Replicated)
+    float CurrentDurability = 100.f;
+
+    virtual EGearFragmentPolicy GetPolicy() const override
+    &#123; return EGearFragmentPolicy::InstancedReplicated; &#125;
+
+    virtual void OnCreated(UGearItemInstance* Instance) override
+    &#123; CurrentDurability = MaxDurability; &#125;
+&#125;;</code></pre>
+      </div>
     </div>
   </section>
 
@@ -288,7 +397,7 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>UGearItemInstance</strong> is the runtime handle for an item occupying a slot. It holds a pointer to the immutable definition. Stackable items share one instance per slot with the count tracked separately in the slot struct; non-stackable items have one instance per unit so each can carry individual state. Instances are owned and replicated by the storage component — never construct one manually, always interact through the component API. The class is Blueprint-subclassable for per-item state such as durability or enchantments.
+      <strong>UGearItemInstance</strong> is the runtime handle for an item occupying a slot. It holds a pointer to the immutable definition and the per-instance copies of any <code>Instanced</code> or <code>InstancedReplicated</code> fragments. Stackable items share one instance per slot; non-stackable items get one instance per unit so each can carry individual state. Instances are owned and replicated by the storage component — never construct one manually. Subclass in Blueprint or C++ via the definition's <code>InstanceClass</code> override.
     </p>
 
     <table class="prop-table">
@@ -300,6 +409,11 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
           <td class="prop-name">Definition</td>
           <td class="prop-type">UGearItemDefinition*</td>
           <td class="prop-desc">The definition this instance was created from. Replicated.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">InstancedFragments</td>
+          <td class="prop-type">TArray&lt;UGearItemFragment*&gt;</td>
+          <td class="prop-desc">Per-instance copies of fragments with <code>Instanced</code> or <code>InstancedReplicated</code> policy. Query through <code>FindFragment</code> rather than accessing this array directly.</td>
         </tr>
       </tbody>
     </table>
@@ -317,27 +431,32 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
         <tr>
           <td class="prop-name">IsStackable()</td>
           <td class="prop-type">bool</td>
-          <td class="prop-desc">Whether this item can stack — true when the definition carries a <code>UGearStackFragment</code>.</td>
+          <td class="prop-desc">True when the definition carries a <code>UGearStackFragment</code>.</td>
         </tr>
         <tr>
-          <td class="prop-name">FindFragmentByClass(FragmentClass)</td>
+          <td class="prop-name">FindFragment&lt;T&gt;()</td>
+          <td class="prop-type">T*</td>
+          <td class="prop-desc">Searches instanced fragments first, then falls back to the definition's shared fragments. Use this in C++ to access fragment data from an instance.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">FindFragmentByClass(Class)</td>
           <td class="prop-type">UGearItemFragment*</td>
-          <td class="prop-desc">Convenience passthrough to <code>Definition->FindFragmentByClass</code>. Use in Blueprint graphs to access fragment data from an instance.</td>
+          <td class="prop-desc">Blueprint-accessible equivalent of <code>FindFragment&lt;T&gt;</code>.</td>
         </tr>
         <tr>
           <td class="prop-name">OnInstanceCreated()</td>
           <td class="prop-type">Blueprint event</td>
-          <td class="prop-desc">Called once after <code>Definition</code> is assigned. Override to initialize per-instance state such as randomized durability on first creation.</td>
+          <td class="prop-desc">Called once after <code>Definition</code> is assigned. Override to initialize per-instance state. Fragment <code>OnCreated</code> hooks fire before this.</td>
         </tr>
         <tr>
           <td class="prop-name">GetInstanceSaveData(out TMap&lt;FString,FString&gt;)</td>
           <td class="prop-type">Blueprint event</td>
-          <td class="prop-desc">Return custom key/value pairs representing this instance's state for save serialization.</td>
+          <td class="prop-desc">Return custom key/value pairs for save serialization. Called by <code>UGearSaveLibrary::CaptureInventory</code>.</td>
         </tr>
         <tr>
           <td class="prop-name">SetInstanceSaveData(TMap&lt;FString,FString&gt;)</td>
           <td class="prop-type">Blueprint event</td>
-          <td class="prop-desc">Restore custom save data on load. Called before <code>OnInstanceCreated</code> when loading from save.</td>
+          <td class="prop-desc">Restore custom save data on load. Called by <code>UGearSaveLibrary::RestoreInventory</code> before <code>OnInstanceCreated</code>.</td>
         </tr>
       </tbody>
     </table>
@@ -353,7 +472,7 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>UGearStorageComponent</strong> is the abstract base shared by Inventory and Equipment. It owns the replicated slot array (<code>FGearContainerSlotArray</code> via FastArray) and exposes the full Add/Remove/Query API. All mutating functions are server-authoritative — calling them on a client has no effect.
+      <strong>UGearStorageComponent</strong> is the abstract base shared by Inventory and Equipment. It owns the replicated slot array (FastArray via <code>FGearContainerSlot</code>) and exposes the full Add/Remove/Query/Move API. All mutating functions are server-authoritative — calling them on a client has no effect.
     </p>
 
     <div class="doc-subsection">
@@ -363,11 +482,6 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
           <tr><th>Field</th><th>Type</th><th>Description</th></tr>
         </thead>
         <tbody>
-          <tr>
-            <td class="prop-name">SlotFilter</td>
-            <td class="prop-type">FGameplayTag</td>
-            <td class="prop-desc">Matched against the item's <code>UGearEquipmentFragment.AcceptedSlotTypes</code>. An empty tag accepts any item.</td>
-          </tr>
           <tr>
             <td class="prop-name">Instance</td>
             <td class="prop-type">UGearItemInstance*</td>
@@ -381,12 +495,17 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
           <tr>
             <td class="prop-name">bStackable</td>
             <td class="prop-type">bool</td>
-            <td class="prop-desc">Whether this slot allows stacking. Set during component initialization.</td>
+            <td class="prop-desc">Whether this slot allows stacking.</td>
           </tr>
           <tr>
             <td class="prop-name">MaxStackSize</td>
             <td class="prop-type">int32</td>
             <td class="prop-desc">Maximum stack count for this slot.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">SlotFilter</td>
+            <td class="prop-type">FGameplayTag</td>
+            <td class="prop-desc">Tag filter for this slot. An empty tag accepts any item. Used by equipment slots to restrict item types.</td>
           </tr>
         </tbody>
       </table>
@@ -403,11 +522,11 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
           <tr><td class="prop-name">AddItemInstance(Instance)</td><td class="prop-desc">Places a pre-created instance into the first available matching slot. Server only.</td></tr>
           <tr><td class="prop-name">RemoveItem(Definition, Count)</td><td class="prop-desc">Removes Count units by item type. Returns false if insufficient. Server only.</td></tr>
           <tr><td class="prop-name">RemoveItemInstance(Instance)</td><td class="prop-desc">Removes a specific instance. Server only.</td></tr>
-          <tr><td class="prop-name">ClearAllItems()</td><td class="prop-desc">Removes all items from all slots. Server only.</td></tr>
-          <tr><td class="prop-name">RestoreSlotState(SlotIndex, Definition, Count)</td><td class="prop-desc">Reconstructs a slot from save data without going through the normal add path.</td></tr>
-          <tr><td class="prop-name">SwapSlots(IndexA, IndexB)</td><td class="prop-desc">Swaps two slots within this component.</td></tr>
-          <tr><td class="prop-name">SwapSlotsBetween(IndexA, OtherComponent, IndexB)</td><td class="prop-desc">Swaps a slot in this component with a slot in another component.</td></tr>
-          <tr><td class="prop-name">ConsolidateStacks()</td><td class="prop-desc">Merges split stacks of the same item where possible, freeing slots.</td></tr>
+          <tr><td class="prop-name">SwapSlots(IndexA, IndexB)</td><td class="prop-desc">Swaps two slots within this component. Server only.</td></tr>
+          <tr><td class="prop-name">SwapSlotsBetween(IndexA, OtherComponent, IndexB)</td><td class="prop-desc">Swaps a slot in this component with a slot in another component. Server only.</td></tr>
+          <tr><td class="prop-name">SplitStack(SlotIndex, SplitCount)</td><td class="prop-desc">Splits a stack by moving SplitCount units to the next available empty slot. Server only.</td></tr>
+          <tr><td class="prop-name">ConsolidateStacks()</td><td class="prop-desc">Merges split stacks of the same item where possible, freeing slots. Server only.</td></tr>
+          <tr><td class="prop-name">MoveItem(SlotIndex, TargetComponent, TargetSlotIndex)</td><td class="prop-desc">Moves a slot to a specific slot in another (or the same) component. Server only.</td></tr>
           <tr><td class="prop-name">GetItemCount(Definition)</td><td class="prop-desc">Returns total units of an item across all slots.</td></tr>
           <tr><td class="prop-name">HasItem(Definition, Count)</td><td class="prop-desc">Returns true if at least Count units of the item are present.</td></tr>
           <tr><td class="prop-name">CanAddItem(Definition, Count)</td><td class="prop-desc">Returns true if there is room to add Count units without losing any.</td></tr>
@@ -433,7 +552,7 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
           <tr>
             <td class="prop-name">OnStorageFull</td>
             <td class="prop-type">Item, AmountNotAdded</td>
-            <td class="prop-desc">Fires when <code>AddItem</code> cannot place all units due to capacity. Use to show a "Inventory Full" notification.</td>
+            <td class="prop-desc">Fires when <code>AddItem</code> cannot place all units due to capacity. Use to show an inventory-full notification.</td>
           </tr>
         </tbody>
       </table>
@@ -450,42 +569,109 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>UGearInventoryComponent</strong> extends <code>UGearStorageComponent</code> and acts as the player bag, chest, or loot container. It configures the slot array at initialization time using the properties below — all slot stacking rules are established once and do not change at runtime.
+      <strong>UGearInventoryComponent</strong> extends <code>UGearStorageComponent</code> and acts as the player bag, chest, or loot container. Slots can be configured uniformly or split into named <strong>categories</strong> — each category owns a fixed slice of the slot array and accepts only items whose <code>UGearCategoryFragment</code> tag matches the category's <code>ItemTypeFilter</code>.
     </p>
 
-    <table class="prop-table">
-      <thead>
-        <tr><th>Property</th><th>Type</th><th>Description</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="prop-name">SlotCount</td>
-          <td class="prop-type">int32</td>
-          <td class="prop-desc">Total number of inventory slots created on initialization.</td>
-        </tr>
-        <tr>
-          <td class="prop-name">bDefaultStackable</td>
-          <td class="prop-type">bool</td>
-          <td class="prop-desc">Applied to all slots on init unless overridden per-slot via <code>SlotFilters</code>.</td>
-        </tr>
-        <tr>
-          <td class="prop-name">DefaultMaxStackSize</td>
-          <td class="prop-type">int32</td>
-          <td class="prop-desc">Default max stack count when <code>bDefaultStackable</code> is true.</td>
-        </tr>
-        <tr>
-          <td class="prop-name">SlotFilters</td>
-          <td class="prop-type">TArray&lt;FGameplayTag&gt;</td>
-          <td class="prop-desc">Per-slot tag filters at init, index-matched to the slot array. Slots without an entry in this array use an empty filter (accepts anything).</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Properties</h3>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Property</th><th>Type</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="prop-name">SlotCount</td>
+            <td class="prop-type">int32</td>
+            <td class="prop-desc">Total number of slots when not using categories. Ignored if <code>Categories</code> is populated.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">bDefaultStackable</td>
+            <td class="prop-type">bool</td>
+            <td class="prop-desc">Default stacking behaviour applied to all slots unless overridden per-slot or per-category.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">DefaultMaxStackSize</td>
+            <td class="prop-type">int32</td>
+            <td class="prop-desc">Default max stack count when <code>bDefaultStackable</code> is true.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">SlotFilters</td>
+            <td class="prop-type">TArray&lt;FGameplayTag&gt;</td>
+            <td class="prop-desc">Per-slot tag filters, index-matched to the slot array. Slots without an entry use an empty filter (accepts anything).</td>
+          </tr>
+          <tr>
+            <td class="prop-name">Categories</td>
+            <td class="prop-type">TArray&lt;FGearInventoryCategory&gt;</td>
+            <td class="prop-desc">Defines named category groups. When populated, the inventory is divided into category-owned slot ranges instead of using <code>SlotCount</code>.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-    <div class="callout callout-info">
-      <span class="callout-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      </span>
-      <span>All mutating functions from <code>UGearStorageComponent</code> — <code>AddItem</code>, <code>RemoveItem</code>, <code>SwapSlots</code> — are available on this component. Calling them from a non-authority client has no effect; always call from the server or use the provided Server RPCs (<code>Server_AddItem</code>, <code>Server_RemoveItem</code>).</span>
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">FGearInventoryCategory</h3>
+      <p class="doc-p" style="margin-bottom:12px">Each entry in the <code>Categories</code> array defines a named slot group. The total inventory slot count is the sum of all category <code>SlotCount</code> values.</p>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="prop-name">CategoryTag</td>
+            <td class="prop-type">FGameplayTag</td>
+            <td class="prop-desc">Unique identifier for this category. Used as the key in <code>GetSlotsByCategory</code>.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">DisplayName</td>
+            <td class="prop-type">FText</td>
+            <td class="prop-desc">UI display name for this category tab or section.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">Icon</td>
+            <td class="prop-type">TSoftObjectPtr&lt;UTexture2D&gt;</td>
+            <td class="prop-desc">Icon for this category's UI tab.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">SlotCount</td>
+            <td class="prop-type">int32</td>
+            <td class="prop-desc">Number of slots in this category's range.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">ItemTypeFilter</td>
+            <td class="prop-type">FGameplayTag</td>
+            <td class="prop-desc">Matched against the item's <code>UGearCategoryFragment.CategoryTag</code>. Only matching items can enter this category's slots.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">bAcceptsUncategorized</td>
+            <td class="prop-type">bool</td>
+            <td class="prop-desc">When true, items without a <code>UGearCategoryFragment</code> can spill into this category. Useful as a catch-all "Misc" category.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">bDefaultStackable</td>
+            <td class="prop-type">bool</td>
+            <td class="prop-desc">Stacking behaviour applied to all slots in this category, overriding the component-level default.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">DefaultMaxStackSize</td>
+            <td class="prop-type">int32</td>
+            <td class="prop-desc">Max stack size for slots in this category.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Category functions</h3>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Function</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="prop-name">GetSlotsByCategory(CategoryTag)</td><td class="prop-desc">Returns the slot indices belonging to the given category. Use to drive per-category UI panels.</td></tr>
+          <tr><td class="prop-name">ResizeInventory(NewSlotCount)</td><td class="prop-desc">Resizes the total slot count at runtime. New slots are empty; items are not moved. Existing items beyond <code>NewSlotCount</code> overflow via the <code>OnStorageFull</code> delegate path. Server only.</td></tr>
+          <tr><td class="prop-name">ResizeCategory(CategoryTag, NewSlotCount)</td><td class="prop-desc">Resizes a single category's slot range at runtime. Server only.</td></tr>
+        </tbody>
+      </table>
     </div>
   </section>
 
@@ -499,7 +685,7 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>UGearEquipmentComponent</strong> extends <code>UGearStorageComponent</code> and manages named gear slots — one item per slot. Only items that carry a <code>UGearEquipmentFragment</code> can be equipped; the fragment's <code>AcceptedSlotTypes</code> is matched against the slot tag. When an item is equipped, the component spawns the fragment's <code>EquippedVisualClass</code> actor server-side, attaches it to the specified socket on <code>VisualAttachTarget</code>, and replicates the visual actor to all clients. Unequipping destroys the visual actor.
+      <strong>UGearEquipmentComponent</strong> extends <code>UGearStorageComponent</code> and manages named gear slots — one item per slot, identified by Gameplay Tag. Only items carrying a <code>UGearEquipmentFragment</code> can be equipped; the fragment's <code>AcceptedSlotTypes</code> must overlap with the target slot tag. When an item is equipped, the component iterates the fragment's <code>EquippedVisuals</code> array and spawns each visual actor server-side, attaching it to the specified socket on <code>VisualAttachTarget</code>. All visual actors replicate to clients. Unequipping destroys them.
     </p>
 
     <div class="doc-subsection">
@@ -512,7 +698,7 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
           <tr>
             <td class="prop-name">EquipmentSlotDefinitions</td>
             <td class="prop-type">TArray&lt;FGameplayTag&gt;</td>
-            <td class="prop-desc">The set of valid slot tags (e.g. <code>Equipment.Weapon.MainHand</code>). Only tags listed here are recognized as equipment slots.</td>
+            <td class="prop-desc">The set of valid slot tags recognized by this component (e.g. <code>GearFlow.Slot.MainHand</code>). Only listed tags can receive items.</td>
           </tr>
           <tr>
             <td class="prop-name">VisualAttachTarget</td>
@@ -522,12 +708,12 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
           <tr>
             <td class="prop-name">SlotAttachSockets</td>
             <td class="prop-type">TMap&lt;FGameplayTag, FName&gt;</td>
-            <td class="prop-desc">Maps slot tag to socket name on <code>VisualAttachTarget</code>. If a slot has no entry, the visual attaches at the component root.</td>
+            <td class="prop-desc">Maps slot tag to socket name on <code>VisualAttachTarget</code>. If a slot has no entry, visuals attach at the component root.</td>
           </tr>
           <tr>
             <td class="prop-name">EquipmentRule</td>
             <td class="prop-type">UGearEquipmentRule*</td>
-            <td class="prop-desc">Optional custom validation object. Default validation is tag matching only. Subclass <code>UGearEquipmentRule</code> to add level requirements, class restrictions, or other conditions.</td>
+            <td class="prop-desc">Optional custom validation object. Default validation is tag matching only. Subclass <code>UGearEquipmentRule</code> and override <code>ValidateEquip()</code> to add level requirements, class restrictions, or other conditions.</td>
           </tr>
         </tbody>
       </table>
@@ -540,16 +726,12 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
           <tr><th>Function</th><th>Description</th></tr>
         </thead>
         <tbody>
-          <tr><td class="prop-name">EquipItem(Definition, SlotTag)</td><td class="prop-desc">Equips by item definition; creates a new instance. Requires a <code>UGearEquipmentFragment</code> with a matching slot tag. Unequips the current occupant if needed. Server only.</td></tr>
-          <tr><td class="prop-name">EquipItemInstance(Instance, SlotTag)</td><td class="prop-desc">Equips a pre-existing instance into the specified slot. Server only.</td></tr>
-          <tr><td class="prop-name">UnequipSlot(SlotTag)</td><td class="prop-desc">Removes the item from the slot; does not destroy the instance. Server only.</td></tr>
+          <tr><td class="prop-name">EquipItem(Definition, SlotTag)</td><td class="prop-desc">Creates a new instance from the definition and equips it to the slot. Unequips the current occupant first if needed. Server only.</td></tr>
+          <tr><td class="prop-name">UnequipSlot(SlotTag)</td><td class="prop-desc">Removes the item from the slot. Does not destroy the instance. Server only.</td></tr>
           <tr><td class="prop-name">UnequipItem(Definition)</td><td class="prop-desc">Finds and unequips the first slot holding this item type. Server only.</td></tr>
-          <tr><td class="prop-name">UnequipItemInstance(Instance)</td><td class="prop-desc">Unequips a specific instance. Server only.</td></tr>
           <tr><td class="prop-name">GetItemInSlot(SlotTag)</td><td class="prop-desc">Returns the <code>UGearItemDefinition*</code> in that slot, or nullptr if empty.</td></tr>
           <tr><td class="prop-name">GetItemInstanceInSlot(SlotTag)</td><td class="prop-desc">Returns the <code>UGearItemInstance*</code> in that slot, or nullptr.</td></tr>
           <tr><td class="prop-name">IsSlotOccupied(SlotTag)</td><td class="prop-desc">Returns true if the slot has an item.</td></tr>
-          <tr><td class="prop-name">GetEquippedItems()</td><td class="prop-desc">Returns a <code>TMap&lt;FGameplayTag, UGearItemDefinition*&gt;</code> of all occupied slots.</td></tr>
-          <tr><td class="prop-name">GetSlotVisual(SlotTag)</td><td class="prop-desc">Returns the live spawned visual actor for that slot, or nullptr if the slot is empty or the item's <code>UGearEquipmentFragment</code> has no <code>EquippedVisualClass</code>.</td></tr>
         </tbody>
       </table>
     </div>
@@ -571,6 +753,11 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
             <td class="prop-type">SlotTag, OldInstance</td>
             <td class="prop-desc">Fires after unequip replication reaches clients.</td>
           </tr>
+          <tr>
+            <td class="prop-name">OnVisualSpawned</td>
+            <td class="prop-type">SlotTag, SpawnedActor</td>
+            <td class="prop-desc">Fires on the server when a visual actor is spawned for a slot. Use to call setup functions on the visual actor before clients receive it.</td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -579,7 +766,7 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
       <span class="callout-icon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       </span>
-      <span>Visual actors are spawned server-side and replicated to all clients with <code>COND_None</code>. Cast the result of <code>GetSlotVisual</code> to your actor class (e.g. <code>ACascadeWeaponActor</code>) to access weapon-specific logic on both server and client.</span>
+      <span>GearFlow ships built-in tags for common slots: <code>GearFlow.Slot.MainHand</code>, <code>GearFlow.Slot.OffHand</code>, <code>GearFlow.Slot.Head</code>, <code>GearFlow.Slot.Chest</code>, <code>GearFlow.Slot.Legs</code>, <code>GearFlow.Slot.Feet</code>, <code>GearFlow.Slot.Hands</code>, <code>GearFlow.Slot.Ring</code>, <code>GearFlow.Slot.Neck</code>, <code>GearFlow.Slot.Back</code>. Define your own in your project's gameplay tags for custom slots.</span>
     </div>
   </section>
 
@@ -593,7 +780,7 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>UGearWalletComponent</strong> is a tag-keyed currency store. Any number of currency types are supported, each identified by a Gameplay Tag. Multi-currency cost checks and atomic payment are first-class — <code>CanAfford</code> and <code>PayCost</code> operate on a whole cost map, making vendor transactions and recipe costs straightforward.
+      <strong>UGearWalletComponent</strong> is a tag-keyed currency store with FastArray replication. Any number of currency types are supported, each identified by a Gameplay Tag. Multi-currency cost checks and atomic payment are first-class — <code>CanAfford</code> and <code>PayCost</code> operate on a whole cost map, making vendor transactions and recipe costs a single call. GearFlow ships built-in currency tags: <code>GearFlow.Currency.Gold</code>, <code>GearFlow.Currency.Silver</code>, and <code>GearFlow.Currency.Premium</code>.
     </p>
 
     <table class="prop-table">
@@ -601,12 +788,12 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
         <tr><th>Function</th><th>Description</th></tr>
       </thead>
       <tbody>
-        <tr><td class="prop-name">AddCurrency(CurrencyTag, Amount)</td><td class="prop-desc">Adds <code>Amount</code> to the given currency. Server only.</td></tr>
-        <tr><td class="prop-name">RemoveCurrency(CurrencyTag, Amount)</td><td class="prop-desc">Removes <code>Amount</code>. Returns false if insufficient. Server only.</td></tr>
-        <tr><td class="prop-name">HasCurrency(CurrencyTag, Amount)</td><td class="prop-desc">Returns true if at least <code>Amount</code> is present for that tag.</td></tr>
+        <tr><td class="prop-name">AddCurrency(CurrencyTag, Amount)</td><td class="prop-desc">Adds Amount to the given currency. Server only.</td></tr>
+        <tr><td class="prop-name">RemoveCurrency(CurrencyTag, Amount)</td><td class="prop-desc">Removes Amount. Returns false if insufficient. Server only.</td></tr>
+        <tr><td class="prop-name">HasCurrency(CurrencyTag, Amount)</td><td class="prop-desc">Returns true if at least Amount is present for that tag.</td></tr>
         <tr><td class="prop-name">GetCurrency(CurrencyTag)</td><td class="prop-desc">Returns current balance, or 0 if the tag has never been added.</td></tr>
         <tr><td class="prop-name">CanAfford(TMap&lt;FGameplayTag,int32&gt;)</td><td class="prop-desc">Returns true if all entries in the cost map can be met simultaneously.</td></tr>
-        <tr><td class="prop-name">PayCost(TMap&lt;FGameplayTag,int32&gt;)</td><td class="prop-desc">Deducts all entries atomically. Returns false (no change applied) if any single entry is insufficient. Server only.</td></tr>
+        <tr><td class="prop-name">PayCost(TMap&lt;FGameplayTag,int32&gt;)</td><td class="prop-desc">Deducts all entries atomically. Returns false and applies no change if any single entry is insufficient. Server only.</td></tr>
         <tr><td class="prop-name">GetCurrencies()</td><td class="prop-desc">Returns all currency entries as a snapshot array.</td></tr>
         <tr><td class="prop-name">ClearAllCurrencies()</td><td class="prop-desc">Removes all currencies. Server only.</td></tr>
       </tbody>
@@ -636,66 +823,77 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>UGearCraftingComponent</strong> manages known recipes and executes crafts against a provided storage component. It can be placed on a player character for personal crafting or on a workbench actor for station crafting — the caller supplies the source and output storage, so the component is agnostic about where items come from and go.
+      GearFlow provides two crafting components. <strong>UGearCraftingComponent</strong> executes recipes immediately — ingredients are consumed and outputs are delivered in the same frame. <strong>UGearTimedCraftingComponent</strong> extends it with a queued model: each craft takes <code>CraftingTime</code> seconds, multiple crafts can be queued up to <code>MaxQueueSize</code>, and progress is queryable at any time. Both components can be placed on a player character or a workbench actor — the caller supplies the source and output storage, so the component is agnostic about where items come from and go.
     </p>
 
     <div class="doc-subsection">
-      <h3 class="doc-subsection-title">Properties</h3>
+      <h3 class="doc-subsection-title">UGearCraftingComponent</h3>
       <table class="prop-table">
         <thead>
-          <tr><th>Property</th><th>Type</th><th>Description</th></tr>
+          <tr><th>Property / Function</th><th>Description</th></tr>
         </thead>
         <tbody>
-          <tr>
-            <td class="prop-name">AvailableRecipes</td>
-            <td class="prop-type">TArray&lt;UGearCraftingRecipeDataAsset*&gt;</td>
-            <td class="prop-desc">The set of recipes this component knows. Replicated to the owner only.</td>
-          </tr>
-          <tr>
-            <td class="prop-name">CraftingRule</td>
-            <td class="prop-type">UGearCraftingRule*</td>
-            <td class="prop-desc">Custom validation logic object. The default rule checks ingredient quantities. Subclass for positional grids, skill requirements, or other conditions.</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="doc-subsection">
-      <h3 class="doc-subsection-title">Functions</h3>
-      <table class="prop-table">
-        <thead>
-          <tr><th>Function</th><th>Description</th></tr>
-        </thead>
-        <tbody>
-          <tr><td class="prop-name">Craft(Recipe, SourceStorage, OutputStorage)</td><td class="prop-desc">Validates via <code>CanCraft</code>, removes ingredients from <code>SourceStorage</code>, and delivers outputs to <code>OutputStorage</code>. Server only.</td></tr>
-          <tr><td class="prop-name">CanCraft(Recipe, SourceStorage)</td><td class="prop-desc">Returns true if all ingredients can be satisfied from <code>SourceStorage</code> without consuming anything.</td></tr>
+          <tr><td class="prop-name">AvailableRecipes</td><td class="prop-desc">The set of recipes this component knows. Replicated to the owner only.</td></tr>
+          <tr><td class="prop-name">CraftingRule</td><td class="prop-desc">Optional validation object. Subclass <code>UGearCraftingRule</code> and override <code>ValidateRecipe()</code> for skill gates, positional grids, or other conditions.</td></tr>
+          <tr><td class="prop-name">Craft(Recipe, SourceStorage, OutputStorage)</td><td class="prop-desc">Validates via <code>CanCraft</code>, removes ingredients from SourceStorage, and delivers outputs to OutputStorage. Server only.</td></tr>
+          <tr><td class="prop-name">CanCraft(Recipe, SourceStorage)</td><td class="prop-desc">Returns true if all ingredients can be satisfied without consuming anything.</td></tr>
           <tr><td class="prop-name">GetAvailableRecipes()</td><td class="prop-desc">Returns all known recipes.</td></tr>
-          <tr><td class="prop-name">GetCraftableRecipes(SourceStorage)</td><td class="prop-desc">Returns the subset of known recipes that pass <code>CanCraft</code> against the given storage.</td></tr>
+          <tr><td class="prop-name">GetCraftableRecipes(SourceStorage)</td><td class="prop-desc">Returns the subset of known recipes that pass <code>CanCraft</code>.</td></tr>
           <tr><td class="prop-name">AddRecipe(Recipe)</td><td class="prop-desc">Adds a recipe at runtime — use for discovery systems. Replicated to owner.</td></tr>
           <tr><td class="prop-name">RemoveRecipe(Recipe)</td><td class="prop-desc">Removes a known recipe. Replicated to owner.</td></tr>
         </tbody>
       </table>
+
+      <table class="prop-table" style="margin-top:16px">
+        <thead>
+          <tr><th>Delegate</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="prop-name">OnCraftingCompleted(Recipe)</td><td class="prop-desc">Fires on the server after a successful craft.</td></tr>
+          <tr><td class="prop-name">OnCraftingFailed(Recipe)</td><td class="prop-desc">Fires when <code>CanCraft</code> returns false. Use to communicate the specific failure reason.</td></tr>
+        </tbody>
+      </table>
     </div>
 
     <div class="doc-subsection">
-      <h3 class="doc-subsection-title">Delegates</h3>
+      <h3 class="doc-subsection-title">UGearTimedCraftingComponent</h3>
+      <p class="doc-p" style="margin-bottom:12px">Drop-in replacement for <code>UGearCraftingComponent</code>. Adds a time-based crafting queue. The <code>CraftingTime</code> field on each recipe asset controls how long each craft takes.</p>
       <table class="prop-table">
         <thead>
-          <tr><th>Delegate</th><th>Parameters</th><th>Description</th></tr>
+          <tr><th>Property / Function</th><th>Description</th></tr>
         </thead>
         <tbody>
-          <tr>
-            <td class="prop-name">OnCraftingCompleted</td>
-            <td class="prop-type">Recipe</td>
-            <td class="prop-desc">Fires on the server after a successful craft. Use to play VFX, grant XP, or trigger other game systems.</td>
-          </tr>
-          <tr>
-            <td class="prop-name">OnCraftingFailed</td>
-            <td class="prop-type">Recipe</td>
-            <td class="prop-desc">Fires when <code>CanCraft</code> returns false. Provides the recipe so the UI can communicate the specific failure reason.</td>
-          </tr>
+          <tr><td class="prop-name">MaxQueueSize</td><td class="prop-desc">Maximum number of crafts that can be queued simultaneously. Additional <code>StartCraft</code> calls are rejected if the queue is full.</td></tr>
+          <tr><td class="prop-name">StartCraft(Recipe, SourceStorage, OutputStorage)</td><td class="prop-desc">Validates and enqueues the craft. Ingredients are consumed immediately on enqueue. Server only.</td></tr>
+          <tr><td class="prop-name">CancelCraft(QueueIndex)</td><td class="prop-desc">Removes the craft at the given queue position. Ingredients are refunded to SourceStorage if they can fit. Server only.</td></tr>
+          <tr><td class="prop-name">GetCraftingProgress()</td><td class="prop-desc">Returns 0.0–1.0 progress of the currently active craft. Safe to call on client.</td></tr>
+          <tr><td class="prop-name">GetCraftingQueue()</td><td class="prop-desc">Returns the current queue as an array of recipe references. Safe to call on client.</td></tr>
         </tbody>
       </table>
+
+      <table class="prop-table" style="margin-top:16px">
+        <thead>
+          <tr><th>Delegate</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="prop-name">OnCraftingStarted(Recipe)</td><td class="prop-desc">Fires when a queued craft begins its timer.</td></tr>
+          <tr><td class="prop-name">OnCraftingProgress(Recipe, Progress)</td><td class="prop-desc">Fires periodically while a craft is in progress. Use to drive a crafting progress bar.</td></tr>
+          <tr><td class="prop-name">OnCraftingCancelled(Recipe)</td><td class="prop-desc">Fires when a craft is cancelled via <code>CancelCraft</code>.</td></tr>
+          <tr><td class="prop-name">OnCraftingQueueChanged()</td><td class="prop-desc">Fires whenever the queue is modified — enqueue, dequeue, or cancel. Use to refresh the queue UI.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-lang">C++</span></div>
+      <pre><code><span class="code-comment">// Start a timed craft on the server</span>
+TimedCraftingComp->StartCraft(SwordRecipe, PlayerInventory, PlayerInventory);
+
+<span class="code-comment">// Bind progress for UI (safe on client after replication)</span>
+TimedCraftingComp->OnCraftingProgress.AddDynamic(this, &AMyHUD::OnCraftProgress);
+
+<span class="code-comment">// Poll progress directly if needed</span>
+float Progress = TimedCraftingComp->GetCraftingProgress();</code></pre>
     </div>
   </section>
 
@@ -709,7 +907,7 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      A <strong>UGearCraftingRecipeDataAsset</strong> declares what is consumed and what is produced. Items are referenced by direct <code>UGearItemDefinition</code> pointer — not by tag — so renaming or moving assets never breaks recipe references. Multiple outputs allow byproduct modelling (e.g. smelting ore yields ingots and slag).
+      A <strong>UGearCraftingRecipeDataAsset</strong> declares what is consumed, what is produced, and how long it takes. Items are referenced by direct <code>UGearItemDefinition</code> pointer — not by tag — so renaming or moving assets never breaks recipe references. Multiple outputs allow byproduct modelling (e.g. smelting ore yields ingots and slag).
     </p>
 
     <table class="prop-table">
@@ -720,15 +918,27 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
         <tr>
           <td class="prop-name">Inputs</td>
           <td class="prop-type">TArray&lt;FGearCraftingIngredient&gt;</td>
-          <td class="prop-desc">Required items. Each entry: a data asset reference and the required quantity.</td>
+          <td class="prop-desc">Required items. Each entry holds a definition reference and a required quantity.</td>
         </tr>
         <tr>
           <td class="prop-name">Outputs</td>
           <td class="prop-type">TArray&lt;FGearCraftingOutput&gt;</td>
-          <td class="prop-desc">Produced items. Each entry: a data asset reference and the quantity to add. Multiple entries enable byproduct drops.</td>
+          <td class="prop-desc">Produced items. Each entry holds a definition reference and a quantity to add. Multiple entries enable byproduct drops.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">CraftingTime</td>
+          <td class="prop-type">float</td>
+          <td class="prop-desc">Duration in seconds for <code>UGearTimedCraftingComponent</code>. Ignored by the instant <code>UGearCraftingComponent</code>.</td>
         </tr>
       </tbody>
     </table>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </span>
+      <span>Custom validation logic lives in <strong>UGearCraftingRule</strong> — subclass it and override <code>ValidateRecipe()</code> to return false under any custom condition. Assign the instance to <code>UGearCraftingComponent.CraftingRule</code>. The rule is checked by both <code>CanCraft</code> and <code>Craft</code>.</span>
+    </div>
   </section>
 
   <!-- ── Loot Tables ────────────────────────────────────────────── -->
@@ -741,7 +951,7 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>UGearLootTableDataAsset</strong> is a weighted pool for procedural inventory population. Define a set of entries each with a weight and quantity range, then call <code>UGearFunctionLibrary::PopulateFromLootTable</code> to roll the table and add results directly to a storage component — useful for populating chest contents, enemy drops, and random shop stock.
+      <strong>UGearLootTableDataAsset</strong> is a weighted pool for procedural inventory population. Define a set of entries each with a weight and quantity range, then call <code>UGearFunctionLibrary::PopulateFromLootTable</code> to roll the table and add results directly to a storage component — useful for chest contents, enemy drops, and random shop stock.
     </p>
 
     <table class="prop-table">
@@ -752,28 +962,28 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
         <tr>
           <td class="prop-name">Entries</td>
           <td class="prop-type">TArray&lt;FGearLootEntry&gt;</td>
-          <td class="prop-desc">Each entry has: <strong>Item</strong> (UGearItemDefinition*), <strong>Weight</strong> (float), <strong>MinQuantity</strong> (int32), <strong>MaxQuantity</strong> (int32). Higher weight increases the chance of being selected on each roll.</td>
+          <td class="prop-desc">Each entry holds: <strong>Item</strong> (UGearItemDefinition*), <strong>Weight</strong> (float), <strong>MinQuantity</strong> (int32), <strong>MaxQuantity</strong> (int32). Higher weight increases the chance of selection on each roll.</td>
         </tr>
         <tr>
           <td class="prop-name">RollCount</td>
           <td class="prop-type">int32</td>
-          <td class="prop-desc">Number of items to roll from the pool. Each roll is independent — the same entry can be selected multiple times.</td>
+          <td class="prop-desc">Number of independent rolls performed when the table is evaluated. The same entry can be selected multiple times.</td>
         </tr>
       </tbody>
     </table>
   </section>
 
-  <!-- ── Pickup Actor ───────────────────────────────────────────── -->
-  <section class="doc-section" id="pickup-actor" data-section="pickup-actor">
+  <!-- ── World Pickups ─────────────────────────────────────────── -->
+  <section class="doc-section" id="world-pickups" data-section="world-pickups">
     <h2 class="doc-section-title">
       <span class="section-icon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="16 12 12 8 8 12"/><line x1="12" y1="16" x2="12" y2="8"/></svg>
       </span>
-      Pickup Actor
+      World Pickups
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>AGearPickupActor</strong> is the world-space item drop. The pickup actor class and world mesh are configured per item via <code>UGearPickupFragment</code>. It triggers pickup on overlap or on an explicit call and supports configurable lifetimes. Spawn it via <code>UGearFunctionLibrary::DropItem</code> — items without a <code>UGearPickupFragment</code> cannot be dropped. Place a subclass in the editor and call <code>InitializePickup</code> at BeginPlay for pre-placed world pickups.
+      <strong>AGearPickupActor</strong> is the world-space item representation. The actor class and world mesh are configured per item via <code>UGearPickupFragment</code>. The built-in <strong>AGearStaticMeshPickupActor</strong> loads and applies the fragment's mesh asynchronously; subclass <code>AGearPickupActor</code> for custom visuals or interaction. Spawn pickups via <code>UGearFunctionLibrary::DropItem</code> — pre-placed pickups call <code>InitializePickup</code> at BeginPlay.
     </p>
 
     <div class="doc-subsection">
@@ -791,12 +1001,12 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
           <tr>
             <td class="prop-name">Quantity</td>
             <td class="prop-type">int32</td>
-            <td class="prop-desc">How many units of the item this pickup contains.</td>
+            <td class="prop-desc">Units of the item this pickup contains.</td>
           </tr>
           <tr>
             <td class="prop-name">bAutoPickup</td>
             <td class="prop-type">bool</td>
-            <td class="prop-desc">When true, automatically calls <code>Pickup</code> when a UGearStorageComponent overlaps the sphere.</td>
+            <td class="prop-desc">When true, automatically calls <code>Pickup</code> when a <code>UGearStorageComponent</code> overlaps the sphere.</td>
           </tr>
           <tr>
             <td class="prop-name">PickupRadius</td>
@@ -824,9 +1034,10 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
           <tr><th>Function</th><th>Description</th></tr>
         </thead>
         <tbody>
-          <tr><td class="prop-name">InitializePickup(Definition, Count)</td><td class="prop-desc">Creates a new instance from the definition and sets it on the actor. Use when spawning fresh drops.</td></tr>
-          <tr><td class="prop-name">InitializePickupFromInstance(Instance, Count)</td><td class="prop-desc">Uses a pre-created instance — preserves per-instance state such as durability or enchantments when dropping equipped items.</td></tr>
-          <tr><td class="prop-name">Pickup(Instigator)</td><td class="prop-desc">Adds the item to the first <code>UGearStorageComponent</code> found on the Instigator actor. Destroys the pickup on success.</td></tr>
+          <tr><td class="prop-name">InitializePickup(Definition, Count)</td><td class="prop-desc">Creates a new instance from the definition. Use for fresh drops with no prior instance state.</td></tr>
+          <tr><td class="prop-name">InitializePickupFromInstance(Instance, Count)</td><td class="prop-desc">Uses a pre-created instance — preserves per-instance state (durability, enchantments) when dropping equipped items.</td></tr>
+          <tr><td class="prop-name">Pickup(Instigator)</td><td class="prop-desc">Adds the item to the first <code>UGearStorageComponent</code> found on the Instigator actor. Destroys the pickup actor on success.</td></tr>
+          <tr><td class="prop-name">OnVisualSetup()</td><td class="prop-desc">Blueprint-overridable event called after <code>ItemInstance</code> is set. Override to configure custom visuals or VFX on the pickup actor.</td></tr>
         </tbody>
       </table>
     </div>
@@ -853,17 +1064,17 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
     </div>
   </section>
 
-  <!-- ── Transfer System ────────────────────────────────────────── -->
-  <section class="doc-section" id="transfer-system" data-section="transfer-system">
+  <!-- ── Item Transfer ──────────────────────────────────────────── -->
+  <section class="doc-section" id="item-transfer" data-section="item-transfer">
     <h2 class="doc-section-title">
       <span class="section-icon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
       </span>
-      Transfer System
+      Item Transfer
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>UGearFunctionLibrary</strong> is a static function library for all cross-component item movement. Every item transfer in GearFlow — looting a chest, buying from a vendor, dropping an item to the world — runs through one of these functions. The unified model means one set of delegates fires on both endpoints, and no custom item-movement code is needed in your project.
+      <strong>UGearFunctionLibrary</strong> is the static utility layer for all cross-component item movement and world population. Every transfer pattern in GearFlow — looting a chest, buying from a vendor, dropping an item, populating a loot chest — runs through one of these functions. The unified model means <code>OnSlotChanged</code> delegates fire normally on both endpoints.
     </p>
 
     <div class="code-block">
@@ -871,11 +1082,14 @@ const p = pluginsData.find(x => x.name === 'GearFlow')!;
       <pre><code><span class="code-comment">// Loot a chest into player inventory</span>
 UGearFunctionLibrary::TransferItem(ChestInventory, PlayerInventory, Item, Count);
 
-<span class="code-comment">// Buy from vendor (deducts Cost from wallet)</span>
+<span class="code-comment">// Buy from vendor (deducts Cost from wallet atomically)</span>
 UGearFunctionLibrary::TransferItem(VendorInventory, PlayerInventory, Item, 1, PlayerWallet);
 
-<span class="code-comment">// Drop item to world</span>
-UGearFunctionLibrary::DropItem(WorldContext, PlayerInventory, Item, 1, DropTransform);</code></pre>
+<span class="code-comment">// Drop item to world at a given transform</span>
+UGearFunctionLibrary::DropItem(WorldContext, PlayerInventory, Item, 1, DropTransform);
+
+<span class="code-comment">// Populate a chest from a loot table</span>
+UGearFunctionLibrary::PopulateFromLootTable(ChestInventory, LootTable);</code></pre>
     </div>
 
     <table class="prop-table">
@@ -885,19 +1099,125 @@ UGearFunctionLibrary::DropItem(WorldContext, PlayerInventory, Item, 1, DropTrans
       <tbody>
         <tr>
           <td class="prop-name">TransferItem(From, To, Item, Count, Wallet)</td>
-          <td class="prop-desc">Moves Count units from <code>From</code> to <code>To</code>. If <code>Wallet</code> is provided and the item carries a <code>UGearCostFragment</code>, deducts the cost map first — the transfer fails atomically if the wallet cannot cover all currencies. Server only.</td>
+          <td class="prop-desc">Moves Count units from From to To. If Wallet is provided and the item carries a <code>UGearCostFragment</code>, deducts the cost map first — the entire transfer fails atomically if the wallet cannot cover all currencies. Server only.</td>
         </tr>
         <tr>
           <td class="prop-name">PopulateFromLootTable(Storage, LootTable)</td>
-          <td class="prop-desc">Rolls the loot table and adds results to <code>Storage</code>. Returns the number of items actually added.</td>
+          <td class="prop-desc">Rolls the loot table and adds results to Storage. Returns the number of items actually added (may be less than <code>RollCount</code> if the storage is nearly full).</td>
         </tr>
         <tr>
           <td class="prop-name">DropItem(WorldContext, Storage, Item, Count, Transform)</td>
-          <td class="prop-desc">Removes the item from <code>Storage</code> and spawns a pickup actor at <code>Transform</code>. The actor class is determined by the item's <code>UGearPickupFragment</code>. Returns nullptr if the item has no <code>UGearPickupFragment</code>.</td>
+          <td class="prop-desc">Removes the item from Storage and spawns a pickup actor at Transform. The actor class is determined by the item's <code>UGearPickupFragment</code>. Returns nullptr if the item has no pickup fragment. Server only.</td>
         </tr>
         <tr>
           <td class="prop-name">DropItemInstance(WorldContext, Storage, Instance, Transform)</td>
-          <td class="prop-desc">Drops a specific instance — preserves per-instance state (durability, enchantments, etc.) on the spawned pickup actor. Returns nullptr if the item has no <code>UGearPickupFragment</code>.</td>
+          <td class="prop-desc">Drops a specific instance — preserves per-instance state (durability, enchantments) on the spawned pickup actor. Server only.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── Save System ────────────────────────────────────────────── -->
+  <section class="doc-section" id="save-system" data-section="save-system">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      </span>
+      Save System
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      <strong>UGearSaveLibrary</strong> provides static capture and restore functions for all three storage components. Capture functions extract the current component state into a structured save data type that you write to your project's save game object. Restore functions rebuild the component from that saved state, including per-instance custom data via the <code>GetInstanceSaveData</code> / <code>SetInstanceSaveData</code> hooks on <code>UGearItemInstance</code>.
+    </p>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">UGearSaveLibrary functions</h3>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Function</th><th>Save data type</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="prop-name">CaptureInventory(Component, out SaveData)</td>
+            <td class="prop-type">FGearInventorySaveData</td>
+            <td class="prop-desc">Serializes the inventory to an array of slot saves, each with slot index, item ID, count, and custom instance data.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">RestoreInventory(Component, SaveData)</td>
+            <td class="prop-type">FGearInventorySaveData</td>
+            <td class="prop-desc">Rebuilds each slot from the saved state. Calls <code>SetInstanceSaveData</code> on each instance before <code>OnInstanceCreated</code>.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">CaptureEquipment(Component, out SaveData)</td>
+            <td class="prop-type">FGearEquipmentSaveData</td>
+            <td class="prop-desc">Serializes equipped items keyed by slot tag, including custom instance data.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">RestoreEquipment(Component, SaveData)</td>
+            <td class="prop-type">FGearEquipmentSaveData</td>
+            <td class="prop-desc">Re-equips saved items into their recorded slots and restores instance data.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">CaptureWallet(Component, out SaveData)</td>
+            <td class="prop-type">FGearWalletSaveData</td>
+            <td class="prop-desc">Serializes currency tag + amount pairs.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">RestoreWallet(Component, SaveData)</td>
+            <td class="prop-type">FGearWalletSaveData</td>
+            <td class="prop-desc">Restores all currency balances from saved entries.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-lang">C++</span></div>
+      <pre><code><span class="code-comment">// On save — in your SaveGame object population</span>
+UGearSaveLibrary::CaptureInventory(InventoryComp, MySaveGame->InventoryData);
+UGearSaveLibrary::CaptureEquipment(EquipmentComp, MySaveGame->EquipmentData);
+UGearSaveLibrary::CaptureWallet(WalletComp, MySaveGame->WalletData);
+
+<span class="code-comment">// On load — after the SaveGame object is read back</span>
+UGearSaveLibrary::RestoreInventory(InventoryComp, MySaveGame->InventoryData);
+UGearSaveLibrary::RestoreEquipment(EquipmentComp, MySaveGame->EquipmentData);
+UGearSaveLibrary::RestoreWallet(WalletComp, MySaveGame->WalletData);</code></pre>
+    </div>
+  </section>
+
+  <!-- ── Debug Tools ────────────────────────────────────────────── -->
+  <section class="doc-section" id="debug-tools" data-section="debug-tools">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      </span>
+      Debug Tools
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      GearFlow registers a <strong>UGearCheatExtension</strong> (a <code>UCheatManagerExtension</code> subclass) automatically at module startup. The cheat commands are available in any build that has the CheatManager enabled — no manual setup required.
+    </p>
+
+    <table class="prop-table">
+      <thead>
+        <tr><th>Command</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="prop-name">GearGive &lt;ItemName&gt; [Count]</td>
+          <td class="prop-desc">Adds the named item to the local player's first <code>UGearInventoryComponent</code>. Count defaults to 1.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">GearClear</td>
+          <td class="prop-desc">Clears all items from the local player's inventory.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">GearPrintInventory</td>
+          <td class="prop-desc">Logs all occupied inventory slots to the output log and on-screen debug area.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">GearGiveCurrency &lt;Tag&gt; &lt;Amount&gt;</td>
+          <td class="prop-desc">Adds the specified amount of the given currency tag to the local player's wallet.</td>
         </tr>
       </tbody>
     </table>
@@ -906,7 +1226,7 @@ UGearFunctionLibrary::DropItem(WorldContext, PlayerInventory, Item, 1, DropTrans
       <span class="callout-icon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       </span>
-      <span>All <code>TransferItem</code> paths call <code>UGearStorageComponent::AddItem</code> and <code>RemoveItem</code> internally, so <code>OnSlotChanged</code> delegates fire normally on both the source and destination components.</span>
+      <span>Misconfiguration errors — such as equipping an item with no <code>UGearEquipmentFragment</code>, or calling mutating functions from a client — produce on-screen debug messages in non-Shipping builds via the <code>GEARFLOW_LOG_WARNING</code> and <code>GEARFLOW_LOG_ERROR</code> macros.</span>
     </div>
   </section>
 
@@ -920,7 +1240,7 @@ UGearFunctionLibrary::DropItem(WorldContext, PlayerInventory, Item, 1, DropTrans
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      All three storage components — Inventory, Equipment, and Wallet — use <strong>FastArray replication</strong> with delta compression. Only changed slot entries are transmitted per frame; a 100-slot inventory that receives one item sends roughly 20–30 bytes, not a full array snapshot. The replication model is <strong>server-authoritative</strong> — all mutating functions must originate on the server. Client-side calls are silently ignored. The recommended pattern is: client sends a Server RPC → server validates and mutates → FastArray replicates the delta → delegates fire on client with the new state.
+      All three storage components — Inventory, Equipment, and Wallet — use <strong>FastArray replication</strong> with delta compression. Only changed slot entries are transmitted per frame; a 100-slot inventory that receives one item sends roughly 20–30 bytes, not a full snapshot. The model is <strong>server-authoritative</strong>: all mutating functions must originate on the server, client-side calls are silently ignored. The recommended pattern is: client sends a Server RPC → server validates and mutates → FastArray replicates the delta → delegates fire on client with the new state.
     </p>
 
     <div class="feature-grid">
@@ -943,14 +1263,28 @@ UGearFunctionLibrary::DropItem(WorldContext, PlayerInventory, Item, 1, DropTrans
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </div>
         <p class="feature-title">Visual Replication</p>
-        <p class="feature-desc">Equipment visual actors are spawned server-side and replicated to all clients with <code>COND_None</code>, so every player sees the correct visual without extra RPC code.</p>
+        <p class="feature-desc">Equipment visual actors are spawned server-side and replicated to all clients, so every player sees the correct visuals without extra RPC code. Multi-mesh items spawn all visual actors simultaneously.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <p class="feature-title">InstancedReplicated Fragments</p>
+        <p class="feature-desc">Fragment data with the <code>InstancedReplicated</code> policy is replicated per instance via the storage component's FastArray, so per-item state (charges, durability) reaches clients automatically.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
         </div>
         <p class="feature-title">Delegates on Client</p>
-        <p class="feature-desc"><code>OnSlotChanged</code>, <code>OnItemEquipped</code>, and <code>OnCurrencyChanged</code> all fire on the client after replication, making UI bindings straightforward.</p>
+        <p class="feature-desc"><code>OnSlotChanged</code>, <code>OnItemEquipped</code>, and <code>OnCurrencyChanged</code> all fire on the client after replication, making UI bindings straightforward with no polling.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <p class="feature-title">Timed Crafting Queue</p>
+        <p class="feature-desc">The crafting queue and progress are replicated to the owning client. <code>OnCraftingProgress</code> fires on the client during the craft timer, enabling live progress bar updates without additional RPCs.</p>
       </div>
     </div>
   </section>

@@ -41,7 +41,7 @@
   {
     "name": "GearFlow",
     "tagline": "Modular inventory, crafting & equipment for UE5. Items are composed from opt-in fragments, with tag-driven gear slots and multiplayer-ready storage.",
-    "version": "1.0",
+    "version": "0.1",
     "logo": "/plugins/gearflow/GearFlow.png",
     "cover": "/plugins/gearflow/GearFlowCover.png",
     "accent": "#c47c0a",
