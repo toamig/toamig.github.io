@@ -2,7 +2,7 @@
   {
     "name": "Cascade Combat System",
     "tagline": "Branching combo trees built on GAS. Input-agnostic, damage-agnostic, and multiplayer-ready without writing replication code.",
-    "version": "1.0",
+    "version": "0.1",
     "logo": "/plugins/cascadecombatsystem/CascadeCombatSystem.png",
     "cover": "/plugins/cascadecombatsystem/CascadeCombatSystemCover.png",
     "accent": "#d4600a",
