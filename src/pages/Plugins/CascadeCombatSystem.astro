@@ -1,12 +1,11 @@
 ---
 import PluginLayout from '../../layouts/PluginLayout.astro';
 import pluginsData from '../../data/plugins.json';
-// Colors: orange #d4600a (accent), amber #f07820 (accentLight)
 const p = pluginsData.find(x => x.name === 'Cascade Combat System')!;
 ---
 <PluginLayout
-  title="Cascade Combat System — Branching Combo Trees Built on GAS for UE5"
-  description="A node-based combat framework for Unreal Engine 5. Build branching combo sequences with a visual graph editor, run damage-agnostic hit detection, and ship multiplayer-ready combat without writing replication code."
+  title="Cascade Combat System — Action Combat Plugin for UE5"
+  description="A modular action-combat framework for Unreal Engine 5. Node-based combo trees, animation-driven abilities, melee detection, projectiles, targeting, and hit reactions — all built on GAS, multiplayer-ready without writing replication code."
   pluginName="Cascade Combat System"
   version={p.version}
   coverImage={p.cover}
@@ -31,24 +30,33 @@ const p = pluginsData.find(x => x.name === 'Cascade Combat System')!;
       <span class="nav-group-label">Combo System</span>
       <a href="#combo-definition">Combo Definition</a>
       <a href="#combo-nodes">Combo Nodes</a>
-      <a href="#combo-ability">Combo Ability</a>
+      <a href="#combo-runtime">Runtime &amp; Buffering</a>
+      <a href="#runtime-builder">Runtime Builder</a>
     </div>
     <div class="nav-group">
       <span class="nav-group-label">Abilities</span>
-      <a href="#anim-ability">Animation Abilities</a>
-      <a href="#attack-ability">Attack Ability</a>
+      <a href="#anim-ability">Anim Ability</a>
+      <a href="#attack-ability">Attack &amp; Charged</a>
+      <a href="#passive-ability">Passives</a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-group-label">Animation</span>
+      <a href="#damage-window">Damage Window</a>
+      <a href="#combo-window">Combo Window</a>
+      <a href="#other-notifies">Other Notifies</a>
     </div>
     <div class="nav-group">
       <span class="nav-group-label">Combat</span>
-      <a href="#hit-detection">Hit Detection</a>
-      <a href="#anim-notifies">Animation Notifies</a>
       <a href="#weapons">Weapons</a>
+      <a href="#projectiles">Projectiles</a>
+      <a href="#targeting">Targeting</a>
+      <a href="#reactions">Reactions</a>
     </div>
     <div class="nav-group">
       <span class="nav-group-label">Systems</span>
-      <a href="#targeting">Targeting</a>
-      <a href="#projectiles">Projectiles</a>
-      <a href="#reactions">Reactions</a>
+      <a href="#input">Input</a>
+      <a href="#gameplay-tags">Gameplay Tags</a>
+      <a href="#debug-tools">Debug Tools</a>
     </div>
     <div class="nav-group">
       <span class="nav-group-label">Multiplayer</span>
@@ -66,54 +74,54 @@ const p = pluginsData.find(x => x.name === 'Cascade Combat System')!;
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>Cascade Combat System</strong> is a node-based combo and melee framework built on the Gameplay Ability System for Unreal Engine 5. It provides the structural pieces — combo trees, animation-driven abilities, swept hit detection, targeting, projectiles, and hit reactions — without making decisions that belong to your game: damage formulas, input mapping style, movement integration, and art direction are all left to the project.
+      <strong>Cascade Combat System</strong> is an action-combat framework for Unreal Engine 5 built on the Gameplay Ability System. It solves the problem of wiring together melee detection, combo sequencing, input buffering, targeting, and hit reactions without rewriting GAS boilerplate for every project. You define <strong>UCascadeComboDefinition</strong> data assets in a node graph editor, attach <strong>UCascadeAbilitySystemComponent</strong> to your characters, and call <code>InitializeCombat</code> — the plugin handles input routing, window management, and networking from there.
     </p>
     <p class="doc-p">
-      The central data primitive is <strong>UCascadeComboDefinition</strong>, a data asset whose node tree is authored in a visual graph editor and executed at runtime by <strong>UCascadeAbilityTask_RunComboTree</strong>. Each node activates a <strong>UGameplayAbility</strong>, enabling the full GAS toolset — gameplay tags, attribute checks, gameplay effects, and prediction — at every combo step. Hit detection is driven by animation notifies rather than ability code, so swapping weapons or animations does not require changing ability blueprints.
+      The plugin is damage-agnostic: it detects hits and delivers <strong>FCascadeHitData</strong> (attacker, victim, tags, custom numeric context) to your GameplayEffects. Cascade never decides how much damage a hit deals — that is your execution calculation. The same principle applies to visuals: hit reactions, VFX, and sounds live in data-driven <strong>UCascadeReactionSetup</strong> assets rather than hardcoded in ability code.
     </p>
 
     <div class="feature-grid">
       <div class="feature-card">
         <div class="feature-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
         </div>
-        <p class="feature-title">Visual Combo Editor</p>
-        <p class="feature-desc">Author branching, looping, and weighted-random combo trees in a dedicated graph editor. The compiler resolves back-edges and validates all node connections before the asset is saved.</p>
+        <p class="feature-title">Node-Based Combos</p>
+        <p class="feature-desc">Build combo trees visually in the editor. Branch, Loop, Random, and Conditional nodes cover every sequencing pattern. Compile to a runtime-ready data asset with one button click.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
         </div>
-        <p class="feature-title">Input-Agnostic</p>
-        <p class="feature-desc">All input flows through <code>FGameplayTag</code>-identified input contexts. Enhanced Input, custom input systems, and AI all speak the same tag language. No hard dependency on any specific input framework.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-        </div>
-        <p class="feature-title">Damage-Agnostic</p>
-        <p class="feature-desc"><code>FCascadeHitData</code> carries who hit whom and gameplay tags describing the hit — never a damage number. Your project reads the context and computes the result. Works with any attribute set.</p>
+        <p class="feature-title">Input Buffering</p>
+        <p class="feature-desc">Configurable pre-window input buffer stores one input or a full combo queue. Players who press ahead of the window still get smooth continuation — no manual timer management required.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         </div>
         <p class="feature-title">Multiplayer Ready</p>
-        <p class="feature-desc">Combo state replicates via FastArray. Melee hit detection runs server-side. Hit reactions replicate via Multicast RPCs. No custom replication code required in your project.</p>
+        <p class="feature-desc">Melee detection, reaction triggers, and hit pause all replicate correctly on listen and dedicated servers. Initialize with <code>InitializeCombat</code> for players or <code>InitializeCombatForAI</code> for NPCs.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
         </div>
-        <p class="feature-title">Notify-Driven Detection</p>
-        <p class="feature-desc">Damage windows, combo windows, I-frames, and gameplay events are all placed on the animation timeline as notify states. Animation and ability code remain independent — swap a montage without touching the ability.</p>
+        <p class="feature-title">Targeting Subsystem</p>
+        <p class="feature-desc">World subsystem for soft-lock and best-target queries. Pluggable scoring policy, line-of-sight gating, team filtering, and AOE/hitscan/ground query types all ship out of the box.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
         </div>
-        <p class="feature-title">Input Buffering</p>
-        <p class="feature-desc">Two buffer modes: <em>Single Input</em> (one pre-window press, consumed on open — Genshin-style) and <em>Full Combo Queue</em> (pre-queue the entire chain — Spider-Man-style). Configured per character on the ASC.</p>
+        <p class="feature-title">Damage-Agnostic</p>
+        <p class="feature-desc">Hit detection delivers FCascadeHitData — who hit whom, which tags, which custom values. Your GameplayEffect execution decides the outcome. Cascade never overrides your damage math.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        </div>
+        <p class="feature-title">AI Support</p>
+        <p class="feature-desc"><code>UCascadeAIInputAdapter</code> lets NPCs submit combo inputs and activate abilities through the same pipeline as players — no special-casing in ability code.</p>
       </div>
     </div>
 
@@ -121,7 +129,7 @@ const p = pluginsData.find(x => x.name === 'Cascade Combat System')!;
       <span class="callout-icon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       </span>
-      <span>Cascade Combat System requires the <strong>Gameplay Ability System</strong> (GAS) plugin. Your character must have a <code>UCascadeAbilitySystemComponent</code> — or a subclass of it — and an ability actor info configured before combat initialization.</span>
+      <span>Cascade Combat System requires <strong>Gameplay Ability System (GAS)</strong>. Enhanced Input is the default player integration, but any input source is supported by implementing <code>ICascadeInputAdapter</code>.</span>
     </div>
   </section>
 
@@ -134,58 +142,43 @@ const p = pluginsData.find(x => x.name === 'Cascade Combat System')!;
       Getting Started
     </h2>
     <div class="section-divider"></div>
-    <p class="doc-p">A character with a working single-attack combo is up in five steps. The fastest path requires no C++ beyond the module dependency.</p>
+    <p class="doc-p">The fastest path to a working melee character is five steps. All of them can be done in Blueprint; C++ is only needed for Build.cs.</p>
 
     <div class="steps">
       <div class="step">
         <span class="step-num">1</span>
         <div class="step-body">
-          <p class="step-title">Enable the plugin</p>
-          <p class="step-desc">In the Unreal Editor, open <strong>Edit → Plugins</strong>, search for <em>CascadeCombatSystem</em>, and enable it. Restart the editor when prompted. Also enable <strong>GameplayAbilities</strong> if it is not already active.</p>
+          <p class="step-title">Enable the plugin and add module dependencies</p>
+          <p class="step-desc">In the Unreal Editor open <strong>Edit &rarr; Plugins</strong>, search for <em>CascadeCombatSystem</em>, and enable it. In your project's <strong>Build.cs</strong> add <code>"CascadeCombatSystem"</code> and <code>"GameplayAbilities"</code> to <code>PublicDependencyModuleNames</code>.</p>
         </div>
       </div>
       <div class="step">
         <span class="step-num">2</span>
         <div class="step-body">
-          <p class="step-title">Add the module dependency</p>
-          <p class="step-desc">In your project's <strong>Build.cs</strong>, add <code>"CascadeCombatSystem"</code> and <code>"GameplayAbilities"</code> to <code>PublicDependencyModuleNames</code>.</p>
+          <p class="step-title">Replace your AbilitySystemComponent</p>
+          <p class="step-desc">On your character, swap any existing <code>UAbilitySystemComponent</code> for <strong>UCascadeAbilitySystemComponent</strong>. It extends the standard GAS component, so existing GAS setup continues to work.</p>
         </div>
       </div>
       <div class="step">
         <span class="step-num">3</span>
         <div class="step-body">
-          <p class="step-title">Add UCascadeAbilitySystemComponent to your character</p>
-          <p class="step-desc">Replace or subclass the standard <code>UAbilitySystemComponent</code> on your character with <strong>UCascadeAbilitySystemComponent</strong>. Initialize actor info in <code>PossessedBy</code> (server) and <code>OnRep_PlayerState</code> (client) as normal for GAS.</p>
+          <p class="step-title">Create a UCascadeCombatSetup data asset</p>
+          <p class="step-desc">Right-click in the Content Browser and select <strong>Cascade &rarr; Combat Setup</strong>. Add your ability classes to <strong>Abilities</strong> and map Input Actions to gameplay tags in <strong>InputBindings</strong>.</p>
         </div>
       </div>
       <div class="step">
         <span class="step-num">4</span>
         <div class="step-body">
-          <p class="step-title">Create a UCascadeCombatSetup asset</p>
-          <p class="step-desc">Right-click in the Content Browser and select <strong>Miscellaneous → Data Asset → UCascadeCombatSetup</strong>. Add your <code>UCascadeComboDefinition</code> assets to the <strong>Combos</strong> array and map each input tag to a <code>UInputAction</code> in <strong>InputEntries</strong>.</p>
+          <p class="step-title">Initialize combat on the server</p>
+          <p class="step-desc">In your character's <code>PossessedBy</code> (server) call <code>InitializeCombat(CombatSetup, EnhancedInputComponent)</code> on the <strong>UCascadeAbilitySystemComponent</strong>. For AI, call <code>InitializeCombatForAI(CombatSetup)</code> instead.</p>
         </div>
       </div>
       <div class="step">
         <span class="step-num">5</span>
         <div class="step-body">
-          <p class="step-title">Initialize combat</p>
-          <p class="step-desc">Call <code>GrantCombatAbilities(CombatSetup)</code> from <code>PossessedBy</code> on the server (grants abilities to AI and player alike). Call <code>InitializeCombat(CombatSetup, InputComponent)</code> from <code>SetupPlayerInputComponent</code> on the owning client (binds Enhanced Input). For AI, call <code>InitializeCombatForAI(CombatSetup)</code> from <code>PossessedBy</code> on the server instead.</p>
+          <p class="step-title">Build your first combo definition</p>
+          <p class="step-desc">Right-click in the Content Browser and select <strong>Cascade &rarr; Combo Definition</strong>. Open the asset to launch the graph editor. Add an Ability node, connect it to Root, hit <strong>Compile</strong>, and assign the definition to a <code>UCascadeCombo</code> ability in your setup asset.</p>
         </div>
-      </div>
-    </div>
-
-    <div class="doc-subsection">
-      <h3 class="doc-subsection-title">Minimal C++ initialization</h3>
-      <div class="code-block">
-        <div class="code-block-header"><span class="code-lang">C++</span></div>
-        <pre><code><span class="code-comment">// AMyCharacter.cpp — PossessedBy (server)</span>
-<span class="code-cmd">CascadeASC</span>->GrantCombatAbilities(<span class="code-val">CombatSetup</span>);
-
-<span class="code-comment">// AMyCharacter.cpp — SetupPlayerInputComponent (owning client)</span>
-<span class="code-cmd">CascadeASC</span>->InitializeCombat(
-    <span class="code-val">CombatSetup</span>,
-    Cast&lt;UEnhancedInputComponent&gt;(InputComponent)
-);</code></pre>
       </div>
     </div>
   </section>
@@ -194,13 +187,13 @@ const p = pluginsData.find(x => x.name === 'Cascade Combat System')!;
   <section class="doc-section" id="combo-definition" data-section="combo-definition">
     <h2 class="doc-section-title">
       <span class="section-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
       </span>
       Combo Definition
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>UCascadeComboDefinition</strong> is a <code>UDataAsset</code> that describes a complete combo tree — its tag identity, root node, timeout, and activation inputs. Open one in the Cascade Combo Editor to author the node graph visually. The compiler converts the graph into an instanced node object tree that <code>UCascadeAbilityTask_RunComboTree</code> traverses at runtime.
+      <strong>UCascadeComboDefinition</strong> is a data asset that describes a complete combo: its unique tag, the node tree that drives sequencing, activation requirements, and timing. Create one per distinct combo in your Content Browser. The graph editor compiles the visual graph into the node tree at save time.
     </p>
 
     <table class="prop-table">
@@ -211,54 +204,56 @@ const p = pluginsData.find(x => x.name === 'Cascade Combat System')!;
         <tr>
           <td class="prop-name">ComboTag</td>
           <td class="prop-type">FGameplayTag</td>
-          <td class="prop-desc">Unique identifier for this combo. Used for routing input, querying active state, and replication.</td>
+          <td class="prop-desc">Unique identifier for this combo. Used to query and cancel a running combo at runtime.</td>
         </tr>
         <tr>
-          <td class="prop-name">ActivationInputTags</td>
-          <td class="prop-type">TArray&lt;FGameplayTag&gt;</td>
-          <td class="prop-desc">Input tags that start this combo from the root node. Any matching tag activates the combo.</td>
+          <td class="prop-name">DisplayName</td>
+          <td class="prop-type">FText</td>
+          <td class="prop-desc">Optional display name for UI or debug output.</td>
         </tr>
         <tr>
           <td class="prop-name">RootNode</td>
           <td class="prop-type">UCascadeComboNode*</td>
-          <td class="prop-desc">Entry point of the combo tree. Instanced — set by the graph compiler.</td>
+          <td class="prop-desc">Entry point of the combo tree. Set automatically when you compile the graph.</td>
         </tr>
         <tr>
           <td class="prop-name">GlobalTimeout</td>
           <td class="prop-type">float</td>
-          <td class="prop-desc">Seconds of input silence before the combo auto-resets. 0 disables the timeout.</td>
+          <td class="prop-desc">Seconds of inactivity before the combo auto-resets. Set to 0 to disable.</td>
         </tr>
         <tr>
-          <td class="prop-name">Priority</td>
-          <td class="prop-type">int32</td>
-          <td class="prop-desc">When multiple registered combos share an input tag, higher priority is evaluated first.</td>
+          <td class="prop-name">bCanBeInterrupted</td>
+          <td class="prop-type">bool</td>
+          <td class="prop-desc">Whether higher-priority abilities can cancel this combo mid-chain.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">ActivationInputTags</td>
+          <td class="prop-type">TArray&lt;FGameplayTag&gt;</td>
+          <td class="prop-desc">Input tags that activate this combo when received by the ASC.</td>
         </tr>
         <tr>
           <td class="prop-name">RequiredTagsToStart</td>
           <td class="prop-type">FGameplayTagContainer</td>
-          <td class="prop-desc">Tags that must be present on the ASC to start this combo.</td>
+          <td class="prop-desc">The owning actor must have all of these tags for the combo to start.</td>
         </tr>
         <tr>
           <td class="prop-name">BlockedTags</td>
           <td class="prop-type">FGameplayTagContainer</td>
-          <td class="prop-desc">Tags that prevent this combo from starting.</td>
+          <td class="prop-desc">Any of these tags on the owner prevents this combo from starting.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">Priority</td>
+          <td class="prop-type">int32</td>
+          <td class="prop-desc">When multiple combos compete, higher priority is evaluated first.</td>
         </tr>
       </tbody>
     </table>
 
     <div class="doc-subsection">
-      <h3 class="doc-subsection-title">Runtime combo building</h3>
-      <p class="doc-p" style="margin-bottom:12px">Combos can also be assembled at runtime without the editor using <code>UCascadeRuntimeComboBuilder</code> or the static factory on the definition itself:</p>
-      <div class="code-block">
-        <div class="code-block-header"><span class="code-lang">C++</span></div>
-        <pre><code><span class="code-comment">// Create a definition from an existing root node at runtime</span>
-UCascadeComboDefinition* Def = UCascadeComboDefinition::CreateDynamicCombo(
-    <span class="code-val">this</span>,
-    <span class="code-val">ComboTag</span>,
-    <span class="code-val">RootNode</span>
-);
-<span class="code-cmd">CascadeASC</span>->RegisterCombo(Def);</code></pre>
-      </div>
+      <h3 class="doc-subsection-title">UCascadeCombo ability</h3>
+      <p class="doc-p" style="margin-bottom:12px">
+        <strong>UCascadeCombo</strong> is the GAS ability that owns a combo. Assign a <code>UCascadeComboDefinition</code> to its <strong>ComboDefinition</strong> property and the ability reads all settings from the asset. You can also configure the combo directly on the ability if you prefer not to use a definition asset — set <strong>ComboTag</strong>, <strong>RootNode</strong>, and <strong>ActivationInputTags</strong> directly. <strong>UCascadeCombo_Runtime</strong> is the variant used when the definition is provided as a spec <code>SourceObject</code> at runtime (e.g. from the Runtime Builder).
+      </p>
     </div>
   </section>
 
@@ -272,136 +267,208 @@ UCascadeComboDefinition* Def = UCascadeComboDefinition::CreateDynamicCombo(
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      All nodes derive from <strong>UCascadeComboNode</strong> and are evaluated in sequence by <code>UCascadeAbilityTask_RunComboTree</code>. Each node receives the current <code>FCascadeComboInputContext</code> and decides whether to advance, branch, loop, or end the combo. You can subclass <code>UCascadeComboNode</code> in Blueprint or C++ for project-specific routing logic.
+      Each node in the combo graph is a <strong>UCascadeComboNode</strong> subclass. Nodes evaluate input, gate by conditions, and return the next node to execute. The graph editor represents these as connected boxes; the compiler converts them into the runtime node tree stored in the definition asset.
     </p>
 
     <table class="prop-table">
       <thead>
-        <tr><th>Node Class</th><th>Description</th></tr>
+        <tr><th>Node Class</th><th>Purpose</th></tr>
       </thead>
       <tbody>
         <tr>
           <td class="prop-name">UCascadeComboNode_Ability</td>
-          <td class="prop-desc">Activates a <code>UGameplayAbility</code> subclass at this step. Carries <strong>NextNodes</strong> for linear sequencing and a <strong>GracePeriod</strong> — the window after ability end during which the next input is still accepted before the combo resets.</td>
+          <td class="prop-desc">Activates a <code>TSubclassOf&lt;UGameplayAbility&gt;</code>. The most common node type. Has a <strong>GracePeriod</strong> (seconds after the ability ends before resetting) and a <strong>NextNodes</strong> array for continuation.</td>
         </tr>
         <tr>
           <td class="prop-name">UCascadeComboNode_Branch</td>
-          <td class="prop-desc">Routes to different next nodes based on which input tag was pressed. Populate the <strong>InputBranches</strong> map (tag → next node) to create light/heavy/dodge divergence points without duplicating abilities.</td>
+          <td class="prop-desc">Routes to different nodes based on which input tag was received. <code>TMap&lt;FGameplayTag, UCascadeComboNode*&gt; InputBranches</code> maps each input to its destination node.</td>
         </tr>
         <tr>
           <td class="prop-name">UCascadeComboNode_Conditional</td>
-          <td class="prop-desc">Checks <strong>RequiredTags</strong> and <strong>BlockedTags</strong> on the ASC before proceeding. Routes to <strong>OnSuccess</strong> or <strong>OnFailure</strong> depending on the result. Use for airborne-only finishers or locked-target specials.</td>
+          <td class="prop-desc">Evaluates gameplay tags on the owner at traversal time. Routes to <strong>OnSuccess</strong> if <code>RequiredTags</code> are present and <code>BlockedTags</code> are absent, otherwise to <strong>OnFailure</strong>. Use for airborne-only branches, resource-gated finishers, etc.</td>
         </tr>
         <tr>
           <td class="prop-name">UCascadeComboNode_Loop</td>
-          <td class="prop-desc">Routes back to an earlier node in the tree, enabling repeating sequences. <strong>MaxIterations</strong> caps the repetition count (0 = unlimited). The target node is resolved at compile time from the graph back-edge.</td>
+          <td class="prop-desc">Routes back to a <strong>TargetNode</strong> up to <strong>MaxIterations</strong> times. Set <code>MaxIterations</code> to 0 for unlimited looping — useful for sustained-fire or spin attacks.</td>
         </tr>
         <tr>
           <td class="prop-name">UCascadeComboNode_Random</td>
-          <td class="prop-desc">Picks one child node using weighted probability. Each entry in <strong>Children</strong> carries a relative <strong>Weight</strong> — equal weights give uniform distribution. Use for attack variation without explicit branching.</td>
+          <td class="prop-desc">Picks a child node by weighted probability. Each entry in <code>Children</code> is a <code>FCascadeRandomNodeEntry</code> with a node pointer and weight. Good for variety without explicit branching logic.</td>
         </tr>
       </tbody>
     </table>
 
-    <div class="callout callout-info">
-      <span class="callout-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      </span>
-      <span>Branch and Conditional nodes are <em>routing-only</em> — they do not activate abilities themselves. The task resolves them transparently and activates the <code>UCascadeComboNode_Ability</code> they point to. The <strong>ResolvedNode</strong> field on <code>FCascadeComboStepResult</code> always holds the final ability node.</span>
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Custom nodes</h3>
+      <p class="doc-p" style="margin-bottom:12px">Subclass <strong>UCascadeComboNode</strong> in Blueprint or C++ and override <code>EvaluateNode</code>, <code>CanEnterNode</code>, and <code>GetValidNextNodes</code> to implement any traversal logic your game requires.</p>
     </div>
   </section>
 
-  <!-- ── Combo Ability ──────────────────────────────────────────── -->
-  <section class="doc-section" id="combo-ability" data-section="combo-ability">
+  <!-- ── Combo Runtime ──────────────────────────────────────────── -->
+  <section class="doc-section" id="combo-runtime" data-section="combo-runtime">
     <h2 class="doc-section-title">
       <span class="section-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
       </span>
-      Combo Ability
+      Runtime &amp; Buffering
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>UCascadeCombo</strong> is the GAS ability that owns a combo's execution lifetime. When the ASC routes a matching input tag to it, <code>ActivateAbility</code> spawns a <strong>UCascadeAbilityTask_RunComboTree</strong> and hands it the resolved root node, combo tag, and timeout. The task then drives the tree — activating step abilities, consuming windowed inputs, enforcing the timeout, and ending the combo ability when the tree finishes.
-    </p>
-    <p class="doc-p">
-      Subclass <code>UCascadeCombo</code> in Blueprint to receive lifecycle callbacks. Point the optional <strong>ComboDefinition</strong> property at a <code>UCascadeComboDefinition</code> asset to let the asset drive all tree settings, or configure <strong>ComboTag</strong>, <strong>RootNode</strong>, and <strong>ActivationInputTags</strong> directly on the class defaults.
+      <strong>UCascadeAbilityTask_RunComboTree</strong> is the execution engine for a running combo. It is created internally by <code>UCascadeCombo</code> on activation; you interact with it through <strong>UCascadeAbilitySystemComponent</strong> rather than directly.
     </p>
 
     <div class="doc-subsection">
-      <h3 class="doc-subsection-title">Blueprint lifecycle events</h3>
-      <table class="prop-table">
-        <thead>
-          <tr><th>Event</th><th>When it fires</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="prop-name">OnComboStarted</td>
-            <td class="prop-desc">Once when the task activates the first step.</td>
-          </tr>
-          <tr>
-            <td class="prop-name">OnComboEnded(bWasCancelled)</td>
-            <td class="prop-desc">When the tree finishes naturally (last node) or is externally cancelled.</td>
-          </tr>
-          <tr>
-            <td class="prop-name">OnStepActivated(StepIndex, NodeTag)</td>
-            <td class="prop-desc">Each time a new ability node is activated by the task.</td>
-          </tr>
-          <tr>
-            <td class="prop-name">OnInputReceived(InputContext)</td>
-            <td class="prop-desc">Each time an input is forwarded to this combo — whether or not it advances the tree.</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="doc-subsection">
-      <h3 class="doc-subsection-title">ASC combo API</h3>
-      <p class="doc-p" style="margin-bottom:12px">The ASC exposes a query and control surface for active combos. All functions are Blueprint-callable.</p>
+      <h3 class="doc-subsection-title">Combo management on UCascadeAbilitySystemComponent</h3>
       <table class="prop-table">
         <thead>
           <tr><th>Function</th><th>Description</th></tr>
         </thead>
         <tbody>
           <tr>
-            <td class="prop-name">ProcessComboInput(InputContext)</td>
-            <td class="prop-desc">Route a tagged input to the active combo task. Returns true if consumed.</td>
+            <td class="prop-name">ProcessComboInput(FCascadeComboInputContext)</td>
+            <td class="prop-desc">Route a semantic input to the active combo. Returns true if consumed. Server only.</td>
           </tr>
           <tr>
-            <td class="prop-name">IsComboActive(ComboTag)</td>
-            <td class="prop-desc">Returns true while a combo task is running for the given tag.</td>
+            <td class="prop-name">IsComboActive(FGameplayTag)</td>
+            <td class="prop-desc">Returns true if a combo with the given tag is currently running.</td>
           </tr>
           <tr>
-            <td class="prop-name">GetActiveComboInstance(ComboTag, OutInstance)</td>
-            <td class="prop-desc">Returns the current step index, current node, and input history for a running combo.</td>
+            <td class="prop-name">GetActiveComboInstance(FGameplayTag, FCascadeComboInstance&amp;)</td>
+            <td class="prop-desc">Fills an instance struct with the current step index, active node, and timing data.</td>
           </tr>
           <tr>
-            <td class="prop-name">EndCombo(ComboTag)</td>
-            <td class="prop-desc">Gracefully ends the combo after the current step finishes.</td>
+            <td class="prop-name">GetActiveCombos()</td>
+            <td class="prop-desc">Returns all combo tags currently running on this component.</td>
           </tr>
           <tr>
-            <td class="prop-name">CancelCombo(ComboTag)</td>
-            <td class="prop-desc">Aborts the running ability and removes the combo immediately, bypassing grace period.</td>
+            <td class="prop-name">EndCombo / EndAllCombos</td>
+            <td class="prop-desc">Ends cleanly — waits for the current ability to finish before resetting.</td>
           </tr>
           <tr>
-            <td class="prop-name">SetAirborneState(bIsAirborne)</td>
-            <td class="prop-desc">Applies or removes <code>Cascade.State.Airborne</code>. Drive from your movement system so Conditional nodes can gate aerial abilities.</td>
+            <td class="prop-name">CancelCombo / CancelAllCombos</td>
+            <td class="prop-desc">Immediately cancels the combo and any active ability.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Input buffering</h3>
+      <p class="doc-p" style="margin-bottom:12px">Set <strong>InputBufferDuration</strong> (seconds) on the ASC to hold inputs that arrive before a combo window opens. <strong>InputBufferMode</strong> controls the queue strategy:</p>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Value</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="prop-name">SingleInput</td>
+            <td class="prop-desc">One input is stored. A newer input replaces the previous buffered one.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">FullCombo</td>
+            <td class="prop-desc">The full sequence pressed by the player is queued and replayed in order when the window opens.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Combo delegates</h3>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Delegate</th><th>Signature</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="prop-name">OnComboStateChanged</td>
+            <td class="prop-desc"><code>(FGameplayTag ComboTag, int32 StepIndex, UCascadeComboNode* CurrentNode)</code></td>
+          </tr>
+          <tr>
+            <td class="prop-name">OnComboStepActivated</td>
+            <td class="prop-desc"><code>(FGameplayTag ComboTag, int32 StepIndex, TSubclassOf&lt;UGameplayAbility&gt; AbilityClass)</code></td>
+          </tr>
+          <tr>
+            <td class="prop-name">OnComboWindowChanged</td>
+            <td class="prop-desc"><code>(FGameplayTag ComboTag, bool bIsOpen)</code> — fires when a combo window opens or closes.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">OnHitDetected</td>
+            <td class="prop-desc"><code>(const FCascadeHitData&amp;)</code> — fires each time the damage window detects a new hit.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">OnDamageTaken</td>
+            <td class="prop-desc"><code>(const FCascadeHitData&amp;, float DamageAmount)</code> — fires on this component's owner when damage is applied.</td>
           </tr>
         </tbody>
       </table>
     </div>
   </section>
 
-  <!-- ── Animation Abilities ────────────────────────────────────── -->
-  <section class="doc-section" id="anim-ability" data-section="anim-ability">
+  <!-- ── Runtime Builder ────────────────────────────────────────── -->
+  <section class="doc-section" id="runtime-builder" data-section="runtime-builder">
     <h2 class="doc-section-title">
       <span class="section-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
       </span>
-      Animation Abilities
+      Runtime Builder
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>UCascadeAnimAbility</strong> is the base class for any ability driven by an animation montage. It handles montage playback via <code>UAbilityTask_PlayMontageAndWait</code>, optional flying-mode root-motion (so Z motion applies in Walking/Falling CMC states), and a Mover 2.0 override point. The ability ends automatically when the montage completes or is interrupted. Subclass in Blueprint for each individual attack step.
+      <strong>UCascadeRuntimeComboBuilder</strong> lets players customize and assemble combos at runtime — a skill-equip screen where the player picks which abilities fill each combo slot. Load a <strong>UCascadeComboTemplate</strong> data asset that defines the available slots and per-slot ability tag requirements, fill them via <code>SetSlot</code>, then call <code>BuildCombo</code> to produce a <code>UCascadeComboDefinition</code> that can be registered with the ASC.
+    </p>
+
+    <table class="prop-table">
+      <thead>
+        <tr><th>Function</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="prop-name">LoadTemplate(UCascadeComboTemplate*)</td>
+          <td class="prop-desc">Initialize the builder from a template asset. Resets any in-progress configuration.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">SetSlot(int32, TSubclassOf&lt;UGameplayAbility&gt;)</td>
+          <td class="prop-desc">Assign an ability to a slot. Returns false if the ability does not satisfy the slot's tag requirements.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">BuildCombo(FGameplayTag, UObject* Outer)</td>
+          <td class="prop-desc">Produces a <code>UCascadeComboDefinition</code>. Returns nullptr if required slots are empty or validation fails.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">SaveConfiguration / LoadConfiguration</td>
+          <td class="prop-desc">Serializes slot assignments to/from a <code>FCascadePlayerComboConfig</code> struct for save-game persistence.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-lang">C++</span></div>
+      <pre><code><span class="code-comment">// Build and register a player-assembled combo at runtime</span>
+Builder->LoadTemplate(MyComboTemplate);
+Builder->SetSlot(0, UMyLightAttack::StaticClass());
+Builder->SetSlot(1, UMyHeavyFinisher::StaticClass());
+
+UCascadeComboDefinition* Built =
+    Builder->BuildCombo(CascadeTags::Combo::Mixed::LLH, this);
+
+if (Built)
+&#123;
+    CascadeASC->RegisterCombo(Built);
+&#125;</code></pre>
+    </div>
+  </section>
+
+  <!-- ── Anim Ability ───────────────────────────────────────────── -->
+  <section class="doc-section" id="anim-ability" data-section="anim-ability">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/><path d="M14 14.5c0-.83.67-1.5 1.5-1.5H20.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5H15.5c-.83 0-1.5-.67-1.5-1.5z"/><path d="M15.5 19H14v-1.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M10 9.5C10 8.67 9.33 8 8.5 8H3.5C2.67 8 2 8.67 2 9.5S2.67 11 3.5 11H8.5c.83 0 1.5-.67 1.5-1.5z"/><path d="M8.5 5H10v1.5c0 .83-.67 1.5-1.5 1.5S7 7.33 7 6.5 7.67 5 8.5 5z"/></svg>
+      </span>
+      Anim Ability
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      <strong>UCascadeAnimAbility</strong> is the base class for all montage-driven abilities. On activation it plays <strong>Montage</strong> at <strong>PlayRate</strong>, optionally jumping to <strong>MontageSectionName</strong>. When the montage completes or is cancelled, the ability ends automatically. Subclass it in Blueprint or C++ for any ability that is fundamentally tied to a single animation.
     </p>
 
     <table class="prop-table">
@@ -412,52 +479,197 @@ UCascadeComboDefinition* Def = UCascadeComboDefinition::CreateDynamicCombo(
         <tr>
           <td class="prop-name">Montage</td>
           <td class="prop-type">UAnimMontage*</td>
-          <td class="prop-desc">Montage played on ability activation.</td>
+          <td class="prop-desc">The animation to play. Required — the ability will not activate without a valid montage.</td>
         </tr>
         <tr>
           <td class="prop-name">MontageSectionName</td>
           <td class="prop-type">FName</td>
-          <td class="prop-desc">Optional montage section to jump to on play.</td>
+          <td class="prop-desc">Optional section to jump to on play. Leave empty to start from the beginning.</td>
         </tr>
         <tr>
           <td class="prop-name">PlayRate</td>
           <td class="prop-type">float</td>
-          <td class="prop-desc">Montage play rate multiplier.</td>
-        </tr>
-        <tr>
-          <td class="prop-name">bUseFlyingModeForRootMotion</td>
-          <td class="prop-type">bool</td>
-          <td class="prop-desc">Switches CMC to MOVE_Flying before the montage so full 3D root motion is applied. Restores to MOVE_Falling on end.</td>
-        </tr>
-        <tr>
-          <td class="prop-name">bBlockCancellationUntilWindow</td>
-          <td class="prop-type">bool</td>
-          <td class="prop-desc">Ability starts non-cancellable. Cancellation re-enables when <code>UCascadeAN_SendGameplayEvent</code> fires <code>Cascade.Event.Ability.RecoveryStarted</code>.</td>
+          <td class="prop-desc">Montage playback rate. Default 1.0.</td>
         </tr>
         <tr>
           <td class="prop-name">bCancelOnMovementInput</td>
           <td class="prop-type">bool</td>
-          <td class="prop-desc">Also cancel the ability when movement input exceeds <strong>MovementCancelThreshold</strong> once the cancellable window is open. Requires <code>bBlockCancellationUntilWindow</code>.</td>
+          <td class="prop-desc">When true, movement input exceeding <strong>MovementCancelThreshold</strong> cancels the ability. Uses <code>UCascadeAbilityTask_WaitMovementInput</code> internally.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">MovementCancelThreshold</td>
+          <td class="prop-type">float</td>
+          <td class="prop-desc">Input magnitude [0.0–1.0] above which a cancel is triggered.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">CancellationSignalTag</td>
+          <td class="prop-type">FGameplayTag</td>
+          <td class="prop-desc">Gameplay event sent to the owner when the ability is cancelled by movement input. Use to trigger a recovery montage via <code>UCascadeAN_SendGameplayEvent</code>.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">bUseFlyingModeForRootMotion</td>
+          <td class="prop-type">bool</td>
+          <td class="prop-desc">Temporarily switches to Flying movement mode to allow Z-axis root motion (launch attacks, uppercuts).</td>
         </tr>
       </tbody>
     </table>
 
-    <p class="doc-p">
-      Override <code>PlayMontage</code> as a Blueprint Native Event to drive playback through a custom movement system (e.g. Mover 2.0) instead of the default CMC path.
-    </p>
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Override points</h3>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Function</th><th>When it fires</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="prop-name">PlayMontage(Montage, Rate) [BlueprintNativeEvent]</td>
+            <td class="prop-desc">Called to play the montage. Override to play on a secondary mesh or with custom parameters.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">OnMontageCompleted()</td>
+            <td class="prop-desc">Called when the montage finishes naturally. Base implementation ends the ability.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">OnMontageCancelled()</td>
+            <td class="prop-desc">Called when the montage is interrupted. Base implementation ends the ability.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </section>
 
-  <!-- ── Attack Ability ─────────────────────────────────────────── -->
+  <!-- ── Attack & Charged ───────────────────────────────────────── -->
   <section class="doc-section" id="attack-ability" data-section="attack-ability">
     <h2 class="doc-section-title">
       <span class="section-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 3a3 3 0 0 0-3 3l-4 8a3 3 0 0 0 3 3 3 3 0 0 0 3-3l4-8a3 3 0 0 0-3-3z"/><path d="M6 21a3 3 0 0 0 3-3l-4-8a3 3 0 0 0-3 3 3 3 0 0 0 3 3l4 8"/></svg>
       </span>
-      Attack Ability
+      Attack &amp; Charged
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>UCascadeAttackAbility</strong> extends <code>UCascadeAnimAbility</code> with hit context and hit pause. Use it as the base class for any ability that produces melee or projectile hits. Hit detection itself is not in the ability — it lives on <code>UCascadeANS_DamageWindow</code> notifies in the montage. The ability contributes context that the notify merges into each <code>FCascadeHitData</code>.
+      <strong>UCascadeAttackAbility</strong> extends <code>UCascadeAnimAbility</code> with hit context and hit pause. Use it as the base for any attack that needs to stamp tags and numeric data onto the <code>FCascadeHitData</code> that reaches your damage execution. <strong>UCascadeChargedAbility</strong> further extends it with hold-to-charge mechanics and damage scaling.
+    </p>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">UCascadeAttackAbility</h3>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Property</th><th>Type</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="prop-name">HitTags</td>
+            <td class="prop-type">FGameplayTagContainer</td>
+            <td class="prop-desc">Tags merged into every <code>FCascadeHitData</code> produced during this ability. Use to classify the hit — e.g. <code>Cascade.Attack.Heavy</code>, <code>Cascade.Damage.Physical.Slash</code>.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">HitCustomData</td>
+            <td class="prop-type">TMap&lt;FName, float&gt;</td>
+            <td class="prop-desc">Project-specific numeric context forwarded in the hit data. Add a key like <code>"BaseDamage"</code> and read it in your damage execution.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">HitPauseDuration</td>
+            <td class="prop-type">float</td>
+            <td class="prop-desc">Seconds to freeze both attacker and victim on a successful hit. Set to 0 to disable.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">HitPauseTimeDilation</td>
+            <td class="prop-type">float</td>
+            <td class="prop-desc">Time dilation during the pause [0.01–0.99]. Lower values produce a more extreme freeze.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">UCascadeChargedAbility</h3>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Property</th><th>Type</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="prop-name">MinChargeTime / MaxChargeTime</td>
+            <td class="prop-type">float</td>
+            <td class="prop-desc">Hold time range in seconds. Below min is uncharged; at or above max is full charge.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">MinChargeDamageMultiplier / MaxChargeDamageMultiplier</td>
+            <td class="prop-type">float</td>
+            <td class="prop-desc">Damage multiplier at each end of the charge range. Read <code>GetChargePercentage()</code> [0, 1] in your damage execution to interpolate between them.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">ChargeMontage</td>
+            <td class="prop-type">UAnimMontage*</td>
+            <td class="prop-desc">Optional animation to play while the player is holding the input. If null, no charge animation plays.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">C++</span></div>
+        <pre><code><span class="code-comment">// Read charge percentage inside a damage execution</span>
+UCascadeChargedAbility* Ability =
+    Cast&lt;UCascadeChargedAbility&gt;(HitData.SourceAbility);
+if (Ability)
+&#123;
+    float Multiplier = FMath::Lerp(
+        Ability->MinChargeDamageMultiplier,
+        Ability->MaxChargeDamageMultiplier,
+        Ability->GetChargePercentage());
+    FinalDamage *= Multiplier;
+&#125;</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Passives ───────────────────────────────────────────────── -->
+  <section class="doc-section" id="passive-ability" data-section="passive-ability">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </span>
+      Passives
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      <strong>UCascadePassiveAbility</strong> is granted and activated automatically by the ASC during <code>GrantCombatAbilities</code>. It does not need an input binding and is never directly activated by the player. Use it for persistent effects — bleed-on-hit procs, damage auras, combo extension bonuses — that live as long as the character has the ability in their spec.
+    </p>
+
+    <table class="prop-table">
+      <thead>
+        <tr><th>Event</th><th>When it fires</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="prop-name">OnPassiveActivated [BlueprintImplementableEvent]</td>
+          <td class="prop-desc">When the passive is first granted and activated on the server. Apply persistent GameplayEffects or start timers here.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">OnHitDetectedPassive(FCascadeHitData) [BlueprintImplementableEvent]</td>
+          <td class="prop-desc">When any hit is detected on the owning ASC. Use for on-hit side effects without modifying the attack ability.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">OnPassiveDeactivated [BlueprintImplementableEvent]</td>
+          <td class="prop-desc">When the ability is removed or the ASC is shut down. Remove any effects applied in <code>OnPassiveActivated</code>.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="doc-p">Add passive abilities to the <strong>PassiveAbilities</strong> array on your <code>UCascadeCombatSetup</code> asset to have them granted automatically on initialization.</p>
+  </section>
+
+  <!-- ── Damage Window ──────────────────────────────────────────── -->
+  <section class="doc-section" id="damage-window" data-section="damage-window">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+      </span>
+      Damage Window
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      <strong>UCascadeANS_DamageWindow</strong> is the AnimNotifyState that activates hit detection for the duration it is active in the montage. Place it on any frame range where an attack should connect. It polls socket positions each tick, performs swept-volume traces, and broadcasts <code>FCascadeHitData</code> for every new hit — automatically deduplicating within a single swing.
     </p>
 
     <table class="prop-table">
@@ -466,24 +678,24 @@ UCascadeComboDefinition* Def = UCascadeComboDefinition::CreateDynamicCombo(
       </thead>
       <tbody>
         <tr>
+          <td class="prop-name">bUseWeaponMesh</td>
+          <td class="prop-type">bool</td>
+          <td class="prop-desc">When true, reads trace configuration from the equipped weapon actor (<code>ACascadeWeaponActor</code>). When false, drives detection from character-mesh sockets using <strong>TraceConfig</strong>.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">WeaponAttachSocket</td>
+          <td class="prop-type">FCascadeSocketName</td>
+          <td class="prop-desc">Which socket on the weapon to use. Only relevant when <code>bUseWeaponMesh</code> is true.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">TraceConfig</td>
+          <td class="prop-type">FCascadeWeaponTraceConfig</td>
+          <td class="prop-desc">Hit detection geometry for character-mesh traces. Defines socket segments (<strong>FCascadeSocketSegment</strong> pairs), trace shape (Line/Box/Sphere/Capsule), and the collision channel.</td>
+        </tr>
+        <tr>
           <td class="prop-name">HitTags</td>
           <td class="prop-type">FGameplayTagContainer</td>
-          <td class="prop-desc">Tags merged into every <code>FCascadeHitData.HitTags</code> this ability produces. Use to mark hit strength (<code>Hit.Strength.Heavy</code>), damage type (<code>Damage.Type.Slash</code>), and similar semantic context your damage formula reads.</td>
-        </tr>
-        <tr>
-          <td class="prop-name">HitCustomData</td>
-          <td class="prop-type">TMap&lt;FName, float&gt;</td>
-          <td class="prop-desc">Open key-value bag merged into <code>FCascadeHitData.CustomData</code>. The plugin never reads this; your project uses it for numeric context (charge level, combo count, stance bonus).</td>
-        </tr>
-        <tr>
-          <td class="prop-name">HitPauseDuration</td>
-          <td class="prop-type">float</td>
-          <td class="prop-desc">Seconds to freeze attacker and victim time dilation on hit. 0 disables.</td>
-        </tr>
-        <tr>
-          <td class="prop-name">HitPauseTimeDilation</td>
-          <td class="prop-type">float</td>
-          <td class="prop-desc">Time dilation multiplier applied during the hit pause window (0.01–0.99).</td>
+          <td class="prop-desc">Tags merged into each hit context produced by this notify. Combined with the ability's <code>HitTags</code> at broadcast time.</td>
         </tr>
       </tbody>
     </table>
@@ -492,162 +704,92 @@ UCascadeComboDefinition* Def = UCascadeComboDefinition::CreateDynamicCombo(
       <span class="callout-icon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       </span>
-      <span><strong>FCascadeHitData intentionally carries no damage value.</strong> Damage formulas are a game concern. Bind to <code>OnHitDetected</code> on the ASC, read the hit context (who, tags, custom data), and apply damage however your project requires.</span>
+      <span>Set the notify to <strong>BranchingPoint</strong> tick type for frame-accurate hit detection on dedicated servers. Editor preview shapes are drawn at design time and can be toggled via CVars at runtime.</span>
     </div>
   </section>
 
-  <!-- ── Hit Detection ──────────────────────────────────────────── -->
-  <section class="doc-section" id="hit-detection" data-section="hit-detection">
+  <!-- ── Combo Window ───────────────────────────────────────────── -->
+  <section class="doc-section" id="combo-window" data-section="combo-window">
     <h2 class="doc-section-title">
       <span class="section-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
       </span>
-      Hit Detection
+      Combo Window
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      Melee hit detection runs inside <strong>UCascadeANS_DamageWindow</strong>, an anim notify state placed on the montage timeline. Each tick of the notify sweeps the configured socket segments against the collision channel, deduplicates hits per actor per window instance, and broadcasts <code>FCascadeHitData</code> on the attacker's ASC via <code>OnHitDetected</code>. A single actor can only be hit once per damage window per montage instance regardless of how many segments overlap it.
-    </p>
-
-    <div class="doc-subsection">
-      <h3 class="doc-subsection-title">Trace configuration</h3>
-      <p class="doc-p" style="margin-bottom:12px">
-        <strong>FCascadeWeaponTraceConfig</strong> defines the sweep shape, collision channel, and socket segments for a weapon. It lives on <strong>ACascadeWeaponActor</strong>. When <code>bUseWeaponMesh</code> is enabled on the notify, the weapon's config is read automatically — no animation changes needed when swapping weapons. Disable <code>bUseWeaponMesh</code> and set <code>TraceConfig</code> directly on the notify for character-mesh traces (unarmed combat, tails, claws).
-      </p>
-
-      <table class="prop-table">
-        <thead>
-          <tr><th>Property</th><th>Description</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="prop-name">TraceSegments</td>
-            <td class="prop-desc">Array of <code>FCascadeSocketSegment</code> entries — each maps a start socket to an end socket on the mesh. One segment per damage zone (blade, tip, handle).</td>
-          </tr>
-          <tr>
-            <td class="prop-name">TraceShape</td>
-            <td class="prop-desc"><code>ECascadeTraceShape</code>: Line, Box, Sphere, or Capsule.</td>
-          </tr>
-          <tr>
-            <td class="prop-name">TraceRadius / TraceHalfHeight / TraceBoxExtent</td>
-            <td class="prop-desc">Shape dimensions — only the fields relevant to the selected shape are shown in the editor.</td>
-          </tr>
-          <tr>
-            <td class="prop-name">TraceChannel</td>
-            <td class="prop-desc">Collision channel swept each tick. Set the weapon mesh profile to ignore this channel to exclude self-hits.</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="doc-subsection">
-      <h3 class="doc-subsection-title">Socket picker</h3>
-      <p class="doc-p" style="margin-bottom:12px">
-        Socket name fields use <strong>FCascadeSocketName</strong> — a metadata-tagged struct that shows a searchable picker in the editor, populated from the owning mesh's sockets and bones via the <code>ICascadeTraceConfigProvider</code> interface. Set sockets on the weapon mesh for weapon traces, or on the character skeleton for unarmed traces.
-      </p>
-    </div>
-
-    <div class="doc-subsection">
-      <h3 class="doc-subsection-title">Hit data</h3>
-      <p class="doc-p" style="margin-bottom:12px">Every hit produces one <code>FCascadeHitData</code> broadcast on the attacker's ASC.</p>
-      <table class="prop-table">
-        <thead>
-          <tr><th>Field</th><th>Type</th><th>Description</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="prop-name">Attacker</td>
-            <td class="prop-type">AActor*</td>
-            <td class="prop-desc">Actor that performed the attack.</td>
-          </tr>
-          <tr>
-            <td class="prop-name">Victim</td>
-            <td class="prop-type">AActor*</td>
-            <td class="prop-desc">Actor that was hit.</td>
-          </tr>
-          <tr>
-            <td class="prop-name">HitResult</td>
-            <td class="prop-type">FHitResult</td>
-            <td class="prop-desc">Exact trace result — location, normal, bone, component.</td>
-          </tr>
-          <tr>
-            <td class="prop-name">SourceAbility</td>
-            <td class="prop-type">UGameplayAbility*</td>
-            <td class="prop-desc">The ability that triggered this hit, or null.</td>
-          </tr>
-          <tr>
-            <td class="prop-name">HitTags</td>
-            <td class="prop-type">FGameplayTagContainer</td>
-            <td class="prop-desc">Merged tags from the notify and the ability (hit type, strength, zone).</td>
-          </tr>
-          <tr>
-            <td class="prop-name">CustomData</td>
-            <td class="prop-type">TMap&lt;FName, float&gt;</td>
-            <td class="prop-desc">Project-specific numeric context merged from <code>UCascadeAttackAbility::HitCustomData</code>.</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="doc-subsection">
-      <h3 class="doc-subsection-title">Damage application pattern</h3>
-      <div class="code-block">
-        <div class="code-block-header"><span class="code-lang">C++</span></div>
-        <pre><code><span class="code-comment">// Bind once in BeginPlay or PossessedBy</span>
-<span class="code-cmd">CascadeASC</span>->OnHitDetected.AddDynamic(<span class="code-val">this</span>, &AMyCharacter::OnHitDetected);
-
-void AMyCharacter::OnHitDetected(const FCascadeHitData& HitData)
-&#123;
-    <span class="code-comment">// Your project computes damage from the context</span>
-    float Damage = ComputeDamage(HitData.HitTags, HitData.CustomData);
-    <span class="code-cmd">ApplyDamageToVictim</span>(HitData.Victim, Damage, HitData.HitResult);
-&#125;</code></pre>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── Animation Notifies ─────────────────────────────────────── -->
-  <section class="doc-section" id="anim-notifies" data-section="anim-notifies">
-    <h2 class="doc-section-title">
-      <span class="section-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-      </span>
-      Animation Notifies
-    </h2>
-    <div class="section-divider"></div>
-    <p class="doc-p">
-      All Cascade notifies are Branching Point notifies — they fire on the game thread at the exact animation frame, not between frames. Place them directly on the montage timeline in the Animation Editor. All notifies are per-montage-instance keyed, so concurrent plays on different characters do not interfere.
+      <strong>UCascadeANS_ComboWindow</strong> marks the frames inside a montage where the combo system accepts the next input. When the notify state begins, it signals the ASC to open the window and replay any buffered input. When it ends, the window closes.
     </p>
 
     <table class="prop-table">
       <thead>
-        <tr><th>Notify</th><th>Type</th><th>Description</th></tr>
+        <tr><th>Property</th><th>Type</th><th>Description</th></tr>
       </thead>
       <tbody>
         <tr>
-          <td class="prop-name">Cascade: Damage Window</td>
-          <td class="prop-type">Notify State</td>
-          <td class="prop-desc"><code>UCascadeANS_DamageWindow</code> — continuous swept hit detection for the duration of the notify. Fires <code>OnHitDetected</code> for each new actor hit. Configure <code>HitTags</code> per-notify for per-swing semantic tags.</td>
+          <td class="prop-name">WindowOpenTag / WindowCloseTag</td>
+          <td class="prop-type">FGameplayTag</td>
+          <td class="prop-desc">Gameplay events fired on the owner when the window opens and closes. Use to drive UI indicators.</td>
         </tr>
         <tr>
-          <td class="prop-name">Cascade: Combo Window</td>
-          <td class="prop-type">Notify State</td>
-          <td class="prop-desc"><code>UCascadeANS_ComboWindow</code> — marks the input acceptance window. The task only advances the combo tree while this window is open. Drives input buffering — inputs that land outside the window are held and replayed when the next window opens.</td>
+          <td class="prop-name">bApplyComboWindowTag</td>
+          <td class="prop-type">bool</td>
+          <td class="prop-desc">When true, applies <strong>ComboWindowActiveTag</strong> as a loose gameplay tag for the duration of the window. Useful for gating other abilities or triggering UI state.</td>
         </tr>
         <tr>
-          <td class="prop-name">Cascade: I-Frames</td>
-          <td class="prop-type">Notify State</td>
-          <td class="prop-desc"><code>UCascadeANS_IFrames</code> — applies <code>Cascade.State.Invulnerable</code> as a loose gameplay tag for the duration. Damage windows automatically skip actors carrying this tag. Enable <code>bApplyDodgingTag</code> for dodge rolls where both tags carry meaning.</td>
+          <td class="prop-name">ComboWindowActiveTag</td>
+          <td class="prop-type">FGameplayTag</td>
+          <td class="prop-desc">The tag applied while the window is open. Only used when <code>bApplyComboWindowTag</code> is true.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── Other Notifies ─────────────────────────────────────────── -->
+  <section class="doc-section" id="other-notifies" data-section="other-notifies">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+      </span>
+      Other Notifies
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">Cascade ships several additional notifies that cover common combat patterns without requiring custom ability code.</p>
+
+    <table class="prop-table">
+      <thead>
+        <tr><th>Class</th><th>Type</th><th>Purpose</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="prop-name">UCascadeAN_SendGameplayEvent</td>
+          <td class="prop-type">Point notify</td>
+          <td class="prop-desc">Sends <strong>EventTag</strong> to the owner at the exact frame the notify fires. Use to trigger ability phase transitions, sound cues, or Blueprint logic without writing ability code.</td>
         </tr>
         <tr>
-          <td class="prop-name">Cascade: Send Gameplay Event</td>
-          <td class="prop-type">Point Notify</td>
-          <td class="prop-desc"><code>UCascadeAN_SendGameplayEvent</code> — sends a single gameplay event to the owner's ASC at a specific frame. Use to signal phase transitions: <code>Cascade.Event.Ability.RecoveryStarted</code> re-enables cancellation; <code>Cascade.Event.Combo.RequestEnd</code> gracefully ends a running combo.</td>
+          <td class="prop-name">UCascadeAN_SpawnProjectile</td>
+          <td class="prop-type">Point notify</td>
+          <td class="prop-desc">Spawns an <code>ACascadeProjectile</code> from a character socket or weapon socket. <strong>ECascadeProjectileAimMode</strong> controls launch direction: <code>SocketDirection</code>, <code>OwnerForward</code>, <code>CameraTrace</code>, or <code>TargetLocation</code>.</td>
         </tr>
         <tr>
-          <td class="prop-name">Cascade: Spawn Projectile</td>
-          <td class="prop-type">Point Notify</td>
-          <td class="prop-desc"><code>UCascadeAN_SpawnProjectile</code> — spawns an <code>ACascadeProjectile</code> at a socket location on the weapon or character mesh. Inherits hit tags from the owning ability via the ASC.</td>
+          <td class="prop-name">UCascadeAN_ApplyDamage</td>
+          <td class="prop-type">Point notify</td>
+          <td class="prop-desc">Instant forward sphere trace from <strong>SocketName</strong> that applies damage on contact. Use for quick-and-dirty point attacks that don't warrant a full damage window.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">UCascadeANS_IFrames</td>
+          <td class="prop-type">Notify state</td>
+          <td class="prop-desc">Grants invincibility for its duration by applying <code>Cascade.State.Invulnerable</code>. Optionally also applies <code>Cascade.State.Dodging</code> and any extra tags via <strong>AdditionalTags</strong>.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">UCascadeANS_TargetStick</td>
+          <td class="prop-type">Notify state</td>
+          <td class="prop-desc">Snaps the attacker toward the locked target, then holds the distance for the notify duration. Configurable snap speed, hold speed, and reacquire-on-loss. Keeps melee attacks connected without relying on root motion precision.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">UCascadeANS_DragTarget</td>
+          <td class="prop-type">Notify state</td>
+          <td class="prop-desc">Moves the target actor alongside the attacker. Three modes: <strong>FollowSocket</strong> lerps to a socket, <strong>CurveOffset</strong> drives from a <code>UCurveVector</code>, <strong>LaunchAndReturn</strong> launches the target then pulls it back with <strong>ReturnImpulse</strong>.</td>
         </tr>
       </tbody>
     </table>
@@ -657,13 +799,13 @@ void AMyCharacter::OnHitDetected(const FCascadeHitData& HitData)
   <section class="doc-section" id="weapons" data-section="weapons">
     <h2 class="doc-section-title">
       <span class="section-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
       </span>
       Weapons
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>ACascadeWeaponActor</strong> is a replicated actor that owns the hit detection configuration for a weapon and optionally grants combat abilities when drawn. It implements <code>ICascadeTraceConfigProvider</code> so damage window notifies can read the weapon's trace setup without coupling to a specific mesh type. Subclass in Blueprint — add your <code>USkeletalMeshComponent</code> or <code>UStaticMeshComponent</code> and override <code>GetWeaponComponent</code> to return it.
+      <strong>ACascadeWeaponActor</strong> is the base class for any weapon that participates in Cascade hit detection. It implements <code>ICascadeTraceConfigProvider</code> so <code>UCascadeANS_DamageWindow</code> can read socket positions from the weapon mesh directly. Attach it to a character socket; call <code>DrawWeapon()</code> and <code>SheathWeapon()</code> to transition states — the weapon re-attaches to <strong>DrawnSocket</strong> or <strong>SheathSocket</strong> automatically.
     </p>
 
     <table class="prop-table">
@@ -674,96 +816,43 @@ void AMyCharacter::OnHitDetected(const FCascadeHitData& HitData)
         <tr>
           <td class="prop-name">TraceConfig</td>
           <td class="prop-type">FCascadeWeaponTraceConfig</td>
-          <td class="prop-desc">Sockets, trace shape, and collision channel for this weapon's hit detection. Read by <code>UCascadeANS_DamageWindow</code> when <code>bUseWeaponMesh</code> is true.</td>
-        </tr>
-        <tr>
-          <td class="prop-name">ProjectileSpawnSockets</td>
-          <td class="prop-type">TArray&lt;FCascadeSocketName&gt;</td>
-          <td class="prop-desc">Sockets on this weapon used as projectile spawn origins by <code>UCascadeAN_SpawnProjectile</code>. One projectile per socket entry.</td>
+          <td class="prop-desc">Defines the swept geometry for hit detection. Contains <strong>TraceSegments</strong> (socket-pair definitions), <strong>TraceShape</strong> (Line/Box/Sphere/Capsule), radius/extent values, and collision channel.</td>
         </tr>
         <tr>
           <td class="prop-name">DrawnSocket / SheathSocket</td>
           <td class="prop-type">FName</td>
-          <td class="prop-desc">Character skeleton sockets the weapon re-attaches to on draw and sheath. Leave <code>NAME_None</code> for games without a socket system.</td>
+          <td class="prop-desc">Character sockets to attach to when drawn and sheathed.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">ProjectileSpawnSockets</td>
+          <td class="prop-type">TArray&lt;FCascadeSocketName&gt;</td>
+          <td class="prop-desc">Named sockets used as projectile spawn origins by <code>UCascadeAN_SpawnProjectile</code> when <code>bSpawnFromWeapon</code> is true.</td>
         </tr>
         <tr>
           <td class="prop-name">CombatSetup</td>
           <td class="prop-type">UCascadeCombatSetup*</td>
-          <td class="prop-desc">Optional data asset — abilities and combos granted to the owner's ASC when the weapon is equipped. Gracefully skipped if the owner has no ASC.</td>
+          <td class="prop-desc">Optional. Grants its abilities to the character's ASC when drawn, revokes them when sheathed.</td>
         </tr>
         <tr>
           <td class="prop-name">EquipEffect</td>
           <td class="prop-type">TSubclassOf&lt;UGameplayEffect&gt;</td>
-          <td class="prop-desc">Optional infinite-duration GameplayEffect applied on equip (passive stat bonuses). Removed automatically when the weapon actor is destroyed.</td>
+          <td class="prop-desc">Optional GameplayEffect applied while the weapon is drawn — stat bonuses, passive auras.</td>
         </tr>
       </tbody>
     </table>
 
     <div class="doc-subsection">
-      <h3 class="doc-subsection-title">Finding an equipped weapon at runtime</h3>
+      <h3 class="doc-subsection-title">Finding the active weapon</h3>
       <div class="code-block">
         <div class="code-block-header"><span class="code-lang">C++</span></div>
-        <pre><code><span class="code-comment">// Get the currently drawn weapon attached to this actor</span>
-ACascadeWeaponActor* Weapon = ACascadeWeaponActor::FindDrawnWeapon(OwnerActor);
+        <pre><code><span class="code-comment">// Get the currently drawn weapon on any actor</span>
+ACascadeWeaponActor* Weapon =
+    ACascadeWeaponActor::FindDrawnWeapon(Character);
 
-<span class="code-comment">// Or get its mesh component directly (e.g. for socket queries)</span>
-UMeshComponent* WeaponMesh = ACascadeWeaponActor::FindDrawnWeaponComponent(OwnerActor);</code></pre>
+<span class="code-comment">// Retrieve just the mesh for socket queries</span>
+UMeshComponent* Mesh =
+    ACascadeWeaponActor::FindDrawnWeaponComponent(Character);</code></pre>
       </div>
-    </div>
-  </section>
-
-  <!-- ── Targeting ──────────────────────────────────────────────── -->
-  <section class="doc-section" id="targeting" data-section="targeting">
-    <h2 class="doc-section-title">
-      <span class="section-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>
-      </span>
-      Targeting
-    </h2>
-    <div class="section-divider"></div>
-    <p class="doc-p">
-      <strong>UCascadeTargetingSubsystem</strong> is a world subsystem that selects the best combat target given a source actor and direction. It operates in two modes: <em>Unlocked</em> (scores all <code>ICascadeTargetable</code> actors in range and picks the best) and <em>Locked</em> (returns the locked target directly). Abilities and AI query the subsystem instead of doing their own overlap tests.
-    </p>
-
-    <div class="doc-subsection">
-      <h3 class="doc-subsection-title">Finding a target</h3>
-      <div class="code-block">
-        <div class="code-block-header"><span class="code-lang">C++</span></div>
-        <pre><code>UCascadeTargetingSubsystem* Targeting = GetWorld()->GetSubsystem&lt;UCascadeTargetingSubsystem&gt;();
-
-FCascadeTargetingRequest Request;
-Request.SourceActor = this;
-Request.PreferredDirection = GetActorForwardVector();
-<span class="code-comment">// Profile controls range, angle, weights, and LoS requirement</span>
-Request.Profile.MaxRange = 800.f;
-Request.Profile.MaxAngleDegrees = 45.f;
-Request.Profile.bRequireLineOfSight = true;
-
-FCascadeTargetingResult Result = Targeting->FindBestTarget(Request);</code></pre>
-      </div>
-    </div>
-
-    <div class="doc-subsection">
-      <h3 class="doc-subsection-title">Lock-on targeting</h3>
-      <p class="doc-p" style="margin-bottom:12px">Switch the subsystem into Locked mode to make all subsequent targeting queries return the pinned target:</p>
-      <div class="code-block">
-        <div class="code-block-header"><span class="code-lang">C++</span></div>
-        <pre><code><span class="code-comment">// Lock onto a specific target</span>
-Targeting->SetTargetingMode(ECascadeTargetingMode::Locked, TargetActor);
-
-<span class="code-comment">// Return to free targeting</span>
-Targeting->SetTargetingMode(ECascadeTargetingMode::Unlocked, nullptr);</code></pre>
-      </div>
-    </div>
-
-    <div class="doc-subsection">
-      <h3 class="doc-subsection-title">Custom scoring</h3>
-      <p class="doc-p" style="margin-bottom:12px">Subclass <strong>UCascadeTargetScoringPolicy</strong> in Blueprint and override <code>ScoreTarget</code> to implement project-specific priority rules (prefer wounded enemies, deprioritize allies, score by threat level). Assign the policy class in the request profile or the subsystem's default config.</p>
-    </div>
-
-    <div class="doc-subsection">
-      <h3 class="doc-subsection-title">Reusable targeting profiles</h3>
-      <p class="doc-p" style="margin-bottom:12px"><strong>UCascadeTargetingProfile</strong> is a data asset wrapping one <code>FCascadeTargetingProfileData</code>. Create named profiles (MeleeRange, BowRange, AOESearch) and pass them to <code>BuildRequestFromProfile</code> to avoid duplicating range and angle values across abilities.</p>
     </div>
   </section>
 
@@ -771,69 +860,163 @@ Targeting->SetTargetingMode(ECascadeTargetingMode::Unlocked, nullptr);</code></p
   <section class="doc-section" id="projectiles" data-section="projectiles">
     <h2 class="doc-section-title">
       <span class="section-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
       </span>
       Projectiles
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>ACascadeProjectile</strong> is a Blueprintable actor that travels through the world and broadcasts <code>OnHitDetected</code> on the instigator's ASC on impact, feeding directly into the same damage path as melee hits. Spawn it via the <strong>Cascade: Spawn Projectile</strong> point notify in a montage to keep projectile creation synchronized with animation frames.
+      <strong>ACascadeProjectile</strong> is the base actor for ranged attacks. Spawn it from <code>UCascadeAN_SpawnProjectile</code> or from an ability directly. Call <code>InitializeProjectile(CascadeASC, SourceAbility, HitTags)</code> after spawning so the owning ASC receives <code>FCascadeHitData</code> on impact. Movement behavior is a swappable <strong>UCascadeProjectileMovementStrategy</strong> — set <strong>MovementStrategyClass</strong> on the projectile to choose one.
     </p>
 
     <table class="prop-table">
       <thead>
-        <tr><th>Property</th><th>Description</th></tr>
+        <tr><th>Property</th><th>Type</th><th>Description</th></tr>
       </thead>
       <tbody>
         <tr>
           <td class="prop-name">CollisionRadius</td>
-          <td class="prop-desc">Radius of the sphere collision component in cm.</td>
+          <td class="prop-type">float</td>
+          <td class="prop-desc">Sphere collision radius in cm.</td>
         </tr>
         <tr>
           <td class="prop-name">PierceCount</td>
-          <td class="prop-desc">Additional actors the projectile can hit after the first before it is destroyed. 0 = single hit.</td>
+          <td class="prop-type">int32</td>
+          <td class="prop-desc">Additional actors the projectile passes through after the first hit. 0 destroys on first contact.</td>
         </tr>
         <tr>
           <td class="prop-name">bDestroyOnEnvironmentHit</td>
-          <td class="prop-desc">Destroy when hitting world geometry (actors with no ASC).</td>
+          <td class="prop-type">bool</td>
+          <td class="prop-desc">Destroy the projectile when it hits world geometry.</td>
         </tr>
         <tr>
           <td class="prop-name">Lifetime</td>
-          <td class="prop-desc">Seconds before auto-destroy. 0 disables.</td>
-        </tr>
-        <tr>
-          <td class="prop-name">DefaultHitTags</td>
-          <td class="prop-desc">Tags present on every hit from this projectile class. Merged with per-spawn tags from the ability.</td>
+          <td class="prop-type">float</td>
+          <td class="prop-desc">Auto-destroy timer in seconds. Set to 0 to disable.</td>
         </tr>
         <tr>
           <td class="prop-name">MovementStrategyClass</td>
-          <td class="prop-desc">Optional strategy. When set, <code>UProjectileMovementComponent</code> is disabled and this strategy drives movement each tick. Leave null for default straight-line movement.</td>
+          <td class="prop-type">TSubclassOf&lt;UCascadeProjectileMovementStrategy&gt;</td>
+          <td class="prop-desc">Movement strategy to instantiate on spawn. Leave null to use the built-in <code>UProjectileMovementComponent</code>.</td>
         </tr>
       </tbody>
     </table>
 
     <div class="doc-subsection">
       <h3 class="doc-subsection-title">Movement strategies</h3>
-      <p class="doc-p" style="margin-bottom:12px">Set <strong>MovementStrategyClass</strong> on your projectile Blueprint to override default straight movement. Three strategies ship with the plugin:</p>
       <table class="prop-table">
         <thead>
-          <tr><th>Strategy</th><th>Description</th></tr>
+          <tr><th>Class</th><th>Key Properties</th><th>Purpose</th></tr>
         </thead>
         <tbody>
           <tr>
-            <td class="prop-name">UCascadeProjectileMovementStrategy_Bezier</td>
-            <td class="prop-desc">Cubic Bezier arc toward the target location. Configure <strong>TravelDuration</strong>, <strong>P1Offset</strong> (from spawn), and <strong>P2Offset</strong> (from destination) to shape the arc. Good for thrown objects, lobbed grenades, and stylized arrow trajectories.</td>
+            <td class="prop-name">UCascadeProjectileMovementStrategy_Homing</td>
+            <td class="prop-type">Speed, MaxTurnRateDegrees, TargetSocketName</td>
+            <td class="prop-desc">Steers continuously toward a tracked actor or location. Guided missiles, seeking arrows.</td>
           </tr>
           <tr>
-            <td class="prop-name">UCascadeProjectileMovementStrategy_Homing</td>
-            <td class="prop-desc">Continuous steering toward a target actor each tick. Works with any actor that implements <code>ICascadeTargetable</code>.</td>
+            <td class="prop-name">UCascadeProjectileMovementStrategy_Bezier</td>
+            <td class="prop-type">TravelDuration, P1Offset, P2Offset</td>
+            <td class="prop-desc">Follows a cubic Bezier arc to a destination. Lobbed grenades, mortars, parabolic arrows.</td>
           </tr>
           <tr>
             <td class="prop-name">UCascadeProjectileMovementStrategy_Boomerang</td>
-            <td class="prop-desc">Travels outward then curves back toward the instigator. Handles return-path hit detection separately so the same actor can be hit on the outbound and return legs.</td>
+            <td class="prop-type">MaxRange, OutboundSpeed, ReturnSpeed, ReturnThreshold</td>
+            <td class="prop-desc">Flies outward to <strong>MaxRange</strong> then reverses. Thrown weapons, chakrams, returning axes.</td>
           </tr>
         </tbody>
       </table>
+    </div>
+  </section>
+
+  <!-- ── Targeting ──────────────────────────────────────────────── -->
+  <section class="doc-section" id="targeting" data-section="targeting">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+      </span>
+      Targeting
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      The targeting system has two layers. <strong>UCascadeTargetingSubsystem</strong> is a world subsystem for soft-lock management — it scores candidates by angle and distance and can hold a locked target across frames. <strong>UCascadeTargetingQuery</strong> subclasses are GAS-integrated query objects used inside abilities to resolve target data for a single activation.
+    </p>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">UCascadeTargetingSubsystem</h3>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Function</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="prop-name">FindBestTarget(FCascadeTargetingRequest)</td>
+            <td class="prop-desc">Scores all <code>ICascadeTargetable</code> actors in range and returns the best candidate. Respects LOS, angle cap, and team filter.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">SetTargetingMode(ECascadeTargetingMode, AActor*)</td>
+            <td class="prop-desc">Switch between <strong>Unlocked</strong> (best target per call) and <strong>Locked</strong> (sticky soft-lock on a specific actor).</td>
+          </tr>
+          <tr>
+            <td class="prop-name">GetLockedTarget()</td>
+            <td class="prop-desc">Returns the currently locked actor, or nullptr when Unlocked.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">BuildRequestFromProfile(Owner, Origin, Profile)</td>
+            <td class="prop-desc">Builds a <code>FCascadeTargetingRequest</code> from a <code>UCascadeTargetingProfile</code> data asset. The profile stores range, angle, distance/angle weights, and scoring policy class.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Targeting queries (in abilities)</h3>
+      <p class="doc-p" style="margin-bottom:12px">Assign a query to <strong>UCascadeAbilityTask_WaitTargetData</strong> in an ability. The task calls <code>OnTargetDataReady</code> when the query resolves, or <code>OnTargetingCancelled</code> if cancelled.</p>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Query Class</th><th>Purpose</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="prop-name">UCascadeTargetingQuery_Hitscan</td>
+            <td class="prop-desc">Camera-space sweep to the first actor with an ASC. For hitscan guns or lock-on confirmation.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">UCascadeTargetingQuery_AOE</td>
+            <td class="prop-desc">Sphere overlap centered on the avatar. Returns up to <strong>MaxTargets</strong> actors. For ground-pounds, explosions.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">UCascadeTargetingQuery_GroundLocation</td>
+            <td class="prop-desc">Traces down from the camera to find a surface point. Optional grid snap. For placement abilities.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">UCascadeTargetingQuery_SingleActor</td>
+            <td class="prop-desc">Resolves one actor via the subsystem's locked target or a camera trace. Mode set via <strong>ECascadeSingleActorQueryMode</strong>: Subsystem or CameraTrace.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">UCascadeTargetingQuery_Self</td>
+            <td class="prop-desc">Returns the ability owner's avatar. For self-cast abilities.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Making an actor targetable</h3>
+      <p class="doc-p" style="margin-bottom:12px">Implement <strong>ICascadeTargetable</strong> on any actor that should appear in targeting results:</p>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">C++</span></div>
+        <pre><code>FVector GetTargetPoint_Implementation() override
+&#123;
+    <span class="code-comment">// Return the world position used for scoring (e.g. chest bone)</span>
+    return GetMesh()->GetSocketLocation(FName("spine_03"));
+&#125;
+
+bool IsTargetable_Implementation() override
+&#123;
+    return !IsDead();
+&#125;</code></pre>
+      </div>
     </div>
   </section>
 
@@ -841,58 +1024,229 @@ Targeting->SetTargetingMode(ECascadeTargetingMode::Unlocked, nullptr);</code></p
   <section class="doc-section" id="reactions" data-section="reactions">
     <h2 class="doc-section-title">
       <span class="section-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
       </span>
       Reactions
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>UCascadeReactionComponent</strong> is an optional actor component that translates damage events into data-driven hit and death reactions. Add it to any character that should play montages, VFX, or sounds in response to being hit. Assign a <strong>UCascadeReactionSetup</strong> data asset — one asset per enemy type — and the component handles everything from there.
-    </p>
-    <p class="doc-p">
-      If the default handler model does not fit your needs, skip the component entirely and bind to <code>OnDamageTaken</code> on the ASC directly.
+      The reaction system decouples visual hit feedback from ability code. <strong>UCascadeReactionComponent</strong> lives on any actor that needs to respond to being hit or killed. It receives replicated hit and death triggers, evaluates a priority-sorted list of handlers from a <strong>UCascadeReactionSetup</strong> data asset, and executes the first handler whose tag conditions are met.
     </p>
 
     <div class="doc-subsection">
-      <h3 class="doc-subsection-title">UCascadeReactionSetup</h3>
+      <h3 class="doc-subsection-title">UCascadeReactionSetup (Data Asset)</h3>
       <table class="prop-table">
         <thead>
-          <tr><th>Property</th><th>Description</th></tr>
+          <tr><th>Property</th><th>Type</th><th>Description</th></tr>
         </thead>
         <tbody>
           <tr>
             <td class="prop-name">HitHandlers</td>
-            <td class="prop-desc">Instanced handler objects evaluated in descending <strong>Priority</strong> order. The first whose <code>CanHandle</code> returns true fires; the rest are skipped.</td>
+            <td class="prop-type">TArray&lt;UCascadeReactionHandler*&gt;</td>
+            <td class="prop-desc">Handlers evaluated in priority order when a hit reaction is triggered.</td>
           </tr>
           <tr>
             <td class="prop-name">DeathHandlers</td>
-            <td class="prop-desc">Same first-match-wins evaluation as HitHandlers, but no cooldown gate. Fires once when the ASC receives the death tag.</td>
+            <td class="prop-type">TArray&lt;UCascadeReactionHandler*&gt;</td>
+            <td class="prop-desc">Handlers evaluated on death — typically a ragdoll entry and a death montage variant.</td>
           </tr>
           <tr>
             <td class="prop-name">GlobalHitReactionCooldown</td>
-            <td class="prop-desc">Minimum seconds between consecutive hit reactions. Prevents montage spam during rapid multi-hit attacks.</td>
+            <td class="prop-type">float</td>
+            <td class="prop-desc">Minimum seconds between consecutive hit reactions on this actor. Prevents reaction spam on rapid hits.</td>
           </tr>
           <tr>
-            <td class="prop-name">bRagdollOnDeath</td>
-            <td class="prop-desc">Simulate physics on the character mesh after the death montage ends.</td>
-          </tr>
-          <tr>
-            <td class="prop-name">bDisableCollisionOnDeath</td>
-            <td class="prop-desc">Disable actor collision when the owner dies.</td>
+            <td class="prop-name">bRagdollOnDeath / bDisableCollisionOnDeath</td>
+            <td class="prop-type">bool</td>
+            <td class="prop-desc">Common death behaviors available as first-class settings. No custom handler needed for basic ragdoll deaths.</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="doc-subsection">
-      <h3 class="doc-subsection-title">Reaction handlers</h3>
+      <h3 class="doc-subsection-title">UCascadeReactionHandler_Montage</h3>
       <p class="doc-p" style="margin-bottom:12px">
-        Subclass <strong>UCascadeReactionHandler</strong> in Blueprint or C++ to define a reaction. Override <code>CanHandle</code> to gate on hit tags (heavy hit, backstab, etc.) and <code>ExecuteReaction</code> to perform the response. Use <strong>UCascadeReactionHandler_Montage</strong> (included) for montage + VFX + sound without writing any code.
+        The built-in <strong>UCascadeReactionHandler_Montage</strong> covers the common reaction case: it plays an animation (with optional directional variants for front/back/left/right), spawns a Niagara VFX, plays a sound, and fires a gameplay cue — all configured in the data asset, no code. Subclass <strong>UCascadeReactionHandler</strong> for custom reaction logic, overriding <code>CanHandle</code> and <code>Execute</code>.
       </p>
-      <p class="doc-p">
-        Blueprint events on <code>UCascadeReactionComponent</code> fire after each handler executes: <code>OnHitReactionExecuted</code>, <code>OnDeathReactionExecuted</code>, and <code>OnNoReactionFound</code> (fired when all handlers are blocked by cooldown, active reaction, or tag mismatch).
-      </p>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Property on any handler</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="prop-name">RequiredTags / BlockedTags</td>
+            <td class="prop-desc">Tag gate on the incoming <code>FCascadeHitData</code>. Handler only evaluates if <code>RequiredTags</code> are present and none of <code>BlockedTags</code> match.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">Priority</td>
+            <td class="prop-desc">Higher priority handlers are evaluated first. First match wins.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">bInterruptCurrentReaction</td>
+            <td class="prop-desc">Whether this handler preempts a currently playing reaction.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">CooldownAfter</td>
+            <td class="prop-desc">Per-handler cooldown in seconds after execution.</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+  </section>
+
+  <!-- ── Input ──────────────────────────────────────────────────── -->
+  <section class="doc-section" id="input" data-section="input">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="6" y1="12" x2="6" y2="12.01"/><line x1="10" y1="12" x2="10" y2="12.01"/><path d="M14 10h4v4h-4z"/></svg>
+      </span>
+      Input
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      Cascade routes all input through the <strong>ICascadeInputAdapter</strong> interface, decoupling the source of input from combo and ability execution. The default implementation is <strong>UCascadeEnhancedInputAdapter</strong> for players. For AI, use <strong>UCascadeAIInputAdapter</strong>. Implement the interface yourself to support any custom input source.
+    </p>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">UCascadeEnhancedInputAdapter (player)</h3>
+      <p class="doc-p" style="margin-bottom:12px">Set up automatically when you call <code>InitializeCombat(Setup, EnhancedInputComponent)</code>. You can also register actions individually:</p>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Function</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="prop-name">RegisterInputAction(UInputAction*, FGameplayTag)</td>
+            <td class="prop-desc">Bind a physical <code>UInputAction</code> to a semantic gameplay tag. When the action fires, the tag is submitted to the ASC as a <code>FCascadeComboInputContext</code>.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">RegisterMappingConfig(UCascadeInputMappingConfig*)</td>
+            <td class="prop-desc">Batch-register all mappings from a <code>UCascadeInputMappingConfig</code> data asset. Preferred over individual <code>RegisterInputAction</code> calls.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">SetTriggerEvents(ETriggerEvent, ETriggerEvent)</td>
+            <td class="prop-desc">Override which Enhanced Input trigger event counts as start and end of an input. Default is <code>Started</code> / <code>Completed</code>.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">UCascadeAIInputAdapter (AI)</h3>
+      <p class="doc-p" style="margin-bottom:12px">Registered when you call <code>InitializeCombatForAI(Setup)</code>. Drive abilities directly from behavior tree tasks:</p>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">C++</span></div>
+        <pre><code><span class="code-comment">// Submit a combo input from an AI behavior tree task</span>
+UCascadeAIInputAdapter* Adapter = CascadeASC->GetAIInputAdapter();
+Adapter->RequestComboInput(CascadeTags::Attack::Light, &#123;&#125;);
+
+<span class="code-comment">// Activate a standalone ability directly</span>
+Adapter->RequestAbilityInput(SpecHandle);</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Gameplay Tags ──────────────────────────────────────────── -->
+  <section class="doc-section" id="gameplay-tags" data-section="gameplay-tags">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+      </span>
+      Gameplay Tags
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      Cascade registers its tag namespace automatically. All native tags are declared in <strong>CascadeGameplayTags.h</strong> and accessible as <code>CascadeTags::</code> in C++.
+    </p>
+
+    <table class="prop-table">
+      <thead>
+        <tr><th>Group</th><th>Examples</th><th>Used for</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="prop-name">Cascade.State</td>
+          <td class="prop-type">Dead, Attacking, ComboWindow, Dodging, Airborne, Dragged, Invulnerable</td>
+          <td class="prop-desc">Transient tags applied and removed by the plugin. Gate ability activation and target eligibility on these.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">Cascade.Ability</td>
+          <td class="prop-type">Attack.Light, Attack.Heavy, Attack.Aerial, Defense.Dodge, Movement.Jump</td>
+          <td class="prop-desc">Ability classification. Applied as ability tags and used in Conditional node tag gates.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">Cascade.Combo</td>
+          <td class="prop-type">LightAttack.ThreeHit, HeavyAttack.TwoHit, Mixed.LLH</td>
+          <td class="prop-desc">Combo identifier tags for the built-in demo definitions. Use as <code>ComboTag</code> on your own definitions.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">Cascade.Event</td>
+          <td class="prop-type">Combo.WindowOpened, Combo.Completed, Hit.Landed, Death.Died</td>
+          <td class="prop-desc">Gameplay events dispatched by the plugin. Bind to these in abilities or Blueprint to react to combat milestones.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">Cascade.Damage</td>
+          <td class="prop-type">Physical.Slash, Physical.Pierce, Elemental.Fire, True</td>
+          <td class="prop-desc">Hit classification. Add to attack abilities; read in your damage execution to apply armor, elemental reactions, etc.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">Cascade.Effect</td>
+          <td class="prop-type">Stun, Knockback, Launch, Bleed, Burn, Freeze</td>
+          <td class="prop-desc">Status effect tags. Apply via GameplayEffects from your execution; reaction handlers can gate on these.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">Cascade.GameplayCue</td>
+          <td class="prop-type">Hit.Heavy, Hit.Critical, Combo.Finisher, Impact.Metal</td>
+          <td class="prop-desc">Cue tags fired by reaction handlers. Map to Niagara effects and sound assets in your GameplayCue manager.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">Cascade.Cheat</td>
+          <td class="prop-type">GodMode, DemigodMode</td>
+          <td class="prop-desc">Applied by cheat commands. Check for these in your damage execution to skip damage.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── Debug Tools ────────────────────────────────────────────── -->
+  <section class="doc-section" id="debug-tools" data-section="debug-tools">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 8v4M12 16h.01"/></svg>
+      </span>
+      Debug Tools
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">Cascade includes debug utilities gated behind CVars and compile-time conditions. None require manual stripping for shipping builds.</p>
+
+    <table class="prop-table">
+      <thead>
+        <tr><th>Tool</th><th>How to use</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="prop-name">Trace previews</td>
+          <td class="prop-desc">Editor-side preview shapes on <code>UCascadeANS_DamageWindow</code> show the swept volume at design time. Runtime trace drawing is controlled by a CVar on the notify.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">UCascadeDebugHelpers</td>
+          <td class="prop-desc">Blueprint function library: <code>DrawComboTree</code> renders a combo definition as a 2D graph on screen, <code>LogComboInfo</code> prints the tree, <code>DrawAttackRange</code> visualizes a radius in the world.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">UCascadeComboHelpers</td>
+          <td class="prop-desc">Runtime query library for UI blueprints: <code>IsComboActive</code>, <code>GetCurrentComboStep</code>, <code>GetActiveCombos</code>, and <code>GetCascadeASC</code> from any actor reference.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">Cheat commands</td>
+          <td class="prop-desc"><code>CascadeGodMode</code> applies <code>Cascade.Cheat.GodMode</code> (block all damage). <code>CascadeDemigod</code> applies <code>Cascade.Cheat.DemigodMode</code> (block damage that would kill).</td>
+        </tr>
+        <tr>
+          <td class="prop-name">Visual Logger</td>
+          <td class="prop-desc">Combo steps, hit detection events, and reaction triggers are logged for timeline-based replay. Open <strong>Window &rarr; Visual Logger</strong> in-editor and filter by <code>Cascade</code>.</td>
+        </tr>
+      </tbody>
+    </table>
   </section>
 
   <!-- ── Multiplayer ────────────────────────────────────────────── -->
@@ -901,46 +1255,52 @@ Targeting->SetTargetingMode(ECascadeTargetingMode::Unlocked, nullptr);</code></p
       <span class="section-icon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       </span>
-      Multiplayer
+      Replication
     </h2>
     <div class="section-divider"></div>
-    <p class="doc-p">
-      Cascade Combat System is server-authoritative. All hit detection, ability activation, and combo progression run on the server. Clients receive replicated state updates and play cosmetic feedback locally.
-    </p>
+    <p class="doc-p">Cascade is server-authoritative. All combat decisions — hit detection, combo progression, ability activation — happen on the server. Below is a summary of each system's replication model.</p>
 
-    <div class="doc-subsection">
-      <h3 class="doc-subsection-title">Combo state replication</h3>
-      <p class="doc-p" style="margin-bottom:12px">
-        Active combo instances replicate via <strong>FCascadeComboInstanceContainer</strong>, a <code>FFastArraySerializer</code> on the ASC. Each item carries the combo tag, current step index, and current node tag — enough for clients to display UI (combo step indicators, locked-target indicators) without running tree evaluation themselves. Delta compression keeps bandwidth minimal even with many simultaneous combos.
-      </p>
-    </div>
-
-    <div class="doc-subsection">
-      <h3 class="doc-subsection-title">Melee hit detection</h3>
-      <p class="doc-p" style="margin-bottom:12px">
-        <code>UCascadeANS_DamageWindow</code> runs its sweep traces on the server only. When a hit is detected, the server broadcasts <code>OnHitDetected</code> on the attacker's ASC. Your project applies the <code>UGameplayEffect</code> damage there — GAS handles prediction and client-side attribute updates as normal.
-      </p>
-    </div>
-
-    <div class="doc-subsection">
-      <h3 class="doc-subsection-title">Hit reactions</h3>
-      <p class="doc-p" style="margin-bottom:12px">
-        <code>UCascadeReactionComponent</code> listens to <code>OnDamageTaken</code> server-side, selects the handler, then calls <strong>Multicast_TriggerHitReaction</strong> and <strong>Multicast_TriggerDeathReaction</strong> to replicate the reaction to all clients. <code>FCascadeHitData</code> is not RPC-safe (it contains a <code>TMap</code>), so the component unpacks the relevant fields before the RPC.
-      </p>
-    </div>
-
-    <div class="doc-subsection">
-      <h3 class="doc-subsection-title">Weapon draw state</h3>
-      <p class="doc-p" style="margin-bottom:12px">
-        <code>ACascadeWeaponActor::bIsDrawn</code> replicates via <code>OnRep_IsDrawn</code>. All machines re-attach the weapon to <code>DrawnSocket</code> or <code>SheathSocket</code> on rep. Bind to <code>OnWeaponStateChanged</code> in Blueprint for animation, sound, or VFX on all clients.
-      </p>
-    </div>
+    <table class="prop-table">
+      <thead>
+        <tr><th>System</th><th>Replication model</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="prop-name">Ability activation</td>
+          <td class="prop-desc">Standard GAS prediction. Client-side prediction is available through the standard GAS prediction flow. No extra setup needed beyond standard GAS.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">Hit detection</td>
+          <td class="prop-desc"><code>UCascadeANS_DamageWindow</code> runs on the server only. Clients do not sweep traces. Hit feedback is driven by the reaction component's Multicast RPCs.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">Reaction triggers</td>
+          <td class="prop-desc"><code>UCascadeReactionComponent</code> fires <code>Multicast_TriggerHitReaction</code> and <code>Multicast_TriggerDeathReaction</code> as reliable NetMulticast RPCs. All clients play the reaction simultaneously.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">Hit pause</td>
+          <td class="prop-desc"><code>ApplyHitPause(Attacker, Victim, Duration, TimeDilation)</code> manages time dilation server-side. The effect reaches clients via the standard replicated <code>CustomTimeDilation</code> property.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">Combo state</td>
+          <td class="prop-desc">Lives server-side on the ASC. Not replicated to clients directly. Use the ASC delegates on the server or respond to replicated gameplay events on clients.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">Player input</td>
+          <td class="prop-desc"><code>UCascadeEnhancedInputAdapter</code> routes input through GAS activation events with client-side prediction. Combo continuation uses the standard GAS ability task prediction window.</td>
+        </tr>
+        <tr>
+          <td class="prop-name">AI input</td>
+          <td class="prop-desc"><code>UCascadeAIInputAdapter</code> runs server-side only. No prediction needed for NPC-driven actions.</td>
+        </tr>
+      </tbody>
+    </table>
 
     <div class="callout callout-info">
       <span class="callout-icon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       </span>
-      <span>Call <code>GrantCombatAbilities</code> from <code>PossessedBy</code> on the server so abilities are granted for remotely controlled pawns before the client's <code>InitializeCombat</code> runs. If abilities are granted after <code>InitializeCombat</code>, input bindings will be missing on the client until the next possession cycle.</span>
+      <span>Call <code>InitializeCombat</code> from <code>PossessedBy</code> on the server and bind input from <code>SetupPlayerInputComponent</code> on the client. Both must run before the player can trigger abilities — the ASC coordinates the two through standard GAS cross-machine flow.</span>
     </div>
   </section>
 
