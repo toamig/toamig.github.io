@@ -148,8 +148,9 @@ jobs:
 
           echo "Build passed after $((attempt + 1)) attempt(s)."
 
-      # ── 6. Commit and push — existing deploy.yml handles the rest ─────────
+      # ── 6. Commit, push, and trigger deploy ───────────────────────────────
       - name: Commit and push
+        id: commit
         env:
           PLUGIN_NAME:         ${{ github.event.client_payload.plugin_name }}
           VERSION:             ${{ github.event.client_payload.version }}
@@ -160,9 +161,15 @@ jobs:
           git add src/
           if git diff --cached --quiet; then
             echo "Nothing to commit"
+            echo "pushed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           git commit -m "docs: $PLUGIN_NAME v$VERSION"
-          # Push with PAT so the push event triggers deploy.yml
-          # (pushes made with GITHUB_TOKEN are intentionally blocked from triggering workflows)
           git push "https://x-access-token:${DOCS_DISPATCH_TOKEN}@github.com/toamig/toamig.github.io.git" master
+          echo "pushed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Trigger deploy
+        if: steps.commit.outputs.pushed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.DOCS_DISPATCH_TOKEN }}
+        run: gh workflow run deploy.yml --ref master
