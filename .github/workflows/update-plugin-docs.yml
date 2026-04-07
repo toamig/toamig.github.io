@@ -79,6 +79,9 @@ jobs:
       - name: Install Claude Code
         run: npm install -g @anthropic-ai/claude-code
 
+      - name: Install project dependencies
+        run: npm ci
+
       # ── 5. Claude Code updates the plugin's .astro docs page ─────────────
       - name: Update docs page
         env:
