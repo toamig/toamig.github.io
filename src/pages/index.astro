@@ -47,26 +47,6 @@ import projects     from '../data/projects.json';
       </div>
     </section>
 
-    <!-- Education -->
-    <section id="education">
-      <div class="container">
-        <h2>Education</h2>
-        <span class="underline"></span>
-        <div class="cards-container">
-          {education.map(e => (
-            <a class="extended-card" href={e.href} target="_blank" rel="noopener noreferrer">
-              <img src={e.logo} alt={`${e.name} Logo`} class="card-logo" />
-              <div class="card-details">
-                <h3>{e.name}</h3>
-                <p class="role">{e.role}</p>
-                <p class="time-period">{e.period}</p>
-              </div>
-            </a>
-          ))}
-        </div>
-      </div>
-    </section>
-
     <!-- Experience -->
     <section id="experience">
       <div class="container">
@@ -95,12 +75,31 @@ import projects     from '../data/projects.json';
       <div class="container">
         <h2>Professional Proficiency</h2>
         <span class="underline"></span>
-        <div class="cards-container">
+        <div class="tech-grid">
           {technologies.map(t => (
-            <div class="tech-card">
+            <div class="tech-card" title={t.name}>
               <img class="tech-logo" src={t.src} alt={t.name} />
-              <h3>{t.name}</h3>
             </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Education -->
+    <section id="education">
+      <div class="container">
+        <h2>Education</h2>
+        <span class="underline"></span>
+        <div class="cards-container">
+          {education.map(e => (
+            <a class="extended-card" href={e.href} target="_blank" rel="noopener noreferrer">
+              <img src={e.logo} alt={`${e.name} Logo`} class="card-logo" />
+              <div class="card-details">
+                <h3>{e.name}</h3>
+                <p class="role">{e.role}</p>
+                <p class="time-period">{e.period}</p>
+              </div>
+            </a>
           ))}
         </div>
       </div>

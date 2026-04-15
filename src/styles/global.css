@@ -299,26 +299,31 @@ header nav a.nav-resume:hover {
 
 /* ─── Technologies ───────────────────────────────────────────────────────────── */
 #technologies { background-color: var(--surface); }
+.tech-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
+  max-width: 1200px;
+}
 .tech-card {
   background: var(--surface);
   border-radius: var(--radius);
-  padding: 32px 20px;
+  padding: 12px;
   box-shadow: var(--shadow);
   transition: all 0.25s ease;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  text-align: center;
+  justify-content: center;
   border: 1.5px solid var(--border);
 }
 .tech-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-3px);
   box-shadow: 0 8px 24px rgba(0,0,0,.08), 0 24px 48px rgba(41,128,185,.08);
   border-color: #bee3f8;
 }
-.tech-logo { width: 72px; height: 72px; object-fit: contain; margin-bottom: 16px; transition: transform 0.3s ease; }
-.tech-card:hover .tech-logo { transform: scale(1.1) rotate(3deg); }
-.tech-card h3 { font-size: 16px; font-weight: 700; color: var(--text); letter-spacing: -.01em; }
+.tech-logo { width: 40px; height: 40px; object-fit: contain; transition: transform 0.3s ease; }
+.tech-card:hover .tech-logo { transform: scale(1.15) rotate(3deg); }
 
 /* ─── Projects ───────────────────────────────────────────────────────────────── */
 #projects { background-color: var(--bg); }
@@ -755,7 +760,7 @@ footer p { font-size: 13px; opacity: 0.4; letter-spacing: .02em; }
   .extended-card { padding: 20px; }
   .extended-card .card-logo { width: 80px; height: 80px; }
   .card-details h3 { font-size: 18px; }
-  .tech-logo { width: 60px; height: 60px; }
+  .tech-logo { width: 36px; height: 36px; }
   .project-card { height: 220px; }
 }
 
