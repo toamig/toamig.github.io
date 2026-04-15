@@ -302,10 +302,14 @@ header nav a.nav-resume:hover {
 .tech-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 28px 40px;
   width: 100%;
   max-width: 1200px;
+  align-items: flex-start;
 }
+.tech-category { display: flex; flex-direction: column; gap: 10px; flex: 0 0 auto; }
+.tech-category-label { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.tech-group { display: flex; flex-wrap: wrap; gap: 12px; }
 .tech-card {
   background: var(--surface);
   border-radius: var(--radius);
@@ -316,6 +320,8 @@ header nav a.nav-resume:hover {
   align-items: center;
   justify-content: center;
   border: 1.5px solid var(--border);
+  text-decoration: none;
+  cursor: pointer;
 }
 .tech-card:hover {
   transform: translateY(-3px);

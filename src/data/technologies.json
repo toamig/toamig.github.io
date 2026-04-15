@@ -1,7 +1,10 @@
 [
-  { "src": "/technologies/csharp.svg", "name": "C#" },
-  { "src": "/technologies/c++.svg",    "name": "C++" },
-  { "src": "/technologies/unity.svg",  "name": "Unity" },
-  { "src": "/technologies/unreal.svg", "name": "Unreal" },
-  { "src": "/technologies/houdini.svg","name": "Houdini" }
+  { "src": "/technologies/csharp.svg",    "name": "C#",          "category": "Languages",       "href": "https://learn.microsoft.com/dotnet/csharp/" },
+  { "src": "/technologies/c++.svg",        "name": "C++",         "category": "Languages",       "href": "https://isocpp.org/" },
+  { "src": "/technologies/unity.svg",      "name": "Unity",       "category": "Engines",         "href": "https://unity.com/" },
+  { "src": "/technologies/unreal.svg",     "name": "Unreal",      "category": "Engines",         "href": "https://www.unrealengine.com/" },
+  { "src": "/technologies/houdini.svg",    "name": "Houdini",     "category": "Art Tools",       "href": "https://www.sidefx.com/" },
+  { "src": "/technologies/git.svg",        "name": "Git",         "category": "Version Control", "href": "https://git-scm.com/" },
+  { "src": "/technologies/plasticscm.svg", "name": "Plastic SCM", "category": "Version Control", "href": "https://www.plasticscm.com/" },
+  { "src": "/technologies/perforce.svg",   "name": "Perforce",    "category": "Version Control", "href": "https://www.perforce.com/" }
 ]
