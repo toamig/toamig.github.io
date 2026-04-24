@@ -1084,11 +1084,16 @@
   }
 
   // ── Image items HTML ────────────────────────────────────
+  function resolveImgSrc(src: string): string {
+    if (!src) return '';
+    if (src.startsWith('blob:') || src.startsWith('data:') || src.startsWith('http') || src.startsWith('/')) return src;
+    return `/${src}`;
+  }
   function renderImageItems(images: string[]): string {
     return images.map((src, i) => {
       const isPending = src.startsWith('blob:');
       return `<div class="img-item ${isPending ? 'img-item-pending' : ''}" draggable="true" data-drag-index="${i}">
-        <img src="${esc(src)}" alt="image ${i+1}" />
+        <img src="${esc(resolveImgSrc(src))}" alt="image ${i+1}" />
         <span class="img-drag-handle">⠿</span>
         ${isPending ? `<span class="img-pending-badge">⏳</span>` : ''}
         <div class="img-overlay">
