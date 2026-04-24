@@ -45,6 +45,12 @@ function getCategoryInfo(tag: string) {
   return map[tag] || { name: tag || 'Other', color: '#dfe6e9' };
 }
 
+function resolveAssetUrl(u: string): string {
+  if (!u) return '';
+  if (u.startsWith('/') || /^https?:/i.test(u) || u.startsWith('data:') || u.startsWith('mailto:')) return u;
+  return `/${u}`;
+}
+
 function formatDate(dateString: string): string {
   if (!dateString) return '';
   const hasDay = /^\d{4}-\d{2}-\d{2}$/.test(dateString);
@@ -169,7 +175,7 @@ const galleryImages = hasPhoto ? event.images!.slice(1) : [];
       {Array.isArray(event.documents) && event.documents.length > 0 && (
         <div class="event-documents event-detail-documents">
           {event.documents.filter(d => d?.url).map(doc => (
-            <a class="event-document" href={doc.url} target="_blank" rel="noopener noreferrer">
+            <a class="event-document" href={resolveAssetUrl(doc.url)} target="_blank" rel="noopener noreferrer">
               <span class="document-icon">&#128196;</span>
               <span class="document-text">{doc.text || doc.label || doc.name || 'View Document'}</span>
             </a>

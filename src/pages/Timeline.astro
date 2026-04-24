@@ -272,6 +272,11 @@ function getCategoryInfo(category: string): { name: string; color: string } {
 function buildEventUrl(id: string): string {
   return `${window.location.origin}/Timeline/${encodeURIComponent(id)}/`;
 }
+function resolveAssetUrl(u: string): string {
+  if (!u) return '';
+  if (u.startsWith('/') || /^https?:/i.test(u) || u.startsWith('data:') || u.startsWith('mailto:')) return u;
+  return `/${u}`;
+}
 
 // ── Render ────────────────────────────────────────────────────────────────────
 function renderEvents() {
@@ -405,7 +410,7 @@ function renderEvents() {
         if (!doc?.url) return;
         const a = document.createElement('a');
         a.className = 'event-document';
-        a.href = doc.url;
+        a.href = resolveAssetUrl(doc.url);
         a.target = '_blank';
         a.rel = 'noopener noreferrer';
         const icon = document.createElement('span');
