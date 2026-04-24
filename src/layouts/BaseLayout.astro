@@ -12,6 +12,7 @@ interface Props {
   ogType?: 'website' | 'article';
   ogImageWidth?: number;
   ogImageHeight?: number;
+  bodyClass?: string;
 }
 
 const {
@@ -22,6 +23,7 @@ const {
   ogType      = 'website',
   ogImageWidth,
   ogImageHeight,
+  bodyClass,
 } = Astro.props;
 ---
 <!DOCTYPE html>
@@ -54,7 +56,7 @@ const {
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image"       content={ogImage} />
   </head>
-  <body>
+  <body class={bodyClass}>
     <MusicPlayer />
     <Header />
     <slot />
