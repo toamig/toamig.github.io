@@ -1,5 +1,29 @@
 [
   {
+    "id": "evt-2026-CCP",
+    "date": "2026-04-24",
+    "title": "Earned Trainer Certification (CCP)",
+    "tags": ["professional", "studies"],
+    "description": "Earned the Portuguese Trainer Certification, allowing me to deliver accredited professional training.",
+    "extendedDescription": [
+      "I wanted to open a new path in my career that goes beyond shipping games and into teaching. In Portugal, anyone who wants to deliver accredited professional training must hold the Certificado de Competências Pedagógicas (CCP), a certification issued by IEFP under Portaria n.º 214/2011. There's no exact equivalent in English-speaking countries, the closest concept would be a Train-the-Trainer qualification.",
+      "To earn it, I completed the 90-hour 'Formação Pedagógica Inicial de Formadores' (Initial Pedagogical Training for Trainers) course in B-Learning format at ENA - Escola de Negócios e Administração.",
+      "I finished with a final grade of 5 - Excellent, and I'm now officially qualified to give professional training and lessons. This opens the door to sharing what I've learned in game development with the next generation of developers."
+    ],
+    "images": [],
+    "documents": [
+      {
+        "url": "events/CCP/CCP.pdf",
+        "text": "Certificate",
+        "name": "Certificate of Pedagogical Competences"
+      }
+    ],
+    "links": [
+      { "text": "IEFP NetForce", "url": "https://netforce.iefp.pt" }
+    ],
+    "expandable": true
+  },
+  {
     "id": "evt-2024-Asturias",
     "date": "2024-04-25",
     "title": "Visited Asturias",
