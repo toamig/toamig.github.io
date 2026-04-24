@@ -1,10 +1,11 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import events from '../data/events.json';
 ---
 <BaseLayout
   title="Toamig - Timeline"
   description="Learn more about Miguel Vieira — game developer, traveller, and lifelong learner."
-  ogUrl="https://migueltechlead.pt/Timeline"
+  ogUrl="https://migueltechlead.pt/Timeline/"
 >
   <!-- ── About Hero ────────────────────────────────────────────────── -->
   <section id="about-2">
@@ -59,14 +60,15 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </div>
       </div>
 
-      <div class="timeline-grid" id="timeline-grid">
-        <div class="loading-message" id="loading-message"><p>Loading events…</p></div>
-      </div>
+      <div class="timeline-grid" id="timeline-grid"></div>
       <div class="no-results" id="no-results" style="display:none;">
         <p>No events found for the selected filter.</p>
       </div>
     </div>
   </section>
+
+  <!-- Events data — baked at build time -->
+  <script id="events-data" type="application/json" set:html={JSON.stringify(events)}></script>
 </BaseLayout>
 
 <script>
@@ -115,19 +117,14 @@ let currentYearFilter  = '';
 let currentMonthFilter = '';
 
 // ── Load ─────────────────────────────────────────────────────────────────────
-async function loadEvents() {
-  const loadingMsg = document.getElementById('loading-message');
+function loadEvents() {
+  const el = document.getElementById('events-data');
   try {
-    const resp = await fetch('/events.json', { cache: 'no-cache' });
-    if (!resp.ok) throw new Error('fetch failed');
-    const data = await resp.json();
-    if (!Array.isArray(data)) throw new Error('not an array');
-    lifeEvents = data;
+    lifeEvents = el ? JSON.parse(el.textContent || '[]') : [];
+    if (!Array.isArray(lifeEvents)) lifeEvents = [];
   } catch (e) {
-    console.info('events.json unavailable, using fallback', e);
+    console.warn('events-data parse failed', e);
     lifeEvents = [];
-  } finally {
-    if (loadingMsg) loadingMsg.style.display = 'none';
   }
   initTimeline();
 }
@@ -135,6 +132,7 @@ async function loadEvents() {
 // ── Init ─────────────────────────────────────────────────────────────────────
 function initTimeline() {
   initLightbox();
+  initShareMenu();
   renderEvents();
   setupEventListeners();
 }
@@ -271,6 +269,10 @@ function getCategoryInfo(category: string): { name: string; color: string } {
   return map[category] || { name: category || 'Other', color: '#dfe6e9' };
 }
 
+function buildEventUrl(id: string): string {
+  return `${window.location.origin}/Timeline/${encodeURIComponent(id)}/`;
+}
+
 // ── Render ────────────────────────────────────────────────────────────────────
 function renderEvents() {
   const grid      = document.getElementById('timeline-grid');
@@ -289,7 +291,7 @@ function renderEvents() {
     const card = document.createElement('article');
     card.className = 'event-card';
 
-    // Header row (tags + date)
+    // Header row (tags + actions)
     const header = document.createElement('div');
     header.className = 'event-header';
     const tagsContainer = document.createElement('div');
@@ -302,11 +304,30 @@ function renderEvents() {
       span.textContent = cat.name;
       tagsContainer.appendChild(span);
     });
+
+    const actions = document.createElement('div');
+    actions.className = 'event-actions';
     const dateSpan = document.createElement('span');
     dateSpan.className = 'event-date';
     dateSpan.textContent = formatDate(event.date || '');
+    actions.appendChild(dateSpan);
+
+    const shareBtn = document.createElement('button');
+    shareBtn.className = 'event-share-btn';
+    shareBtn.setAttribute('aria-label', `Share ${event.title}`);
+    shareBtn.setAttribute('type', 'button');
+    shareBtn.dataset.eventId = event.id;
+    shareBtn.dataset.eventTitle = event.title || '';
+    shareBtn.dataset.eventDescription = event.description || '';
+    shareBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`;
+    shareBtn.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      openShareMenu(shareBtn, event);
+    });
+    actions.appendChild(shareBtn);
+
     header.appendChild(tagsContainer);
-    header.appendChild(dateSpan);
+    header.appendChild(actions);
 
     // Content (title + short desc)
     const content = document.createElement('div');
@@ -406,8 +427,9 @@ function renderEvents() {
       card.setAttribute('role', 'button');
       card.setAttribute('tabindex', '0');
       card.addEventListener('click', (e) => {
-        if ((e.target as Element).tagName === 'A' || (e.target as Element).tagName === 'IMG') return;
-        if ((e.target as Element).closest('a') || (e.target as Element).closest('img')) return;
+        const tgt = e.target as Element;
+        if (tgt.tagName === 'A' || tgt.tagName === 'IMG') return;
+        if (tgt.closest('a') || tgt.closest('img') || tgt.closest('.event-share-btn') || tgt.closest('.share-menu')) return;
         card.classList.toggle('expanded');
         const indicator = card.querySelector('.expand-indicator');
         if (indicator) indicator.innerHTML = card.classList.contains('expanded') ? '&#9650;' : '&#9660;';
@@ -419,6 +441,114 @@ function renderEvents() {
     card.appendChild(expandable);
     grid.appendChild(card);
   });
+}
+
+// ── Share menu ────────────────────────────────────────────────────────────────
+let shareMenu: HTMLElement | null = null;
+let activeShareBtn: HTMLElement | null = null;
+
+function initShareMenu() {
+  if (document.querySelector('.share-menu')) {
+    shareMenu = document.querySelector('.share-menu');
+    return;
+  }
+  shareMenu = document.createElement('div');
+  shareMenu.className = 'share-menu';
+  shareMenu.setAttribute('role', 'menu');
+  shareMenu.innerHTML = `
+    <button class="share-item" data-action="native" role="menuitem" hidden>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+      <span>Share…</span>
+    </button>
+    <button class="share-item" data-action="linkedin" role="menuitem">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.063 2.063 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452z"/></svg>
+      <span>LinkedIn</span>
+    </button>
+    <button class="share-item" data-action="twitter" role="menuitem">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      <span>Share on X</span>
+    </button>
+    <button class="share-item" data-action="copy" role="menuitem">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+      <span class="share-copy-label">Copy link</span>
+    </button>
+  `;
+  document.body.appendChild(shareMenu);
+
+  const nativeBtn = shareMenu.querySelector<HTMLButtonElement>('[data-action="native"]');
+  if (nativeBtn && typeof navigator.share === 'function') {
+    nativeBtn.hidden = false;
+  }
+
+  shareMenu.addEventListener('click', async (e) => {
+    const btn = (e.target as Element).closest<HTMLButtonElement>('.share-item');
+    if (!btn || !activeShareBtn) return;
+    const id    = activeShareBtn.dataset.eventId || '';
+    const title = activeShareBtn.dataset.eventTitle || '';
+    const desc  = activeShareBtn.dataset.eventDescription || '';
+    const url   = buildEventUrl(id);
+    const action = btn.dataset.action;
+
+    if (action === 'native') {
+      try { await navigator.share({ title, text: desc, url }); } catch { /* user cancelled */ }
+      closeShareMenu();
+    } else if (action === 'linkedin') {
+      window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank', 'noopener,noreferrer');
+      closeShareMenu();
+    } else if (action === 'twitter') {
+      const text = `${title} — ${desc}`.trim();
+      window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
+      closeShareMenu();
+    } else if (action === 'copy') {
+      const label = btn.querySelector('.share-copy-label');
+      try {
+        await navigator.clipboard.writeText(url);
+        if (label) label.textContent = 'Copied!';
+        setTimeout(() => { if (label) label.textContent = 'Copy link'; closeShareMenu(); }, 900);
+      } catch {
+        if (label) label.textContent = 'Copy failed';
+        setTimeout(() => { if (label) label.textContent = 'Copy link'; }, 900);
+      }
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!shareMenu?.classList.contains('open')) return;
+    const tgt = e.target as Element;
+    if (tgt.closest('.share-menu') || tgt.closest('.event-share-btn')) return;
+    closeShareMenu();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeShareMenu();
+  });
+  window.addEventListener('scroll', closeShareMenu, { passive: true });
+  window.addEventListener('resize', closeShareMenu);
+}
+
+function openShareMenu(btn: HTMLElement, _event: LifeEvent) {
+  if (!shareMenu) return;
+  if (activeShareBtn === btn && shareMenu.classList.contains('open')) {
+    closeShareMenu();
+    return;
+  }
+  activeShareBtn = btn;
+  const rect = btn.getBoundingClientRect();
+  shareMenu.classList.add('open');
+  // Position after showing so we can measure
+  const menuRect = shareMenu.getBoundingClientRect();
+  let left = rect.right - menuRect.width;
+  let top  = rect.bottom + 8;
+  if (left < 8) left = 8;
+  if (left + menuRect.width > window.innerWidth - 8) left = window.innerWidth - menuRect.width - 8;
+  if (top + menuRect.height > window.innerHeight - 8) top = rect.top - menuRect.height - 8;
+  shareMenu.style.left = `${left + window.scrollX}px`;
+  shareMenu.style.top  = `${top  + window.scrollY}px`;
+}
+
+function closeShareMenu() {
+  if (!shareMenu) return;
+  shareMenu.classList.remove('open');
+  activeShareBtn = null;
 }
 
 // ── Lightbox ──────────────────────────────────────────────────────────────────

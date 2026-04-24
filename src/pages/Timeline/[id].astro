@@ -1,0 +1,225 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import events from '../../data/events.json';
+
+export async function getStaticPaths() {
+  return events.map(event => ({
+    params: { id: event.id },
+    props:  { event },
+  }));
+}
+
+interface LifeEvent {
+  id: string;
+  date: string;
+  title: string;
+  category?: string;
+  tags?: string[];
+  description?: string;
+  extendedDescription?: string | string[];
+  images?: string[];
+  links?:     { text?: string; label?: string; url: string }[];
+  documents?: { text?: string; label?: string; name?: string; url: string }[];
+}
+
+const { event } = Astro.props as { event: LifeEvent };
+
+const SITE = 'https://migueltechlead.pt';
+const pageUrl = `${SITE}/Timeline/${encodeURIComponent(event.id)}/`;
+
+function getTags(ev: LifeEvent): string[] {
+  if (Array.isArray(ev.tags)) return ev.tags;
+  if (ev.category) return [ev.category];
+  return [];
+}
+
+function getCategoryInfo(tag: string) {
+  const map: Record<string, { name: string; color: string }> = {
+    hobbies:      { name: 'Hobbies',       color: '#f9fbbf' },
+    studies:      { name: 'Studies',       color: '#b8dcff' },
+    personal:     { name: 'Personal',      color: '#f6c48a' },
+    professional: { name: 'Professional',  color: '#cbc5ff' },
+    travels:      { name: 'Travels',       color: '#c9f3b2' },
+    work:         { name: 'Work & Career', color: '#cbc5ff' },
+  };
+  return map[tag] || { name: tag || 'Other', color: '#dfe6e9' };
+}
+
+function formatDate(dateString: string): string {
+  if (!dateString) return '';
+  const hasDay = /^\d{4}-\d{2}-\d{2}$/.test(dateString);
+  const d = new Date(dateString);
+  if (isNaN(d.getTime())) return dateString;
+  return d.toLocaleDateString('en-US', hasDay
+    ? { year: 'numeric', month: 'long', day: 'numeric' }
+    : { year: 'numeric', month: 'long' });
+}
+
+const hasPhoto = Array.isArray(event.images) && event.images.length > 0;
+const firstImageRel = hasPhoto
+  ? (event.images![0].startsWith('/') ? event.images![0] : `/${event.images![0]}`)
+  : null;
+
+// OG image: first event photo if present, otherwise the build-time generated card.
+const ogImage = hasPhoto
+  ? `${SITE}${firstImageRel}`
+  : `${SITE}/og/${encodeURIComponent(event.id)}.png`;
+
+const tags = getTags(event);
+const descText = event.description || '';
+const paragraphs: string[] = Array.isArray(event.extendedDescription)
+  ? event.extendedDescription.filter(Boolean)
+  : (typeof event.extendedDescription === 'string' && event.extendedDescription.trim())
+    ? [event.extendedDescription]
+    : [];
+
+const galleryImages = hasPhoto ? event.images!.slice(1) : [];
+---
+<BaseLayout
+  title={`${event.title} — Toamig`}
+  description={descText || event.title}
+  ogUrl={pageUrl}
+  ogImage={ogImage}
+  ogType="article"
+  ogImageWidth={hasPhoto ? undefined : 1200}
+  ogImageHeight={hasPhoto ? undefined : 630}
+>
+  <section id="event-detail">
+    <div class="event-detail-container">
+      <a class="back-link" href="/Timeline/">&larr; Back to Timeline</a>
+
+      <div class="event-detail-meta">
+        <div class="event-tags-container">
+          {tags.map(tag => {
+            const cat = getCategoryInfo(tag);
+            return <span class="event-category" style={`background-color: ${cat.color}`}>{cat.name}</span>;
+          })}
+        </div>
+        <span class="event-date">{formatDate(event.date)}</span>
+      </div>
+
+      <h1 class="event-detail-title">{event.title}</h1>
+      {descText && <p class="event-detail-lead">{descText}</p>}
+
+      <div class="event-detail-share">
+        <span class="share-prompt">Share this:</span>
+        <button
+          type="button"
+          class="share-pill"
+          data-share-action="native"
+          data-share-url={pageUrl}
+          data-share-title={event.title}
+          data-share-text={descText}
+          hidden
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+          Share…
+        </button>
+        <a
+          class="share-pill"
+          href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(pageUrl)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Share on LinkedIn"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.063 2.063 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452z"/></svg>
+          LinkedIn
+        </a>
+        <a
+          class="share-pill"
+          href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(`${event.title}${descText ? ' — ' + descText : ''}`)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Share on X"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          X
+        </a>
+        <button type="button" class="share-pill" data-share-action="copy" data-share-url={pageUrl}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+          <span class="copy-label">Copy link</span>
+        </button>
+      </div>
+
+      {firstImageRel && (
+        <figure class="event-hero">
+          <img src={firstImageRel} alt={event.title} loading="eager" decoding="async" />
+        </figure>
+      )}
+
+      {paragraphs.length > 0 && (
+        <div class="event-detail-body">
+          {paragraphs.map(p => <p>{p}</p>)}
+        </div>
+      )}
+
+      {galleryImages.length > 0 && (
+        <div class="event-detail-gallery">
+          {galleryImages.map((imgSrc, idx) => {
+            const src = imgSrc.startsWith('/') ? imgSrc : `/${imgSrc}`;
+            return (
+              <a class="gallery-item" href={src} target="_blank" rel="noopener noreferrer">
+                <img src={src} alt={`${event.title} — image ${idx + 2}`} loading="lazy" decoding="async" />
+              </a>
+            );
+          })}
+        </div>
+      )}
+
+      {Array.isArray(event.documents) && event.documents.length > 0 && (
+        <div class="event-documents event-detail-documents">
+          {event.documents.filter(d => d?.url).map(doc => (
+            <a class="event-document" href={doc.url} target="_blank" rel="noopener noreferrer">
+              <span class="document-icon">&#128196;</span>
+              <span class="document-text">{doc.text || doc.label || doc.name || 'View Document'}</span>
+            </a>
+          ))}
+        </div>
+      )}
+
+      {Array.isArray(event.links) && event.links.length > 0 && (
+        <div class="event-links event-detail-links">
+          {event.links.filter(l => l?.url).map(link => (
+            <a class="event-link" href={link.url} target="_blank" rel="noopener noreferrer">
+              {link.text || link.label || link.url}
+            </a>
+          ))}
+        </div>
+      )}
+
+      <a class="back-link back-link-bottom" href="/Timeline/">&larr; Back to Timeline</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Native share pill — only show if supported
+    const nativeBtn = document.querySelector<HTMLButtonElement>('[data-share-action="native"]');
+    if (nativeBtn && typeof navigator.share === 'function') {
+      nativeBtn.hidden = false;
+      nativeBtn.addEventListener('click', async () => {
+        const url   = nativeBtn.dataset.shareUrl   || window.location.href;
+        const title = nativeBtn.dataset.shareTitle || document.title;
+        const text  = nativeBtn.dataset.shareText  || '';
+        try { await navigator.share({ title, text, url }); } catch { /* cancelled */ }
+      });
+    }
+
+    // Copy link pill
+    const copyBtn = document.querySelector<HTMLButtonElement>('[data-share-action="copy"]');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', async () => {
+        const url   = copyBtn.dataset.shareUrl || window.location.href;
+        const label = copyBtn.querySelector<HTMLElement>('.copy-label');
+        try {
+          await navigator.clipboard.writeText(url);
+          if (label) label.textContent = 'Copied!';
+        } catch {
+          if (label) label.textContent = 'Copy failed';
+        }
+        setTimeout(() => { if (label) label.textContent = 'Copy link'; }, 1200);
+      });
+    }
+  });
+</script>
