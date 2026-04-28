@@ -1,0 +1,683 @@
+---
+import '../../styles/ai-setup.css';
+
+const SITE   = 'https://migueltechlead.pt';
+const PATH   = '/AI-Setup-Consulting/';
+const ogUrl  = `${SITE}${PATH}`;
+const ogImg  = `${SITE}/og/ai-setup-consulting.png`;
+const title  = 'AI Setup Consulting for Game Studios — Miguel Vieira';
+const desc   = 'I help Unreal Engine teams adopt Claude Code and AI workflows in 4–6 weeks — with guardrails for C++, Perforce, and proprietary IP.';
+
+const BRAND        = 'Miguel Vieira';
+const CALENDLY_URL = 'https://calendly.com/migueltechlead-support/30min';
+const EMAIL        = 'support@migueltechlead.pt';
+const LINKEDIN_URL = 'https://www.linkedin.com/in/toamig';
+const CURRENT_YEAR = new Date().getFullYear();
+
+const navLinks = [
+  { href: '#services', label: 'Services' },
+  { href: '#process',  label: 'How We Work' },
+  { href: '#privacy',  label: 'Privacy' },
+  { href: '#pricing',  label: 'Pricing' },
+  { href: '#faq',      label: 'FAQ' },
+];
+
+const pains = [
+  { icon: 'eye-off',       title: 'Reviews drowning in style nitpicks', body: 'Senior engineers spend hours flagging the same convention violations. AI output makes it worse without proper guardrails.' },
+  { icon: 'shield-alert',  title: 'Proprietary IP risk',                 body: 'Devs paste engine code into personal AI accounts. Your code may be retained for 5 years and used for training. Most studios don\'t even know this is happening.' },
+  { icon: 'git-branch',    title: 'No Perforce, no integration',         body: 'AI tools assume Git. Your team uses Perforce or Plastic. The "AI workflow" everyone talks about doesn\'t apply out of the box.' },
+  { icon: 'trending-up',   title: 'Costs spiral with no visibility',     body: 'Token spend with no per-team budgets, no monitoring, no controls. Some studios have spent thousands before noticing.' },
+  { icon: 'users',         title: 'Senior devs resist, juniors over-rely', body: 'Without a playbook, adoption fractures. Half the team avoids it; the other half ships AI-generated bugs to main.' },
+  { icon: 'bar-chart',     title: 'No way to prove ROI',                 body: 'Leadership wants numbers. "It feels faster" doesn\'t get budget renewed.' },
+];
+
+const services = [
+  {
+    icon: 'search',
+    title: 'AI Readiness Audit',
+    duration: '1–2 weeks',
+    price: '€4,000 – €6,000 fixed',
+    outcome: 'Map of current workflows, friction points, privacy tier recommendation, phased adoption roadmap, ROI estimate, and Shadow AI detection (devs using personal accounts on company code).',
+    cta: 'Start with an Audit',
+  },
+  {
+    icon: 'settings',
+    title: 'Setup & Integration',
+    duration: '3–6 weeks',
+    price: '€10,000 – €25,000 depending on scope',
+    outcome: 'Hierarchical CLAUDE.md adapted to your codebase. Custom skills per domain (gameplay, networking, UI, shaders). MCP Perforce configured. Permission settings (engine off-limits, protected paths). Onboarding guide. Cost-monitoring dashboard. Lead handover session.',
+    cta: 'Plan a Setup',
+  },
+  {
+    icon: 'graduation-cap',
+    title: 'Team Training',
+    duration: '1–3 days on-site or remote',
+    price: '€1,500/day up to 15 devs · €2,500/day up to 30 devs',
+    outcome: 'Prompting patterns for performance-critical C++. Code review of AI output (red flags, anti-patterns). Safe workflows. Hands-on sessions on your real codebase.',
+    cta: 'Train your team',
+  },
+  {
+    icon: 'repeat',
+    title: 'Optimization Retainer',
+    duration: 'Monthly · 6-month minimum',
+    price: '€2,500 – €5,000/month',
+    outcome: 'Skills and MCPs evolve with your codebase. Office hours for devs (4–8h/month). Code review of AI-related PRs. Integration of new Claude features as they ship. Quarterly ROI report.',
+    cta: 'Stay supported',
+  },
+];
+
+const process = [
+  { step: '01', title: 'Discovery Call', meta: '30 min · free',     body: 'We confirm fit, your stack, your constraints, and which tier of privacy you need. If we\'re not the right call, we\'ll say so.' },
+  { step: '02', title: 'Pre-Audit Questionnaire', meta: 'asynchronous', body: '30 structured questions sent before any work begins. You fill it in; we arrive prepared. Most teams find pain points they hadn\'t articulated.' },
+  { step: '03', title: 'Audit',       meta: '1–2 weeks',  body: 'Tech Lead interview, codebase walkthrough, workflow mapping, Shadow AI scan, privacy tier recommendation, phased roadmap, written report.' },
+  { step: '04', title: 'Setup',       meta: '3–6 weeks',  body: 'CLAUDE.md hierarchy, custom skills, MCP Perforce, permissions, monitoring dashboard, onboarding doc. Module by module, not big bang.' },
+  { step: '05', title: 'Retainer',    meta: 'ongoing',    body: 'Skills evolve with the codebase. Office hours. PR reviews. New Claude capabilities folded in. Quarterly ROI report.' },
+];
+
+const privacyTiers = [
+  { tier: 'Tier 1', title: 'Claude for Work / Enterprise', body: 'Commercial terms. Anthropic does not train on your data. Suitable for ~80% of studios. Fastest to deploy.' },
+  { tier: 'Tier 2', title: 'Claude API (Commercial Terms)', body: 'Direct API access under commercial terms. Same training protections, plus tighter log retention. Better fit for studios with custom tooling.' },
+  { tier: 'Tier 3', title: 'Zero Data Retention (ZDR)',     body: 'Enterprise addendum. Logs processed only for real-time abuse detection, then immediately discarded. No chat content, metadata, or request details persisted. Right answer for AAA / licensed IP / heavy NDA work.' },
+  { tier: 'Tier 4', title: 'AWS Bedrock or Google Vertex AI', body: 'Claude runs on the cloud provider\'s infrastructure. Your code never touches Anthropic infrastructure. Maximum control, zero-friction compliance for studios already on AWS or GCP.' },
+];
+
+const comparison = [
+  ['Knows Claude Code in the abstract',     'Knows how Claude Code behaves on a 2M-line UE5 codebase'],
+  ['Ships Git-based workflows',              'Ships Perforce-native workflows'],
+  ['Generic CLAUDE.md templates',            'Hierarchical CLAUDE.md tuned for gameplay framework, networking, shaders'],
+  ['"AI for developers" training decks',     'Hands-on prompting for performance-critical C++'],
+  ['No opinion on engine code edits',        'Hard guardrails: engine source off-limits unless explicitly flagged'],
+  ['Token spend is the client\'s problem',   'Cost monitoring and per-team budgets included'],
+];
+
+const pricing = [
+  { service: 'AI Readiness Audit',     price: '€4,000 – €6,000',     cadence: 'One-off' },
+  { service: 'Setup & Integration',    price: '€10,000 – €25,000',   cadence: 'One-off' },
+  { service: 'Team Training',          price: '€1,500 – €2,500 / day', cadence: 'One-off' },
+  { service: 'Optimization Retainer',  price: '€2,500 – €5,000 / month', cadence: 'Monthly · 6-month min' },
+  { service: 'MCP Perforce License',   price: '€3,000 / year (30 seats)', cadence: 'Annual' },
+];
+
+const faqs = [
+  {
+    q: 'Do you work with studios outside Portugal?',
+    a: 'Yes. Most engagements are remote with one or two on-site weeks. Clients in EU, UK, and Nordic countries are the most common fit.',
+  },
+  {
+    q: 'What if our team uses Plastic SCM, not Perforce?',
+    a: 'Covered. Custom MCPs for Plastic on request, billed within Setup scope.',
+  },
+  {
+    q: 'Can you sign our NDA?',
+    a: 'Yes. Mutual NDA is signed before the Audit kicks off. Larger studios usually have their own template; we\'ll review and adapt.',
+  },
+  {
+    q: 'What about Codex / GitHub Copilot / Cursor?',
+    a: 'Our specialty is Claude Code and the Anthropic ecosystem, where we go deepest. We can integrate alongside other tools your team already uses, and we\'ll tell you honestly when another tool is the right fit for a specific use case.',
+  },
+  {
+    q: 'How is ROI measured?',
+    a: 'During the Audit we agree on 3–5 KPIs (review cycle time, PR throughput, time-to-onboard, etc.) and baseline them. Quarterly retainer reports track delta.',
+  },
+  {
+    q: 'What if we already started rolling out AI internally?',
+    a: 'Even better. The Audit doubles as a course-correction. We\'ve seen teams 3 months in with the wrong tier of privacy, no Perforce integration, and no cost controls. Easier to fix than to start cold.',
+  },
+  {
+    q: 'What does the typical engagement look like end to end?',
+    a: 'Discovery call → questionnaire → Audit (1–2 weeks) → Setup (3–6 weeks) → Retainer (ongoing). Total active engagement to first results: 4–8 weeks.',
+  },
+];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': `${SITE}/#organization`,
+      name: BRAND,
+      url: SITE,
+      sameAs: [LINKEDIN_URL],
+      contactPoint: {
+        '@type': 'ContactPoint',
+        contactType: 'sales',
+        email: EMAIL,
+      },
+    },
+    {
+      '@type': 'Service',
+      name: 'AI Setup Consulting for Game Studios',
+      provider: { '@id': `${SITE}/#organization` },
+      serviceType: 'AI adoption and tooling consulting',
+      areaServed: 'EU, UK, Nordic countries',
+      audience: {
+        '@type': 'Audience',
+        audienceType: 'Game studios using Unreal Engine 4/5',
+      },
+      offers: services.map(s => ({
+        '@type': 'Offer',
+        name: s.title,
+        description: s.outcome,
+      })),
+      url: ogUrl,
+    },
+  ],
+};
+---
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={desc} />
+    <link rel="icon" type="image/svg+xml" href="/logo_head.svg" />
+    <link rel="canonical" href={ogUrl} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" />
+
+    <meta property="og:type"        content="website" />
+    <meta property="og:title"       content={title} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:url"         content={ogUrl} />
+    <meta property="og:image"       content={ogImg} />
+    <meta property="og:image:width"  content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name"   content={BRAND} />
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:title"       content={title} />
+    <meta name="twitter:description" content={desc} />
+    <meta name="twitter:image"       content={ogImg} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+
+  <body class="min-h-screen text-text antialiased">
+    <!-- ── Sticky Nav ─────────────────────────────────────────── -->
+    <nav class="fixed top-0 left-0 right-0 z-50 border-b border-border/60 bg-ink/80 backdrop-blur-md">
+      <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        <a href="#hero" data-scroll class="flex items-center gap-2 font-semibold tracking-tight">
+          <span class="inline-flex w-7 h-7 rounded-md bg-amber/15 border border-amber/30 items-center justify-center font-mono text-[12px] text-amber">M</span>
+          <span class="text-text text-[15px]">{BRAND}</span>
+        </a>
+
+        <div class="hidden md:flex items-center gap-7">
+          {navLinks.map(link => (
+            <a href={link.href} data-scroll class="text-text-2 hover:text-text text-[14px] font-medium transition-colors">
+              {link.label}
+            </a>
+          ))}
+          <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" class="px-4 py-1.5 rounded-md bg-amber text-ink text-[13px] font-semibold hover:bg-amber-2 transition-colors">
+            Book Call
+          </a>
+        </div>
+
+        <button id="menu-toggle" class="md:hidden p-2 text-text-2 hover:text-text" aria-label="Toggle menu" aria-expanded="false">
+          <svg id="icon-menu"  width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+          <svg id="icon-close" class="hidden" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+
+      <div id="mobile-menu" class="hidden md:hidden border-t border-border/60 bg-ink">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col gap-3">
+          {navLinks.map(link => (
+            <a href={link.href} data-scroll class="text-text-2 hover:text-text text-[15px] py-1">
+              {link.label}
+            </a>
+          ))}
+          <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" class="mt-2 px-4 py-2 rounded-md bg-amber text-ink text-[14px] font-semibold text-center">
+            Book Call
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <!-- ── Hero ─────────────────────────────────────────── -->
+      <section id="hero" class="hero-grid pt-32 pb-32 md:pt-40 md:pb-40 border-b border-border/40">
+        <div class="max-w-5xl mx-auto px-6 text-center">
+          <div data-fade class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-surface text-text-2 text-[12px] font-mono mb-8">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber"></span>
+            For studios using Unreal 4/5, C++, Perforce
+          </div>
+
+          <h1 data-fade data-fade-delay="80" class="text-[44px] md:text-[64px] lg:text-[76px] font-bold tracking-[-0.03em] leading-[1.02] mb-6">
+            AI setup, <span class="text-amber">built for game studios.</span>
+          </h1>
+
+          <p data-fade data-fade-delay="160" class="text-[18px] md:text-[20px] text-text-2 leading-[1.55] max-w-3xl mx-auto mb-10">
+            We help Unreal Engine teams adopt Claude Code and AI workflows in <span class="font-mono text-text">4&ndash;6 weeks</span> &mdash; with guardrails for C++, Perforce, and proprietary IP.
+          </p>
+
+          <div data-fade data-fade-delay="240" class="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-6 py-3 rounded-md bg-amber text-ink font-semibold text-[15px] hover:bg-amber-2 transition-colors">
+              Book a 30-min discovery call
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
+            <a href="#process" data-scroll class="inline-flex items-center gap-2 px-6 py-3 text-text-2 hover:text-text text-[15px] font-medium transition-colors">
+              See how it works
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
+            </a>
+          </div>
+
+          <p data-fade data-fade-delay="320" class="mt-10 text-[13px] text-text-3 font-mono">
+            Privacy-first  ·  ROI-tracked  ·  Fixed-scope packages
+          </p>
+        </div>
+      </section>
+
+      <!-- ── Problem ─────────────────────────────────────────── -->
+      <section id="problem" class="py-24 md:py-32 border-b border-border/40">
+        <div class="max-w-7xl mx-auto px-6">
+          <div class="max-w-3xl mb-16">
+            <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">The bottleneck</p>
+            <h2 data-fade data-fade-delay="60" class="text-[34px] md:text-[44px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+              Your team wants to use AI. Setup is the bottleneck.
+            </h2>
+            <p data-fade data-fade-delay="120" class="text-[17px] text-text-2 leading-[1.6]">
+              Most studios we talk to face the same friction. None of it is technical genius &mdash; but it eats months of senior time when nobody owns the rollout.
+            </p>
+          </div>
+
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-px bg-border/60 border border-border/60 rounded-lg overflow-hidden">
+            {pains.map((p, i) => (
+              <div data-fade data-fade-delay={i * 60} class="bg-ink p-7 lg:p-8 hover:bg-surface/80 transition-colors">
+                <div class="w-9 h-9 rounded-md bg-amber/10 border border-amber/20 flex items-center justify-center mb-5 text-amber">
+                  {p.icon === 'eye-off' && (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+                      <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+                      <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+                      <line x1="2" x2="22" y1="2" y2="22"/>
+                    </svg>
+                  )}
+                  {p.icon === 'shield-alert' && (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+                      <path d="M12 8v4"/><path d="M12 16h.01"/>
+                    </svg>
+                  )}
+                  {p.icon === 'git-branch' && (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="6" x2="6" y1="3" y2="15"/>
+                      <circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/>
+                      <path d="M18 9a9 9 0 0 1-9 9"/>
+                    </svg>
+                  )}
+                  {p.icon === 'trending-up' && (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+                      <polyline points="16 7 22 7 22 13"/>
+                    </svg>
+                  )}
+                  {p.icon === 'users' && (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                      <circle cx="9" cy="7" r="4"/>
+                      <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                  )}
+                  {p.icon === 'bar-chart' && (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M3 3v18h18"/><path d="M18 17V9"/>
+                      <path d="M13 17V5"/><path d="M8 17v-3"/>
+                    </svg>
+                  )}
+                </div>
+                <h3 class="text-[17px] font-semibold text-text mb-2 leading-snug">{p.title}</h3>
+                <p class="text-[15px] text-text-2 leading-[1.6]">{p.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Services ─────────────────────────────────────────── -->
+      <section id="services" class="py-24 md:py-32 border-b border-border/40">
+        <div class="max-w-7xl mx-auto px-6">
+          <div class="max-w-3xl mb-16">
+            <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Services</p>
+            <h2 data-fade data-fade-delay="60" class="text-[34px] md:text-[44px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+              Four ways we work with your team.
+            </h2>
+            <p data-fade data-fade-delay="120" class="text-[17px] text-text-2 leading-[1.6]">
+              Most clients start with an Audit, move into Setup, then keep us on a monthly Retainer. The MCP Perforce license is available standalone.
+            </p>
+          </div>
+
+          <div class="grid md:grid-cols-2 gap-5">
+            {services.map((s, i) => (
+              <div data-fade data-fade-delay={i * 80} class="group relative p-8 rounded-lg border border-border bg-surface hover:border-border-2 hover:bg-surface-2 transition-all duration-200">
+                <div class="flex items-start justify-between gap-4 mb-6">
+                  <div class="w-11 h-11 rounded-md bg-amber/10 border border-amber/25 flex items-center justify-center text-amber">
+                    {s.icon === 'search' && (
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+                      </svg>
+                    )}
+                    {s.icon === 'settings' && (
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                      </svg>
+                    )}
+                    {s.icon === 'graduation-cap' && (
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/>
+                        <path d="M22 10v6"/>
+                        <path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>
+                      </svg>
+                    )}
+                    {s.icon === 'repeat' && (
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/>
+                        <path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/>
+                      </svg>
+                    )}
+                  </div>
+                  <span class="font-mono text-[12px] text-text-3 mt-1">0{i + 1}</span>
+                </div>
+
+                <h3 class="text-[22px] font-semibold tracking-tight mb-3">{s.title}</h3>
+
+                <div class="flex flex-wrap gap-x-5 gap-y-1 mb-5 font-mono text-[12.5px]">
+                  <span class="text-text-3">Duration</span><span class="text-text-2">{s.duration}</span>
+                  <span class="text-text-3">Price</span><span class="text-amber">{s.price}</span>
+                </div>
+
+                <p class="text-[15px] text-text-2 leading-[1.65] mb-6">{s.outcome}</p>
+
+                <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-[14px] font-medium text-text hover:text-amber transition-colors">
+                  {s.cta}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-0.5 transition-transform"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+              </div>
+            ))}
+          </div>
+
+          <div data-fade class="mt-8 p-6 md:p-7 rounded-lg border border-amber/30 bg-amber-soft/30">
+            <p class="text-[15px] text-text-2 leading-[1.65]">
+              <span class="font-semibold text-amber">Also available — MCP Perforce License.</span>
+              <span class="font-mono text-text"> €3,000/year</span> up to 30 seats, <span class="font-mono text-text">+€80/seat</span> above. Drop-in tool that lets Claude Code create, shelve, and submit Perforce changelists with your studio's conventions. Sold standalone or bundled with Setup.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Process ─────────────────────────────────────────── -->
+      <section id="process" class="py-24 md:py-32 border-b border-border/40">
+        <div class="max-w-7xl mx-auto px-6">
+          <div class="max-w-3xl mb-16">
+            <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Process</p>
+            <h2 data-fade data-fade-delay="60" class="text-[34px] md:text-[44px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+              From first call to shipping AI workflows in 6 weeks.
+            </h2>
+            <p data-fade data-fade-delay="120" class="text-[17px] text-text-2 leading-[1.6]">
+              A predictable process. No open-ended retainers. No "we'll figure it out."
+            </p>
+          </div>
+
+          <ol class="relative">
+            {process.map((p, i) => (
+              <li data-fade data-fade-delay={i * 60} class="grid md:grid-cols-[120px_1fr] gap-4 md:gap-10 py-7 md:py-9 border-t border-border/50">
+                <div class="flex md:flex-col items-baseline md:items-start gap-3">
+                  <span class="font-mono text-[13px] text-amber tracking-[0.1em]">STEP {p.step}</span>
+                  <span class="font-mono text-[12px] text-text-3 md:mt-1">{p.meta}</span>
+                </div>
+                <div class="max-w-3xl">
+                  <h3 class="text-[20px] md:text-[22px] font-semibold tracking-tight mb-2">{p.title}</h3>
+                  <p class="text-[15.5px] text-text-2 leading-[1.65]">{p.body}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <!-- ── Privacy & IP ─────────────────────────────────────── -->
+      <section id="privacy" class="py-24 md:py-32 border-b border-border/40">
+        <div class="max-w-7xl mx-auto px-6">
+          <div class="max-w-3xl mb-16">
+            <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Privacy &amp; IP</p>
+            <h2 data-fade data-fade-delay="60" class="text-[34px] md:text-[44px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+              Your code never trains a model.
+            </h2>
+            <p data-fade data-fade-delay="120" class="text-[17px] text-text-2 leading-[1.6]">
+              The biggest blocker we hear: "Our code is proprietary." Here's how we solve it, ranked by paranoia level.
+            </p>
+          </div>
+
+          <div class="grid md:grid-cols-2 gap-5 mb-10">
+            {privacyTiers.map((t, i) => (
+              <div data-fade data-fade-delay={i * 60} class="p-7 rounded-lg border border-border bg-surface">
+                <div class="flex items-baseline gap-3 mb-3">
+                  <span class="font-mono text-[12px] text-amber tracking-[0.1em] uppercase">{t.tier}</span>
+                  <span class="font-mono text-[12px] text-text-3">0{i + 1} / 04</span>
+                </div>
+                <h3 class="text-[19px] font-semibold tracking-tight mb-3">{t.title}</h3>
+                <p class="text-[14.5px] text-text-2 leading-[1.65]">{t.body}</p>
+              </div>
+            ))}
+          </div>
+
+          <div data-fade class="p-7 md:p-8 rounded-lg border border-amber/40 bg-amber-soft/40">
+            <div class="flex items-start gap-4">
+              <div class="flex-shrink-0 w-9 h-9 rounded-md bg-amber/20 border border-amber/40 flex items-center justify-center text-amber mt-0.5">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+                  <path d="M12 8v4"/><path d="M12 16h.01"/>
+                </svg>
+              </div>
+              <p class="text-[15.5px] text-text leading-[1.65]">
+                <span class="font-semibold text-amber">Critical to know.</span> Claude Free, Pro, and Max are <em class="not-italic font-mono text-[14px] text-text">consumer accounts</em>. By default they retain data for up to <span class="font-mono text-amber">5 years</span> and may use it for training unless manually opted out. If your devs are using personal Claude accounts on company code, you have a leak. Detecting and shutting that down is part of every Audit.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Differentiation ─────────────────────────────────── -->
+      <section id="why" class="py-24 md:py-32 border-b border-border/40">
+        <div class="max-w-7xl mx-auto px-6">
+          <div class="max-w-3xl mb-16">
+            <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Differentiation</p>
+            <h2 data-fade data-fade-delay="60" class="text-[34px] md:text-[44px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+              Why a gamedev specialist, not a generalist AI consultant.
+            </h2>
+          </div>
+
+          <div data-fade class="rounded-lg border border-border overflow-hidden">
+            <div class="grid grid-cols-2 bg-surface/60">
+              <div class="px-5 md:px-7 py-4 border-r border-border">
+                <p class="font-mono text-[12px] uppercase tracking-[0.12em] text-text-3">Generalist AI consultant</p>
+              </div>
+              <div class="px-5 md:px-7 py-4 bg-amber-soft/30">
+                <p class="font-mono text-[12px] uppercase tracking-[0.12em] text-amber">This practice</p>
+              </div>
+            </div>
+            {comparison.map(([gen, ours], i) => (
+              <div class={`grid grid-cols-2 ${i !== 0 ? 'border-t border-border/60' : ''}`}>
+                <div class="px-5 md:px-7 py-5 md:py-6 border-r border-border/60 text-text-3 text-[14.5px] leading-[1.55]">
+                  <span class="inline-block mr-2 text-text-3">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="inline -translate-y-px"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                  </span>
+                  {gen}
+                </div>
+                <div class="px-5 md:px-7 py-5 md:py-6 text-text text-[14.5px] leading-[1.55]">
+                  <span class="inline-block mr-2 text-amber">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="inline -translate-y-px"><path d="M20 6 9 17l-5-5"/></svg>
+                  </span>
+                  {ours}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Pricing ─────────────────────────────────────────── -->
+      <section id="pricing" class="py-24 md:py-32 border-b border-border/40">
+        <div class="max-w-7xl mx-auto px-6">
+          <div class="max-w-3xl mb-16">
+            <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Pricing</p>
+            <h2 data-fade data-fade-delay="60" class="text-[34px] md:text-[44px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+              Transparent pricing. No hourly billing.
+            </h2>
+            <p data-fade data-fade-delay="120" class="text-[17px] text-text-2 leading-[1.6]">
+              Fixed-scope packages. <span class="font-mono text-text">50% upfront</span>, <span class="font-mono text-text">50% on delivery</span>. Anthropic API tokens billed at <span class="font-mono text-text">cost + 15%</span> as a separate line item.
+            </p>
+          </div>
+
+          <div data-fade class="rounded-lg border border-border overflow-hidden">
+            <div class="grid grid-cols-[1.2fr_1.2fr_1fr] gap-px bg-border">
+              <div class="px-5 md:px-7 py-4 bg-surface/60 font-mono text-[12px] uppercase tracking-[0.12em] text-text-3">Service</div>
+              <div class="px-5 md:px-7 py-4 bg-surface/60 font-mono text-[12px] uppercase tracking-[0.12em] text-text-3">Price</div>
+              <div class="px-5 md:px-7 py-4 bg-surface/60 font-mono text-[12px] uppercase tracking-[0.12em] text-text-3">Cadence</div>
+              {pricing.map(p => (
+                <>
+                  <div class="px-5 md:px-7 py-5 bg-ink text-[15px] font-medium">{p.service}</div>
+                  <div class="px-5 md:px-7 py-5 bg-ink text-[15px] font-mono text-amber">{p.price}</div>
+                  <div class="px-5 md:px-7 py-5 bg-ink text-[14px] text-text-2">{p.cadence}</div>
+                </>
+              ))}
+            </div>
+          </div>
+
+          <p data-fade class="mt-6 text-[14px] text-text-3 leading-[1.6]">
+            Custom scopes available for larger studios. Volume discounts on Retainers paid annually.
+          </p>
+        </div>
+      </section>
+
+      <!-- ── FAQ ─────────────────────────────────────────────── -->
+      <section id="faq" class="py-24 md:py-32 border-b border-border/40">
+        <div class="max-w-4xl mx-auto px-6">
+          <div class="mb-12 md:mb-16">
+            <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">FAQ</p>
+            <h2 data-fade data-fade-delay="60" class="text-[34px] md:text-[44px] font-bold tracking-[-0.02em] leading-[1.1]">
+              Questions, answered.
+            </h2>
+          </div>
+
+          <div class="border-t border-border/60">
+            {faqs.map((f) => (
+              <details data-faq class="group border-b border-border/60">
+                <summary class="flex items-start justify-between gap-6 py-6 md:py-7">
+                  <span class="text-[16.5px] md:text-[18px] font-medium text-text leading-snug">{f.q}</span>
+                  <span class="chevron flex-shrink-0 mt-1 text-text-3 group-hover:text-amber transition-colors">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                  </span>
+                </summary>
+                <div class="answer pb-6 md:pb-7 max-w-3xl">
+                  <p class="text-[15.5px] text-text-2 leading-[1.7]">{f.a}</p>
+                </div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Final CTA ───────────────────────────────────────── -->
+      <section id="contact" class="py-28 md:py-40">
+        <div class="max-w-3xl mx-auto px-6 text-center">
+          <h2 data-fade class="text-[32px] md:text-[44px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+            <span class="font-mono text-amber text-[24px] md:text-[32px] mr-2">30 minutes.</span><br class="hidden md:block"/>
+            No pitch deck. Just a real conversation about your stack.
+          </h2>
+          <p data-fade data-fade-delay="100" class="text-[17px] md:text-[18px] text-text-2 leading-[1.6] mb-10 max-w-2xl mx-auto">
+            Bring questions about your codebase, your team, your blockers. We'll tell you whether we're the right fit. If we're not, we'll point you to who is.
+          </p>
+          <div data-fade data-fade-delay="200" class="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
+            <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-7 py-3.5 rounded-md bg-amber text-ink font-semibold text-[15px] hover:bg-amber-2 transition-colors">
+              Book your discovery call
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
+            <a href={`mailto:${EMAIL}`} class="inline-flex items-center gap-2 px-7 py-3.5 rounded-md border border-border text-text hover:border-border-2 hover:bg-surface text-[15px] font-medium transition-colors">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              {EMAIL}
+            </a>
+          </div>
+          <p data-fade data-fade-delay="280" class="text-[13px] text-text-3 font-mono">
+            No prep needed. Pre-audit questionnaire only after the call, if we agree to proceed.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <!-- ── Footer ────────────────────────────────────────────── -->
+    <footer class="border-t border-border/60 py-12">
+      <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-5">
+        <div class="flex items-center gap-3 text-[14px] text-text-3">
+          <span class="font-semibold text-text">{BRAND}</span>
+          <span class="text-border-2">·</span>
+          <span>Lisbon, Portugal</span>
+          <span class="text-border-2">·</span>
+          <span class="font-mono">© {CURRENT_YEAR}</span>
+        </div>
+        <div class="flex items-center gap-5">
+          <a href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" class="text-text-3 hover:text-text transition-colors">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+              <rect width="4" height="12" x="2" y="9"/>
+              <circle cx="4" cy="4" r="2"/>
+            </svg>
+          </a>
+          <a href={`mailto:${EMAIL}`} aria-label="Email" class="text-text-3 hover:text-text transition-colors">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          </a>
+        </div>
+      </div>
+      <p class="max-w-7xl mx-auto px-6 mt-6 text-[12px] text-text-3 font-mono leading-relaxed">
+        Claude, Claude Code, and Anthropic are trademarks of their respective owners. {BRAND} is an independent consultancy and not affiliated with Anthropic unless explicitly stated.
+      </p>
+    </footer>
+
+    <script>
+      // Smooth scroll for in-page anchors
+      document.querySelectorAll<HTMLAnchorElement>('a[data-scroll]').forEach(a => {
+        a.addEventListener('click', e => {
+          const href = a.getAttribute('href');
+          if (!href || !href.startsWith('#')) return;
+          const target = document.querySelector(href);
+          if (!target) return;
+          e.preventDefault();
+          const top = target.getBoundingClientRect().top + window.pageYOffset - 72;
+          window.scrollTo({ top, behavior: 'smooth' });
+          // Close mobile menu after navigating
+          document.getElementById('mobile-menu')?.classList.add('hidden');
+          document.getElementById('icon-menu')?.classList.remove('hidden');
+          document.getElementById('icon-close')?.classList.add('hidden');
+          document.getElementById('menu-toggle')?.setAttribute('aria-expanded', 'false');
+        });
+      });
+
+      // Mobile menu toggle
+      const toggle = document.getElementById('menu-toggle');
+      const menu   = document.getElementById('mobile-menu');
+      const iconM  = document.getElementById('icon-menu');
+      const iconC  = document.getElementById('icon-close');
+      toggle?.addEventListener('click', () => {
+        const open = menu?.classList.toggle('hidden') === false;
+        iconM?.classList.toggle('hidden', open);
+        iconC?.classList.toggle('hidden', !open);
+        toggle.setAttribute('aria-expanded', String(open));
+      });
+
+      // Fade-in on scroll
+      const fadeEls = document.querySelectorAll<HTMLElement>('[data-fade]');
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          const el = entry.target as HTMLElement;
+          const delay = parseInt(el.dataset.fadeDelay ?? '0', 10);
+          window.setTimeout(() => el.classList.add('is-visible'), delay);
+          io.unobserve(el);
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -32px 0px' });
+      fadeEls.forEach(el => io.observe(el));
+    </script>
+  </body>
+</html>
