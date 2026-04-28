@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+[data-fade] {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.65s cubic-bezier(0.25, 0.1, 0.25, 1),
+              transform 0.65s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+[data-fade].is-visible {
+  opacity: 1;
+  transform: none;
+}

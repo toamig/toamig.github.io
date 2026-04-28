@@ -1,0 +1,572 @@
+---
+import '../../styles/consulting.css';
+
+const SITE   = 'https://migueltechlead.pt';
+const ogUrl  = `${SITE}/Pre-Production-Consulting/`;
+const ogImg  = `${SITE}/og/pre-production-consulting.png`;
+const title  = 'UE5 Pre-Production Consultant Portfolio';
+const desc   = 'I help teams define gameplay architecture, pipelines, and reference implementations in pre-production — so you don\'t pay for rewrites later.';
+
+const navLinks = [
+  { href: '#services', label: 'Services' },
+  { href: '#work',     label: 'Work' },
+  { href: '#process',  label: 'Process' },
+  { href: '#pricing',  label: 'Pricing' },
+  { href: '#about',    label: 'About' },
+  { href: '#contact',  label: 'Contact' },
+];
+
+const goodFit = [
+  'Indie or AA teams starting a new UE5 project',
+  'Studios moving from another engine to Unreal',
+  'Teams adding multiplayer or scalable gameplay systems',
+  'Projects that need technical direction before hiring a team',
+];
+const notAFit = [
+  'Teams deep in production needing feature delivery',
+  'Long-term staff augmentation or ongoing development',
+  '"Just make it work" without architecture standards',
+  'Projects with established architecture already in place',
+];
+
+const services = [
+  {
+    icon: 'network',
+    title: 'Multiplayer Architecture',
+    description: 'Design replication strategies, authority models, and dedicated server topology for networked titles — before a single line of feature code is written. Built on real experience shipping multiplayer across UE4 and UE5.',
+  },
+  {
+    icon: 'shield-check',
+    title: 'Systems Design & Object-Oriented Architecture',
+    description: 'Define clear contracts between gameplay systems, establish C++/Blueprint boundaries, and structure your codebase to scale with the feature list — not against it.',
+  },
+  {
+    icon: 'git-branch',
+    title: 'Development Standards & Pipelines',
+    description: 'Establish naming conventions, ownership rules, and cross-discipline handoff protocols that keep art and tech teams aligned throughout production.',
+  },
+  {
+    icon: 'wrench',
+    title: 'Technical Risk & Audit',
+    description: 'Identify the architectural gaps, wrong priorities, and hidden debt in your current direction — early enough to fix them without derailing production.',
+  },
+];
+
+const projects = [
+  {
+    title: 'Dakar Desert Rally',
+    role: 'Multiplayer Programmer',
+    tags: ['UE4', 'Racing', 'Multiplayer', 'Shipped'],
+    description: 'Diagnosed and resolved multiplayer bugs across a large open-world racing title, refactoring existing features to align with proper replication architecture. Work spanned gameplay systems, state synchronisation, and ensuring consistent behaviour across client and server.',
+    link: 'https://store.steampowered.com/app/1839940/Dakar_Desert_Rally/',
+    linkLabel: 'View on Steam',
+  },
+  {
+    title: 'Road Kings',
+    role: 'Tools Lead Programmer',
+    tags: ['UE5', 'Simulation', 'Open World', 'Houdini', 'In Development'],
+    description: 'Built end-to-end pipelines bridging art production and gameplay logic in a large-scale open-world title. Developed Houdini-based art tools and custom Unreal Editor tooling to accelerate content iteration, enforce performance budgets, and reduce friction between disciplines.',
+    link: 'https://store.steampowered.com/app/2141130/Road_Kings/',
+    linkLabel: 'View on Steam',
+  },
+  {
+    title: 'Timefront',
+    role: 'Gameplay Lead Engineer',
+    tags: ['UE5', 'RTS', 'Multiplayer', 'Early Access'],
+    description: 'Led the architectural transition from a single-player prototype to a dedicated server multiplayer title. Redesigned and refactored core systems — including abilities, buildings, and fog of war — to support replication at scale. Conducted in-depth profiling and delivered targeted performance improvements across the gameplay stack.',
+    link: 'https://store.steampowered.com/app/3328840/Timefront/',
+    linkLabel: 'View on Steam',
+  },
+];
+
+const phases = [
+  {
+    label: 'Phase 0',
+    title: 'Exploratory Call',
+    free: true,
+    payment: null,
+    description: 'A no-commitment conversation to understand your project, team, and core problem. No deep technical analysis — just enough to determine if there is a fit and what the engagement should look like.',
+    deliverables: [],
+  },
+  {
+    label: 'Phase 1',
+    title: 'Discovery & Audit',
+    free: false,
+    payment: 'Invoiced before start',
+    description: 'Deep-dive into your current state — idea, GDD, prototype, or existing codebase. The goal is to surface risks early and map out exactly what needs to be built and in what order.',
+    deliverables: [
+      'Technical risk report',
+      'Core loop validation with edge cases flagged',
+      'Preliminary system map and dependency order',
+    ],
+  },
+  {
+    label: 'Phase 2',
+    title: 'Architecture & Standards',
+    free: false,
+    payment: 'Invoiced before start',
+    description: 'Define the foundations before a single production feature is built. System contracts, cross-discipline standards, and development guidelines are locked in here.',
+    deliverables: [
+      'Core system architecture document',
+      'Art/tech pipeline and handoff standards',
+      'Development standards (naming, ownership, Blueprint vs C++ boundaries, performance guidelines)',
+    ],
+  },
+  {
+    label: 'Phase 3',
+    title: 'Handoff & Q&A',
+    free: false,
+    payment: 'Invoiced after Phase 2 delivery',
+    description: 'A timeboxed session to walk the team through every document, answer technical questions, and make sure everyone is aligned before development starts. You leave with full clarity, I leave knowing the work lands correctly.',
+    deliverables: [
+      'Structured walkthrough of all architecture and standards documents',
+      'Live Q&A with the full tech team',
+      'Engineer onboarding documentation',
+    ],
+  },
+];
+
+const deliverables = [
+  'Technical risk report',
+  'Core loop validation with edge cases flagged',
+  'System map and dependency order',
+  'Core system architecture document',
+  'Art/tech pipeline and handoff standards',
+  'Development standards (naming, ownership, Blueprint vs C++ boundaries, performance guidelines)',
+  'Structured walkthrough of all architecture and standards documents',
+  'Engineer onboarding documentation',
+  'Live Q&A session with the full team',
+];
+
+const tiers = [
+  { label: 'Micro Team',    description: 'Solo devs or small founding teams with a clear concept and limited scope.' },
+  { label: 'Small Team',    description: 'Structured teams working on a defined project with cross-discipline collaboration.' },
+  { label: 'Mid-size Team', description: 'Larger productions with multiple systems, art pipelines, and engineering depth.' },
+  { label: 'Large Team',    description: 'Complex productions with significant scope and multiple cross-discipline teams.' },
+];
+
+const addons = [
+  { name: 'Multiplayer / Dedicated Server Architecture', description: 'Full replication strategy, authority model, and server topology design.' },
+  { name: 'Prototype / Reference Implementation',         description: 'A working implementation of a core system to validate the architecture and serve as a reference for the team.' },
+  { name: 'Art–Tech Pipeline Setup',                      description: 'Houdini tooling, Editor automation, or custom content pipelines for art teams.' },
+  { name: 'Existing Codebase Audit',                      description: 'Structured review of an existing codebase before architecture is defined.' },
+  { name: 'No GDD / Concept-only Start',                  description: 'Additional discovery overhead when starting without a defined design document.' },
+  { name: 'Accelerated Timeline',                         description: 'Priority scheduling to compress the engagement below the standard duration.' },
+  { name: 'Implementation Accompaniment',                 description: 'Periodic check-ins during active development to review progress against the architecture, answer technical questions, and catch drift before it becomes debt. Scoped and priced per engagement.' },
+];
+
+const currentYear = new Date().getFullYear();
+---
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={desc} />
+    <link rel="icon" type="image/svg+xml" href="/logo_head.svg" />
+    <link rel="canonical" href={ogUrl} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" />
+
+    <meta property="og:type"        content="website" />
+    <meta property="og:title"       content={title} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:url"         content={ogUrl} />
+    <meta property="og:image"       content={ogImg} />
+    <meta property="og:image:width"  content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name"   content="Miguel Vieira" />
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:title"       content={title} />
+    <meta name="twitter:description" content={desc} />
+    <meta name="twitter:image"       content={ogImg} />
+
+    <style is:global>
+      html, body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+    </style>
+  </head>
+
+  <body class="min-h-screen bg-white text-gray-900">
+    <!-- ── Navigation ─────────────────────────────────────────────── -->
+    <nav class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-gray-200 z-50">
+      <div class="max-w-6xl mx-auto px-6">
+        <div class="flex items-center justify-between h-16">
+          <a href="#hero" data-scroll class="font-semibold text-gray-900 text-lg">Miguel Vieira</a>
+
+          <div class="hidden md:flex items-center gap-8">
+            {navLinks.map(link => (
+              <a href={link.href} data-scroll class="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors">
+                {link.label}
+              </a>
+            ))}
+          </div>
+
+          <button id="menu-toggle" class="md:hidden p-2 text-gray-600" aria-label="Toggle menu" aria-expanded="false">
+            <svg id="icon-menu" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="4" x2="20" y1="6"  y2="6"/>
+              <line x1="4" x2="20" y1="12" y2="12"/>
+              <line x1="4" x2="20" y1="18" y2="18"/>
+            </svg>
+            <svg id="icon-close" class="hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 6 6 18"/>
+              <path d="m6 6 12 12"/>
+            </svg>
+          </button>
+        </div>
+
+        <div id="mobile-menu" class="hidden md:hidden pb-4">
+          {navLinks.map(link => (
+            <a href={link.href} data-scroll class="block py-2 text-gray-600 hover:text-gray-900 text-sm font-medium">
+              {link.label}
+            </a>
+          ))}
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <!-- ── Hero ─────────────────────────────────────────────────── -->
+      <section id="hero" class="mt-16 min-h-[calc(50vh-32px)] flex items-center">
+        <div class="max-w-4xl mx-auto px-6 text-center w-full py-10">
+          <h1 data-fade class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+            Start your UE5 project with architecture that scales.
+          </h1>
+          <p data-fade data-fade-delay="120" class="text-lg md:text-xl text-gray-600 mb-10 max-w-3xl mx-auto leading-relaxed">
+            I help teams define gameplay architecture, pipelines, and reference
+            implementations in pre-production — so you don't pay for rewrites later.
+          </p>
+          <div data-fade data-fade-delay="240" class="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a href="#contact" data-scroll class="inline-flex items-center gap-2 px-8 py-3 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-colors">
+              Book a call
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
+            <a href="#process" data-scroll class="inline-flex items-center gap-2 px-8 py-3 bg-white text-gray-900 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors">
+              How it works
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Who it's for ─────────────────────────────────────────── -->
+      <section id="fit" class="min-h-[calc(50vh-32px)] flex items-center bg-gray-50">
+        <div class="max-w-6xl mx-auto px-6 w-full py-10">
+          <h2 data-fade class="text-3xl md:text-4xl font-bold text-gray-900 mb-10 text-center">Is this a fit?</h2>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div data-fade data-fade-delay="80" class="bg-white border border-gray-200 rounded-lg p-6 h-full">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-9 h-9 bg-green-100 rounded-lg flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-700"><path d="M20 6 9 17l-5-5"/></svg>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900">Good fit</h3>
+              </div>
+              <ul class="space-y-3">
+                {goodFit.map(item => (
+                  <li class="flex items-start gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-600 flex-shrink-0 mt-0.5"><path d="M20 6 9 17l-5-5"/></svg>
+                    <span class="text-gray-700">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div data-fade data-fade-delay="180" class="bg-white border border-gray-200 rounded-lg p-6 h-full">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-9 h-9 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-600"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900">Not a fit</h3>
+              </div>
+              <ul class="space-y-3">
+                {notAFit.map(item => (
+                  <li class="flex items-start gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 flex-shrink-0 mt-0.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    <span class="text-gray-600">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Services ─────────────────────────────────────────────── -->
+      <section id="services" class="py-20">
+        <div class="max-w-6xl mx-auto px-6">
+          <h2 data-fade class="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center">What I do</h2>
+          <div class="grid md:grid-cols-2 gap-6">
+            {services.map((service, index) => (
+              <div data-fade data-fade-delay={index * 80} class="bg-white p-8 rounded-lg border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all duration-200 h-full">
+                <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mb-4">
+                  {service.icon === 'network' && (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-700">
+                      <rect x="16" y="16" width="6" height="6" rx="1"/>
+                      <rect x="2"  y="16" width="6" height="6" rx="1"/>
+                      <rect x="9"  y="2"  width="6" height="6" rx="1"/>
+                      <path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/>
+                      <path d="M12 12V8"/>
+                    </svg>
+                  )}
+                  {service.icon === 'shield-check' && (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-700">
+                      <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+                      <path d="m9 12 2 2 4-4"/>
+                    </svg>
+                  )}
+                  {service.icon === 'git-branch' && (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-700">
+                      <line x1="6" x2="6" y1="3" y2="15"/>
+                      <circle cx="18" cy="6"  r="3"/>
+                      <circle cx="6"  cy="18" r="3"/>
+                      <path d="M18 9a9 9 0 0 1-9 9"/>
+                    </svg>
+                  )}
+                  {service.icon === 'wrench' && (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-700">
+                      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                    </svg>
+                  )}
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-3">{service.title}</h3>
+                <p class="text-gray-600 leading-relaxed">{service.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Work ─────────────────────────────────────────────────── -->
+      <section id="work" class="py-20 bg-gray-50">
+        <div class="max-w-5xl mx-auto px-6">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center">Selected projects</h2>
+          <div class="grid md:grid-cols-2 gap-6">
+            {projects.map(project => (
+              <div class="bg-white border border-gray-200 rounded-lg p-6 flex flex-col">
+                <div class="flex flex-wrap gap-2 mb-4">
+                  {project.tags.map(tag => (
+                    <span class="text-xs font-medium px-2 py-1 bg-gray-100 text-gray-600 rounded">{tag}</span>
+                  ))}
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-1">{project.title}</h3>
+                <p class="text-sm font-medium text-gray-500 mb-3">{project.role}</p>
+                <p class="text-gray-600 text-sm leading-relaxed flex-1">{project.description}</p>
+                <a href={project.link} target="_blank" rel="noopener noreferrer" class="mt-5 inline-flex items-center gap-2 text-sm font-medium text-gray-900 hover:underline">
+                  {project.linkLabel} →
+                </a>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Process ──────────────────────────────────────────────── -->
+      <section id="process" class="py-20">
+        <div class="max-w-5xl mx-auto px-6">
+          <h2 data-fade class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 text-center">Process</h2>
+          <p data-fade class="text-gray-600 text-center mb-16 max-w-2xl mx-auto">
+            A full engagement typically spans 1 to 3 months depending on project scope and team size.
+          </p>
+
+          <div class="relative">
+            <div class="absolute left-1/2 top-0 bottom-0 w-0.5 bg-gray-200 -translate-x-1/2 hidden md:block"></div>
+            <div class="space-y-12">
+              {phases.map((phase, index) => {
+                const isEven = index % 2 === 0;
+                return (
+                  <div data-fade data-fade-delay="60" class={`relative flex flex-col md:flex-row gap-8 ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
+                    <div class={`md:w-1/2 ${isEven ? 'md:text-right md:pr-12' : 'md:pl-12'}`}>
+                      <div class="bg-white border border-gray-200 rounded-lg p-6 hover:border-gray-300 hover:shadow-sm transition-all duration-200">
+                        <div class={`flex items-center gap-3 mb-3 ${isEven ? 'md:justify-end' : ''}`}>
+                          <span class="text-sm font-semibold text-gray-500 uppercase tracking-wide">{phase.label}</span>
+                          {phase.free && (
+                            <span class="text-xs font-semibold text-green-700 bg-green-50 border border-green-200 px-2 py-0.5 rounded">Free</span>
+                          )}
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">{phase.title}</h3>
+                        <p class="text-gray-600 leading-relaxed">{phase.description}</p>
+                        {phase.deliverables.length > 0 && (
+                          <ul class="mt-4 space-y-1">
+                            {phase.deliverables.map(item => (
+                              <li class={`flex items-start gap-2 text-sm text-gray-600 ${isEven ? 'md:flex-row-reverse' : ''}`}>
+                                <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-gray-400 shrink-0"></span>
+                                {item}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                        {phase.payment && (
+                          <p class={`mt-4 text-xs font-medium text-gray-400 ${isEven ? 'md:text-right' : ''}`}>{phase.payment}</p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div class="hidden md:flex absolute left-1/2 -translate-x-1/2 w-10 h-10 bg-gray-900 rounded-full items-center justify-center z-10">
+                      <span class="text-white text-sm font-semibold">{index}</span>
+                    </div>
+                    <div class="md:w-1/2"></div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Deliverables ────────────────────────────────────────── -->
+      <section id="deliverables" class="py-20 bg-gray-50">
+        <div class="max-w-4xl mx-auto px-6">
+          <h2 data-fade class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 text-center">Deliverables</h2>
+          <p data-fade class="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
+            Every engagement includes the following regardless of team size or project scope.
+          </p>
+          <div data-fade data-fade-delay="100" class="bg-white border border-gray-200 rounded-lg p-8 md:p-10">
+            <ul class="space-y-4">
+              {deliverables.map(item => (
+                <li class="flex items-start gap-4">
+                  <div class="flex-shrink-0 w-6 h-6 bg-gray-900 rounded-full flex items-center justify-center mt-0.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="M20 6 9 17l-5-5"/></svg>
+                  </div>
+                  <span class="text-gray-700 text-lg leading-relaxed">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Pricing ──────────────────────────────────────────────── -->
+      <section id="pricing" class="py-20">
+        <div class="max-w-5xl mx-auto px-6">
+          <h2 data-fade class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 text-center">Pricing</h2>
+          <p data-fade class="text-gray-600 text-center mb-16 max-w-2xl mx-auto">
+            Each phase is invoiced separately — you only commit one step at a time.
+          </p>
+
+          <h3 data-fade data-fade-delay="60" class="text-xl font-semibold text-gray-900 mb-6">Pricing ranges</h3>
+          <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-16">
+            {tiers.map((tier, index) => (
+              <div data-fade data-fade-delay={80 + index * 70} class="bg-white border border-gray-200 rounded-lg p-6 flex flex-col h-full hover:border-gray-300 hover:shadow-sm transition-all duration-200">
+                <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">{tier.label}</p>
+                <p class="text-sm text-gray-600 leading-relaxed">{tier.description}</p>
+              </div>
+            ))}
+          </div>
+
+          <h3 data-fade class="text-xl font-semibold text-gray-900 mb-6">Add-ons</h3>
+          <div class="space-y-3">
+            {addons.map((addon, index) => (
+              <div data-fade data-fade-delay={index * 50} class="bg-white border border-gray-200 rounded-lg px-6 py-4 hover:border-gray-300 hover:shadow-sm transition-all duration-200">
+                <p class="font-medium text-gray-900">{addon.name}</p>
+                <p class="text-sm text-gray-500 mt-0.5">{addon.description}</p>
+              </div>
+            ))}
+          </div>
+
+          <p data-fade data-fade-delay="100" class="text-sm text-gray-400 text-center mt-10">
+            Final pricing is confirmed after the Phase 0 exploratory call.
+          </p>
+        </div>
+      </section>
+
+      <!-- ── About ────────────────────────────────────────────────── -->
+      <section id="about" class="py-20 bg-gray-50">
+        <div class="max-w-3xl mx-auto px-6">
+          <h2 data-fade class="text-3xl md:text-4xl font-bold text-gray-900 mb-8 text-center">About</h2>
+          <div data-fade data-fade-delay="100" class="space-y-5 text-lg text-gray-700 leading-relaxed">
+            <p>I specialise in multiplayer architecture and object-oriented systems design for Unreal Engine — the kind of foundational work that determines whether a project scales gracefully or collapses under its own weight mid-production.</p>
+            <p>What I keep seeing across projects is the same pattern: wrong priorities early on, no pipelines, no standards, and <strong>technical debt that quietly accumulates until it starts costing real money</strong> — in refactors, in delays, in developers losing faith in the codebase they have to ship. By then, fixing it is expensive. Often teams don't fix it at all, and that drags all the way to release.</p>
+            <p>My approach is the opposite. <strong>Do the heavy lifting early.</strong> Invest in the foundations before the feature list grows. Define the contracts, the pipelines, the architecture — when the cost of change is still near zero. So that when you reach the end of production, certifications and final delivery are smooth for every developer on the team.</p>
+            <p><strong>Solid foundations are not a luxury or a nice-to-have. They are the most cost-effective decision a team can make.</strong> I'm here to help you make that decision before it's too late.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Contact ──────────────────────────────────────────────── -->
+      <section id="contact" class="py-20">
+        <div class="max-w-3xl mx-auto px-6 text-center">
+          <h2 data-fade class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Get in touch</h2>
+          <p data-fade data-fade-delay="100" class="text-xl text-gray-700 leading-relaxed mb-10">
+            If you're about to start a project, I can help you avoid early technical debt.
+          </p>
+          <div data-fade data-fade-delay="200" class="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a href="https://calendly.com/migueltechlead-support/30min" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-3 px-8 py-4 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-colors text-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+              Book a free call
+            </a>
+            <a href="mailto:support@migueltechlead.pt" class="inline-flex items-center gap-3 px-8 py-4 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-100 transition-colors text-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              support@migueltechlead.pt
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ── Footer ─────────────────────────────────────────────────── -->
+    <footer class="py-12 border-t border-gray-200">
+      <div class="max-w-6xl mx-auto px-6">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+          <p class="text-gray-600 text-sm">© {currentYear} Miguel Vieira. All rights reserved.</p>
+          <div class="flex items-center gap-6">
+            <a href="https://www.linkedin.com/in/toamig" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" class="text-gray-600 hover:text-gray-900 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+                <rect width="4" height="12" x="2" y="9"/>
+                <circle cx="4" cy="4" r="2"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Smooth scroll for in-page anchors
+      document.querySelectorAll<HTMLAnchorElement>('a[data-scroll]').forEach(a => {
+        a.addEventListener('click', e => {
+          const href = a.getAttribute('href');
+          if (!href || !href.startsWith('#')) return;
+          const target = document.querySelector(href);
+          if (!target) return;
+          e.preventDefault();
+          const top = target.getBoundingClientRect().top + window.pageYOffset - 80;
+          window.scrollTo({ top, behavior: 'smooth' });
+          // Close mobile menu after click
+          const menu = document.getElementById('mobile-menu');
+          menu?.classList.add('hidden');
+          document.getElementById('icon-menu')?.classList.remove('hidden');
+          document.getElementById('icon-close')?.classList.add('hidden');
+          document.getElementById('menu-toggle')?.setAttribute('aria-expanded', 'false');
+        });
+      });
+
+      // Mobile menu toggle
+      const toggle = document.getElementById('menu-toggle');
+      const menu   = document.getElementById('mobile-menu');
+      const iconM  = document.getElementById('icon-menu');
+      const iconC  = document.getElementById('icon-close');
+      toggle?.addEventListener('click', () => {
+        const open = menu?.classList.toggle('hidden') === false;
+        iconM?.classList.toggle('hidden', open);
+        iconC?.classList.toggle('hidden', !open);
+        toggle.setAttribute('aria-expanded', String(open));
+      });
+
+      // Fade-in on scroll
+      const fadeEls = document.querySelectorAll<HTMLElement>('[data-fade]');
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          const el = entry.target as HTMLElement;
+          const delay = parseInt(el.dataset.fadeDelay ?? '0', 10);
+          window.setTimeout(() => el.classList.add('is-visible'), delay);
+          io.unobserve(el);
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -32px 0px' });
+      fadeEls.forEach(el => io.observe(el));
+    </script>
+  </body>
+</html>
