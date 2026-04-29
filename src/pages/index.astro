@@ -17,17 +17,38 @@ import projects     from '../data/projects.json';
   <!-- ── Hero ─────────────────────────────────────────────────────── -->
   <div class="front-page">
     <div class="front-page-content">
+      <div class="hero-status" aria-label="Current role">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span class="status-key">CURRENT</span>
+        <span class="status-divider">/</span>
+        <span class="status-value">Lead Software Engineer</span>
+        <span class="status-divider">·</span>
+        <span>Flama Craftworks</span>
+      </div>
+
       <div class="branding">
         <div id="branding-placeholder">
           <Logo class="logo" />
         </div>
         <h1>TOAMIG</h1>
       </div>
-      <h1>Welcome to my <span class="strong-text">Game Developer</span> Portfolio</h1>
-      <p>Discover my projects, skills, and experience</p>
+
+      <p class="hero-tagline">
+        I lead the engineering<br />
+        behind <span class="hero-accent">games</span>.
+      </p>
+
+      <div class="hero-disciplines" aria-label="Disciplines">
+        <span>Gameplay</span>
+        <span>Multiplayer</span>
+        <span>Tools</span>
+        <span>Animation</span>
+        <span>AI</span>
+        <span>Leadership</span>
+      </div>
     </div>
     <div class="scroll-down">
-      <a href="#content"></a>
+      <a href="#content" aria-label="Scroll to content"></a>
     </div>
   </div>
 
@@ -40,11 +61,17 @@ import projects     from '../data/projects.json';
         <div class="about-content">
           <img src="/me/IMG_7.JPEG" alt="Profile Picture" class="profile-image" />
           <div class="about-text">
-            <h2>Summary</h2>
-            <span class="underline"></span>
-            <p class="p1">My name is Miguel "Toamig" Vieira, and I'm a software engineer specialized in game development and interactive systems.</p>
-            <p class="p3">My experience spans nearly every area of game programming, including Gameplay, Multiplayer, Tools, Animation, and AI.</p>
-            <p class="p2">Currently I'm working as a Lead Software Engineer at Flama Craftworks, where I'm responsible for the gameplay development of the Timefront project.</p>
+            <div class="section-header">
+              <p class="section-eyebrow">
+                <span class="num">01</span>
+                <span class="sep">—</span>
+                <span class="tag">Profile</span>
+              </p>
+              <h2>The <em>short version</em>.</h2>
+            </div>
+            <p class="p1">Game engineer turned tech lead — building gameplay, tools, and the engineering teams that ship them.</p>
+            <p class="p3">Five years across studios shipping gameplay, multiplayer, tools, animation, and AI systems on PC, console, and VR — currently leading engineering at Flama Craftworks on Timefront, after a stretch as Tools Lead at Saber Interactive.</p>
+            <p class="p2">I care about the systems behind the systems — the tooling, patterns, and tech direction that let a team ship without burning out.</p>
           </div>
         </div>
       </div>
@@ -53,11 +80,20 @@ import projects     from '../data/projects.json';
     <!-- Experience -->
     <section id="experience">
       <div class="container">
-        <h2>Work Experience</h2>
-        <span class="underline"></span>
+        <div class="section-header">
+          <p class="section-eyebrow">
+            <span class="num">02</span>
+            <span class="sep">—</span>
+            <span class="tag">Career</span>
+          </p>
+          <h2>Where I've <em>shipped</em>.</h2>
+        </div>
         <div class="cards-container">
           {experience.map(e => (
             <a class="extended-card" href={e.href} target="_blank" rel="noopener noreferrer">
+              {(e.period?.includes('Present') || e.period?.includes('Ongoing')) && (
+                <span class="current-pill">Current</span>
+              )}
               {e.logo
                 ? <img src={e.logo} alt={`${e.name} Logo`} class="card-logo" />
                 : <div class="card-logo" />
@@ -76,8 +112,14 @@ import projects     from '../data/projects.json';
     <!-- Technologies -->
     <section id="technologies">
       <div class="container">
-        <h2>Professional Proficiency</h2>
-        <span class="underline"></span>
+        <div class="section-header">
+          <p class="section-eyebrow">
+            <span class="num">03</span>
+            <span class="sep">—</span>
+            <span class="tag">Toolbox</span>
+          </p>
+          <h2>What I <em>build with</em>.</h2>
+        </div>
         <div class="tech-grid">
           {(['Languages', 'Engines', 'Art Tools', 'Version Control'] as const).map(cat => (
             <div class="tech-category">
@@ -98,11 +140,20 @@ import projects     from '../data/projects.json';
     <!-- Education -->
     <section id="education">
       <div class="container">
-        <h2>Education</h2>
-        <span class="underline"></span>
+        <div class="section-header">
+          <p class="section-eyebrow">
+            <span class="num">04</span>
+            <span class="sep">—</span>
+            <span class="tag">Studies</span>
+          </p>
+          <h2>How I <em>got here</em>.</h2>
+        </div>
         <div class="cards-container">
           {education.map(e => (
             <a class="extended-card" href={e.href} target="_blank" rel="noopener noreferrer">
+              {(e.period?.includes('Present') || e.period?.includes('Ongoing')) && (
+                <span class="current-pill">Current</span>
+              )}
               <img src={e.logo} alt={`${e.name} Logo`} class="card-logo" />
               <div class="card-details">
                 <h3>{e.name}</h3>
@@ -118,10 +169,16 @@ import projects     from '../data/projects.json';
     <!-- Projects -->
     <section id="projects">
       <div class="container">
-        <h2>Professional Projects</h2>
-        <span class="underline"></span>
+        <div class="section-header">
+          <p class="section-eyebrow">
+            <span class="num">05</span>
+            <span class="sep">—</span>
+            <span class="tag">Showcase</span>
+          </p>
+          <h2>Selected <em>projects</em>.</h2>
+        </div>
         <div class="cards-container">
-          {projects.map(p => (
+          {projects.map((p, i) => (
             <a
               class="project-card"
               style={`background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url('${p.image}')`}
@@ -129,9 +186,11 @@ import projects     from '../data/projects.json';
               target="_blank"
               rel="noopener noreferrer"
             >
+              <span class="project-index">PRJ / {String(i + 1).padStart(2, '0')}</span>
               <div class="project-details">
                 <h3>{p.name}</h3>
                 <p>{p.desc}</p>
+                <span class="project-cta">View project</span>
               </div>
             </a>
           ))}

@@ -12,8 +12,14 @@ import events from '../data/events.json';
     <div class="about-content-2">
       <img src="/me/IMG_7.JPEG" alt="Profile Picture" class="profile-image" />
       <div class="about-text-2">
-        <h2>About Me</h2>
-        <span class="underline"></span>
+        <div class="section-header">
+          <p class="section-eyebrow">
+            <span class="num">00</span>
+            <span class="sep">—</span>
+            <span class="tag">Who</span>
+          </p>
+          <h2>About <em>me</em>.</h2>
+        </div>
         <p class="p1">I design systems, solve problems, and chase dreams — always choosing the edge of discomfort as my playground.</p>
         <p class="p2">I bring structure to chaos and lead by example. Grounded in pragmatism but never blind to detail, I stay deeply committed to my responsibilities and driven by an insatiable thirst for learning.</p>
         <p class="p3">These are the values that define me — as a person, a developer, and a leader.</p>
@@ -27,8 +33,14 @@ import events from '../data/events.json';
   <!-- ── Life Timeline ─────────────────────────────────────────────── -->
   <section id="life-timeline">
     <div class="container">
-      <h2>Life Timeline</h2>
-      <span class="underline"></span>
+      <div class="section-header">
+        <p class="section-eyebrow">
+          <span class="num">01</span>
+          <span class="sep">—</span>
+          <span class="tag">Chronicle</span>
+        </p>
+        <h2>Life <em>timeline</em>.</h2>
+      </div>
 
       <div class="timeline-controls">
         <div class="filter-section">
@@ -259,14 +271,14 @@ function formatDate(dateString: string): string {
 }
 function getCategoryInfo(category: string): { name: string; color: string } {
   const map: Record<string, { name: string; color: string }> = {
-    hobbies:      { name: 'Hobbies',       color: '#f9fbbf' },
-    studies:      { name: 'Studies',       color: '#b8dcff' },
-    personal:     { name: 'Personal',      color: '#f6c48a' },
-    professional: { name: 'Professional',  color: '#cbc5ff' },
-    travels:      { name: 'Travels',       color: '#c9f3b2' },
-    work:         { name: 'Work & Career', color: '#cbc5ff' },
+    hobbies:      { name: 'Hobbies',       color: '#be185d' },
+    studies:      { name: 'Studies',       color: '#0e7490' },
+    personal:     { name: 'Personal',      color: '#b45309' },
+    professional: { name: 'Professional',  color: '#475569' },
+    travels:      { name: 'Travels',       color: '#4d7c0f' },
+    work:         { name: 'Work & Career', color: '#475569' },
   };
-  return map[category] || { name: category || 'Other', color: '#dfe6e9' };
+  return map[category] || { name: category || 'Other', color: '#64748b' };
 }
 
 function buildEventUrl(id: string): string {
@@ -289,7 +301,18 @@ function renderEvents() {
   if (sorted.length === 0) { if (noResults) noResults.style.display = 'block'; return; }
   if (noResults) noResults.style.display = 'none';
 
+  let lastYear: string | null = null;
   sorted.forEach(event => {
+    const year = (event.date || '').substring(0, 4);
+    if (year && year !== lastYear) {
+      const yearMark = document.createElement('div');
+      yearMark.className = 'timeline-year-mark';
+      yearMark.setAttribute('aria-hidden', 'true');
+      yearMark.textContent = year;
+      grid.appendChild(yearMark);
+      lastYear = year;
+    }
+
     const tags        = getTags(event);
     const isExpandable = event.expandable === true;
 
