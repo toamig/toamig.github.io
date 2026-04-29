@@ -7,13 +7,18 @@ const ogImg  = `${SITE}/og/pre-production-consulting.png`;
 const title  = 'UE5 Pre-Production Consultant Portfolio';
 const desc   = 'I help teams define gameplay architecture, pipelines, and reference implementations in pre-production — so you don\'t pay for rewrites later.';
 
+const BRAND        = 'Miguel Vieira';
+const CALENDLY_URL = 'https://calendly.com/migueltechlead-support/30min';
+const EMAIL        = 'support@migueltechlead.pt';
+const LINKEDIN_URL = 'https://www.linkedin.com/in/toamig';
+
 const navLinks = [
   { href: '#services', label: 'Services' },
   { href: '#work',     label: 'Work' },
   { href: '#process',  label: 'Process' },
   { href: '#pricing',  label: 'Pricing' },
+  { href: '#faq',      label: 'FAQ' },
   { href: '#about',    label: 'About' },
-  { href: '#contact',  label: 'Contact' },
 ];
 
 const goodFit = [
@@ -155,6 +160,69 @@ const addons = [
   { name: 'Implementation Accompaniment',                 description: 'Periodic check-ins during active development to review progress against the architecture, answer technical questions, and catch drift before it becomes debt. Scoped and priced per engagement.' },
 ];
 
+const faqs = [
+  {
+    q: 'Do you work remotely or on-site?',
+    a: 'Most engagements are remote. Where helpful, I can be on-site for the Phase 1 kickoff or the Phase 3 handoff session — most useful for cross-discipline alignment with art, design, and tech leads in the same room. Travel is included for EU clients; quoted separately for further.',
+  },
+  {
+    q: 'How are NDAs and IP handled?',
+    a: 'Mutual NDA is signed before Phase 1 kicks off. Larger studios usually have their own template; I\'ll review and adapt. All deliverables are exclusively yours — I don\'t reuse or share project-specific work across engagements.',
+  },
+  {
+    q: 'What if we don\'t have a GDD yet?',
+    a: 'Workable, but harder. The "No GDD / Concept-only Start" add-on covers the extra discovery overhead. Best engagements start with at least a clear core loop and target audience locked in. Phase 1 will surface the remaining ambiguity.',
+  },
+  {
+    q: 'Can you work alongside our existing engineering team?',
+    a: 'Yes — that\'s the expectation. Phase 3 is built around aligning the team. The "Implementation Accompaniment" add-on extends this with periodic check-ins during active development.',
+  },
+  {
+    q: 'What if we already started building?',
+    a: 'Possible. Architectural cost-of-change grows fast in production, so the earlier the better. The "Existing Codebase Audit" add-on covers reviewing what\'s there before recommending direction, and Phase 1 doubles as a course-correction.',
+  },
+  {
+    q: 'How does pricing work?',
+    a: 'Each phase is invoiced separately, so you only commit one step at a time. Final scope and pricing are confirmed after the Phase 0 exploratory call — that\'s where we figure out which tier and add-ons fit.',
+  },
+];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': `${SITE}/#person`,
+      name: BRAND,
+      url: SITE,
+      jobTitle: 'UE5 Pre-Production Consultant',
+      sameAs: [LINKEDIN_URL],
+      contactPoint: {
+        '@type': 'ContactPoint',
+        contactType: 'sales',
+        email: EMAIL,
+      },
+    },
+    {
+      '@type': 'Service',
+      name: 'UE5 Pre-Production Consulting',
+      provider: { '@id': `${SITE}/#person` },
+      serviceType: 'Game development architecture and pipelines consulting',
+      areaServed: 'Worldwide',
+      audience: {
+        '@type': 'Audience',
+        audienceType: 'Game studios starting or restructuring an Unreal Engine project',
+      },
+      offers: services.map(s => ({
+        '@type': 'Offer',
+        name: s.title,
+        description: s.description,
+      })),
+      url: ogUrl,
+    },
+  ],
+};
+
 const currentYear = new Date().getFullYear();
 ---
 <!DOCTYPE html>
@@ -184,6 +252,8 @@ const currentYear = new Date().getFullYear();
     <meta name="twitter:description" content={desc} />
     <meta name="twitter:image"       content={ogImg} />
 
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
     <style is:global>
       html, body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
     </style>
@@ -196,12 +266,15 @@ const currentYear = new Date().getFullYear();
         <div class="flex items-center justify-between h-16">
           <a href="#hero" data-scroll class="font-semibold text-gray-900 text-lg">Miguel Vieira</a>
 
-          <div class="hidden md:flex items-center gap-8">
+          <div class="hidden md:flex items-center gap-7">
             {navLinks.map(link => (
               <a href={link.href} data-scroll class="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors">
                 {link.label}
               </a>
             ))}
+            <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" class="px-4 py-1.5 rounded-md bg-gray-900 text-white text-sm font-semibold hover:bg-gray-800 transition-colors">
+              Book a call
+            </a>
           </div>
 
           <button id="menu-toggle" class="md:hidden p-2 text-gray-600" aria-label="Toggle menu" aria-expanded="false">
@@ -223,6 +296,9 @@ const currentYear = new Date().getFullYear();
               {link.label}
             </a>
           ))}
+          <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" class="mt-3 inline-block w-full text-center px-4 py-2 rounded-md bg-gray-900 text-white text-sm font-semibold">
+            Book a call
+          </a>
         </div>
       </div>
     </nav>
@@ -347,7 +423,7 @@ const currentYear = new Date().getFullYear();
               <div class="bg-white border border-gray-200 rounded-lg p-6 flex flex-col">
                 <div class="flex flex-wrap gap-2 mb-4">
                   {project.tags.map(tag => (
-                    <span class="text-xs font-medium px-2 py-1 bg-gray-100 text-gray-600 rounded">{tag}</span>
+                    <span class="font-mono text-xs font-medium px-2 py-1 bg-gray-100 text-gray-600 rounded">{tag}</span>
                   ))}
                 </div>
                 <h3 class="text-lg font-semibold text-gray-900 mb-1">{project.title}</h3>
@@ -367,7 +443,7 @@ const currentYear = new Date().getFullYear();
         <div class="max-w-5xl mx-auto px-6">
           <h2 data-fade class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 text-center">Process</h2>
           <p data-fade class="text-gray-600 text-center mb-16 max-w-2xl mx-auto">
-            A full engagement typically spans 1 to 3 months depending on project scope and team size.
+            A full engagement typically spans <span class="font-mono text-gray-700">1 to 3 months</span> depending on project scope and team size.
           </p>
 
           <div class="relative">
@@ -380,7 +456,7 @@ const currentYear = new Date().getFullYear();
                     <div class={`md:w-1/2 ${isEven ? 'md:text-right md:pr-12' : 'md:pl-12'}`}>
                       <div class="bg-white border border-gray-200 rounded-lg p-6 hover:border-gray-300 hover:shadow-sm transition-all duration-200">
                         <div class={`flex items-center gap-3 mb-3 ${isEven ? 'md:justify-end' : ''}`}>
-                          <span class="text-sm font-semibold text-gray-500 uppercase tracking-wide">{phase.label}</span>
+                          <span class="font-mono text-xs font-semibold text-gray-500 uppercase tracking-wider">{phase.label}</span>
                           {phase.free && (
                             <span class="text-xs font-semibold text-green-700 bg-green-50 border border-green-200 px-2 py-0.5 rounded">Free</span>
                           )}
@@ -398,7 +474,7 @@ const currentYear = new Date().getFullYear();
                           </ul>
                         )}
                         {phase.payment && (
-                          <p class={`mt-4 text-xs font-medium text-gray-400 ${isEven ? 'md:text-right' : ''}`}>{phase.payment}</p>
+                          <p class={`mt-4 font-mono text-xs font-medium text-gray-400 ${isEven ? 'md:text-right' : ''}`}>{phase.payment}</p>
                         )}
                       </div>
                     </div>
@@ -449,7 +525,7 @@ const currentYear = new Date().getFullYear();
           <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-16">
             {tiers.map((tier, index) => (
               <div data-fade data-fade-delay={80 + index * 70} class="bg-white border border-gray-200 rounded-lg p-6 flex flex-col h-full hover:border-gray-300 hover:shadow-sm transition-all duration-200">
-                <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">{tier.label}</p>
+                <p class="font-mono text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">{tier.label}</p>
                 <p class="text-sm text-gray-600 leading-relaxed">{tier.description}</p>
               </div>
             ))}
@@ -484,21 +560,46 @@ const currentYear = new Date().getFullYear();
         </div>
       </section>
 
+      <!-- ── FAQ ─────────────────────────────────────────────────── -->
+      <section id="faq" class="py-20">
+        <div class="max-w-4xl mx-auto px-6">
+          <h2 data-fade class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 text-center">FAQ</h2>
+          <p data-fade data-fade-delay="80" class="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
+            Common questions before booking a call. If yours isn't here, the call is the place.
+          </p>
+          <div data-fade data-fade-delay="160" class="border-t border-gray-200">
+            {faqs.map(f => (
+              <details data-faq class="group border-b border-gray-200">
+                <summary class="flex items-start justify-between gap-6 py-5 md:py-6">
+                  <span class="text-base md:text-lg font-medium text-gray-900 leading-snug">{f.q}</span>
+                  <span class="chevron flex-shrink-0 mt-1 text-gray-400 group-hover:text-gray-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                  </span>
+                </summary>
+                <div class="pb-5 md:pb-6 max-w-3xl">
+                  <p class="text-gray-600 leading-relaxed">{f.a}</p>
+                </div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <!-- ── Contact ──────────────────────────────────────────────── -->
-      <section id="contact" class="py-20">
+      <section id="contact" class="py-20 bg-gray-50">
         <div class="max-w-3xl mx-auto px-6 text-center">
           <h2 data-fade class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Get in touch</h2>
           <p data-fade data-fade-delay="100" class="text-xl text-gray-700 leading-relaxed mb-10">
             If you're about to start a project, I can help you avoid early technical debt.
           </p>
           <div data-fade data-fade-delay="200" class="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a href="https://calendly.com/migueltechlead-support/30min" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-3 px-8 py-4 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-colors text-lg">
+            <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-3 px-8 py-4 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-colors text-lg">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
               Book a free call
             </a>
-            <a href="mailto:support@migueltechlead.pt" class="inline-flex items-center gap-3 px-8 py-4 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-100 transition-colors text-lg">
+            <a href={`mailto:${EMAIL}`} class="inline-flex items-center gap-3 px-8 py-4 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-100 transition-colors text-lg">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-              support@migueltechlead.pt
+              {EMAIL}
             </a>
           </div>
         </div>
@@ -509,9 +610,9 @@ const currentYear = new Date().getFullYear();
     <footer class="py-12 border-t border-gray-200">
       <div class="max-w-6xl mx-auto px-6">
         <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-          <p class="text-gray-600 text-sm">© {currentYear} Miguel Vieira. All rights reserved.</p>
+          <p class="text-gray-600 text-sm">© <span class="font-mono">{currentYear}</span> {BRAND}. All rights reserved.</p>
           <div class="flex items-center gap-6">
-            <a href="https://www.linkedin.com/in/toamig" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" class="text-gray-600 hover:text-gray-900 transition-colors">
+            <a href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" class="text-gray-600 hover:text-gray-900 transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
                 <rect width="4" height="12" x="2" y="9"/>
