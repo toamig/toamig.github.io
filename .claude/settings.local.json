@@ -71,7 +71,8 @@
       "Read(//c/Program Files/**)",
       "Bash(env)",
       "Bash(cmd.exe *)",
-      "Bash(git diff *)"
+      "Bash(git diff *)",
+      "Bash(git checkout *)"
     ]
   }
 }

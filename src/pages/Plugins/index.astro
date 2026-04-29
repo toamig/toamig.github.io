@@ -4,6 +4,7 @@ import pluginsData from '../../data/plugins.json';
 interface Plugin {
   name: string;
   tagline: string;
+  domain: string;
   version: string;
   logo: string;
   cover: string;
@@ -97,9 +98,13 @@ const statusMeta: Record<Plugin['status'], { label: string; color: string }> = {
             <div class="card-body">
               <div class="card-header">
                 <img src={p.logo} alt={`${p.name} logo`} class="card-logo" />
-                <div>
+                <div class="card-title-block">
                   <h2>{p.name}</h2>
-                  <span class="ver">v{p.version}</span>
+                  <div class="card-meta">
+                    <span class="domain">{p.domain}</span>
+                    <span class="meta-dot" aria-hidden="true">·</span>
+                    <span class="ver">v{p.version}</span>
+                  </div>
                 </div>
               </div>
               <p class="tagline">{p.tagline}</p>
@@ -115,6 +120,7 @@ const statusMeta: Record<Plugin['status'], { label: string; color: string }> = {
         );
       })}
     </div>
+    <p class="grid-foot">More plugins in development.</p>
   </section>
 
 
@@ -364,8 +370,8 @@ body {
 
 .eyebrow {
   font-size: .7rem;
-  font-weight: 700;
-  letter-spacing: .16em;
+  font-weight: 600;
+  letter-spacing: .14em;
   text-transform: uppercase;
   color: #6366f1;
   margin-bottom: 14px;
@@ -443,11 +449,11 @@ h1 {
 .badge {
   position: absolute;
   top: 11px; right: 11px;
-  padding: 3px 9px;
+  padding: 3px 10px;
   border-radius: 99px;
   font-size: .65rem;
-  font-weight: 700;
-  letter-spacing: .09em;
+  font-weight: 600;
+  letter-spacing: .14em;
   text-transform: uppercase;
   color: var(--s);
   background: color-mix(in srgb, var(--s) 12%, #06090f);
@@ -466,8 +472,9 @@ h1 {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
+.card-title-block { min-width: 0; flex: 1; }
 
 .card-logo {
   width: 44px; height: 44px;
@@ -482,19 +489,29 @@ h2 {
   font-size: 1.05rem;
   font-weight: 700;
   color: #f1f5f9;
-  margin-bottom: 3px;
+  margin-bottom: 5px;
   line-height: 1.2;
 }
 
+.card-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1;
+}
+.domain {
+  font-size: .65rem;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+.meta-dot { color: rgba(148,163,184,.25); font-weight: 700; }
 .ver {
   font-size: .67rem;
-  font-weight: 600;
-  color: var(--accent-l);
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
-  padding: 1px 7px;
-  border-radius: 99px;
-  display: inline-block;
+  font-weight: 500;
+  color: rgba(148,163,184,.55);
+  font-variant-numeric: tabular-nums;
 }
 
 .tagline {
@@ -543,6 +560,14 @@ h2 {
   color: #94a3b8;
 }
 .btn-fab.disabled { cursor: default; pointer-events: none; }
+
+/* ── Closing line ────────────────────────────────────────────────────── */
+.grid-foot {
+  margin: 48px 0 0;
+  text-align: center;
+  font-size: .82rem;
+  color: #475569;
+}
 
 /* ── Responsive ──────────────────────────────────────────────────────── */
 @media (max-width: 600px) {
