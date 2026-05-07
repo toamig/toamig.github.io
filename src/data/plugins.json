@@ -54,5 +54,19 @@
     "docsUrl": "/Plugins/GearFlow",
     "fabUrl": null,
     "hidden": false
+  },
+  {
+    "name": "PlayLink",
+    "tagline": "OSS-agnostic multiplayer social layer for UE5. Identity, friends, parties, lobbies, sessions, and invites — across Null, Steam, EOS, and EOSPlus.",
+    "domain": "Multiplayer",
+    "version": "0.2",
+    "logo": "/plugins/playlink/PlayLink.png",
+    "cover": "/plugins/playlink/PlayLinkCover.png",
+    "accent": "#0a9b7e",
+    "accentLight": "#1ad19d",
+    "status": "pre-launch",
+    "docsUrl": "/Plugins/PlayLink",
+    "fabUrl": null,
+    "hidden": false
   }
 ]
