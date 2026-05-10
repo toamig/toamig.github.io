@@ -25,6 +25,7 @@ const p = pluginsData.find(x => x.name === 'PlayLink')!;
     <div class="nav-group">
       <span class="nav-group-label">Introduction</span>
       <a href="#overview">Overview</a>
+      <a href="#concepts">Concepts</a>
       <a href="#getting-started">Getting Started</a>
     </div>
     <div class="nav-group">
@@ -42,6 +43,7 @@ const p = pluginsData.find(x => x.name === 'PlayLink')!;
       <a href="#lobbies">Lobbies</a>
       <a href="#sessions">Sessions</a>
       <a href="#parties">Parties</a>
+      <a href="#travel">Travel</a>
     </div>
     <div class="nav-group">
       <span class="nav-group-label">Tooling</span>
@@ -108,6 +110,125 @@ const p = pluginsData.find(x => x.name === 'PlayLink')!;
         <p class="feature-title">Runtime Dev Panel</p>
         <p class="feature-desc">The <code>PlayLinkDev</code> developer module ships with cheat exec commands and a UMG debug overlay (<code>WBP_PlayLinkDevWidget</code>). Stripped from shipping builds; works out of the box on first project enable.</p>
       </div>
+    </div>
+  </section>
+
+  <!-- ── Concepts ───────────────────────────────────────────────── -->
+  <section class="doc-section" id="concepts" data-section="concepts">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/><line x1="8" y1="6" x2="11" y2="11"/><line x1="16" y1="6" x2="13" y2="11"/><line x1="8" y1="18" x2="11" y2="13"/><line x1="16" y1="18" x2="13" y2="13"/></svg>
+      </span>
+      Concepts — Party vs Lobby vs Session
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      The PlayLink API exposes <strong>Party</strong>, <strong>Lobby</strong>, and <strong>Session</strong> as three sibling subsystems with near-identical surface shapes (<code>Action_Host*</code>, <code>Action_Find*</code>, <code>Action_Join*</code>, <code>Action_Leave*</code>). They are <em>not</em> interchangeable. The three solve different problems and only one of them has a network endpoint. Read this section before wiring multiplayer flow on top of PlayLink.
+    </p>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">The progression in a real game</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">flow</span></div>
+        <pre><code>Party  ──►  Lobby     ──►  Session   ──►  Gameplay
+(group)    (configure)    (match)        (level)</code></pre>
+      </div>
+      <p class="doc-p">
+        Friends form a <strong>party</strong> that persists across matches. They enter a <strong>lobby</strong> to pick mode and map. When ready, the lobby host creates a <strong>session</strong> and everyone joins it. The host then <code>ServerTravel</code>s to the gameplay map; clients <code>ClientTravel</code> along to the host's listen server.
+      </p>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Lobby — metadata bulletin board</h3>
+      <p class="doc-p">
+        Backed by an OSS object (Steam Lobby, EOS Lobby) that stores key/value pairs: name, max players, custom flags (<code>region=eu</code>, <code>mode=ranked</code>), chat. Members read/write metadata and exchange messages. Settings round-trip via <code>OnLobbySettingsChanged</code> + <code>OnUpdateSessionComplete</code>.
+      </p>
+      <p class="doc-p">
+        <strong>A lobby has no IP, no port, no <code>NetDriver</code>.</strong> You cannot <code>ClientTravel</code> to a lobby — there is nothing on the wire to connect to. Use lobbies to wait for friends, configure match rules, decide what to play next, and hold pre-game chat.
+      </p>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Party — cross-game social grouping</h3>
+      <p class="doc-p">
+        "I'm queueing with these three people, drag us together wherever we go." Parties span sessions, lobbies, and even sequential matches — they survive a match ending so the same group can re-queue without losing its membership.
+      </p>
+      <p class="doc-p">
+        Implementation differs per backend. Steam has no native parties; PlayLink ships <code>UPlayLinkLobbyPartyService</code>, a presence-true OSS session named <code>PlayLinkParty</code> that stands in for a party. EOS has a real <code>IOnlineParty</code> service planned as a sibling plugin (<code>PlayLinkEOSParty</code>). Either way the public API stays the same.
+      </p>
+      <p class="doc-p">
+        <strong>A party also has no network endpoint.</strong> Parties don't host gameplay — they track who's grouped together so when a match starts, the matchmaker pulls everyone into the same session. Use parties to persist a friend group across multiple matches.
+      </p>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Session — the actual game match</h3>
+      <p class="doc-p">
+        Backed by an OSS session <em>and</em> a UE listen-server <code>NetDriver</code>. A session has an IP:port. <code>JoinSession</code> returns a connect string that <code>APlayerController::ClientTravel</code> hands to the engine's net layer; the client lands on the host. This is the only one of the three where "transport me to the host's level" is a meaningful operation.
+      </p>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">When to pick which</h3>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Scenario</th><th>Use</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="prop-desc">Show chat, map vote, or mode picker before a match starts</td>
+            <td class="prop-name">Lobby</td>
+          </tr>
+          <tr>
+            <td class="prop-desc">Keep a squad together across multiple matches</td>
+            <td class="prop-name">Party</td>
+          </tr>
+          <tr>
+            <td class="prop-desc">Replicate actor state between players in a level</td>
+            <td class="prop-name">Session</td>
+          </tr>
+          <tr>
+            <td class="prop-desc">Travel everyone to the gameplay map (ServerTravel + ClientTravel)</td>
+            <td class="prop-name">Session</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Backend coverage</h3>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Concept</th><th>Steam</th><th>EOS</th><th>Null / LAN</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="prop-name">Lobby</td>
+            <td class="prop-desc">OSS Session w/ <code>bUsesPresence=true</code>, <code>bUseLobbiesIfAvailable=true</code></td>
+            <td class="prop-desc">EOS Lobby</td>
+            <td class="prop-desc">LAN UDP broadcast</td>
+          </tr>
+          <tr>
+            <td class="prop-name">Party</td>
+            <td class="prop-desc">Stub via <code>UPlayLinkLobbyPartyService</code></td>
+            <td class="prop-desc"><code>IOnlineParty</code> (planned sibling plugin)</td>
+            <td class="prop-desc">Stub via lobby fallback</td>
+          </tr>
+          <tr>
+            <td class="prop-name">Session</td>
+            <td class="prop-desc">OSS Session w/ <code>bShouldAdvertise=true</code> + listen NetDriver</td>
+            <td class="prop-desc">EOS Session</td>
+            <td class="prop-desc">LAN UDP broadcast</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </span>
+      <span>The dev panel reflects this distinction: only the <strong>Session</strong> card has a Travel button. Asking a lobby or party to travel is a category error — they are coordination state, not transport endpoints.</span>
     </div>
   </section>
 
@@ -623,6 +744,126 @@ void UMySocialSubsystem::HandleInvite(FPlayLinkInvite Invite)
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       </span>
       <span>To swap the party backend, subclass <code>UPlayLinkPartyServiceBase</code> and set the new class in your project config. The subsystem instantiates whichever class is configured at <code>Initialize()</code>.</span>
+    </div>
+  </section>
+
+  <!-- ── Travel ─────────────────────────────────────────────── -->
+  <section class="doc-section" id="travel" data-section="travel">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-8-8 18-2-7-8-3z"/></svg>
+      </span>
+      Travel
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      Hosting a session advertises it through the OSS, but the host's UE network listener only spins up after a <code>ServerTravel</code> with <code>?listen</code> appended to the URL. PlayLink does not own the gameplay map — your project picks the destination and drives travel. The <code>PlayLinkDev</code> module ships C++ wrappers on <strong>UPlayLinkDevWidgetBase</strong> that codify the canonical pattern, so dev-panel travel works out of the box and your project subclass can call the same functions.
+    </p>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">End-to-end flow</h3>
+      <div class="steps">
+        <div class="step">
+          <span class="step-num">1</span>
+          <div class="step-body">
+            <p class="step-title">Host advertises the session</p>
+            <p class="step-desc"><code>Action_HostListenSession</code> — the OSS session is created with <code>bShouldAdvertise=true</code> and registered with the matchmaking layer.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">2</span>
+          <div class="step-body">
+            <p class="step-title">Host opens the listen server</p>
+            <p class="step-desc"><code>Action_HostTravelToListenServer</code> — <code>UWorld::ServerTravel("/Game/Maps/MyMap?listen", true)</code>. The <code>?listen</code> suffix tells UE to spin up the listen-server <code>NetDriver</code>; the OSS attaches its session info to the listening port.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">3</span>
+          <div class="step-body">
+            <p class="step-title">Client finds the session</p>
+            <p class="step-desc"><code>Action_FindSessions</code> — locates the host's advertised session via the OSS search interface.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">4</span>
+          <div class="step-body">
+            <p class="step-title">Client joins and receives the connect string</p>
+            <p class="step-desc"><code>Action_JoinSession(searchResult)</code> — the OSS resolves the connect string. <code>OnSessionJoined</code> fires with <code>(Result, Handle, ConnectString)</code>.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">5</span>
+          <div class="step-body">
+            <p class="step-title">Client travels to the host</p>
+            <p class="step-desc"><code>Action_TravelToJoinedSession</code> — calls <code>APlayerController::ClientTravel(ConnectString, TRAVEL_Absolute, false)</code>. The client lands in the host's map.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">UPlayLinkDevWidgetBase travel API</h3>
+      <p class="doc-p">
+        The dev widget caches the connect string from the most recent successful <code>OnSessionJoined</code> and exposes BlueprintCallable wrappers. Subclass the widget in your project (or call the C++ directly) — no need for BP graphs to reach <code>Get World</code> or <code>Get Game Mode</code>.
+      </p>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Function</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="prop-name">Action_HostTravelToListenServer()</td>
+            <td class="prop-desc">Validates host state, then <code>World-&gt;ServerTravel(DevTravelMapPath + "?listen", true)</code>. Returns <code>true</code> if travel was initiated. No-ops with a warning when the project hasn't set <code>DevTravelMapPath</code>.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">Action_TravelToJoinedSession()</td>
+            <td class="prop-desc">Consumes the cached connect string and calls <code>PC-&gt;ClientTravel(URL, TRAVEL_Absolute, false)</code>. Returns <code>true</code> if a connect string was available.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">HasPendingClientTravel()</td>
+            <td class="prop-desc">BlueprintPure helper for binding the Travel button's <code>IsEnabled</code> — true only after a successful <code>OnSessionJoined</code>.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">DevTravelMapPath</td>
+            <td class="prop-desc">EditAnywhere, BlueprintReadWrite — the map the host travels to. Default empty so misconfiguration is loud (the host action no-ops with a warning instead of silently travelling somewhere wrong).</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Connect string lifecycle</h3>
+      <p class="doc-p">
+        <code>OnSessionJoined</code> hands the resolved connect string back through the third delegate parameter. The dev widget caches it on success only — failed joins clear the cache so a stale URL can't fire later. <code>OnSessionDestroyed</code> also clears the cache: a destroyed session's URL belongs to a session that no longer exists.
+      </p>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">C++</span></div>
+        <pre><code><span class="code-comment">// Bind once during init</span>
+SessionSubsystem-&gt;OnSessionJoined.AddDynamic(this, &amp;UMyClass::HandleJoined);
+
+<span class="code-comment">// Capture and travel</span>
+void UMyClass::HandleJoined(EPlayLinkResult Result, FPlayLinkSessionHandle Handle, FString ConnectString)
+&#123;
+    if (Result == EPlayLinkResult::Success &amp;&amp; !ConnectString.IsEmpty())
+    &#123;
+        GetOwningPlayer()-&gt;ClientTravel(ConnectString, ETravelType::TRAVEL_Absolute, <span class="code-val">false</span>);
+    &#125;
+&#125;</code></pre>
+      </div>
+    </div>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </span>
+      <span>Order matters. <code>OnSessionJoined</code> can fire before the host has completed its <code>ServerTravel</code>, in which case the OSS join succeeded but the UE listen server isn't up yet and <code>ClientTravel</code> will fail. The host should travel first, then clients join. The dev widget validates this state for you.</span>
+    </div>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </span>
+      <span>Pure-Blueprint projects can also use <code>UGameplayStatics::OpenLevel("MyMap?listen")</code> as an alternative to <code>ServerTravel</code> — but the C++ wrappers above are the recommended path because they share state with the dev panel and validate host/client status before firing.</span>
     </div>
   </section>
 
