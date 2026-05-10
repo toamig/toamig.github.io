@@ -774,7 +774,7 @@ void UMySocialSubsystem::HandleInvite(FPlayLinkInvite Invite)
           <span class="step-num">2</span>
           <div class="step-body">
             <p class="step-title">Host opens the listen server</p>
-            <p class="step-desc"><code>Action_HostTravelToListenServer</code> — <code>UWorld::ServerTravel("/Game/Maps/MyMap?listen", true)</code>. The <code>?listen</code> suffix tells UE to spin up the listen-server <code>NetDriver</code>; the OSS attaches its session info to the listening port.</p>
+            <p class="step-desc"><code>Action_HostTravelToListenServer</code> — <code>UWorld::ServerTravel(MapPath + "?listen", true)</code>. By default <code>MapPath</code> is the host's current map (no configuration required); set <code>DevTravelMapPath</code> to override. The <code>?listen</code> suffix tells UE to spin up the listen-server <code>NetDriver</code>; the OSS attaches its session info to the listening port.</p>
           </div>
         </div>
         <div class="step">
@@ -813,7 +813,7 @@ void UMySocialSubsystem::HandleInvite(FPlayLinkInvite Invite)
         <tbody>
           <tr>
             <td class="prop-name">Action_HostTravelToListenServer()</td>
-            <td class="prop-desc">Validates host state, then <code>World-&gt;ServerTravel(DevTravelMapPath + "?listen", true)</code>. Returns <code>true</code> if travel was initiated. No-ops with a warning when the project hasn't set <code>DevTravelMapPath</code>.</td>
+            <td class="prop-desc">Validates host state, then <code>World-&gt;ServerTravel(MapPath + "?listen", true)</code>. By default reloads the host's current map as a listen server — no project configuration required. Returns <code>true</code> if travel was initiated.</td>
           </tr>
           <tr>
             <td class="prop-name">Action_TravelToJoinedSession()</td>
@@ -825,7 +825,7 @@ void UMySocialSubsystem::HandleInvite(FPlayLinkInvite Invite)
           </tr>
           <tr>
             <td class="prop-name">DevTravelMapPath</td>
-            <td class="prop-desc">EditAnywhere, BlueprintReadWrite — the map the host travels to. Default empty so misconfiguration is loud (the host action no-ops with a warning instead of silently travelling somewhere wrong).</td>
+            <td class="prop-desc">EditAnywhere, BlueprintReadWrite — <em>optional</em> override for the destination map. Leave empty (the default) to host on the current map. Set this only when a widget subclass needs to route from one map (e.g. a lobby) to a different map (e.g. a gameplay arena) on host-travel.</td>
           </tr>
         </tbody>
       </table>
