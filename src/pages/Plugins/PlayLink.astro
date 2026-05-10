@@ -43,6 +43,7 @@ const p = pluginsData.find(x => x.name === 'PlayLink')!;
       <a href="#lobbies">Lobbies</a>
       <a href="#sessions">Sessions</a>
       <a href="#parties">Parties</a>
+      <a href="#matchmaking">Matchmaking</a>
       <a href="#travel">Travel</a>
     </div>
     <div class="nav-group">
@@ -744,6 +745,138 @@ void UMySocialSubsystem::HandleInvite(FPlayLinkInvite Invite)
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       </span>
       <span>To swap the party backend, subclass <code>UPlayLinkPartyServiceBase</code> and set the new class in your project config. The subsystem instantiates whichever class is configured at <code>Initialize()</code>.</span>
+    </div>
+  </section>
+
+  <!-- ── Matchmaking ─────────────────────────────────────────────── -->
+  <section class="doc-section" id="matchmaking" data-section="matchmaking">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </span>
+      Matchmaking
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      <strong>UPlayLinkMatchmakingSubsystem</strong> drives the canonical search-then-join-or-host loop that most multiplayer games on UE5 build by hand. Submit a ticket, the service searches for matching sessions, joins the best result, and falls back to hosting a new session if nothing suitable is found within the configured timeout. Backed by a pluggable <strong>UPlayLinkMatchmakingServiceBase</strong> so projects can swap in custom strategies (skill-bucketed, region-aware, party-following, dedicated-server-list) without touching gameplay code.
+    </p>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Ticket lifecycle</h3>
+      <p class="doc-p">
+        Submit one ticket per matchmaking attempt. The subsystem broadcasts status transitions through <code>OnStatusChanged</code> as the service moves through the state machine, and a single final outcome through <code>OnCompleted</code>.
+      </p>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">flow</span></div>
+        <pre><code>Idle  ──►  Searching  ──►  Found  ──►  Joining  ──►  Completed
+                       │
+                       ├──►  Hosting  ──►  Completed
+                       │
+                       ├──►  Failed
+                       │
+                       └──►  Cancelled</code></pre>
+      </div>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">FPlayLinkMatchmakingTicket</h3>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Property</th><th>Type</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="prop-name">GameModeTags</td>
+            <td class="prop-type">TArray&lt;FString&gt;</td>
+            <td class="prop-desc">Free-form mode tags. Default service maps the first entry to the session's <code>GameMode</code> attribute for filtering. Custom services may implement alternative semantics.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">NumericAttributes</td>
+            <td class="prop-type">TMap&lt;FString, int32&gt;</td>
+            <td class="prop-desc">Skill / region / level filters. Service-specific semantics — the default service ignores these; project subclasses use them for ELO bucketing.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">StringAttributes</td>
+            <td class="prop-type">TMap&lt;FString, FString&gt;</td>
+            <td class="prop-desc">Region / language / mode filters. Service-specific semantics.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">PartySize</td>
+            <td class="prop-type">int32</td>
+            <td class="prop-desc">Slots the ticket reserves on the chosen session. Default service rejects sessions with fewer than <code>PartySize</code> open slots.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">MaxWaitSeconds</td>
+            <td class="prop-type">float</td>
+            <td class="prop-desc">Search budget. Default service falls back to host (or fails) when the budget elapses with no successful join.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">bFallbackToHost</td>
+            <td class="prop-type">bool</td>
+            <td class="prop-desc">When <code>true</code>, the service hosts a new session after <code>MaxWaitSeconds</code> rather than failing. Project authors usually leave this on for quick-play and off for ranked.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">bLanOnly</td>
+            <td class="prop-type">bool</td>
+            <td class="prop-desc">Restricts the search and any host fallback to LAN. Useful for dev testing.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Default service — UPlayLinkSessionSearchMatchmaker</h3>
+      <p class="doc-p">Shipped as the fallback when no <code>[PlayLink] MatchmakingServiceClass=...</code> is set in <code>DefaultGame.ini</code>. Implements:</p>
+      <ol>
+        <li><code>FindSessions</code> filtered by the first <code>GameModeTag</code> and the <code>bLanOnly</code> flag</li>
+        <li>Picks the best candidate — lowest ping with at least <code>PartySize</code> open slots</li>
+        <li><code>JoinSession</code> on the chosen result</li>
+        <li>If no candidate appears within <code>MaxWaitSeconds</code>:
+          <ul>
+            <li><code>bFallbackToHost=true</code>: creates a new advertised session with the ticket's first <code>GameModeTag</code> as its <code>GameMode</code> attribute</li>
+            <li><code>bFallbackToHost=false</code>: surfaces <code>Failed_Timeout</code></li>
+          </ul>
+        </li>
+      </ol>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Minimal C++ usage</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">C++</span></div>
+        <pre><code>UPlayLinkMatchmakingSubsystem* MM = GI-&gt;GetSubsystem&lt;UPlayLinkMatchmakingSubsystem&gt;();
+
+MM-&gt;OnStatusChanged.AddDynamic(this, &amp;ThisClass::HandleStatus);
+MM-&gt;OnCompleted.AddDynamic(this, &amp;ThisClass::HandleCompleted);
+
+FPlayLinkMatchmakingTicket Ticket;
+Ticket.GameModeTags = &#123; <span class="code-val">TEXT("Ranked")</span>, <span class="code-val">TEXT("Solo")</span> &#125;;
+Ticket.PartySize = <span class="code-val">1</span>;
+Ticket.MaxWaitSeconds = <span class="code-val">60.0f</span>;
+Ticket.bFallbackToHost = <span class="code-val">true</span>;
+
+MM-&gt;StartMatchmaking(<span class="code-val">0</span>, Ticket);</code></pre>
+      </div>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Swapping the strategy</h3>
+      <p class="doc-p">
+        Subclass <code>UPlayLinkMatchmakingServiceBase</code> and override the pure-virtual <code>StartMatchmaking</code> / <code>CancelMatchmaking</code> / <code>GetStatus</code> / <code>GetEstimatedWaitSeconds</code>. Point the config entry at your subclass:
+      </p>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">ini</span></div>
+        <pre><code>[PlayLink]
+MatchmakingServiceClass=/Script/MyGame.MyEloMatchmaker</code></pre>
+      </div>
+      <p class="doc-p">The subsystem instantiates the configured class at <code>Initialize</code> and forwards every BP-callable function to it. Project code keeps calling the same <code>UPlayLinkMatchmakingSubsystem</code> API — only the strategy underneath changes.</p>
+    </div>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </span>
+      <span>The dev panel exposes <code>Scenario_QuickMatch(bLanOnly)</code> and <code>PlayLinkMatchmake</code> exec command for one-click testing — sensible defaults (60s search, fallback-to-host, solo party) so you can validate the loop without building any project UI.</span>
     </div>
   </section>
 
