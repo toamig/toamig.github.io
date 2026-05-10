@@ -774,7 +774,7 @@ void UMySocialSubsystem::HandleInvite(FPlayLinkInvite Invite)
           <span class="step-num">2</span>
           <div class="step-body">
             <p class="step-title">Host opens the listen server</p>
-            <p class="step-desc"><code>Action_HostTravelToListenServer</code> — <code>UWorld::ServerTravel(MapPath + "?listen", true)</code>. By default <code>MapPath</code> is the host's current map (no configuration required); set <code>DevTravelMapPath</code> to override. The <code>?listen</code> suffix tells UE to spin up the listen-server <code>NetDriver</code>; the OSS attaches its session info to the listening port.</p>
+            <p class="step-desc"><code>Action_HostTravelToListenServer</code> — <code>UWorld::ServerTravel(MapPath + "?listen", true)</code>. By default <code>MapPath</code> is the host's current map (no configuration required); set <code>DevTravelMapOverride</code> in Project Settings to route across maps. The <code>?listen</code> suffix tells UE to spin up the listen-server <code>NetDriver</code>; the OSS attaches its session info to the listening port.</p>
           </div>
         </div>
         <div class="step">
@@ -824,8 +824,8 @@ void UMySocialSubsystem::HandleInvite(FPlayLinkInvite Invite)
             <td class="prop-desc">BlueprintPure helper for binding the Travel button's <code>IsEnabled</code> — true only after a successful <code>OnSessionJoined</code>.</td>
           </tr>
           <tr>
-            <td class="prop-name">DevTravelMapPath</td>
-            <td class="prop-desc">EditAnywhere, BlueprintReadWrite — <em>optional</em> override for the destination map. Leave empty (the default) to host on the current map. Set this only when a widget subclass needs to route from one map (e.g. a lobby) to a different map (e.g. a gameplay arena) on host-travel.</td>
+            <td class="prop-name">UPlayLinkDevSettings::DevTravelMapOverride</td>
+            <td class="prop-desc"><em>Optional</em> override exposed in <strong>Project Settings → Plugins → PlayLink Dev → Travel</strong>. Set when the project needs to route from one map (e.g. a lobby) to a different map (e.g. a gameplay arena) on host-travel. Lives on settings rather than the widget Class Defaults so projects don't have to edit the plugin's shipped UMG asset.</td>
           </tr>
         </tbody>
       </table>
