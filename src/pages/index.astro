@@ -130,7 +130,10 @@ import profile        from '../data/profile.json';
               <div class="tech-group">
                 {technologies.filter(t => t.category === cat.id && !(t as any).cvOnly).map(t => (
                   <a class="tech-card" href={t.href} title={t.name} target="_blank" rel="noopener noreferrer">
-                    <img class="tech-logo" src={t.src} alt={t.name} />
+                    {t.src
+                      ? <img class="tech-logo" src={t.src} alt={t.name} onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'tech-label',textContent:this.alt}));" />
+                      : <span class="tech-label">{t.name}</span>
+                    }
                   </a>
                 ))}
               </div>

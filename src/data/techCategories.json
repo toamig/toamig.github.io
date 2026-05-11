@@ -2,5 +2,6 @@
   { "id": "languages",       "name": "Languages"       },
   { "id": "engines",         "name": "Engines"         },
   { "id": "art-tools",       "name": "Art Tools"       },
-  { "id": "version-control", "name": "Version Control" }
+  { "id": "version-control", "name": "Version Control" },
+  { "id": "ai",              "name": "AI Tools"        }
 ]

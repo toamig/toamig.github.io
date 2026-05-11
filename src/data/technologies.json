@@ -14,5 +14,9 @@
   { "src": "/technologies/houdini.svg",    "name": "Houdini",     "category": "art-tools",       "href": "https://www.sidefx.com/" },
   { "src": "/technologies/git.svg",        "name": "Git",         "category": "version-control", "href": "https://git-scm.com/" },
   { "src": "/technologies/plasticscm.svg", "name": "Plastic SCM", "category": "version-control", "href": "https://www.plasticscm.com/" },
-  { "src": "/technologies/perforce.svg",   "name": "Perforce",    "category": "version-control", "href": "https://www.perforce.com/" }
+  { "src": "/technologies/perforce.svg",   "name": "Perforce",    "category": "version-control", "href": "https://www.perforce.com/" },
+  { "src": "/technologies/claude.svg",     "name": "Claude",      "category": "ai",              "href": "https://www.anthropic.com/claude" },
+  { "src": "/technologies/claude-code.svg","name": "Claude Code", "category": "ai",              "href": "https://claude.com/product/claude-code" },
+  { "src": "/technologies/chatgpt.svg",    "name": "ChatGPT",     "category": "ai",              "href": "https://chat.openai.com/" },
+  { "src": "/technologies/codex.svg",      "name": "Codex",       "category": "ai",              "href": "https://openai.com/codex/" }
 ]
