@@ -58,11 +58,10 @@
   {
     "name": "PlayLink",
     "tagline": "OSS-agnostic multiplayer social layer for UE5. Identity, friends, parties, lobbies, sessions, matchmaking, achievements, stats, and leaderboards — across Null, Steam, EOS, and EOSPlus.",
-    "domain": "Multiplayer",
     "version": "0.5",
     "logo": "/plugins/playlink/PlayLink.png",
     "cover": "/plugins/playlink/PlayLinkCover.jpg",
-    "accent": "#7c3fe4",
+    "accent": "#854fe3",
     "accentLight": "#42aef2",
     "status": "pre-launch",
     "docsUrl": "/Plugins/PlayLink",
