@@ -48,6 +48,7 @@ const p = pluginsData.find(x => x.name === 'PlayLink')!;
     </div>
     <div class="nav-group">
       <span class="nav-group-label">Tooling</span>
+      <a href="#async-actions">Async BP Actions</a>
       <a href="#dev-panel">Dev Panel</a>
     </div>
   </nav>
@@ -514,7 +515,7 @@ bAutoWritePresence=False</code></pre>
         <tr>
           <td class="prop-name">Presence</td>
           <td class="prop-type">EPlayLinkPresence</td>
-          <td class="prop-desc">Coarse presence: <code>Offline</code>, <code>Online</code>, <code>Away</code>, <code>InGame</code>, <code>InLobby</code>, <code>InMatch</code>. <code>InLobby</code> and <code>InMatch</code> are project-driven via rich presence.</td>
+          <td class="prop-desc">Coarse presence: <code>Offline</code>, <code>Online</code>, <code>Away</code>, <code>InMenu</code>, <code>InLobby</code>, <code>InMatch</code>. <code>InMenu</code> / <code>InLobby</code> / <code>InMatch</code> are written automatically by <code>UPlayLinkIdentitySubsystem</code> as the local user moves through lobby/session lifecycle, and read back on friends via their OSS rich-presence status string.</td>
         </tr>
         <tr>
           <td class="prop-name">bIsPlayingThisGame</td>
@@ -1038,6 +1039,104 @@ void UMyClass::HandleJoined(EPlayLinkResult Result, FPlayLinkSessionHandle Handl
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       </span>
       <span>Pure-Blueprint projects can also use <code>UGameplayStatics::OpenLevel("MyMap?listen")</code> as an alternative to <code>ServerTravel</code> — but the C++ wrappers above are the recommended path because they share state with the dev panel and validate host/client status before firing.</span>
+    </div>
+  </section>
+
+  <!-- ── Async BP Actions ─────────────────────────────────────────────── -->
+  <section class="doc-section" id="async-actions" data-section="async-actions">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </span>
+      Blueprint Async Actions
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      Every async PlayLink operation ships as a <code>UBlueprintAsyncActionBase</code> node with <strong>On Success</strong> / <strong>On Failure</strong> execution pins. Designers get a single graph node that drives the operation and returns through the matching pin when it resolves — no manual delegate binding. The subsystem APIs remain available for C++ users and project code that prefers delegate-driven flows.
+    </p>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Available nodes</h3>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Node</th><th>Wraps</th><th>Success pin payload</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="prop-name">PlayLink Login</td>
+            <td class="prop-desc"><code>UPlayLinkIdentitySubsystem::Login</code></td>
+            <td class="prop-desc"><code>Result</code>, <code>UserId</code>, <code>LocalUserNum</code></td>
+          </tr>
+          <tr>
+            <td class="prop-name">PlayLink Create Lobby</td>
+            <td class="prop-desc"><code>UPlayLinkLobbySubsystem::CreateLobby</code></td>
+            <td class="prop-desc"><code>Result</code>, <code>LobbyHandle</code></td>
+          </tr>
+          <tr>
+            <td class="prop-name">PlayLink Find Lobbies</td>
+            <td class="prop-desc"><code>UPlayLinkLobbySubsystem::FindLobbies</code></td>
+            <td class="prop-desc"><code>Result</code>, <code>Results</code> array</td>
+          </tr>
+          <tr>
+            <td class="prop-name">PlayLink Join Lobby</td>
+            <td class="prop-desc"><code>UPlayLinkLobbySubsystem::JoinLobby</code></td>
+            <td class="prop-desc"><code>Result</code>, <code>LobbyHandle</code></td>
+          </tr>
+          <tr>
+            <td class="prop-name">PlayLink Create Session</td>
+            <td class="prop-desc"><code>UPlayLinkSessionSubsystem::CreateSession</code></td>
+            <td class="prop-desc"><code>Result</code>, <code>SessionHandle</code></td>
+          </tr>
+          <tr>
+            <td class="prop-name">PlayLink Find Sessions</td>
+            <td class="prop-desc"><code>UPlayLinkSessionSubsystem::FindSessions</code></td>
+            <td class="prop-desc"><code>Result</code>, <code>Results</code> array</td>
+          </tr>
+          <tr>
+            <td class="prop-name">PlayLink Join Session</td>
+            <td class="prop-desc"><code>UPlayLinkSessionSubsystem::JoinSession</code></td>
+            <td class="prop-desc"><code>Result</code>, <code>SessionHandle</code>, <code>ConnectString</code></td>
+          </tr>
+          <tr>
+            <td class="prop-name">PlayLink Start Matchmaking</td>
+            <td class="prop-desc"><code>UPlayLinkMatchmakingSubsystem::StartMatchmaking</code></td>
+            <td class="prop-desc"><code>Result</code>, <code>SessionHandle</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">When to use async actions vs. delegate binding</h3>
+      <p class="doc-p">
+        Both APIs are first-class. Pick based on the flow you're building:
+      </p>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Scenario</th><th>Use</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="prop-desc">A button click that drives one operation and continues on success/failure</td>
+            <td class="prop-name">Async action node</td>
+          </tr>
+          <tr>
+            <td class="prop-desc">A persistent UI that needs to react to backend-initiated events (friend invites, host migrations, presence updates)</td>
+            <td class="prop-name">Subsystem delegate binding</td>
+          </tr>
+          <tr>
+            <td class="prop-desc">Matchmaking flow with progress UI showing search/found/joining state</td>
+            <td class="prop-name">Both — async node for the final outcome, subsystem's <code>OnStatusChanged</code> for intermediate states</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </span>
+      <span>Async actions are one-shot: each node creates a fresh instance, fires once on its matching pin, and self-destroys. Don't try to hold a reference across multiple operations — create a new node per call.</span>
     </div>
   </section>
 
