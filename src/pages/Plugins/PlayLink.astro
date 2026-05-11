@@ -47,6 +47,10 @@ const p = pluginsData.find(x => x.name === 'PlayLink')!;
       <a href="#travel">Travel</a>
     </div>
     <div class="nav-group">
+      <span class="nav-group-label">Progression</span>
+      <a href="#achievements">Achievements</a>
+    </div>
+    <div class="nav-group">
       <span class="nav-group-label">Tooling</span>
       <a href="#async-actions">Async BP Actions</a>
       <a href="#dev-panel">Dev Panel</a>
@@ -1039,6 +1043,67 @@ void UMyClass::HandleJoined(EPlayLinkResult Result, FPlayLinkSessionHandle Handl
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       </span>
       <span>Pure-Blueprint projects can also use <code>UGameplayStatics::OpenLevel("MyMap?listen")</code> as an alternative to <code>ServerTravel</code> — but the C++ wrappers above are the recommended path because they share state with the dev panel and validate host/client status before firing.</span>
+    </div>
+  </section>
+
+  <!-- ── Achievements ─────────────────────────────────────────────── -->
+  <section class="doc-section" id="achievements" data-section="achievements">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+      </span>
+      Achievements
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      <strong>UPlayLinkAchievementsSubsystem</strong> wraps <code>IOnlineAchievements</code> with the BP-callable surface most projects actually use. Achievement IDs are defined at the OSS level (Steam Achievements admin, EOS Achievement Service definitions) — the subsystem doesn't validate IDs, it just routes the OSS calls and surfaces results as <code>EPlayLinkResult</code>.
+    </p>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Public surface</h3>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Function</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="prop-name">UnlockAchievement(LocalUserNum, AchievementId)</td>
+            <td class="prop-desc">Writes a full unlock (100%) for the achievement. Result delivered via <code>OnAchievementUnlocked</code>.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">GetAchievementProgress(LocalUserNum, AchievementId)</td>
+            <td class="prop-desc">BP-pure. Returns 0.0–1.0 for the local player's cached progress. Returns 0 if the achievement isn't loaded — call <code>RefreshAchievements</code> first if needed.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">IsAchievementUnlocked(LocalUserNum, AchievementId)</td>
+            <td class="prop-desc">BP-pure convenience: returns true when progress &gt;= 1.0.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">RefreshAchievements(LocalUserNum)</td>
+            <td class="prop-desc">Forces a fresh OSS read of the player's achievement state. Result delivered via <code>OnAchievementsLoaded</code>.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Events</h3>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Delegate</th><th>Parameters</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="prop-name">OnAchievementUnlocked</td><td class="prop-type">EPlayLinkResult, FString AchievementId</td></tr>
+          <tr><td class="prop-name">OnAchievementsLoaded</td><td class="prop-type">EPlayLinkResult</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </span>
+      <span>Incremental achievements (e.g. "kill 100 enemies") are project-side bookkeeping. Track the counter in your save game or PlayerState; call <code>UnlockAchievement</code> once it crosses the threshold. PlayLink always writes 100% — the OSS handles the actual unlock transition.</span>
     </div>
   </section>
 
