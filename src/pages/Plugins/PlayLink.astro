@@ -1,12 +1,12 @@
 ---
 import PluginLayout from '../../layouts/PluginLayout.astro';
 import pluginsData from '../../data/plugins.json';
-// Colors from logo: teal #0a9b7e, light teal #1ad19d → cool, deep near-blacks with green undertone
+// Colors from logo: purple #7c3fe4, cyan-blue #42aef2 → deep navy near-blacks with violet undertone
 const p = pluginsData.find(x => x.name === 'PlayLink')!;
 ---
 <PluginLayout
   title="PlayLink — OSS-Agnostic Multiplayer Social Layer for UE5"
-  description="An OSS-agnostic multiplayer social layer for Unreal Engine 5. One API for identity, friends, parties, lobbies, sessions, and invites — running unchanged across Null, Steam, EOS, and EOSPlus. Drop in, route, ship."
+  description="An OSS-agnostic multiplayer social layer for Unreal Engine 5. One API for identity, friends, parties, lobbies, sessions, matchmaking, achievements, stats, and leaderboards — running unchanged across Null, Steam, EOS, and EOSPlus. Drop in, route, ship."
   pluginName="PlayLink"
   version={p.version}
   coverImage={p.cover}
@@ -14,10 +14,10 @@ const p = pluginsData.find(x => x.name === 'PlayLink')!;
   fabUrl={p.fabUrl ?? '#'}
   accent={p.accent}
   accentLight={p.accentLight}
-  bg="#040908"
-  surface="#08120e"
-  codeBg="#040b09"
-  surface2="#0c1a14"
+  bg="#06081c"
+  surface="#0d1130"
+  surface2="#181c44"
+  codeBg="#040518"
 >
 
   <!-- ── Sidebar nav ─────────────────────────────────────────────── -->
