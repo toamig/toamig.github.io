@@ -49,6 +49,8 @@ const p = pluginsData.find(x => x.name === 'PlayLink')!;
     <div class="nav-group">
       <span class="nav-group-label">Progression</span>
       <a href="#achievements">Achievements</a>
+      <a href="#stats">Stats</a>
+      <a href="#leaderboards">Leaderboards</a>
     </div>
     <div class="nav-group">
       <span class="nav-group-label">Tooling</span>
@@ -1104,6 +1106,138 @@ void UMyClass::HandleJoined(EPlayLinkResult Result, FPlayLinkSessionHandle Handl
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       </span>
       <span>Incremental achievements (e.g. "kill 100 enemies") are project-side bookkeeping. Track the counter in your save game or PlayerState; call <code>UnlockAchievement</code> once it crosses the threshold. PlayLink always writes 100% — the OSS handles the actual unlock transition.</span>
+    </div>
+  </section>
+
+  <!-- ── Stats ─────────────────────────────────────────────── -->
+  <section class="doc-section" id="stats" data-section="stats">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      </span>
+      Stats
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      <strong>UPlayLinkStatsSubsystem</strong> wraps <code>IOnlineStats</code> with the buffered-write pattern most gameplay code expects. Writes are cheap (local cache) and persisted in batches via <code>FlushStats</code>. Stat IDs are project-defined and registered at the OSS level (Steamworks Stats admin, EOS Stat Definitions).
+    </p>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Buffered-write pattern</h3>
+      <p class="doc-p">Writes go to the local cache instantly; the backend round-trip happens on Flush. This matches how most projects want to track stats — increment per-event, persist on match end or interval.</p>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">C++</span></div>
+        <pre><code>UPlayLinkStatsSubsystem* Stats = GI-&gt;GetSubsystem&lt;UPlayLinkStatsSubsystem&gt;();
+
+<span class="code-comment">// During gameplay — cheap, local-only</span>
+Stats-&gt;IncrementStatInt(<span class="code-val">0</span>, <span class="code-val">TEXT("stat_kills")</span>, <span class="code-val">1</span>);
+Stats-&gt;SetStatFloat(<span class="code-val">0</span>, <span class="code-val">TEXT("stat_best_combo_time")</span>, <span class="code-val">12.4f</span>);
+
+<span class="code-comment">// On match end — persist to backend</span>
+Stats-&gt;OnStatsFlushed.AddDynamic(this, &amp;ThisClass::HandleStatsFlushed);
+Stats-&gt;FlushStats(<span class="code-val">0</span>);</code></pre>
+      </div>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Public surface</h3>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Function</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="prop-name">SetStatInt / SetStatFloat</td><td class="prop-desc">Write to local cache (no backend hit).</td></tr>
+          <tr><td class="prop-name">IncrementStatInt(StatName, Delta)</td><td class="prop-desc">Read-modify-write on local cache. Creates the stat at 0 if not yet cached.</td></tr>
+          <tr><td class="prop-name">GetStatInt / GetStatFloat</td><td class="prop-desc">BP-pure cache read. Returns 0 if not cached — call <code>QueryStats</code> first if needed.</td></tr>
+          <tr><td class="prop-name">FlushStats(LocalUserNum)</td><td class="prop-desc">Pushes buffered writes via <code>IOnlineStats::UpdateStats</code>. Result on <code>OnStatsFlushed</code>.</td></tr>
+          <tr><td class="prop-name">QueryStats(LocalUserNum, StatNames)</td><td class="prop-desc">Refreshes local cache from OSS. Result on <code>OnStatsQueried</code>.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Pairing with Achievements</h3>
+      <p class="doc-p">
+        Stats hold the counter; Achievements hold the unlock state — two different concerns that pair naturally:
+      </p>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">C++</span></div>
+        <pre><code><span class="code-comment">// Track the counter</span>
+Stats-&gt;IncrementStatInt(<span class="code-val">0</span>, <span class="code-val">TEXT("stat_total_kills")</span>, <span class="code-val">1</span>);
+
+<span class="code-comment">// Check threshold against the local cache</span>
+<span class="code-cmd">if</span> (Stats-&gt;GetStatInt(<span class="code-val">0</span>, <span class="code-val">TEXT("stat_total_kills")</span>) &gt;= <span class="code-val">100</span>)
+&#123;
+    Achievements-&gt;UnlockAchievement(<span class="code-val">0</span>, <span class="code-val">TEXT("ACH_KILL_100")</span>);
+&#125;</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Leaderboards ─────────────────────────────────────────────── -->
+  <section class="doc-section" id="leaderboards" data-section="leaderboards">
+    <h2 class="doc-section-title">
+      <span class="section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg>
+      </span>
+      Leaderboards
+    </h2>
+    <div class="section-divider"></div>
+    <p class="doc-p">
+      <strong>UPlayLinkLeaderboardsSubsystem</strong> wraps <code>IOnlineLeaderboards</code> with the four fetch patterns most games ship. Leaderboard IDs are project-defined and registered at the OSS level (Steamworks Leaderboards admin, EOS Leaderboards derived from Stat Definitions).
+    </p>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Public surface</h3>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Function</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="prop-name">SubmitScore(LocalUserNum, BoardName, Score)</td><td class="prop-desc">Pushes the local player's score. Sync on most backends — result fires immediately.</td></tr>
+          <tr><td class="prop-name">FetchRange(LocalUserNum, BoardName, StartRank, Count)</td><td class="prop-desc">Top N entries starting at <code>StartRank</code>. Pass <code>StartRank=0</code> for the top of the board.</td></tr>
+          <tr><td class="prop-name">FetchAroundMe(LocalUserNum, BoardName, Range)</td><td class="prop-desc">Up to <code>Range</code> entries above and below the local user's rank.</td></tr>
+          <tr><td class="prop-name">FetchFriendsBoard(LocalUserNum, BoardName)</td><td class="prop-desc">Friend-filtered ranking.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">FPlayLinkLeaderboardEntry</h3>
+      <p class="doc-p">Each fetch returns an array of these, sorted by <code>Rank</code> ascending.</p>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Field</th><th>Type</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="prop-name">UserId</td><td class="prop-type">FPlayLinkUserId</td></tr>
+          <tr><td class="prop-name">DisplayName</td><td class="prop-type">FString</td></tr>
+          <tr><td class="prop-name">Rank</td><td class="prop-type">int32 (1 = top)</td></tr>
+          <tr><td class="prop-name">Score</td><td class="prop-type">int32 (OSS-native scores &gt;2B truncated)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Minimal usage</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">C++</span></div>
+        <pre><code>UPlayLinkLeaderboardsSubsystem* LB = GI-&gt;GetSubsystem&lt;UPlayLinkLeaderboardsSubsystem&gt;();
+LB-&gt;OnLeaderboardFetched.AddDynamic(this, &amp;ThisClass::HandleLeaderboardFetched);
+
+<span class="code-comment">// On match end — push the score</span>
+LB-&gt;SubmitScore(<span class="code-val">0</span>, <span class="code-val">TEXT("lb_weekly_kills")</span>, MyMatchKills);
+
+<span class="code-comment">// On opening the leaderboard UI</span>
+LB-&gt;FetchRange(<span class="code-val">0</span>, <span class="code-val">TEXT("lb_weekly_kills")</span>, <span class="code-val">0</span>, <span class="code-val">100</span>);</code></pre>
+      </div>
+    </div>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </span>
+      <span>Default write policy is <code>KeepBest</code> + descending sort (highest score wins). Projects needing different sort/update semantics should register the board with custom metadata in the OSS dashboard — the subsystem submits the score, the backend resolves the ranking rules.</span>
     </div>
   </section>
 
