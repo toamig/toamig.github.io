@@ -1,0 +1,41 @@
+{
+  "contact": {
+    "email":    "carlosmiguelvieira@hotmail.com",
+    "phone":    "+351 937 067 472",
+    "location": "Vila Nova de Gaia, Portugal",
+    "website":  "migueltechlead.pt",
+    "linkedin": "linkedin.com/in/toamig",
+    "github":   "github.com/toamig",
+    "itch":     "toamig.itch.io"
+  },
+  "highlights": [
+    "Shipped Dakar Desert Rally (AAA, Saber Interactive) on PC, PS4/5, Xbox One/Series X.",
+    "Promoted twice to leadership roles within three years.",
+    "Currently directing the engineering and gameplay team on Timefront (RTS / battle-royale hybrid).",
+    "Author of five published Unreal Engine plugins covering combat, inventory, dialog, world-streaming, and multiplayer social."
+  ],
+  "languages": [
+    { "name": "Portuguese", "level": "Native" },
+    { "name": "English",    "level": "Fluent (C2)" },
+    { "name": "Spanish",    "level": "Professional working" }
+  ],
+  "softSkills": [
+    "Team leadership",
+    "Strategic planning",
+    "Mentorship",
+    "Cross-discipline communication",
+    "Architecture & code review"
+  ],
+  "certifications": [
+    { "name": "Certificate of Pedagogical Competences (CCP)", "issuer": "ENA · IEFP", "year": "2026" },
+    { "name": "Class B Driver's License", "year": "2019" }
+  ],
+  "interests": [
+    "Drone Piloting",
+    "Inline Skating",
+    "Powerlifting & Calisthenics",
+    "Travel",
+    "Photography",
+    "Gaming"
+  ]
+}

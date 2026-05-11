@@ -1,0 +1,80 @@
+---
+interface Props {
+  /** Optional number for the section eyebrow ("06" on home; omitted on the /cv standalone page). */
+  eyebrowNum?: string;
+  eyebrowTag?: string;
+}
+const { eyebrowNum, eyebrowTag = 'CV' } = Astro.props;
+---
+<section id="resume">
+  <div class="container">
+    <div class="section-header">
+      <p class="section-eyebrow">
+        {eyebrowNum && (
+          <>
+            <span class="num">{eyebrowNum}</span>
+            <span class="sep">—</span>
+          </>
+        )}
+        <span class="tag">{eyebrowTag}</span>
+      </p>
+      <h2>Read my <em>CV</em>.</h2>
+      <p class="section-sub">Two formats from the same data. Pick whichever fits your reading.</p>
+    </div>
+
+    <div class="cv-cards">
+      <!-- ─── Editorial ─── -->
+      <a href="/cv/editorial" class="cv-card cv-card--editorial">
+        <div class="cv-preview">
+          <p class="cv-preview-eyebrow">Lead Software Engineer · Games</p>
+          <p class="cv-preview-name">Miguel <em>Vieira</em></p>
+          <p class="cv-preview-role">Engineering Director · Flama Craftworks</p>
+          <p class="cv-preview-lede">Game engineer turned tech lead, drawn to the work behind the work…</p>
+          <div class="cv-preview-cols">
+            <div>
+              <p class="cv-preview-h">Toolbox</p>
+              <div class="cv-preview-bars"><span></span><span class="s"></span><span></span></div>
+              <p class="cv-preview-h" style="margin-top:8px">Interests</p>
+              <div class="cv-preview-bars"><span class="s"></span></div>
+            </div>
+            <div>
+              <p class="cv-preview-h">Experience</p>
+              <div class="cv-preview-row"><span>Flama Craftworks</span><span class="d">2025 +</span></div>
+              <div class="cv-preview-row"><span>Saber Interactive</span><span class="d">2022 — 24</span></div>
+              <div class="cv-preview-row"><span>Dive Studios</span><span class="d">2021</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="cv-card-body">
+          <p class="cv-card-eyebrow">Style 01 · Warm</p>
+          <h3>Editorial</h3>
+          <p class="cv-card-desc">For human readers. Two-page warm layout in the site's typography — best for designers, recruiters, and direct viewing.</p>
+          <span class="cv-card-cta">View editorial →</span>
+        </div>
+      </a>
+
+      <!-- ─── Neutral ─── -->
+      <a href="/cv/neutral" class="cv-card cv-card--neutral">
+        <div class="cv-preview cv-preview--neutral">
+          <p class="cv-preview-name-n">Miguel Vieira</p>
+          <p class="cv-preview-role-n">Lead Software Engineer · Games · Porto, PT</p>
+          <div class="cv-preview-rule-n"></div>
+          <p class="cv-preview-h-n">Profile</p>
+          <div class="cv-preview-bars cv-preview-bars-n"><span></span><span></span><span class="s"></span></div>
+          <p class="cv-preview-h-n">Experience</p>
+          <div class="cv-preview-row-n"><span>Flama Craftworks — Engineering Director</span><span>2025 — Present</span></div>
+          <div class="cv-preview-row-n"><span>Saber Interactive — Tools Lead</span><span>2022 — 2024</span></div>
+          <div class="cv-preview-row-n"><span>Dive Studios — Team Leader</span><span>2021</span></div>
+          <p class="cv-preview-h-n">Technical Skills</p>
+          <div class="cv-preview-bars cv-preview-bars-n"><span class="s"></span></div>
+        </div>
+        <div class="cv-card-body">
+          <p class="cv-card-eyebrow">Style 02 · Neutral</p>
+          <h3>ATS-friendly</h3>
+          <p class="cv-card-desc">For automated screeners and recruiters outside games. Clean monochrome typography, single column, easy for parsers to read.</p>
+          <span class="cv-card-cta">View neutral →</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>

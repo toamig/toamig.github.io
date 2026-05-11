@@ -4,41 +4,79 @@
     "logo": "/experience/Side_(game_company)_vector_logo.svg.png",
     "name": "Side",
     "role": "Unreal Game Engineer",
-    "period": "Mar 2026 - Present"
+    "period": "Mar 2026 - Present",
+    "location": "Remote",
+    "bullets": [
+      "Contract Unreal Engine 5 game engineering for AAA partner studios.",
+      "Gameplay, tools, and systems work across multiple client engagements."
+    ]
   },
   {
     "href": "https://www.flamacraftworks.com/",
     "logo": "/experience/image02.png",
     "name": "Flama Craftworks",
     "role": "Engineering Director",
-    "period": "Mar 2025 - Present"
+    "period": "Mar 2025 - Present",
+    "location": "Remote",
+    "bullets": [
+      "Currently directing the engineering and gameplay team on Timefront, an RTS / battle-royale hybrid built in Unreal Engine 5.",
+      "Architected extensible gameplay systems for long-term feature expansion and multiplayer scalability across many concurrent actors in a single session.",
+      "Built and hire the gameplay engineering team: run technical interviews, onboarding, and mentorship for junior and mid engineers.",
+      "Partner with Cinematics, VFX, Character, and Technical Art leads to land integrated gameplay features end-to-end.",
+      "Established code-review, architecture, and Git/branching standards adopted across the engineering organisation."
+    ]
   },
   {
     "href": "",
     "logo": "",
     "name": "Ikonic Games",
     "role": "Core Software Engineer",
-    "period": "Fev 2024 - Fev 2025"
+    "period": "Feb 2024 - Feb 2025",
+    "location": "Vila Nova de Gaia, Portugal",
+    "bullets": [
+      "Core team developer across two unannounced action-adventure projects in Unreal Engine 5.",
+      "Established the technical foundation and gameplay architecture of the early prototypes.",
+      "Implemented systems across animation, combat, UI, and editor tooling.",
+      "Contributed to the design and implementation of action-adventure combat mechanics."
+    ]
   },
   {
     "href": "https://saberporto.com/",
     "logo": "/experience/saber.jfif",
-    "name": "Saber Interactive",
+    "name": "Saber Interactive Porto",
     "role": "Tools Lead Programmer",
-    "period": "Aug 2022 - Jan 2024"
+    "period": "Aug 2022 - Jan 2024",
+    "location": "Vila Nova de Gaia, Portugal",
+    "bullets": [
+      "Joined as Junior Multiplayer Programmer on Dakar Desert Rally: bugfixed and refactored multiplayer and replication systems to harden online play across PC, PS4, PS5, Xbox One, and Xbox Series X.",
+      "Promoted to Tools Programmer (Feb 2023): built Houdini-Engine integrations and editor tooling for the art and tech-art teams, including a Houdini integration compatible with World Partition streaming.",
+      "Promoted to Tools Lead Programmer on Road Kings (May 2023): led sprint planning, architecture reviews, and cross-department coordination for the tools team; established software architecture guidelines."
+    ]
   },
   {
     "href": "https://shadowprofile.pt/",
     "logo": "/experience/shadowprofile.png",
     "name": "Shadow Profile",
     "role": "Unity Game Developer",
-    "period": "May 2022 - Aug 2022"
+    "period": "May 2022 - Aug 2022",
+    "location": "Vila Nova de Famalicão, Portugal",
+    "bullets": [
+      "Programmed gameplay features and UI across 2D, 3D, and VR Unity applications.",
+      "Built backend and database integrations for Unity-based clients.",
+      "Improved performance and architecture of existing Unity codebases."
+    ]
   },
   {
     "href": "https://www.linkedin.com/company/dive-studios-porto/",
     "logo": "/experience/dive.jfif",
-    "name": "Dive Studios",
+    "name": "Dive Studios — FEUP / Visionarium",
     "role": "Team Leader",
-    "period": "Feb 2021 - Jun 2021"
+    "period": "Feb 2021 - Jun 2021",
+    "location": "Porto, Portugal",
+    "bullets": [
+      "Led an 8-developer team on AutoRocket, an educational rocket simulator featured by Visionarium.",
+      "Planned project architecture and sprint cadence; ran high-level risk analysis.",
+      "Acted as the communication bridge between programming, art, and the external client."
+    ]
   }
 ]

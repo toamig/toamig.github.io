@@ -1,0 +1,520 @@
+---
+import profile        from '../../data/profile.json';
+import experience     from '../../data/experience.json';
+import education      from '../../data/education.json';
+import technologies   from '../../data/technologies.json';
+import techCategories from '../../data/techCategories.json';
+import projects       from '../../data/projects.json';
+import plugins        from '../../data/plugins.json';
+import cv             from '../../data/cvExtras.json';
+
+const exp = experience;
+
+const techByCat = techCategories.map(cat => ({
+  name: cat.name,
+  items: technologies.filter(t => t.category === cat.id).map(t => t.name),
+})).filter(g => g.items.length > 0);
+
+const featuredProjects = projects;
+const publishedPlugins = plugins.filter(p => !p.hidden);
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Miguel Vieira — CV</title>
+  <link rel="icon" href="/logo_head.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Inter:wght@300;400;500;600;700;800&display=swap" />
+  <style>
+    :root {
+      --paper:    #fdfaf5;
+      --ink:      #1a1a1a;
+      --ink-sub:  #3d3a36;
+      --muted:    #777067;
+      --rule:     #d4c8b8;
+      --rule-soft:#e8e1d2;
+      --accent:   #b35a2e;
+      --accent-soft: #f8e6d6;
+      --font-display: 'Bricolage Grotesque', Georgia, serif;
+      --font-body:    'Inter', -apple-system, sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: #e9e5dd; }
+    body {
+      font-family: var(--font-body); color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      padding: 56px 16px 80px;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 32px;
+    }
+
+    /* ── Screen actions — sticky CTA bar ──────────────────────── */
+    .actions {
+      position: sticky;
+      top: 18px;
+      z-index: 100;
+      width: 210mm; max-width: 100%;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 10px; flex-wrap: wrap;
+      padding: 9px 14px;
+      background: rgba(253, 250, 245, 0.82);
+      backdrop-filter: blur(18px) saturate(140%);
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
+      border: 1px solid rgba(212, 200, 184, 0.55);
+      border-radius: 999px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.04), 0 14px 40px rgba(0,0,0,.06);
+    }
+    .actions-left { display: flex; gap: 8px; }
+    .actions a, .actions button {
+      font-family: var(--font-body); font-size: 12px; font-weight: 600;
+      padding: 7px 14px; border-radius: 99px; border: 1.5px solid var(--rule);
+      background: rgba(255,255,255,.6); color: var(--ink-sub); cursor: pointer; text-decoration: none;
+      transition: all .15s;
+    }
+    .actions a:hover, .actions button:hover { background: rgba(255,255,255,.95); border-color: var(--accent); color: var(--accent); }
+    .actions .primary {
+      background: var(--accent); color: #fff; border-color: var(--accent);
+      box-shadow: 0 2px 8px rgba(179,90,46,.3);
+    }
+    .actions .primary:hover { background: #9a4a23; border-color: #9a4a23; color: #fff; }
+
+    /* ── Page ─────────────────────────────────────────────────── */
+    .page {
+      width: 210mm; min-height: 297mm;
+      background: var(--paper);
+      padding: 14mm 14mm 22mm 14mm;       /* extra bottom for footer */
+      box-shadow: 0 1px 3px rgba(0,0,0,.04), 0 24px 64px rgba(0,0,0,.12);
+      position: relative;
+      page-break-after: always;
+      break-after: page;
+    }
+    .page:last-of-type { page-break-after: auto; break-after: auto; }
+
+    /* ── Header (full, page 1) ────────────────────────────────── */
+    .header {
+      display: grid; grid-template-columns: 1fr auto; gap: 18px;
+      align-items: end; padding-bottom: 12px;
+      border-bottom: 1.5px solid var(--rule);
+    }
+    .brand-eyebrow {
+      font-size: 9px; font-weight: 700;
+      letter-spacing: .28em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 5px;
+    }
+    .header h1 {
+      font-family: var(--font-display);
+      font-size: 48px; font-weight: 500;
+      line-height: 1; letter-spacing: -0.025em;
+      font-variation-settings: 'opsz' 48, 'wght' 500;
+    }
+    .header h1 em { font-style: italic; font-weight: 400; color: var(--accent); }
+    .header .role-line { margin-top: 6px; font-size: 12.5px; color: var(--ink-sub); font-weight: 500; }
+    .header .role-line .sep { color: var(--rule); margin: 0 7px; }
+    .meta {
+      text-align: right; font-size: 10px; color: var(--muted);
+      line-height: 1.65; letter-spacing: .01em;
+    }
+    .meta strong { color: var(--ink); font-weight: 600; }
+    .meta a { color: var(--ink-sub); text-decoration: none; }
+
+    /* ── Continuation header (page 2) ─────────────────────────── */
+    .header-cont {
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding-bottom: 8px; margin-bottom: 14px;
+      border-bottom: 1.5px solid var(--rule);
+    }
+    .header-cont .name {
+      font-family: var(--font-display);
+      font-size: 22px; font-weight: 500; letter-spacing: -0.02em;
+      color: var(--ink);
+      font-variation-settings: 'opsz' 24, 'wght' 500;
+    }
+    .header-cont .name em { font-style: italic; color: var(--accent); font-weight: 400; }
+    .header-cont .right { display: flex; gap: 14px; align-items: baseline; }
+    .header-cont .right .role {
+      font-family: var(--font-display); font-style: italic;
+      font-size: 11px; color: var(--accent);
+    }
+    .header-cont .right .pageno {
+      font-size: 9.5px; font-weight: 700;
+      letter-spacing: .18em; text-transform: uppercase; color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── Footer (each page) ───────────────────────────────────── */
+    .page-footer {
+      position: absolute;
+      left: 14mm; right: 14mm; bottom: 10mm;
+      padding-top: 6px;
+      border-top: 1px solid var(--rule);
+      display: flex; justify-content: space-between; align-items: baseline;
+      font-size: 9px; color: var(--muted); letter-spacing: .04em;
+    }
+    .page-footer a { color: inherit; text-decoration: none; }
+    .page-footer .mark {
+      font-family: var(--font-display); font-style: italic;
+      font-variation-settings: 'opsz' 11, 'wght' 500;
+      color: var(--ink-sub);
+    }
+    .page-footer .pageno { font-variant-numeric: tabular-nums; letter-spacing: .12em; text-transform: uppercase; }
+
+    /* ── Lede + highlights ────────────────────────────────────── */
+    .lede {
+      margin: 11px 0 4px;
+      font-family: var(--font-display);
+      font-size: 14.5px; line-height: 1.45;
+      color: var(--ink-sub); letter-spacing: -.005em;
+      font-variation-settings: 'opsz' 18, 'wght' 400;
+    }
+    .lede::before {
+      content: ''; display: inline-block;
+      width: 18px; height: 2px; background: var(--accent);
+      vertical-align: middle; margin-right: 10px; margin-bottom: 3px; border-radius: 2px;
+    }
+    .highlights {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4px 20px;
+      margin: 10px 0 4px; padding: 9px 12px;
+      background: rgba(248,230,214,.45);
+      border-radius: 6px;
+      border-left: 3px solid var(--accent);
+    }
+    .highlights li {
+      font-size: 10.5px; line-height: 1.45; color: var(--ink-sub);
+      list-style: none; padding-left: 12px; position: relative;
+    }
+    .highlights li::before {
+      content: '★'; position: absolute; left: 0; top: 0;
+      color: var(--accent); font-size: 9px; line-height: 1.6;
+    }
+
+    /* ── Columns (page 1 only) ────────────────────────────────── */
+    .cols { display: grid; grid-template-columns: 60mm 1fr; gap: 9mm; margin-top: 10px; }
+
+    /* ── Section ──────────────────────────────────────────────── */
+    section { margin-bottom: 11px; break-inside: avoid; }
+    section h2 {
+      font-family: var(--font-body);
+      font-size: 9px; font-weight: 800;
+      letter-spacing: .24em; text-transform: uppercase;
+      color: var(--accent);
+      padding-bottom: 4px; margin-bottom: 7px;
+      border-bottom: 1.5px solid var(--rule);
+    }
+    section p { font-size: 11px; line-height: 1.55; color: var(--ink-sub); }
+
+    /* ── Sidebar entries ──────────────────────────────────────── */
+    .skill-group { margin-bottom: 7px; }
+    .skill-group .label {
+      font-family: var(--font-display); font-style: italic;
+      font-size: 11px; font-weight: 600; color: var(--ink); margin-bottom: 1px;
+      font-variation-settings: 'opsz' 14, 'wght' 600;
+    }
+    .skill-group .items { font-size: 10px; line-height: 1.5; color: var(--ink-sub); }
+
+    .lang-list { font-size: 10.5px; }
+    .lang-list .row {
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding: 2px 0; border-bottom: 1px dotted var(--rule-soft);
+    }
+    .lang-list .row:last-child { border-bottom: none; }
+    .lang-list .name { font-weight: 600; color: var(--ink); }
+    .lang-list .lvl { color: var(--muted); font-size: 9.5px; }
+
+    .soft-skills, .interest-list { display: flex; flex-wrap: wrap; gap: 4px; }
+    .soft-skills span, .interest-list span {
+      font-size: 9.5px; padding: 2px 8px;
+      background: var(--accent-soft); color: var(--accent);
+      border-radius: 99px; font-weight: 500;
+    }
+
+    /* ── Experience entries ───────────────────────────────────── */
+    .entry { margin-bottom: 9px; break-inside: avoid; page-break-inside: avoid; }
+    .entry-head {
+      display: flex; justify-content: space-between; align-items: baseline;
+      gap: 10px; margin-bottom: 1px;
+    }
+    .entry-title {
+      font-family: var(--font-display); font-size: 13px; font-weight: 600;
+      color: var(--ink); letter-spacing: -.005em;
+      font-variation-settings: 'opsz' 18, 'wght' 600;
+    }
+    .entry-date {
+      font-size: 9.5px; color: var(--muted);
+      font-weight: 500; white-space: nowrap;
+      font-variant-numeric: tabular-nums; letter-spacing: .02em;
+    }
+    .entry-role {
+      font-style: italic; font-size: 11px; color: var(--accent);
+      font-weight: 500; margin-bottom: 2px;
+    }
+    .entry-role .loc { color: var(--muted); font-style: normal; margin-left: 6px; font-size: 9.5px; }
+    .entry ul { margin: 2px 0 0 0; padding: 0; list-style: none; }
+    .entry ul li {
+      font-size: 10.5px; line-height: 1.45; color: var(--ink-sub);
+      padding-left: 12px; position: relative; margin-bottom: 1.5px;
+    }
+    .entry ul li::before {
+      content: ''; position: absolute; left: 2px; top: 6.5px;
+      width: 3px; height: 3px; background: var(--accent); border-radius: 50%;
+    }
+
+    /* ── Page 2 single-column wrapper ─────────────────────────── */
+    .single { display: block; }
+
+    /* ── Education ────────────────────────────────────────────── */
+    .edu-entry { margin-bottom: 7px; break-inside: avoid; }
+    .edu-entry .head {
+      display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
+    }
+    .edu-entry .deg {
+      font-family: var(--font-display); font-size: 13px; font-weight: 600; color: var(--ink);
+    }
+    .edu-entry .school { font-style: italic; font-size: 11px; color: var(--accent); font-weight: 500; }
+    .edu-entry .yr { font-size: 10px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+    /* ── Project / Plugin lists ───────────────────────────────── */
+    .work-list { display: flex; flex-direction: column; gap: 5px; }
+    .work-item {
+      display: grid; grid-template-columns: 24% 1fr; gap: 12px;
+      align-items: baseline; padding: 3px 0;
+      border-bottom: 1px dotted var(--rule-soft);
+    }
+    .work-item:last-child { border-bottom: none; }
+    .work-item .name {
+      font-family: var(--font-display); font-size: 12px; font-weight: 600;
+      color: var(--ink); letter-spacing: -.005em;
+    }
+    .work-item .desc { font-size: 11px; color: var(--ink-sub); line-height: 1.45; }
+
+    .plugin-list { display: flex; flex-direction: column; gap: 5px; }
+    .plugin-item {
+      display: grid; grid-template-columns: 22% 1fr auto; gap: 12px;
+      align-items: baseline; padding: 3px 0;
+      border-bottom: 1px dotted var(--rule-soft);
+    }
+    .plugin-item:last-child { border-bottom: none; }
+    .plugin-name {
+      font-family: var(--font-display); font-size: 12px; font-weight: 600; color: var(--ink);
+    }
+    .plugin-tag { font-size: 10.5px; color: var(--ink-sub); line-height: 1.45; }
+    .plugin-ver { font-size: 10px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+    /* ── Certifications ───────────────────────────────────────── */
+    .cert-list { font-size: 11px; }
+    .cert-list .row {
+      display: flex; justify-content: space-between; align-items: baseline;
+      gap: 8px; padding: 3px 0;
+      border-bottom: 1px dotted var(--rule-soft);
+    }
+    .cert-list .row:last-child { border-bottom: none; }
+    .cert-list .name { color: var(--ink); font-weight: 500; line-height: 1.35; }
+    .cert-list .iss  { color: var(--muted); font-weight: 400; font-size: 10px; }
+    .cert-list .yr   { color: var(--muted); font-size: 10px; flex-shrink: 0; }
+
+    /* ── Print ─────────────────────────────────────────────────── */
+    @page { size: A4; margin: 0; }
+    @media print {
+      html, body {
+        background: #fff !important;
+        margin: 0 !important; padding: 0 !important;
+        display: block !important;
+        gap: 0 !important;
+      }
+      .actions { display: none !important; }
+      .page {
+        width: 210mm !important;
+        min-height: 297mm !important;
+        height: 297mm !important;
+        margin: 0 !important;
+        padding: 12mm 12mm 18mm 12mm !important;
+        box-shadow: none !important;
+        background: var(--paper);
+      }
+      .page-footer { left: 12mm !important; right: 12mm !important; bottom: 8mm !important; }
+      .entry, .edu-entry, .work-item, .plugin-item, .skill-group,
+      .cert-list .row, .lang-list .row {
+        break-inside: avoid; page-break-inside: avoid;
+      }
+      section { break-inside: auto; page-break-inside: auto; }
+      section h2 { break-after: avoid; page-break-after: avoid; }
+      p, li { orphans: 2; widows: 2; }
+      *, *::before, *::after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="actions">
+    <div class="actions-left">
+      <a href="/#resume">← Back</a>
+      <a href="/cv/neutral">Switch to neutral →</a>
+    </div>
+    <button class="primary" onclick="window.print()">⌘P · Save as PDF</button>
+  </div>
+
+  <!-- ──────────────────────── PAGE 1 ──────────────────────── -->
+  <article class="page">
+    <header class="header">
+      <div>
+        <div class="brand-eyebrow">Lead Software Engineer · Games</div>
+        <h1>Miguel <em>Vieira</em></h1>
+        <div class="role-line">
+          Engineering Director at Flama Craftworks
+          <span class="sep">/</span>
+          Author of five published UE plugins
+        </div>
+      </div>
+      <div class="meta">
+        <div><strong>{cv.contact.location}</strong></div>
+        <div><a href={`mailto:${cv.contact.email}`}>{cv.contact.email}</a></div>
+        <div>{cv.contact.phone}</div>
+        <div><a href={`https://${cv.contact.website}`}>{cv.contact.website}</a></div>
+        <div><a href={`https://${cv.contact.linkedin}`}>{cv.contact.linkedin}</a></div>
+        <div><a href={`https://${cv.contact.github}`}>{cv.contact.github}</a></div>
+      </div>
+    </header>
+
+    <p class="lede">{profile.shortVersion.lead}</p>
+
+    <ul class="highlights">
+      {cv.highlights.map(h => <li>{h}</li>)}
+    </ul>
+
+    <div class="cols">
+      <!-- LEFT COLUMN -->
+      <aside>
+        <section>
+          <h2>Toolbox</h2>
+          {techByCat.map(g => (
+            <div class="skill-group">
+              <div class="label">{g.name}</div>
+              <div class="items">{g.items.join(' · ')}</div>
+            </div>
+          ))}
+        </section>
+
+        <section>
+          <h2>Soft Skills</h2>
+          <div class="soft-skills">
+            {cv.softSkills.map(s => <span>{s}</span>)}
+          </div>
+        </section>
+
+        <section>
+          <h2>Languages</h2>
+          <div class="lang-list">
+            {cv.languages.map(l => (
+              <div class="row"><span class="name">{l.name}</span><span class="lvl">{l.level}</span></div>
+            ))}
+          </div>
+        </section>
+
+        <section>
+          <h2>Interests</h2>
+          <div class="interest-list">
+            {cv.interests.map(i => <span>{i}</span>)}
+          </div>
+        </section>
+      </aside>
+
+      <!-- RIGHT COLUMN -->
+      <main>
+        <section>
+          <h2>Experience</h2>
+          {exp.map((e: any) => (
+            <div class="entry">
+              <div class="entry-head">
+                <span class="entry-title">{e.name}</span>
+                <span class="entry-date">{e.period}</span>
+              </div>
+              <div class="entry-role">{e.role}{e.location && <span class="loc">· {e.location}</span>}</div>
+              {Array.isArray(e.bullets) && e.bullets.length > 0 && (
+                <ul>{e.bullets.map((b: string) => <li>{b}</li>)}</ul>
+              )}
+            </div>
+          ))}
+        </section>
+      </main>
+    </div>
+
+    <div class="page-footer">
+      <span><span class="mark">Miguel Vieira</span> · CV · <a href={`https://${cv.contact.website}`}>{cv.contact.website}</a></span>
+      <span class="pageno">Page 1 of 2</span>
+    </div>
+  </article>
+
+  <!-- ──────────────────────── PAGE 2 ──────────────────────── -->
+  <article class="page">
+    <header class="header-cont">
+      <span class="name">Miguel <em>Vieira</em></span>
+      <span class="right">
+        <span class="role">Lead Software Engineer · Games</span>
+        <span class="pageno">Page 2 / 2</span>
+      </span>
+    </header>
+
+    <div class="single">
+      <section>
+        <h2>Education</h2>
+        {education.map(e => (
+          <div class="edu-entry">
+            <div class="head">
+              <span class="deg">{e.role}</span>
+              <span class="yr">{e.period}</span>
+            </div>
+            <div class="school">{e.name}</div>
+          </div>
+        ))}
+      </section>
+
+      <section>
+        <h2>Selected Projects</h2>
+        <div class="work-list">
+          {featuredProjects.map(p => (
+            <div class="work-item">
+              <div class="name">{p.name}</div>
+              <div class="desc">{p.desc}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <h2>Published Unreal Engine Plugins</h2>
+        <div class="plugin-list">
+          {publishedPlugins.map(p => (
+            <div class="plugin-item">
+              <span class="plugin-name">{p.name}</span>
+              <span class="plugin-tag">{p.tagline.length > 130 ? p.tagline.slice(0, 130) + '…' : p.tagline}</span>
+              <span class="plugin-ver">v{p.version}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <h2>Certifications</h2>
+        <div class="cert-list">
+          {cv.certifications.map((c: any) => (
+            <div class="row">
+              <span class="name">{c.name}{c.issuer && <span class="iss"> — {c.issuer}</span>}</span>
+              <span class="yr">{c.year}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+
+    <div class="page-footer">
+      <span><span class="mark">Miguel Vieira</span> · CV · <a href={`https://${cv.contact.website}`}>{cv.contact.website}</a></span>
+      <span class="pageno">Page 2 of 2</span>
+    </div>
+  </article>
+</body>
+</html>

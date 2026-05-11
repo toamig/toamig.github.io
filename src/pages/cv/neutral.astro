@@ -1,0 +1,411 @@
+---
+import profile        from '../../data/profile.json';
+import experience     from '../../data/experience.json';
+import education      from '../../data/education.json';
+import technologies   from '../../data/technologies.json';
+import techCategories from '../../data/techCategories.json';
+import projects       from '../../data/projects.json';
+import plugins        from '../../data/plugins.json';
+import cv             from '../../data/cvExtras.json';
+
+const exp = experience;
+
+const techByCat = techCategories.map(cat => ({
+  name: cat.name,
+  items: technologies.filter(t => t.category === cat.id).map(t => t.name),
+})).filter(g => g.items.length > 0);
+
+const featuredProjects = projects;
+const publishedPlugins = plugins.filter(p => !p.hidden);
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Miguel Vieira — CV</title>
+  <link rel="icon" href="/logo_head.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" />
+  <style>
+    :root {
+      --paper:    #ffffff;
+      --ink:      #111111;
+      --ink-sub:  #2a2a2a;
+      --muted:    #6b6b6b;
+      --rule:     #1a1a1a;
+      --rule-sub: #d8d8d8;
+      --accent-bg:#f5f5f5;
+      --font:     'Inter', -apple-system, sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: #ececec; }
+    body {
+      font-family: var(--font); color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      padding: 56px 16px 80px;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 32px;
+    }
+
+    /* ── Actions — sticky CTA bar ─────────────────────────────── */
+    .actions {
+      position: sticky;
+      top: 18px;
+      z-index: 100;
+      width: 210mm; max-width: 100%;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 10px; flex-wrap: wrap;
+      padding: 9px 14px;
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(18px) saturate(140%);
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
+      border: 1px solid rgba(200, 200, 200, 0.6);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.04), 0 14px 40px rgba(0,0,0,.07);
+    }
+    .actions-left { display: flex; gap: 8px; }
+    .actions a, .actions button {
+      font-family: var(--font); font-size: 12px; font-weight: 600;
+      padding: 7px 14px; border-radius: 6px; border: 1.5px solid #c0c0c0;
+      background: rgba(255,255,255,.6); color: #333; cursor: pointer; text-decoration: none;
+      transition: all .15s;
+    }
+    .actions a:hover, .actions button:hover { background: rgba(255,255,255,.95); border-color: #1a1a1a; color: #1a1a1a; }
+    .actions .primary {
+      background: #1a1a1a; color: #fff; border-color: #1a1a1a;
+      box-shadow: 0 2px 8px rgba(0,0,0,.25);
+    }
+    .actions .primary:hover { background: #000; }
+
+    /* ── Page ─────────────────────────────────────────────────── */
+    .page {
+      width: 210mm; min-height: 297mm;
+      background: var(--paper);
+      padding: 14mm 16mm 22mm 16mm;       /* extra bottom space reserved for footer */
+      box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 24px 64px rgba(0,0,0,.12);
+      position: relative;
+      page-break-after: always;
+      break-after: page;
+    }
+    .page:last-of-type { page-break-after: auto; break-after: auto; }
+
+    /* ── Page header (full, page 1) ───────────────────────────── */
+    .header { padding-bottom: 9px; border-bottom: 2px solid var(--rule); }
+    .header h1 {
+      font-size: 26px; font-weight: 700; letter-spacing: -.015em;
+      line-height: 1.05;
+    }
+    .header .role {
+      font-size: 13px; font-weight: 500; color: var(--ink-sub);
+      margin-top: 3px;
+    }
+    .header .meta {
+      font-size: 10.5px; color: var(--muted); margin-top: 6px;
+      display: flex; flex-wrap: wrap; gap: 3px 12px;
+    }
+    .header .meta .dot { width: 2.5px; height: 2.5px; background: #aaa; border-radius: 50%; align-self: center; }
+    .header .meta a { color: var(--ink-sub); text-decoration: none; }
+
+    /* ── Continuation header (page 2+) ────────────────────────── */
+    .header-cont {
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding-bottom: 6px; margin-bottom: 12px;
+      border-bottom: 1px solid var(--rule-sub);
+      font-size: 11px; color: var(--muted); letter-spacing: .01em;
+    }
+    .header-cont .name { font-weight: 600; color: var(--ink); font-size: 13.5px; letter-spacing: -.005em; }
+    .header-cont .right { display: flex; gap: 12px; align-items: baseline; }
+    .header-cont .right .role { color: var(--ink-sub); }
+    .header-cont .right .pageno { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+    /* ── Page footer (each page) ──────────────────────────────── */
+    .page-footer {
+      position: absolute;
+      left: 16mm; right: 16mm; bottom: 10mm;
+      padding-top: 6px;
+      border-top: 1px solid var(--rule-sub);
+      display: flex; justify-content: space-between; align-items: baseline;
+      font-size: 9px; color: var(--muted); letter-spacing: .04em;
+    }
+    .page-footer a { color: var(--muted); text-decoration: none; }
+    .page-footer .pageno { font-variant-numeric: tabular-nums; letter-spacing: .06em; }
+
+    /* ── Sections ─────────────────────────────────────────────── */
+    section { margin-top: 12px; }
+    section h2 {
+      font-size: 10px; font-weight: 700; letter-spacing: .18em;
+      text-transform: uppercase; color: var(--ink);
+      padding-bottom: 4px; margin-bottom: 6px;
+      border-bottom: 1px solid var(--rule-sub);
+    }
+    section .summary { font-size: 11.5px; line-height: 1.55; color: var(--ink-sub); }
+
+    /* ── Highlights ───────────────────────────────────────────── */
+    .highlights {
+      list-style: none; margin-top: 8px;
+      padding: 8px 12px; background: var(--accent-bg); border-radius: 4px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 3px 18px;
+    }
+    .highlights li {
+      font-size: 10.5px; line-height: 1.45; color: var(--ink-sub);
+      padding-left: 12px; position: relative;
+    }
+    .highlights li::before {
+      content: '▸'; position: absolute; left: 0; top: 0;
+      color: var(--ink); font-size: 10px; line-height: 1.4;
+    }
+
+    /* ── Entries ──────────────────────────────────────────────── */
+    .entry { margin-bottom: 8px; break-inside: avoid; page-break-inside: avoid; }
+    .entry-head {
+      display: flex; justify-content: space-between; align-items: baseline;
+      gap: 12px;
+    }
+    .entry-title { font-size: 12px; font-weight: 600; color: var(--ink); }
+    .entry-title .sep { color: var(--muted); margin: 0 5px; font-weight: 400; }
+    .entry-title .role { font-weight: 500; color: var(--ink-sub); }
+    .entry-date {
+      font-size: 10.5px; color: var(--muted);
+      font-weight: 500; white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+    .entry-loc { font-size: 10px; color: var(--muted); margin-top: 1px; font-style: italic; }
+    .entry ul { margin: 3px 0 0 0; padding: 0; list-style: none; }
+    .entry ul li {
+      font-size: 10.5px; line-height: 1.5; color: var(--ink-sub);
+      padding-left: 12px; position: relative; margin-bottom: 1px;
+    }
+    .entry ul li::before {
+      content: '·'; position: absolute; left: 3px; top: -2px;
+      color: var(--ink); font-size: 16px; line-height: 1;
+    }
+
+    /* ── Skills ───────────────────────────────────────────────── */
+    .skill-row {
+      display: grid; grid-template-columns: 120px 1fr; gap: 12px;
+      font-size: 11px; padding: 1.5px 0;
+    }
+    .skill-row .k { color: var(--muted); font-weight: 500; }
+    .skill-row .v { color: var(--ink-sub); }
+
+    /* ── Projects ─────────────────────────────────────────────── */
+    .two-up { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 18px; }
+    .two-up .row { font-size: 10.5px; line-height: 1.45; padding: 1.5px 0; }
+    .two-up .name { font-weight: 600; color: var(--ink); }
+    .two-up .desc { color: var(--ink-sub); }
+
+    .plugin-row {
+      display: grid; grid-template-columns: 130px 1fr 30px; gap: 12px;
+      padding: 1.5px 0; font-size: 11px; align-items: baseline;
+      break-inside: avoid;
+    }
+    .plugin-row .name { font-weight: 600; color: var(--ink); }
+    .plugin-row .tag { color: var(--ink-sub); line-height: 1.4; }
+    .plugin-row .ver { color: var(--muted); font-size: 10px; text-align: right; font-variant-numeric: tabular-nums; }
+
+    /* ── Inline lists ─────────────────────────────────────────── */
+    .inline-list { font-size: 11px; color: var(--ink-sub); line-height: 1.6; }
+    .inline-list .sep { color: var(--muted); margin: 0 7px; }
+
+    .meta-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4px 20px;
+      font-size: 11px;
+    }
+    .meta-grid .label { font-weight: 600; color: var(--ink); }
+    .meta-grid .iss   { color: var(--muted); }
+    .meta-grid .row { display: flex; justify-content: space-between; gap: 8px; }
+    .meta-grid .yr { color: var(--muted); font-size: 10.5px; flex-shrink: 0; }
+
+    /* ── Print ────────────────────────────────────────────────── */
+    @page { size: A4; margin: 0; }
+    @media print {
+      html, body {
+        background: #fff !important;
+        margin: 0 !important; padding: 0 !important;
+        display: block !important;
+        gap: 0 !important;
+      }
+      .actions { display: none !important; }
+      .page {
+        width: 210mm !important;
+        min-height: 297mm !important;       /* keep — anchors absolute footer to page bottom */
+        height: 297mm !important;
+        margin: 0 !important;
+        padding: 12mm 14mm 18mm 14mm !important;
+        box-shadow: none !important;
+        background: var(--paper);
+      }
+      .page-footer { left: 14mm !important; right: 14mm !important; bottom: 8mm !important; }
+      .entry, .plugin-row, .two-up .row, .skill-row {
+        break-inside: avoid; page-break-inside: avoid;
+      }
+      section { break-inside: auto; page-break-inside: auto; }
+      section h2 { break-after: avoid; page-break-after: avoid; }
+      p, li { orphans: 2; widows: 2; }
+      *, *::before, *::after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="actions">
+    <div class="actions-left">
+      <a href="/#resume">← Back</a>
+      <a href="/cv/editorial">Switch to editorial →</a>
+    </div>
+    <button class="primary" onclick="window.print()">⌘P · Save as PDF</button>
+  </div>
+
+  <!-- ──────────────────────── PAGE 1 ──────────────────────── -->
+  <article class="page">
+    <header class="header">
+      <h1>Miguel Vieira</h1>
+      <div class="role">Lead Software Engineer · Games &nbsp;·&nbsp; Engineering Director at Flama Craftworks</div>
+      <div class="meta">
+        <span>{cv.contact.location}</span>
+        <span class="dot"></span>
+        <span><a href={`mailto:${cv.contact.email}`}>{cv.contact.email}</a></span>
+        <span class="dot"></span>
+        <span>{cv.contact.phone}</span>
+        <span class="dot"></span>
+        <span><a href={`https://${cv.contact.website}`}>{cv.contact.website}</a></span>
+        <span class="dot"></span>
+        <span><a href={`https://${cv.contact.linkedin}`}>{cv.contact.linkedin}</a></span>
+        <span class="dot"></span>
+        <span><a href={`https://${cv.contact.github}`}>{cv.contact.github}</a></span>
+      </div>
+    </header>
+
+    <section>
+      <h2>Profile</h2>
+      <p class="summary">{profile.shortVersion.lead} {profile.shortVersion.body}</p>
+      <ul class="highlights">
+        {cv.highlights.map(h => <li>{h}</li>)}
+      </ul>
+    </section>
+
+    <section>
+      <h2>Experience</h2>
+      {exp.map((e: any) => (
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">
+              {e.name}<span class="sep">—</span><span class="role">{e.role}</span>
+            </div>
+            <div class="entry-date">{e.period}</div>
+          </div>
+          {e.location && <div class="entry-loc">{e.location}</div>}
+          {Array.isArray(e.bullets) && e.bullets.length > 0 && (
+            <ul>{e.bullets.map((b: string) => <li>{b}</li>)}</ul>
+          )}
+        </div>
+      ))}
+    </section>
+
+    <section>
+      <h2>Education</h2>
+      {education.map(e => (
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">{e.role}<span class="sep">—</span><span class="role">{e.name}</span></div>
+            <div class="entry-date">{e.period}</div>
+          </div>
+        </div>
+      ))}
+    </section>
+
+    <div class="page-footer">
+      <span>Miguel Vieira · CV · <a href={`https://${cv.contact.website}`}>{cv.contact.website}</a></span>
+      <span class="pageno">Page 1 of 2</span>
+    </div>
+  </article>
+
+  <!-- ──────────────────────── PAGE 2 ──────────────────────── -->
+  <article class="page">
+    <header class="header-cont">
+      <span class="name">Miguel Vieira</span>
+      <span class="right">
+        <span class="role">Lead Software Engineer · Games</span>
+        <span class="pageno">Page 2 of 2</span>
+      </span>
+    </header>
+
+    <section>
+      <h2>Technical Skills</h2>
+      {techByCat.map(g => (
+        <div class="skill-row">
+          <span class="k">{g.name}</span>
+          <span class="v">{g.items.join(', ')}</span>
+        </div>
+      ))}
+      <div class="skill-row">
+        <span class="k">Soft skills</span>
+        <span class="v">{cv.softSkills.join(', ')}</span>
+      </div>
+    </section>
+
+    <section>
+      <h2>Selected Projects</h2>
+      <div class="two-up">
+        {featuredProjects.map(p => (
+          <div class="row"><span class="name">{p.name}</span> — <span class="desc">{p.desc}</span></div>
+        ))}
+      </div>
+    </section>
+
+    <section>
+      <h2>Published Unreal Engine Plugins</h2>
+      {publishedPlugins.map(p => (
+        <div class="plugin-row">
+          <span class="name">{p.name}</span>
+          <span class="tag">{p.tagline.length > 130 ? p.tagline.slice(0, 130) + '…' : p.tagline}</span>
+          <span class="ver">v{p.version}</span>
+        </div>
+      ))}
+    </section>
+
+    <section>
+      <h2>Languages</h2>
+      <div class="inline-list">
+        {cv.languages.map((l, i) => (
+          <>{i > 0 && <span class="sep">·</span>}<span><strong>{l.name}</strong> — {l.level}</span></>
+        ))}
+      </div>
+    </section>
+
+    <section>
+      <h2>Certifications</h2>
+      <div class="meta-grid">
+        {cv.certifications.map((c: any) => (
+          <div class="row">
+            <span>
+              <span class="label">{c.name}</span>
+              {c.issuer && <span class="iss"> — {c.issuer}</span>}
+            </span>
+            <span class="yr">{c.year}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section>
+      <h2>Interests</h2>
+      <div class="inline-list">
+        {cv.interests.map((i, idx) => (
+          <>{idx > 0 && <span class="sep">·</span>}<span>{i}</span></>
+        ))}
+      </div>
+    </section>
+
+    <div class="page-footer">
+      <span>Miguel Vieira · CV · <a href={`https://${cv.contact.website}`}>{cv.contact.website}</a></span>
+      <span class="pageno">Page 2 of 2</span>
+    </div>
+  </article>
+</body>
+</html>
