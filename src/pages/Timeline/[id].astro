@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import events from '../../data/events.json';
+import events       from '../../data/events.json';
+import timelineTags from '../../data/timelineTags.json';
 
 export async function getStaticPaths() {
   return events.map(event => ({
@@ -34,15 +35,9 @@ function getTags(ev: LifeEvent): string[] {
 }
 
 function getCategoryInfo(tag: string) {
-  const map: Record<string, { name: string; color: string }> = {
-    hobbies:      { name: 'Hobbies',       color: '#be185d' },
-    studies:      { name: 'Studies',       color: '#0e7490' },
-    personal:     { name: 'Personal',      color: '#b45309' },
-    professional: { name: 'Professional',  color: '#475569' },
-    travels:      { name: 'Travels',       color: '#4d7c0f' },
-    work:         { name: 'Work & Career', color: '#475569' },
-  };
-  return map[tag] || { name: tag || 'Other', color: '#64748b' };
+  const def = timelineTags.find(t => t.id === tag);
+  if (def) return { name: def.name, color: def.color };
+  return { name: tag || 'Other', color: '#64748b' };
 }
 
 function resolveAssetUrl(u: string): string {

@@ -1,10 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Logo from '../components/Logo.astro';
-import education    from '../data/education.json';
-import experience   from '../data/experience.json';
-import technologies from '../data/technologies.json';
-import projects     from '../data/projects.json';
+import education      from '../data/education.json';
+import experience     from '../data/experience.json';
+import technologies   from '../data/technologies.json';
+import techCategories from '../data/techCategories.json';
+import projects       from '../data/projects.json';
+import profile        from '../data/profile.json';
 ---
 <BaseLayout
   title="Toamig"
@@ -69,9 +71,9 @@ import projects     from '../data/projects.json';
               </p>
               <h2>The <em>short version</em>.</h2>
             </div>
-            <p class="p1">Game engineer turned tech lead — building gameplay, tools, and the engineering teams that ship them.</p>
-            <p class="p3">Five years across studios shipping gameplay, multiplayer, tools, animation, and AI systems on PC, console, and VR — currently leading engineering at Flama Craftworks on Timefront, after a stretch as Tools Lead at Saber Interactive.</p>
-            <p class="p2">I care about the systems behind the systems — the tooling, patterns, and tech direction that let a team ship without burning out.</p>
+            <p class="p1">{profile.shortVersion.lead}</p>
+            <p class="p3">{profile.shortVersion.body}</p>
+            <p class="p2">{profile.shortVersion.tagline}</p>
           </div>
         </div>
       </div>
@@ -121,11 +123,11 @@ import projects     from '../data/projects.json';
           <h2>What I <em>build with</em>.</h2>
         </div>
         <div class="tech-grid">
-          {(['Languages', 'Engines', 'Art Tools', 'Version Control'] as const).map(cat => (
+          {techCategories.map(cat => (
             <div class="tech-category">
-              <span class="tech-category-label">{cat}</span>
+              <span class="tech-category-label">{cat.name}</span>
               <div class="tech-group">
-                {technologies.filter(t => t.category === cat).map(t => (
+                {technologies.filter(t => t.category === cat.id).map(t => (
                   <a class="tech-card" href={t.href} title={t.name} target="_blank" rel="noopener noreferrer">
                     <img class="tech-logo" src={t.src} alt={t.name} />
                   </a>

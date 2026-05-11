@@ -1,0 +1,8 @@
+[
+  { "id": "studies",      "name": "Studies",       "color": "#0e7490", "filter": true  },
+  { "id": "personal",     "name": "Personal",      "color": "#b45309", "filter": true  },
+  { "id": "professional", "name": "Professional",  "color": "#475569", "filter": true  },
+  { "id": "travels",      "name": "Travels",       "color": "#4d7c0f", "filter": true  },
+  { "id": "hobbies",      "name": "Hobbies",       "color": "#be185d", "filter": false },
+  { "id": "work",         "name": "Work & Career", "color": "#475569", "filter": false }
+]

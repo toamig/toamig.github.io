@@ -327,40 +327,50 @@
   const GH_API = 'https://api.github.com';
 
   const FILE_MAP: Record<string, string> = {
-    plugins:      'src/data/plugins.json',
-    events:       'src/data/events.json',
-    experience:   'src/data/experience.json',
-    education:    'src/data/education.json',
-    projects:     'src/data/projects.json',
-    technologies: 'src/data/technologies.json',
+    profile:        'src/data/profile.json',
+    plugins:        'src/data/plugins.json',
+    events:         'src/data/events.json',
+    timelineTags:   'src/data/timelineTags.json',
+    experience:     'src/data/experience.json',
+    education:      'src/data/education.json',
+    projects:       'src/data/projects.json',
+    technologies:   'src/data/technologies.json',
+    techCategories: 'src/data/techCategories.json',
   };
 
   const IMG_FOLDER: Record<string, string> = {
-    plugins:    'public/plugins',
-    events:     'public/events',
-    experience: 'public/experience',
-    education:  'public/education',
-    projects:   'public/projects',
+    plugins:      'public/plugins',
+    events:       'public/events',
+    experience:   'public/experience',
+    education:    'public/education',
+    projects:     'public/projects',
     technologies: 'public/technologies',
   };
 
   const SECTION_META: Record<string, { label: string; icon: string }> = {
-    plugins:      { label: 'Plugins',          icon: '🧩' },
-    events:       { label: 'Timeline Events', icon: '📅' },
-    experience:   { label: 'Work Experience', icon: '💼' },
-    education:    { label: 'Education',        icon: '🎓' },
-    projects:     { label: 'Projects',         icon: '🎮' },
-    technologies: { label: 'Technologies',     icon: '⚙️' },
+    profile:        { label: 'Profile',          icon: '👤' },
+    plugins:        { label: 'Plugins',          icon: '🧩' },
+    events:         { label: 'Timeline Events',  icon: '📅' },
+    timelineTags:   { label: 'Timeline Tags',    icon: '🎨' },
+    experience:     { label: 'Work Experience',  icon: '💼' },
+    education:      { label: 'Education',        icon: '🎓' },
+    projects:       { label: 'Projects',         icon: '🎮' },
+    technologies:   { label: 'Technologies',     icon: '⚙️' },
+    techCategories: { label: 'Tech Categories',  icon: '🏷️' },
   };
 
-  const TAG_COLORS: Record<string, string> = {
-    studies:      '#b8dcff',
-    personal:     '#f6c48a',
-    professional: '#cbc5ff',
-    travels:      '#c9f3b2',
-    hobbies:      '#f9fbbf',
-    work:         '#cbc5ff',
-  };
+  // Single-record sections (object, not list). No "Add" or list UI.
+  const SINGLE_RECORD = new Set(['profile']);
+  // Sections where the records list is fixed (edit only, no add/delete).
+  const INLINE_LIST   = new Set(['timelineTags']);
+
+  function getTagDef(id: string): { name: string; color: string } | null {
+    const tag = (state.data.timelineTags || []).find((t: any) => t.id === id);
+    return tag ? { name: tag.name, color: tag.color } : null;
+  }
+  function getTagColor(id: string): string { return getTagDef(id)?.color || '#888'; }
+  function getTagName(id: string):  string { return getTagDef(id)?.name  || id;     }
+  function getAllTagIds(): string[] { return (state.data.timelineTags || []).map((t: any) => t.id); }
 
   // ═══════════════════════════════════════════════════════
   // STATE
@@ -369,7 +379,7 @@
     token: string | null;
     user: { login: string } | null;
     section: string;
-    data:  Record<string, any[]>;
+    data:  Record<string, any>;
     sha:   Record<string, string | null>;
     dirty: Record<string, boolean>;
     editing: { item: any; index: number } | null;
@@ -379,10 +389,10 @@
   const state: AppState = {
     token: sessionStorage.getItem('admin_token'),
     user:  null,
-    section: 'plugins',
-    data:  { plugins: [], events: [], experience: [], education: [], projects: [], technologies: [] },
-    sha:   { plugins: null, events: null, experience: null, education: null, projects: null, technologies: null },
-    dirty: { plugins: false, events: false, experience: false, education: false, projects: false, technologies: false },
+    section: 'profile',
+    data:  { profile: {}, plugins: [], events: [], timelineTags: [], experience: [], education: [], projects: [], technologies: [], techCategories: [] },
+    sha:   { profile: null, plugins: null, events: null, timelineTags: null, experience: null, education: null, projects: null, technologies: null, techCategories: null },
+    dirty: { profile: false, plugins: false, events: false, timelineTags: false, experience: false, education: false, projects: false, technologies: false, techCategories: false },
     editing: null,
     pendingUploads: {},
   };
@@ -589,14 +599,16 @@
             <button class="hamburger" id="hamburger">
               <span></span><span></span><span></span>
             </button>
-            <span class="topbar-title">${meta.icon} ${isEditing ? (state.editing!.index === -1 ? 'New ' : 'Edit ') + meta.label.replace(/s$/, '') : meta.label}</span>
+            <span class="topbar-title">${meta.icon} ${isEditing && !SINGLE_RECORD.has(sec) && !INLINE_LIST.has(sec) ? (state.editing!.index === -1 ? 'New ' : 'Edit ') + meta.label.replace(/s$/, '') : meta.label}</span>
             ${isDirty && !isEditing ? `<span class="unsaved-badge">Unsaved changes</span>` : ''}
           </div>
           <div class="topbar-right">
             ${isEditing
               ? `<button class="btn btn-ghost btn-sm" id="cancel-edit-btn">← Back</button>`
-              : `<button class="btn btn-primary btn-sm" id="add-btn">+ Add New</button>
-                 <button class="btn btn-success btn-sm ${!isDirty ? 'btn-ghost' : ''}" id="save-btn" ${!isDirty ? 'disabled' : ''}>💾 Save</button>`
+              : (SINGLE_RECORD.has(sec) || INLINE_LIST.has(sec)
+                  ? `<button class="btn btn-success btn-sm ${!isDirty ? 'btn-ghost' : ''}" id="save-btn" ${!isDirty ? 'disabled' : ''}>💾 Save</button>`
+                  : `<button class="btn btn-primary btn-sm" id="add-btn">+ Add New</button>
+                     <button class="btn btn-success btn-sm ${!isDirty ? 'btn-ghost' : ''}" id="save-btn" ${!isDirty ? 'disabled' : ''}>💾 Save</button>`)
             }
           </div>
         </header>
@@ -670,7 +682,9 @@
   // ═══════════════════════════════════════════════════════
   function renderSectionContent(): string {
     if (state.editing) return renderEditForm();
-    const items = state.data[state.section];
+    if (state.section === 'profile')      return renderProfileForm();
+    if (state.section === 'timelineTags') return renderTagsList();
+    const items = state.data[state.section] || [];
     if (!items.length) return `
       <div class="empty">
         <div class="empty-icon">${SECTION_META[state.section].icon}</div>
@@ -678,9 +692,10 @@
         <button class="btn btn-primary" id="add-btn-empty">+ Add First</button>
       </div>`;
 
-    if (state.section === 'plugins')      return renderPluginList(items);
-    if (state.section === 'events')       return renderEventList(items);
-    if (state.section === 'technologies') return renderTechList(items);
+    if (state.section === 'plugins')        return renderPluginList(items);
+    if (state.section === 'events')         return renderEventList(items);
+    if (state.section === 'technologies')   return renderTechList(items);
+    if (state.section === 'techCategories') return renderTechCategoriesList(items);
     return renderCardList(items);
   }
 
@@ -688,7 +703,10 @@
   function renderEventList(items: any[]) {
     return `<div class="item-list">${items.map((ev, i) => {
       const tags = getTags(ev);
-      const tagPills = tags.map(t => `<span class="tag-pill" style="background:${TAG_COLORS[t]||'#eee'};color:#333">${t}</span>`).join('');
+      const tagPills = tags.map(t => {
+        const color = getTagColor(t);
+        return `<span class="tag-pill" style="background:${color}1a;color:${color};border:1px solid ${color}44">${esc(getTagName(t))}</span>`;
+      }).join('');
       return `<div class="item-row" data-index="${i}">
         <span class="event-date-badge">${ev.date || '—'}</span>
         <div class="item-info">
@@ -726,17 +744,118 @@
 
   // ── Tech list ───────────────────────────────────────────
   function renderTechList(items: any[]) {
+    const cats = state.data.techCategories || [];
+    const catName = (id: string) => cats.find((c: any) => c.id === id)?.name || (id ? `${id} (orphan)` : '—');
     return `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px">${
       items.map((it, i) => `
         <div style="background:var(--white);border-radius:var(--radius);padding:16px;text-align:center;box-shadow:var(--shadow);position:relative">
           ${it.src ? `<img src="${esc(it.src)}" style="height:52px;object-fit:contain;margin-bottom:8px" onerror="this.style.display='none'" alt="">` : '<div style="height:52px;margin-bottom:8px"></div>'}
           <div style="font-size:13px;font-weight:700">${esc(it.name)}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">${esc(catName(it.category||''))}</div>
           <div style="display:flex;gap:6px;justify-content:center;margin-top:10px">
             <button class="btn btn-secondary btn-sm edit-btn" data-index="${i}">✏️</button>
             <button class="btn btn-danger btn-sm del-btn" data-index="${i}">🗑</button>
           </div>
         </div>`
       ).join('')}
+    </div>`;
+  }
+
+  // ── Tech categories list ────────────────────────────────
+  function renderTechCategoriesList(items: any[]) {
+    return `<div class="item-list">${items.map((c, i) => `
+      <div class="item-row" data-index="${i}">
+        <div class="item-thumb-ph">🏷️</div>
+        <div class="item-info">
+          <h3>${esc(c.name || 'Unnamed')}</h3>
+          <p style="font-family:monospace;font-size:11px">id: ${esc(c.id || '')}</p>
+        </div>
+        <div class="item-actions">
+          <button class="btn btn-secondary btn-sm edit-btn" data-index="${i}">✏️ Edit</button>
+          <button class="btn btn-danger btn-sm del-btn" data-index="${i}">🗑</button>
+        </div>
+      </div>`).join('')}</div>`;
+  }
+
+  // ── Profile editor (single record) ──────────────────────
+  function renderProfileForm(): string {
+    const p  = state.data.profile || {};
+    const sv = p.shortVersion || {};
+    const ta = p.timelineAbout || {};
+    return `<div class="edit-card">
+      <div class="edit-header">
+        <h2>👤 Profile Content</h2>
+      </div>
+
+      <div class="form-section">Short Version (Home page · "The short version")</div>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Lead paragraph <span style="color:var(--muted);font-weight:400;text-transform:none">(large pull-quote)</span></label>
+          <textarea data-profile-field="shortVersion.lead" rows="3">${esc(sv.lead||'')}</textarea>
+        </div>
+        <div class="form-group full">
+          <label>Body paragraph</label>
+          <textarea data-profile-field="shortVersion.body" rows="4">${esc(sv.body||'')}</textarea>
+        </div>
+        <div class="form-group full">
+          <label>Tagline paragraph</label>
+          <textarea data-profile-field="shortVersion.tagline" rows="3">${esc(sv.tagline||'')}</textarea>
+        </div>
+      </div>
+
+      <div class="form-section">Timeline About Me (Timeline page · "About me")</div>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Intro paragraph</label>
+          <textarea data-profile-field="timelineAbout.intro" rows="3">${esc(ta.intro||'')}</textarea>
+        </div>
+        <div class="form-group full">
+          <label>Body paragraph</label>
+          <textarea data-profile-field="timelineAbout.body" rows="4">${esc(ta.body||'')}</textarea>
+        </div>
+        <div class="form-group full">
+          <label>Closing paragraph <span style="color:var(--muted);font-weight:400;text-transform:none">(italic emphasis)</span></label>
+          <textarea data-profile-field="timelineAbout.closing" rows="3">${esc(ta.closing||'')}</textarea>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // ── Timeline tags editor (inline list) ──────────────────
+  function renderTagsList(): string {
+    const tags = state.data.timelineTags || [];
+    return `<div class="edit-card">
+      <div class="edit-header">
+        <h2>🎨 Timeline Tag Colors</h2>
+      </div>
+      <p style="font-size:13px;color:var(--text-sub);line-height:1.6;margin-bottom:18px">
+        Edit the display name and color for each timeline tag. Tags flagged as <em>filter</em> show up as buttons on the Timeline page.
+      </p>
+      <div class="item-list">${tags.map((t: any, i: number) => {
+        const sample = `style="background:${esc(t.color)}1a;color:${esc(t.color)};border:1px solid ${esc(t.color)}66"`;
+        return `<div class="item-row" data-tag-row="${i}" style="gap:18px;flex-wrap:wrap">
+          <div data-tag-swatch="${i}" style="width:42px;height:42px;border-radius:8px;background:${esc(t.color)};border:1.5px solid var(--border);flex-shrink:0"></div>
+          <div class="item-info" style="min-width:180px">
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <label style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Name</label>
+              <input data-tag-field="name" data-tag-i="${i}" value="${esc(t.name||'')}" style="font-size:13.5px;padding:8px 11px;border:1.5px solid var(--border);border-radius:8px;background:#f7fafc" />
+            </div>
+            <p style="font-family:monospace;font-size:11px;margin-top:6px;color:var(--muted)">id: ${esc(t.id)}</p>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px;min-width:160px">
+            <label style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Color</label>
+            <div style="display:flex;gap:6px;align-items:center">
+              <input type="color" data-tag-field="color" data-tag-i="${i}" data-tag-pair="text" value="${esc(t.color)}" style="width:42px;height:36px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;padding:2px;flex-shrink:0" />
+              <input type="text" data-tag-field="color" data-tag-i="${i}" data-tag-pair="picker" value="${esc(t.color)}" style="flex:1;min-width:0;font-family:monospace;font-size:12px;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;background:#f7fafc" />
+            </div>
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--text-sub);cursor:pointer;padding:0 4px">
+            <input type="checkbox" data-tag-field="filter" data-tag-i="${i}" ${t.filter ? 'checked' : ''} style="width:16px;height:16px;accent-color:var(--accent)" />
+            Filter button
+          </label>
+          <span class="tag-pill" data-tag-preview="${i}" ${sample}>${esc(t.name||t.id)}</span>
+        </div>`;
+      }).join('')}</div>
     </div>`;
   }
 
@@ -780,9 +899,10 @@
   // ═══════════════════════════════════════════════════════
   function renderEditForm(): string {
     const sec = state.section;
-    if (sec === 'plugins')      return renderPluginForm();
-    if (sec === 'events')       return renderEventForm();
-    if (sec === 'technologies') return renderTechForm();
+    if (sec === 'plugins')        return renderPluginForm();
+    if (sec === 'events')         return renderEventForm();
+    if (sec === 'technologies')   return renderTechForm();
+    if (sec === 'techCategories') return renderTechCategoryForm();
     return renderSimpleForm();
   }
 
@@ -790,7 +910,7 @@
   function renderEventForm(): string {
     const ev = state.editing!.item;
     const tags = getTags(ev);
-    const allTags = ['studies','personal','professional','travels','hobbies','work'];
+    const allTags = getAllTagIds();
     const extDesc: string[] = Array.isArray(ev.extendedDescription) ? ev.extendedDescription : (ev.extendedDescription ? [ev.extendedDescription] : []);
     const links: any[]    = ev.links    || [];
     const docs:  any[]    = ev.documents|| [];
@@ -823,11 +943,14 @@
         <div class="form-group full">
           <label>Categories</label>
           <div class="tag-grid">
-            ${allTags.map(t => `
-              <label>
-                <input class="tag-check" type="checkbox" value="${t}" ${tags.includes(t) ? 'checked' : ''} />
-                <span class="tag-label" style="${tags.includes(t) ? `background:${TAG_COLORS[t]};border-color:${TAG_COLORS[t]}` : ''}">${t}</span>
-              </label>`).join('')}
+            ${allTags.map(t => {
+              const color = getTagColor(t);
+              const checked = tags.includes(t);
+              return `<label>
+                <input class="tag-check" type="checkbox" value="${t}" ${checked ? 'checked' : ''} />
+                <span class="tag-label" style="${checked ? `background:${color};border-color:${color};color:#fff` : `color:${color};border-color:${color}55`}">${esc(getTagName(t))}</span>
+              </label>`;
+            }).join('')}
           </div>
         </div>
         <div class="form-group full" style="align-items:center;flex-direction:row;gap:10px">
@@ -949,6 +1072,10 @@
   function renderTechForm(): string {
     const it  = state.editing!.item;
     const isNew = state.editing!.index === -1;
+    const cats = state.data.techCategories || [];
+    const catOpts = cats.map((c: any) =>
+      `<option value="${esc(c.id)}" ${it.category === c.id ? 'selected' : ''}>${esc(c.name)}</option>`
+    ).join('');
     return `<div class="edit-card">
       <div class="edit-header"><h2>${isNew ? 'New' : 'Edit'} Technology</h2></div>
       <div class="form-grid">
@@ -957,6 +1084,17 @@
           <input id="f-name" value="${esc(it.name||'')}" />
         </div>
         <div class="form-group">
+          <label>Category</label>
+          <select id="f-category">
+            <option value="" ${!it.category ? 'selected' : ''}>— Uncategorised —</option>
+            ${catOpts}
+          </select>
+        </div>
+        <div class="form-group full">
+          <label>Link / URL</label>
+          <input id="f-href" value="${esc(it.href||'')}" placeholder="https://…" />
+        </div>
+        <div class="form-group full">
           <label>Icon</label>
           <div class="logo-upload">
             ${it.src ? `<img class="logo-preview" id="logo-preview-img" src="${esc(it.src)}" onerror="this.style.display='none'" />` : `<div class="logo-preview-ph" id="logo-preview-img">⚙️</div>`}
@@ -970,6 +1108,32 @@
           </div>
         </div>
       </div>
+      <div class="form-actions">
+        <button class="btn btn-secondary" id="cancel-edit-btn2">Cancel</button>
+        <button class="btn btn-primary" id="save-item-btn">${isNew ? '+ Create' : '💾 Save'}</button>
+      </div>
+    </div>`;
+  }
+
+  // ── Tech category form ──────────────────────────────────
+  function renderTechCategoryForm(): string {
+    const it  = state.editing!.item;
+    const isNew = state.editing!.index === -1;
+    return `<div class="edit-card">
+      <div class="edit-header"><h2>${isNew ? 'New' : 'Edit'} Tech Category</h2></div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Name *</label>
+          <input id="f-name" value="${esc(it.name||'')}" placeholder="e.g. Languages" />
+        </div>
+        <div class="form-group">
+          <label>ID (slug)</label>
+          <input id="f-id" value="${esc(it.id||'')}" placeholder="auto-generated from name" />
+        </div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-top:14px;line-height:1.6">
+        The <strong>id</strong> is the stable key referenced by technologies. Changing it on an existing category will orphan any technologies still pointing at the old value — reassign them after.
+      </p>
       <div class="form-actions">
         <button class="btn btn-secondary" id="cancel-edit-btn2">Cancel</button>
         <button class="btn btn-primary" id="save-item-btn">${isNew ? '+ Create' : '💾 Save'}</button>
@@ -1109,6 +1273,10 @@
   function attachSectionListeners() {
     const content = document.getElementById('content-area')!;
 
+    // Inline editors (no separate edit page)
+    if (state.section === 'profile')      { attachProfileInlineListeners();      return; }
+    if (state.section === 'timelineTags') { attachTimelineTagsInlineListeners(); return; }
+
     // List: edit / delete / add empty
     content.addEventListener('click', (e) => {
       const target = e.target as HTMLElement;
@@ -1136,6 +1304,64 @@
     });
 
     if (state.editing) attachFormListeners();
+  }
+
+  function markDirty(sec: string) {
+    state.dirty[sec] = true;
+    const btn = document.getElementById('save-btn') as HTMLButtonElement | null;
+    if (btn) { btn.disabled = false; btn.classList.remove('btn-ghost'); }
+  }
+
+  function attachProfileInlineListeners() {
+    document.querySelectorAll<HTMLTextAreaElement>('[data-profile-field]').forEach(el => {
+      el.addEventListener('input', () => {
+        const path = el.dataset.profileField!;
+        const [group, key] = path.split('.');
+        if (!state.data.profile || typeof state.data.profile !== 'object') state.data.profile = {};
+        if (!state.data.profile[group]) state.data.profile[group] = {};
+        state.data.profile[group][key] = el.value;
+        markDirty('profile');
+      });
+    });
+  }
+
+  function attachTimelineTagsInlineListeners() {
+    document.querySelectorAll<HTMLInputElement>('[data-tag-field]').forEach(el => {
+      const update = () => {
+        const i = parseInt(el.dataset.tagI!);
+        const field = el.dataset.tagField!;
+        const tags = state.data.timelineTags || [];
+        if (!tags[i]) return;
+        const value: any = el.type === 'checkbox' ? el.checked : el.value;
+        tags[i][field] = value;
+
+        // Sync paired color picker ↔ text inputs
+        if (field === 'color') {
+          const isHex = /^#[0-9a-fA-F]{6}$/.test(el.value);
+          if (isHex) {
+            const row = document.querySelector(`[data-tag-row="${i}"]`);
+            row?.querySelectorAll<HTMLInputElement>('[data-tag-field="color"]').forEach(other => {
+              if (other !== el) other.value = el.value;
+            });
+            const swatch = document.querySelector(`[data-tag-swatch="${i}"]`) as HTMLElement | null;
+            if (swatch) swatch.style.background = el.value;
+            const preview = document.querySelector(`[data-tag-preview="${i}"]`) as HTMLElement | null;
+            if (preview) {
+              preview.style.background = `${el.value}1a`;
+              preview.style.color      = el.value;
+              preview.style.border     = `1px solid ${el.value}66`;
+            }
+          }
+        }
+        if (field === 'name') {
+          const preview = document.querySelector(`[data-tag-preview="${i}"]`) as HTMLElement | null;
+          if (preview) preview.textContent = el.value || tags[i].id;
+        }
+        markDirty('timelineTags');
+      };
+      el.addEventListener('input', update);
+      if (el.type === 'checkbox') el.addEventListener('change', update);
+    });
   }
 
   function attachFormListeners() {
@@ -1477,6 +1703,8 @@
         delete item.imageFolder;
       } else if (sec === 'technologies') {
         item = collectTechForm();
+      } else if (sec === 'techCategories') {
+        item = collectTechCategoryForm();
       } else {
         item = collectSimpleForm();
       }
@@ -1543,7 +1771,14 @@
 
   function collectTechForm(): any {
     const get = (id: string) => (document.getElementById(id) as HTMLInputElement)?.value.trim() || '';
-    return { src: get('f-src'), name: get('f-name') };
+    return { src: get('f-src'), name: get('f-name'), category: get('f-category'), href: get('f-href') };
+  }
+
+  function collectTechCategoryForm(): any {
+    const get = (id: string) => (document.getElementById(id) as HTMLInputElement)?.value.trim() || '';
+    const name = get('f-name');
+    const id   = get('f-id') || slugify(name);
+    return { id, name };
   }
 
   // ═══════════════════════════════════════════════════════
@@ -1557,10 +1792,11 @@
   }
 
   function newItem(sec: string): any {
-    if (sec === 'plugins')      return { name: '', tagline: '', version: '1.0', logo: null, cover: null, accent: '#6366f1', accentLight: '#818cf8', status: 'in-development', docsUrl: null, fabUrl: null, hidden: true };
-    if (sec === 'events')       return { id: '', date: '', title: '', tags: [], description: '', extendedDescription: [], expandable: true, images: [], links: [], documents: [] };
-    if (sec === 'technologies') return { src: '', name: '' };
-    if (sec === 'projects')     return { href: '', image: '', name: '', desc: '' };
+    if (sec === 'plugins')        return { name: '', tagline: '', version: '1.0', logo: null, cover: null, accent: '#6366f1', accentLight: '#818cf8', status: 'in-development', docsUrl: null, fabUrl: null, hidden: true };
+    if (sec === 'events')         return { id: '', date: '', title: '', tags: [], description: '', extendedDescription: [], expandable: true, images: [], links: [], documents: [] };
+    if (sec === 'technologies')   return { src: '', name: '', category: '', href: '' };
+    if (sec === 'techCategories') return { id: '', name: '' };
+    if (sec === 'projects')       return { href: '', image: '', name: '', desc: '' };
     return { href: '', logo: '', name: '', role: '', period: '' };
   }
 
