@@ -612,6 +612,104 @@ void UMySocialSubsystem::HandleInvite(FPlayLinkInvite Invite)
 &#125;</code></pre>
       </div>
     </div>
+
+    <div class="doc-subsection">
+      <h3 class="doc-subsection-title">Handling failures (project-side)</h3>
+      <p class="doc-p">
+        Every PlayLink async op surfaces an <code>EPlayLinkResult</code> on its completion delegate (<code>OnInviteAccepted</code>, <code>OnSessionJoined</code>, <code>OnLobbyJoined</code>, etc.). The plugin ships a <strong>broad classification</strong> of failures — enough to drive generic UI flows — but does not enumerate every backend-specific cause.
+      </p>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Code</th><th>What PlayLink guarantees</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="prop-name">Success</td><td class="prop-desc">Operation landed; consumer can read result data.</td></tr>
+          <tr><td class="prop-name">Failed_NoBackend</td><td class="prop-desc">No OSS resolved (or the OSS interface is unavailable).</td></tr>
+          <tr><td class="prop-name">Failed_NotLoggedIn</td><td class="prop-desc">Local user is not authenticated.</td></tr>
+          <tr><td class="prop-name">Failed_Network</td><td class="prop-desc">Generic network failure reported by the OSS.</td></tr>
+          <tr><td class="prop-name">Failed_Timeout</td><td class="prop-desc">Operation did not complete within the OSS-defined window.</td></tr>
+          <tr><td class="prop-name">Failed_AlreadyInState</td><td class="prop-desc">Already in a session/lobby/party (or already logged in).</td></tr>
+          <tr><td class="prop-name">Failed_NotInState</td><td class="prop-desc">Not currently in the state the op requires (e.g. leaving a session you're not in).</td></tr>
+          <tr><td class="prop-name">Failed_PermissionDenied</td><td class="prop-desc">Backend rejected for permissions / privacy / invite rules.</td></tr>
+          <tr><td class="prop-name">Failed_Full</td><td class="prop-desc">Session or lobby is full.</td></tr>
+          <tr><td class="prop-name">Failed_Cancelled</td><td class="prop-desc">User-initiated cancel.</td></tr>
+          <tr><td class="prop-name">Failed_BackendError</td><td class="prop-desc">Backend returned an error not mapped to a more specific code — inspect <code>LogPlayLink</code> for the native OSS error.</td></tr>
+        </tbody>
+      </table>
+      <p class="doc-p">
+        These cover the <strong>shape</strong> of failure — enough to show "couldn't join (full)" vs "couldn't join (permission denied)" vs "couldn't join (no network)". Beyond this, the realities of online platforms include many platform-specific failure modes that PlayLink intentionally <strong>does not</strong> enumerate:
+      </p>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Platform-specific failure</th><th>Where to detect it</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="prop-desc"><strong>Version mismatch</strong> — client / server <code>NetCL</code> or game build differs</td>
+            <td class="prop-desc">UE's <code>FNetworkVersion</code> check; surfaces as <code>NetworkFailure</code> on travel, not on PlayLink's delegates</td>
+          </tr>
+          <tr>
+            <td class="prop-desc"><strong>Friend doesn't own the game</strong> — invite sent to a friend who doesn't have the title installed / entitled</td>
+            <td class="prop-desc">Steam: filter <code>FPlayLinkFriend::bIsPlayingThisGame</code> before sending; EOS: entitlement check via project's storefront integration</td>
+          </tr>
+          <tr>
+            <td class="prop-desc"><strong>Rate-limited by backend</strong> — Steam throttles presence + invite spam, EOS rate-limits writes</td>
+            <td class="prop-desc">Maps to <code>Failed_BackendError</code> with backend-specific error string in <code>LogPlayLink</code></td>
+          </tr>
+          <tr>
+            <td class="prop-desc"><strong>Region restriction / geo-block</strong></td>
+            <td class="prop-desc">Maps to <code>Failed_PermissionDenied</code> or <code>Failed_BackendError</code> depending on the backend</td>
+          </tr>
+          <tr>
+            <td class="prop-desc"><strong>Crossplay blocked</strong> — friend on different platform + crossplay disabled</td>
+            <td class="prop-desc">Project-side: check <code>EPlayLinkBackend</code> of both users before inviting</td>
+          </tr>
+          <tr>
+            <td class="prop-desc"><strong>Account suspended / VAC-banned</strong></td>
+            <td class="prop-desc">Maps to <code>Failed_NotLoggedIn</code> on Steam after the platform layer rejects auth</td>
+          </tr>
+          <tr>
+            <td class="prop-desc"><strong>Stale invite</strong> — session destroyed before user accepted</td>
+            <td class="prop-desc">Maps to <code>Failed_BackendError</code> — destination join broadcasts <code>Failed_NotInState</code> when the session no longer exists</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="doc-p">
+        <strong>Why this design</strong>: every backend names failures differently and adds new failure modes over time (Steam updates, EOS feature additions, console certification requirements). Pinning PlayLink's enum to every possible backend code would make the plugin a maintenance treadmill chasing OSS releases. Instead PlayLink commits to a <strong>stable, shape-classified surface</strong> and lets projects extract finer-grained failure semantics from the platform layer they actually ship on.
+      </p>
+      <p class="doc-p">
+        <strong>How projects extract more detail</strong>:
+      </p>
+      <ol>
+        <li>Inspect <code>LogPlayLink</code> for the native OSS error string PlayLink prints alongside each <code>Failed_BackendError</code>.</li>
+        <li>For richer fidelity, subscribe to your OSS's native error delegates directly (e.g. <code>IOnlineSubsystem::OnConnectionStatusChanged</code>, Steam's <code>SteamServersConnectFailure</code>, EOS's <code>EOS_Connect_OnAuthExpirationCallback</code>) — they live alongside PlayLink and don't conflict.</li>
+        <li>Map backend codes to project-specific user-facing strings ("update your game" / "this server isn't available in your region" / "your friend doesn't own this game") in your UI layer.</li>
+      </ol>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-lang">C++</span></div>
+        <pre><code><span class="code-comment">// Generic PlayLink handler covers 80% of UI cases</span>
+void UMySocialSubsystem::HandleSessionJoined(EPlayLinkResult Result, FPlayLinkSessionHandle Handle, FString ConnectString)
+&#123;
+    <span class="code-cmd">switch</span> (Result)
+    &#123;
+        <span class="code-cmd">case</span> EPlayLinkResult::Success:             ClientTravel(ConnectString); <span class="code-cmd">break</span>;
+        <span class="code-cmd">case</span> EPlayLinkResult::Failed_Full:         ShowToast(<span class="code-val">"Session is full"</span>); <span class="code-cmd">break</span>;
+        <span class="code-cmd">case</span> EPlayLinkResult::Failed_NotLoggedIn:  ShowLoginPrompt(); <span class="code-cmd">break</span>;
+        <span class="code-cmd">case</span> EPlayLinkResult::Failed_Network:      ShowToast(<span class="code-val">"Network error — check connection"</span>); <span class="code-cmd">break</span>;
+        <span class="code-cmd">case</span> EPlayLinkResult::Failed_BackendError: ShowToast(<span class="code-val">"Could not join (see log)"</span>); <span class="code-cmd">break</span>;
+        <span class="code-cmd">default</span>:                                  ShowToast(<span class="code-val">"Could not join"</span>); <span class="code-cmd">break</span>;
+    &#125;
+&#125;
+
+<span class="code-comment">// Project can layer backend-specific refinement on top:</span>
+<span class="code-cmd">case</span> EPlayLinkResult::Failed_BackendError:
+    <span class="code-cmd">if</span> (Router-&gt;GetBackend() == EPlayLinkBackend::Steam)
+    &#123;
+        <span class="code-comment">// Inspect SteamAPI directly for the last error if needed</span>
+    &#125;
+    <span class="code-cmd">break</span>;</code></pre>
+      </div>
+    </div>
   </section>
 
   <!-- ── Lobbies ─────────────────────────────────────────────── -->
