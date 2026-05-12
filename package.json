@@ -4,7 +4,9 @@
   "version": "0.1.0",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/generate-cv-pdfs.mjs",
+    "build:html": "astro build",
+    "build:pdfs": "node scripts/generate-cv-pdfs.mjs",
     "preview": "astro preview"
   },
   "dependencies": {
@@ -15,6 +17,7 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.9",
+    "puppeteer": "^24.43.1",
     "sharp": "^0.34.5",
     "tailwindcss": "^4.0.9"
   }
