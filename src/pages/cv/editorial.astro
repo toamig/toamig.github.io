@@ -10,6 +10,13 @@ import cv             from '../../data/cvExtras.json';
 
 const exp = experience;
 
+// Split experience across pages so page 1 fits on A4 even when the browser
+// adds default print headers/footers (iOS Safari ~25mm overhead). Page 1
+// keeps the four most-recent roles; older positions move to page 2.
+const PAGE1_EXP_COUNT = 4;
+const expPage1 = exp.slice(0, PAGE1_EXP_COUNT);
+const expPage2 = exp.slice(PAGE1_EXP_COUNT);
+
 const techByCat = techCategories.map(cat => ({
   name: cat.name,
   items: technologies.filter(t => t.category === cat.id).map(t => t.name),
@@ -263,6 +270,15 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
       border-radius: 99px; font-weight: 500;
     }
 
+    /* Continuation marker — "/ continued" suffix in section headings */
+    .cont-mark {
+      font-family: var(--font-body);
+      font-size: 9px; font-weight: 500; letter-spacing: .04em;
+      color: var(--muted); text-transform: none;
+      font-style: italic;
+      margin-left: 4px;
+    }
+
     /* ── Experience entries ───────────────────────────────────── */
     .entry { margin-bottom: 9px; break-inside: avoid; page-break-inside: avoid; }
     .entry-head {
@@ -369,6 +385,11 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
         padding: 12mm 12mm 18mm 12mm !important;
         box-shadow: none !important;
         background: var(--paper);
+        /* Defensive clip: if browser-added headers (iOS Safari URL/date)
+           shrink the printable area below 297mm, this stops content from
+           spilling onto a phantom third PDF page. The .page-footer is
+           absolutely positioned inside this box so it stays visible. */
+        overflow: hidden !important;
       }
       .page-footer { left: 12mm !important; right: 12mm !important; bottom: 8mm !important; }
       .entry, .edu-entry, .work-item, .plugin-item, .skill-group,
@@ -464,7 +485,7 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
       <main>
         <section>
           <h2>Experience</h2>
-          {exp.map((e: any) => (
+          {expPage1.map((e: any) => (
             <div class="entry">
               <div class="entry-head">
                 <span class="entry-title">{e.name}</span>
@@ -499,6 +520,24 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
     </header>
 
     <div class="single">
+      {expPage2.length > 0 && (
+        <section>
+          <h2>Experience <span class="cont-mark">/ continued</span></h2>
+          {expPage2.map((e: any) => (
+            <div class="entry">
+              <div class="entry-head">
+                <span class="entry-title">{e.name}</span>
+                <span class="entry-date">{e.period}</span>
+              </div>
+              <div class="entry-role">{e.role}{e.location && <span class="loc">· {e.location}</span>}</div>
+              {Array.isArray(e.bullets) && e.bullets.length > 0 && (
+                <ul>{e.bullets.map((b: string) => <li>{b}</li>)}</ul>
+              )}
+            </div>
+          ))}
+        </section>
+      )}
+
       <section>
         <h2>Education</h2>
         {education.map(e => (

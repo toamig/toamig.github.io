@@ -10,6 +10,13 @@ import cv             from '../../data/cvExtras.json';
 
 const exp = experience;
 
+// Split experience across pages so page 1 fits on A4 even with browser
+// print headers eating into the printable area (iOS Safari ~25mm). The
+// four most-recent roles stay on page 1; older ones move to page 2.
+const PAGE1_EXP_COUNT = 4;
+const expPage1 = exp.slice(0, PAGE1_EXP_COUNT);
+const expPage2 = exp.slice(PAGE1_EXP_COUNT);
+
 const techByCat = techCategories.map(cat => ({
   name: cat.name,
   items: technologies.filter(t => t.category === cat.id).map(t => t.name),
@@ -179,6 +186,11 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
       border-bottom: 1px solid var(--rule-sub);
     }
     section .summary { font-size: 11.5px; line-height: 1.55; color: var(--ink-sub); }
+    .cont-mark {
+      font-size: 9px; font-weight: 500; letter-spacing: .04em;
+      color: var(--muted); text-transform: none;
+      font-style: italic; margin-left: 4px;
+    }
 
     /* ── Highlights ───────────────────────────────────────────── */
     .highlights {
@@ -280,6 +292,10 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
         padding: 12mm 14mm 18mm 14mm !important;
         box-shadow: none !important;
         background: var(--paper);
+        /* Defensive clip: if browser-added print headers shrink the
+           printable area below 297mm, content stays inside the page
+           instead of spilling onto a phantom PDF page. */
+        overflow: hidden !important;
       }
       .page-footer { left: 14mm !important; right: 14mm !important; bottom: 8mm !important; }
       .entry, .plugin-row, .two-up .row, .skill-row {
@@ -335,7 +351,7 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
 
     <section>
       <h2>Experience</h2>
-      {exp.map((e: any) => (
+      {expPage1.map((e: any) => (
         <div class="entry">
           <div class="entry-head">
             <div class="entry-title">
@@ -380,6 +396,26 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
         <span class="pageno">Page 2 of 2</span>
       </span>
     </header>
+
+    {expPage2.length > 0 && (
+      <section>
+        <h2>Experience <span class="cont-mark">/ continued</span></h2>
+        {expPage2.map((e: any) => (
+          <div class="entry">
+            <div class="entry-head">
+              <div class="entry-title">
+                {e.name}<span class="sep">—</span><span class="role">{e.role}</span>
+              </div>
+              <div class="entry-date">{e.period}</div>
+            </div>
+            {e.location && <div class="entry-loc">{e.location}</div>}
+            {Array.isArray(e.bullets) && e.bullets.length > 0 && (
+              <ul>{e.bullets.map((b: string) => <li>{b}</li>)}</ul>
+            )}
+          </div>
+        ))}
+      </section>
+    )}
 
     <section>
       <h2>Technical Skills</h2>
