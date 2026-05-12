@@ -127,9 +127,22 @@ export const GET: APIRoute = async ({ props }) => {
     ? `<div style="display:flex;flex-shrink:0;width:220px;height:220px;margin-right:48px;align-items:center;justify-content:center"><img src="${logoDataUrl}" style="width:220px;height:220px;object-fit:contain" /></div>`
     : '';
 
+  // Background composition:
+  //   - Base diagonal: flat dark, no accent tint anywhere. Warm accents
+  //     (orange/gold) at low alpha were still creating a visible "beam"
+  //     across the middle of the card that fought the tagline.
+  //   - Top-right radial: the ONLY accent wash, contained to the corner
+  //     above the title. Keeps each plugin visually distinct without
+  //     bleeding into the text or URL areas.
+  //   - Bottom vignette: darkens the band under the URL row so white
+  //     text always reads, regardless of accent.
+  // The accent identity is carried by the left bar, the domain pill,
+  // the top-right glow, and the accent-coloured "UE5 Plugin · v" line.
   const markupString = `
-    <div style="width:1200px;height:630px;display:flex;flex-direction:column;padding:56px 72px;background:linear-gradient(135deg,#06080d 0%,#0a0d14 55%,${accent}33 100%);font-family:Inter;color:#ffffff;position:relative">
+    <div style="width:1200px;height:630px;display:flex;flex-direction:column;padding:56px 72px;background:linear-gradient(135deg,#06080d 0%,#0a0d14 60%,#0c1018 100%);font-family:Inter;color:#ffffff;position:relative">
       <div style="position:absolute;top:0;left:0;width:8px;height:630px;background:linear-gradient(180deg,${accentLight},${accent});display:flex"></div>
+      <div style="position:absolute;top:0;right:0;width:620px;height:360px;background:radial-gradient(ellipse at 95% 5%, ${accent}26 0%, transparent 65%);display:flex"></div>
+      <div style="position:absolute;left:0;right:0;bottom:0;height:200px;background:linear-gradient(180deg, transparent 0%, rgba(4,6,10,0.55) 60%, rgba(4,6,10,0.85) 100%);display:flex"></div>
 
       <div style="display:flex;gap:12px;flex-wrap:wrap">
         ${domainPill}
@@ -144,7 +157,7 @@ export const GET: APIRoute = async ({ props }) => {
         </div>
       </div>
 
-      <div style="display:flex;justify-content:space-between;align-items:center;padding-top:24px;border-top:2px solid rgba(255,255,255,0.12)">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding-top:24px;border-top:2px solid rgba(255,255,255,0.18)">
         <div style="display:flex;font-size:24px;font-weight:600;color:${accentLight}">Unreal Engine 5 Plugin${version ? ' · v' + escapeForSatori(version) : ''}</div>
         <div style="display:flex;font-size:22px;font-weight:700;color:#ffffff;letter-spacing:0.02em">migueltechlead.pt</div>
       </div>

@@ -72,7 +72,11 @@
       "Bash(env)",
       "Bash(cmd.exe *)",
       "Bash(git diff *)",
-      "Bash(git checkout *)"
+      "Bash(git checkout *)",
+      "Bash(git fetch *)",
+      "PowerShell(npm run *)",
+      "Read(//c/Users/Miguel/AppData/Local/Temp/claude/C--Users-Miguel-Documents-GitHub-toamig-github-io/e3b46e8b-0d34-4cb3-9e0d-9b0c1dee3e7e/tasks/**)",
+      "PowerShell(Get-ChildItem \"C:/Users/Miguel/Documents/GitHub/toamig.github.io/dist/og/plugins\" | Select-Object Name, @{N='KB';E={[math]::Round\\($_.Length/1KB,1\\)}} | Format-Table -AutoSize)"
     ]
   }
 }

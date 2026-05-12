@@ -83,6 +83,10 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
     .actions .primary:hover { background: #9a4a23; border-color: #9a4a23; color: #fff; }
 
     /* ── Page ─────────────────────────────────────────────────── */
+    .page-wrap {
+      width: 210mm; max-width: 100%;
+      display: flex; justify-content: center;
+    }
     .page {
       width: 210mm; min-height: 297mm;
       background: var(--paper);
@@ -93,6 +97,27 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
       break-after: page;
     }
     .page:last-of-type { page-break-after: auto; break-after: auto; }
+
+    /* ── Mobile fit ───────────────────────────────────────────────
+       Scale the A4 sheet to viewport width and let .page-wrap claim
+       the scaled height via aspect-ratio. `screen` only so the print
+       layout (A4 PDF) keeps the unscaled page. */
+    @media screen and (max-width: 820px) {
+      body { padding: 16px 8px 40px; gap: 16px; align-items: stretch; overflow-x: hidden; }
+      .actions { width: auto; }
+      .page-wrap {
+        width: 100%;
+        aspect-ratio: 210 / 297;
+        overflow: hidden;
+        position: relative;
+        justify-content: flex-start;
+      }
+      .page-wrap .page {
+        position: absolute; top: 0; left: 0;
+        transform-origin: top left;
+        transform: scale(calc((100vw - 16px) / 794));
+      }
+    }
 
     /* ── Header (full, page 1) ────────────────────────────────── */
     .header {
@@ -359,6 +384,7 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
   </div>
 
   <!-- ──────────────────────── PAGE 1 ──────────────────────── -->
+  <div class="page-wrap">
   <article class="page">
     <header class="header">
       <div>
@@ -448,8 +474,10 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
       <span class="pageno">Page 1 of 2</span>
     </div>
   </article>
+  </div>
 
   <!-- ──────────────────────── PAGE 2 ──────────────────────── -->
+  <div class="page-wrap">
   <article class="page">
     <header class="header-cont">
       <span class="name">Miguel <em>Vieira</em></span>
@@ -516,5 +544,6 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
       <span class="pageno">Page 2 of 2</span>
     </div>
   </article>
+  </div>
 </body>
 </html>
