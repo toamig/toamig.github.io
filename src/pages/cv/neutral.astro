@@ -367,18 +367,6 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
       ))}
     </section>
 
-    <section>
-      <h2>Education</h2>
-      {education.map(e => (
-        <div class="entry">
-          <div class="entry-head">
-            <div class="entry-title">{e.role}<span class="sep">—</span><span class="role">{e.name}</span></div>
-            <div class="entry-date">{e.period}</div>
-          </div>
-        </div>
-      ))}
-    </section>
-
     <div class="page-footer">
       <span>Miguel Vieira · CV · <a href={`https://${cv.contact.website}`}>{cv.contact.website}</a></span>
       <span class="pageno">Page 1 of 2</span>
@@ -416,6 +404,18 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
         ))}
       </section>
     )}
+
+    <section>
+      <h2>Education</h2>
+      {education.map(e => (
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">{e.role}<span class="sep">—</span><span class="role">{e.name}</span></div>
+            <div class="entry-date">{e.period}</div>
+          </div>
+        </div>
+      ))}
+    </section>
 
     <section>
       <h2>Technical Skills</h2>
