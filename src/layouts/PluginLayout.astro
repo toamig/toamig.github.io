@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import pluginsData from '../data/plugins.json';
 
 interface Props {
   title: string;
@@ -37,7 +38,12 @@ const {
   codeBg      = '#050d1a',
 } = Astro.props;
 
-const og = ogImage ?? coverImage;
+const SITE = 'https://migueltechlead.pt';
+const pluginEntry = (pluginsData as Array<{ name: string; docsUrl: string | null }>).find(p => p.name === pluginName);
+const slug = pluginEntry?.docsUrl?.split('/').filter(Boolean).pop() ?? null;
+
+const og      = ogImage ?? (slug ? `${SITE}/og/plugins/${slug}.png` : `${SITE}${coverImage}`);
+const pageUrl = slug ? `${SITE}/Plugins/${slug}/` : `${SITE}/Plugins/`;
 
 const themeVars = [
   `--pl-blue:${accent}`,
@@ -56,13 +62,28 @@ const themeVars = [
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="icon" href="/logo_head.svg" type="image/svg+xml" />
+    <link rel="canonical" href={pageUrl} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" />
-    <meta property="og:title"       content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:image"       content={og} />
-    <meta property="og:type"        content="website" />
+
+    <!-- Open Graph -->
+    <meta property="og:title"        content={title} />
+    <meta property="og:description"  content={description} />
+    <meta property="og:image"        content={og} />
+    <meta property="og:image:width"  content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt"    content={`${pluginName} — Unreal Engine 5 Plugin`} />
+    <meta property="og:url"          content={pageUrl} />
+    <meta property="og:type"         content="website" />
+    <meta property="og:site_name"    content="Miguel Techlead" />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:title"       content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image"       content={og} />
+    <meta name="twitter:image:alt"   content={`${pluginName} — Unreal Engine 5 Plugin`} />
   </head>
   <body style={themeVars}>
 
