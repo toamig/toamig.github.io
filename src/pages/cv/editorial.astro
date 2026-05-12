@@ -115,7 +115,9 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
       .page-wrap .page {
         position: absolute; top: 0; left: 0;
         transform-origin: top left;
-        transform: scale(calc((100vw - 16px) / 794));
+        /* 794px ≈ 210mm at 96dpi. Both operands must be lengths so calc()
+           resolves to a unitless number that scale() will accept. */
+        transform: scale(calc((100vw - 16px) / 794px));
       }
     }
 
