@@ -42,6 +42,10 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { background: #ececec; }
+    /* iOS Safari auto-inflates text on narrow viewports, which fights the
+       transform-scale fit on iPhone. Pin text size to 100% so the scale is
+       the only thing affecting visual size. */
+    html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
     body {
       font-family: var(--font); color: var(--ink);
       -webkit-font-smoothing: antialiased;
@@ -117,8 +121,11 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
         position: absolute; top: 0; left: 0;
         transform-origin: top left;
         /* 794px ≈ 210mm at 96dpi. Both operands must be lengths so calc()
-           resolves to a unitless number that scale() will accept. */
-        transform: scale(calc((100vw - 16px) / 794px));
+           resolves to a unitless number that scale() will accept.
+           100dvw (dynamic viewport width) is what iOS Safari actually
+           reports as the visible width; 100vw can over-scale due to
+           safe-area handling. */
+        transform: scale(calc((100dvw - 16px) / 794px));
       }
     }
 
@@ -259,6 +266,12 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
         gap: 0 !important;
       }
       .actions { display: none !important; }
+      /* The mobile-fit wrapper interferes with `page-break-after: always`
+         on its child .page when it's a flex container — Chromium slips a
+         blank page in. `display: contents` removes the wrapper from the
+         box tree entirely so the existing .page print rules apply as if
+         it was a direct body child. */
+      .page-wrap { display: contents !important; }
       .page {
         width: 210mm !important;
         min-height: 297mm !important;       /* keep — anchors absolute footer to page bottom */

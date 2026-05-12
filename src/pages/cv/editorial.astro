@@ -44,6 +44,9 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { background: #e9e5dd; }
+    /* Disable iOS text inflation so transform-scale is the only thing
+       affecting visible text size on iPhone. */
+    html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
     body {
       font-family: var(--font-body); color: var(--ink);
       -webkit-font-smoothing: antialiased;
@@ -116,8 +119,10 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
         position: absolute; top: 0; left: 0;
         transform-origin: top left;
         /* 794px ≈ 210mm at 96dpi. Both operands must be lengths so calc()
-           resolves to a unitless number that scale() will accept. */
-        transform: scale(calc((100vw - 16px) / 794px));
+           resolves to a unitless number that scale() will accept.
+           100dvw is what iOS Safari actually reports as the visible
+           width; 100vw can over-scale due to safe-area handling. */
+        transform: scale(calc((100dvw - 16px) / 794px));
       }
     }
 
@@ -352,6 +357,10 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
         gap: 0 !important;
       }
       .actions { display: none !important; }
+      /* Remove the mobile-fit wrapper from the print box tree — its
+         flex container breaks `page-break-after: always` on .page and
+         causes Chromium to emit a blank third page. */
+      .page-wrap { display: contents !important; }
       .page {
         width: 210mm !important;
         min-height: 297mm !important;
