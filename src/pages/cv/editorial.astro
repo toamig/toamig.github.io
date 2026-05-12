@@ -10,9 +10,14 @@ import cv             from '../../data/cvExtras.json';
 
 const exp = experience;
 
-// Split experience across pages so page 1 fits on A4 even when the browser
-// adds default print headers/footers (iOS Safari ~25mm overhead). Page 1
-// keeps the four most-recent roles; older positions move to page 2.
+// Editorial's 2-column layout makes the right column the page-height
+// bottleneck. The full 6-entry experience list overflows A4 even with
+// zero margins (verified in the build-time PDF). Keep the four most-
+// recent roles on page 1 and continue with the rest at the top of
+// page 2 under "Experience / continued".
+//
+// Neutral uses a single-column layout that has no such constraint, so
+// this split is editorial-only on purpose — don't propagate it.
 const PAGE1_EXP_COUNT = 4;
 const expPage1 = exp.slice(0, PAGE1_EXP_COUNT);
 const expPage2 = exp.slice(PAGE1_EXP_COUNT);
