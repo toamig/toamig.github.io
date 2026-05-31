@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/sesqui/favicon.svg" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"
+    />
+    <meta name="theme-color" content="#15152a" />
+    <!-- Home-screen install (iOS Safari + Android Chrome). iOS ignores the
+         manifest icons and uses this PNG apple-touch-icon for the home screen.
+         status-bar-style "default" keeps page content below the status bar so
+         nothing hides under the notch, and the dark bar text stays legible on
+         the two light skins (Walnut, Bauhaus). -->
+    <link rel="apple-touch-icon" href="/sesqui/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Sesqui" />
+    <title>Sesqui</title>
+    <!-- Apply the saved skin before first paint so there is no flash of the
+         default theme. Mirrors theme.ts / theme.css; keep the ids in sync. -->
+    <script>
+      (function () {
+        try {
+          var s = localStorage.getItem('sesqui-skin')
+          if (!s) return
+          document.documentElement.setAttribute('data-skin', s)
+          var c = {
+            midnight: '#15152a',
+            walnut: '#cbb088',
+            bauhaus: '#f4ece0',
+            synthwave: '#0d0a1f',
+          }[s]
+          if (c) {
+            var m = document.querySelector('meta[name="theme-color"]')
+            if (m) m.setAttribute('content', c)
+          }
+        } catch (e) {}
+      })()
+    </script>
+    <script type="module" crossorigin src="/sesqui/assets/index-CHbnPsPR.js"></script>
+    <link rel="stylesheet" crossorigin href="/sesqui/assets/index-KdpXxR7b.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
