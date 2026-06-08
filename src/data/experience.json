@@ -24,7 +24,8 @@
       "Built and hire the gameplay engineering team: run technical interviews, onboarding, and mentorship for junior and mid engineers.",
       "Partner with Cinematics, VFX, Character, and Technical Art leads to land integrated gameplay features end-to-end.",
       "Established code-review, architecture, and Git/branching standards adopted across the engineering organisation."
-    ]
+    ],
+    "current": false
   },
   {
     "href": "",
