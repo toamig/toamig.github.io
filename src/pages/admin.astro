@@ -1035,6 +1035,20 @@
         <div class="form-group">
           <label>Period</label>
           <input id="f-period" value="${esc(it.period||'')}" placeholder="e.g. Jan 2023 - Present" />
+        </div>
+        <div class="form-group full" style="align-items:center;flex-direction:row;gap:10px;padding-top:4px">
+          <input type="checkbox" id="f-current" style="width:18px;height:18px;accent-color:var(--accent)" ${
+            (it.current !== undefined
+              ? it.current
+              : (it.period && (it.period.includes('Present') || it.period.includes('Ongoing')))
+            ) ? 'checked' : ''
+          } />
+          <label for="f-current" style="text-transform:none;font-size:13px;font-weight:600;color:var(--text);cursor:pointer">
+            Show "Current" pill on home page
+            <span style="display:block;font-weight:400;color:var(--muted);font-size:11.5px;margin-top:2px">
+              Overrides automatic detection from period text containing "Present" or "Ongoing".
+            </span>
+          </label>
         </div>` : `
         <div class="form-group full">
           <label>Short Description</label>
@@ -1762,11 +1776,26 @@
 
   function collectSimpleForm(): any {
     const get = (id: string) => (document.getElementById(id) as HTMLInputElement)?.value.trim() || '';
+    const checked = (id: string) => (document.getElementById(id) as HTMLInputElement)?.checked ?? false;
     const sec = state.section;
+
+    // Preserve any fields the form doesn't expose (e.g. bullets / location on
+    // experience entries, used by the CV PDFs). Otherwise saving from the
+    // admin would silently strip them.
+    const existing = state.editing?.item || {};
+
     if (sec === 'projects') {
-      return { href: get('f-href'), image: get('f-logo'), name: get('f-name'), desc: get('f-desc') };
+      return { ...existing, href: get('f-href'), image: get('f-logo'), name: get('f-name'), desc: get('f-desc') };
     }
-    return { href: get('f-href'), logo: get('f-logo'), name: get('f-name'), role: get('f-role'), period: get('f-period') };
+    return {
+      ...existing,
+      href:    get('f-href'),
+      logo:    get('f-logo'),
+      name:    get('f-name'),
+      role:    get('f-role'),
+      period:  get('f-period'),
+      current: checked('f-current'),
+    };
   }
 
   function collectTechForm(): any {

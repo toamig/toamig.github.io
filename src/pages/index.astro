@@ -104,7 +104,9 @@ for (const [r, c] of [[2,6],[3,0],[3,1],[4,6],[5,6]]) boardCells[r * 8 + c].piec
         <div class="cards-container">
           {experience.map(e => (
             <a class="extended-card" href={e.href} target="_blank" rel="noopener noreferrer">
-              {(e.period?.includes('Present') || e.period?.includes('Ongoing')) && (
+              {/* Explicit `current` flag from the admin wins; if undefined, fall
+                  back to auto-detecting from the period text for legacy data. */}
+              {((e as any).current ?? (e.period?.includes('Present') || e.period?.includes('Ongoing'))) && (
                 <span class="current-pill">Current</span>
               )}
               {e.logo
@@ -167,7 +169,8 @@ for (const [r, c] of [[2,6],[3,0],[3,1],[4,6],[5,6]]) boardCells[r * 8 + c].piec
         <div class="cards-container">
           {education.map(e => (
             <a class="extended-card" href={e.href} target="_blank" rel="noopener noreferrer">
-              {(e.period?.includes('Present') || e.period?.includes('Ongoing')) && (
+              {/* Same explicit-flag-with-fallback rule as experience above. */}
+              {((e as any).current ?? (e.period?.includes('Present') || e.period?.includes('Ongoing'))) && (
                 <span class="current-pill">Current</span>
               )}
               <img src={e.logo} alt={`${e.name} Logo`} class="card-logo" />
