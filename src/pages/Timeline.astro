@@ -1,5 +1,6 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import BaseLayout        from '../layouts/BaseLayout.astro';
+import HeroConstellation from '../components/HeroConstellation.astro';
 import events       from '../data/events.json';
 import profile      from '../data/profile.json';
 import timelineTags from '../data/timelineTags.json';
@@ -13,6 +14,7 @@ const filterTags = timelineTags.filter(t => t.filter);
 >
   <!-- ── About Hero ────────────────────────────────────────────────── -->
   <section id="about-2">
+    <HeroConstellation />
     <div class="about-content-2">
       <img src="/me/IMG_7.JPEG" alt="Profile Picture" class="profile-image" />
       <div class="about-text-2">

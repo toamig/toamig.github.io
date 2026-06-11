@@ -75,5 +75,97 @@ const {
         });
       });
     </script>
+
+    <!-- Site motion: scroll reveals + pointer glare. Classes are added here
+         (not in markup), so if this script never runs nothing is hidden. -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // ── Scroll reveals ─────────────────────────────────────────────
+        // Targets cover both server-rendered content and the Timeline's
+        // client-rendered event cards (picked up via MutationObserver).
+        const SELECTOR = [
+          '.section-header', '.extended-card', '.tech-category',
+          '.project-card', '.play-card', '.about-content',
+          '.event-card', '.timeline-year-mark', '.cv-card',
+        ].join(',');
+
+        if (!reduced) {
+          // rAF-throttled getBoundingClientRect sweep instead of
+          // IntersectionObserver: identical result, but immune to emulated /
+          // zoomed viewports where IO's rootBounds disagree with the layout
+          // viewport. ~30-80 elements per page — the sweep is negligible.
+          const pending = new Set<Element>();
+          let ticking = false;
+
+          const sweep = () => {
+            ticking = false;
+            const limit = innerHeight - 60;
+            for (const el of pending) {
+              const r = el.getBoundingClientRect();
+              if (r.top < limit && r.bottom > 0) {
+                el.classList.add('rv-in');
+                pending.delete(el);
+              }
+            }
+          };
+          const queue = () => {
+            if (!ticking && pending.size) { ticking = true; requestAnimationFrame(sweep); }
+          };
+
+          const prep = (el: Element) => {
+            if (el.classList.contains('rv')) return;
+            // Heroes run their own bespoke load animations — don't layer the
+            // scroll-reveal on top (avoids a double opacity/transform fight).
+            if (el.closest('.front-page, #about-2')) return;
+            // Stagger within the parent: cards cascade, lone elements don't wait.
+            const sibs = el.parentElement
+              ? Array.from(el.parentElement.children).filter(c => c.matches(SELECTOR))
+              : [el];
+            const i = Math.max(0, sibs.indexOf(el));
+            (el as HTMLElement).style.setProperty('--rv-delay', `${(i % 8) * 70}ms`);
+            el.classList.add('rv');
+            pending.add(el);
+            queue();
+          };
+
+          addEventListener('scroll', queue, { passive: true });
+          addEventListener('resize', queue, { passive: true });
+          // Tabs loaded in the background freeze rAF, so the initial sweep
+          // never runs. When the page becomes visible, unstick and re-sweep
+          // so above-the-fold content reveals without needing a scroll.
+          document.addEventListener('visibilitychange', () => {
+            if (document.hidden) return;
+            ticking = false;
+            queue();
+          });
+
+          document.querySelectorAll(SELECTOR).forEach(prep);
+
+          // Late-rendered content (Timeline filters re-render the grid).
+          new MutationObserver((muts) => {
+            for (const m of muts) {
+              m.addedNodes.forEach(node => {
+                if (!(node instanceof Element)) return;
+                if (node.matches(SELECTOR)) prep(node);
+                node.querySelectorAll?.(SELECTOR).forEach(prep);
+              });
+            }
+          }).observe(document.body, { childList: true, subtree: true });
+        }
+
+        // ── Pointer glare on cards ─────────────────────────────────────
+        if (!reduced && matchMedia('(hover: hover)').matches) {
+          document.addEventListener('pointermove', (e) => {
+            const card = (e.target as Element | null)?.closest?.('.extended-card, .project-card') as HTMLElement | null;
+            if (!card) return;
+            const r = card.getBoundingClientRect();
+            card.style.setProperty('--mx', `${((e.clientX - r.left) / r.width * 100).toFixed(2)}%`);
+            card.style.setProperty('--my', `${((e.clientY - r.top) / r.height * 100).toFixed(2)}%`);
+          }, { passive: true });
+        }
+      });
+    </script>
   </body>
 </html>

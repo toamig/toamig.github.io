@@ -263,16 +263,20 @@ header nav a.nav-resume:hover {
   background-size: 32px 32px;
   pointer-events: none;
 }
-/* Slow-drifting aurora layer */
+/* Slow-drifting aurora layer.
+   No filter: blur() — the radial gradients are already soft, and blurring a
+   large animated layer makes Chrome re-rasterise (and flicker) on focus
+   change. will-change pins it to its own GPU layer so the transform-only
+   drift stays smooth and composited. */
 .front-page::after {
   content: '';
   position: absolute;
   inset: -20%;
   background:
-    radial-gradient(ellipse 30% 40% at 30% 40%, rgba(255,138,76,.10) 0%, transparent 60%),
-    radial-gradient(ellipse 35% 35% at 70% 60%, rgba(59,151,211,.14) 0%, transparent 60%);
-  filter: blur(20px);
+    radial-gradient(ellipse 30% 40% at 30% 40%, rgba(255,138,76,.12) 0%, transparent 62%),
+    radial-gradient(ellipse 35% 35% at 70% 60%, rgba(59,151,211,.16) 0%, transparent 62%);
   animation: aurora-drift 22s ease-in-out infinite alternate;
+  will-change: transform;
   pointer-events: none;
   z-index: 0;
 }
@@ -280,6 +284,23 @@ header nav a.nav-resume:hover {
   0%   { transform: translate(0, 0) rotate(0deg); }
   100% { transform: translate(-4%, 3%) rotate(6deg); }
 }
+
+/* WebGL constellation — sits between the aurora and the content. When the
+   canvas boots it adds .has-webgl to .front-page, which retires the static
+   dot grid (the live node graph replaces it). If WebGL fails, the dot grid
+   stays and the hero looks exactly as before. */
+.hero-constellation {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+/* When the canvas boots, retire the static dot grid on whichever hero it
+   lives in — the live node graph replaces it. */
+.front-page.has-webgl::before,
+#about-2.has-webgl::before { display: none; }
 .front-page-content {
   display: flex;
   flex-direction: column;
@@ -855,7 +876,11 @@ footer p { font-size: 13px; opacity: 0.4; letter-spacing: .02em; }
   min-height: 100vh;
   padding: 90px 0 80px;
   text-align: center;
-  overflow-x: hidden;
+  /* Both axes: clips the decorative aurora/constellation overhang. Using
+     only overflow-x here forces overflow-y to compute as `auto`, which
+     turns the hero into a scroll container and traps the wheel on the
+     aurora's bottom overhang. */
+  overflow: hidden;
   width: 100%;
   display: flex;
   align-items: center;
@@ -869,6 +894,21 @@ footer p { font-size: 13px; opacity: 0.4; letter-spacing: .02em; }
   background-image: radial-gradient(rgba(255,255,255,.04) 1px, transparent 1px);
   background-size: 32px 32px;
   pointer-events: none;
+}
+/* Slow-drifting aurora — mirrors the home hero so both "chapter cover"
+   heroes share the same living atmosphere behind the WebGL constellation.
+   No blur (flicker-free); will-change keeps it on a stable GPU layer. */
+#about-2::after {
+  content: '';
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(ellipse 30% 40% at 30% 40%, rgba(255,138,76,.12) 0%, transparent 62%),
+    radial-gradient(ellipse 35% 35% at 70% 60%, rgba(59,151,211,.16) 0%, transparent 62%);
+  animation: aurora-drift 22s ease-in-out infinite alternate;
+  will-change: transform;
+  pointer-events: none;
+  z-index: 0;
 }
 .about-content-2 {
   display: flex;
@@ -1434,6 +1474,7 @@ footer p { font-size: 13px; opacity: 0.4; letter-spacing: .02em; }
   .date-sort-row { flex-wrap: wrap; gap: 14px; }
   .timeline-grid { padding-left: 50px; }
   .timeline-grid::before { left: 25px; }
+  .timeline-year-mark { margin-left: -46px; }   /* track padding-left so year stays on-screen */
   .event-card::before { left: -41px; }
   .event-card::after { left: -25px; width: 25px; }
   header { padding: 14px 32px; }
@@ -1541,6 +1582,7 @@ footer p { font-size: 13px; opacity: 0.4; letter-spacing: .02em; }
   .sort-toggle-btn { width: 100%; justify-content: center; font-size: 12px; padding: 8px 14px; }
   .timeline-grid { padding-left: 25px; padding-right: 5px; width: calc(100% - 10px); margin-left: 5px; }
   .timeline-grid::before { left: 10px; width: 2px; }
+  .timeline-year-mark { margin-left: -21px; }   /* track padding-left so year stays on-screen */
   .event-card { padding: 14px 12px; margin-bottom: 14px; border-radius: 10px; width: calc(100% - 5px); }
   .event-card::before { left: -20px; top: 18px; width: 10px; height: 10px; border-width: 2px; }
   .event-card::after { left: -15px; top: 22px; width: 15px; }
@@ -1597,6 +1639,7 @@ footer p { font-size: 13px; opacity: 0.4; letter-spacing: .02em; }
   .filter-btn { flex: 1 1 100%; min-width: 100%; font-size: 10px; padding: 7px 6px; }
   .timeline-grid { padding-left: 20px; padding-right: 3px; width: calc(100% - 6px); margin-left: 3px; }
   .timeline-grid::before { left: 8px; }
+  .timeline-year-mark { margin-left: -16px; }   /* track padding-left so year stays on-screen */
   .event-card { padding: 10px 8px; margin-bottom: 12px; width: calc(100% - 3px); }
   .event-card::before { left: -16px; top: 14px; width: 8px; height: 8px; }
   .event-card::after { left: -12px; top: 17px; width: 12px; }
@@ -1785,5 +1828,56 @@ footer p { font-size: 13px; opacity: 0.4; letter-spacing: .02em; }
   .cv-preview-name { font-size: 26px; }
   .cv-card-body { padding: 20px 22px 22px; }
   .cv-card h3 { font-size: 22px; }
+}
+
+/* ─── Scroll reveals ─────────────────────────────────────────────────────────
+   The .rv class is applied by JS (BaseLayout site-motion script), so a
+   missing/failed script leaves everything visible. Stagger comes from the
+   per-element --rv-delay set by the script. */
+@media (prefers-reduced-motion: no-preference) {
+  .rv {
+    opacity: 0;
+    transform: translateY(26px);
+    transition:
+      opacity .7s ease var(--rv-delay, 0s),
+      transform .8s cubic-bezier(.16,.7,.2,1) var(--rv-delay, 0s);
+  }
+  .rv.rv-in { opacity: 1; transform: none; }
+}
+
+/* ─── Pointer glare on cards ─────────────────────────────────────────────────
+   A soft specular highlight that follows the cursor. Position is driven by
+   --mx / --my (set per-card by the site-motion script); opacity rides the
+   existing hover state. ::after is free on these cards (::before is the
+   bottom glow). */
+.extended-card::after,
+.project-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    280px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(255,255,255,.22) 0%,
+    rgba(255,255,255,.06) 35%,
+    transparent 65%
+  );
+  opacity: 0;
+  transition: opacity .3s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+.project-card::after {
+  background: radial-gradient(
+    320px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(255,255,255,.14) 0%,
+    transparent 60%
+  );
+}
+.extended-card:hover::after,
+.project-card:hover::after { opacity: 1; }
+@media (prefers-reduced-motion: reduce), (hover: none) {
+  .extended-card::after,
+  .project-card::after { display: none; }
 }
 

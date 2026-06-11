@@ -1,0 +1,262 @@
+---
+// WebGL "system graph" — drifting nodes with distance-based links, rendered
+// behind the hero content. A literal node graph: the systems/engineering
+// metaphor for "I lead the engineering behind games".
+//
+// Design constraints:
+//   - Dependency-free. Raw WebGL1, ~2 draw calls per frame.
+//   - Palette-locked: blue-white nodes (the site's --blue family) with rare
+//     coral ones (--accent). Low alpha everywhere — atmosphere, not disco.
+//   - prefers-reduced-motion: renders ONE static frame, no loop, no mouse.
+//   - WebGL unavailable: canvas stays empty and the existing CSS gradient /
+//     aurora layers carry the hero unchanged.
+//   - Pauses when the tab is hidden.
+---
+<canvas class="hero-constellation" aria-hidden="true"></canvas>
+
+<script>
+  const canvas = document.querySelector<HTMLCanvasElement>('.hero-constellation');
+
+  function boot(cv: HTMLCanvasElement) {
+    // preserveDrawingBuffer: true keeps the last full frame in the buffer so
+    // off-cadence composites (triggered by hover/focus repaints) never show a
+    // cleared/half-drawn frame — that was the flicker. Negligible cost here.
+    const gl = cv.getContext('webgl', {
+      alpha: true,
+      premultipliedAlpha: true,
+      antialias: true,
+      preserveDrawingBuffer: true,
+    });
+    if (!gl) return; // CSS-only hero remains
+
+    // Host = the hero section this canvas was dropped into (home or timeline).
+    const host = cv.closest('.front-page, #about-2') ?? cv.parentElement ?? cv;
+    host.classList.add('has-webgl');
+
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // ── Shaders ──────────────────────────────────────────────────────────
+    const compile = (type: number, src: string) => {
+      const s = gl.createShader(type)!;
+      gl.shaderSource(s, src); gl.compileShader(s);
+      return s;
+    };
+    const program = (vs: string, fs: string) => {
+      const p = gl.createProgram()!;
+      gl.attachShader(p, compile(gl.VERTEX_SHADER, vs));
+      gl.attachShader(p, compile(gl.FRAGMENT_SHADER, fs));
+      gl.linkProgram(p);
+      return p;
+    };
+
+    // Lines: position + rgba per vertex.
+    const lineProg = program(`
+      attribute vec2 a_pos; attribute vec4 a_col;
+      uniform vec2 u_res; uniform vec2 u_off;
+      varying vec4 v_col;
+      void main() {
+        vec2 p = (a_pos + u_off) / u_res * 2.0 - 1.0;
+        gl_Position = vec4(p.x, -p.y, 0.0, 1.0);
+        v_col = a_col;
+      }`, `
+      precision mediump float; varying vec4 v_col;
+      void main() { gl_FragColor = vec4(v_col.rgb * v_col.a, v_col.a); }`);
+
+    // Points: soft circular sprite.
+    const pointProg = program(`
+      attribute vec2 a_pos; attribute float a_size; attribute vec4 a_col;
+      uniform vec2 u_res; uniform vec2 u_off; uniform float u_dpr;
+      varying vec4 v_col;
+      void main() {
+        vec2 p = (a_pos + u_off) / u_res * 2.0 - 1.0;
+        gl_Position = vec4(p.x, -p.y, 0.0, 1.0);
+        gl_PointSize = a_size * u_dpr;
+        v_col = a_col;
+      }`, `
+      precision mediump float; varying vec4 v_col;
+      void main() {
+        float d = distance(gl_PointCoord, vec2(0.5));
+        float a = smoothstep(0.5, 0.12, d) * v_col.a;
+        gl_FragColor = vec4(v_col.rgb * a, a);
+      }`);
+
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.ONE, gl.ONE); // premultiplied additive — soft glow on dark bg
+
+    const lineBuf  = gl.createBuffer();
+    const pointBuf = gl.createBuffer();
+
+    // ── Simulation state ─────────────────────────────────────────────────
+    interface Node { x: number; y: number; vx: number; vy: number; size: number; coral: boolean; }
+    let nodes: Node[] = [];
+    let W = 0, H = 0, dpr = 1;
+    const LINK = 130;          // px — max link distance
+    const SPEED = 9;           // px/s drift
+    const MARGIN = 60;         // wrap margin beyond edges
+
+    // Palette (premultiplied later in shader): blue-white + coral.
+    const BLUE  = [0.66, 0.82, 0.95];
+    const CORAL = [1.0, 0.62, 0.36];
+
+    function seed() {
+      const count = Math.round(Math.min(130, Math.max(50, (W * H) / (dpr * dpr) / 13000)));
+      nodes = Array.from({ length: count }, () => {
+        const a = Math.random() * Math.PI * 2;
+        return {
+          x: Math.random() * W, y: Math.random() * H,
+          vx: Math.cos(a) * SPEED, vy: Math.sin(a) * SPEED,
+          size: 2.2 + Math.random() * 2.6,
+          coral: Math.random() < 0.10,
+        };
+      });
+    }
+
+    function resize() {
+      dpr = Math.min(devicePixelRatio || 1, 2);
+      const r = cv.getBoundingClientRect();
+      const w = Math.round(r.width * dpr), h = Math.round(r.height * dpr);
+      if (w === cv.width && h === cv.height) return;
+      cv.width = w; cv.height = h;
+      W = w; H = h;
+      gl.viewport(0, 0, w, h);
+      seed();
+    }
+
+    // ── Pointer (smoothly lerped parallax + repel) ───────────────────────
+    let tx = 0, ty = 0;        // raw pointer in canvas px
+    let mx = 0, my = 0;        // lerped pointer (drives repel)
+    let active = false;        // pointer currently over the hero
+    let pOffX = 0, pOffY = 0;  // current parallax offset, eased toward target
+    const PARALLAX = 10;       // max field shift (px × dpr)
+    if (!reduced) {
+      host.addEventListener('pointermove', (e: Event) => {
+        const r = cv.getBoundingClientRect();
+        const pe = e as PointerEvent;
+        tx = (pe.clientX - r.left) * dpr;
+        ty = (pe.clientY - r.top) * dpr;
+        if (!active) { mx = tx; my = ty; active = true; } // snap on entry, lerp after
+      });
+      // Don't reset the pointer on leave — just stop tracking. The parallax
+      // offset eases back to 0 in draw(), so nothing snaps.
+      host.addEventListener('pointerleave', () => { active = false; });
+    }
+
+    // ── Frame ────────────────────────────────────────────────────────────
+    const lineVerts: number[] = [];
+    const pointVerts: number[] = [];
+
+    function step(dt: number) {
+      const repelR = 110 * dpr;
+      for (const n of nodes) {
+        if (active) {
+          const dx = n.x - mx, dy = n.y - my;
+          const d2 = dx * dx + dy * dy;
+          if (d2 < repelR * repelR && d2 > 1) {
+            const d = Math.sqrt(d2);
+            const f = (1 - d / repelR) * 26 * dpr * dt;
+            n.vx += (dx / d) * f; n.vy += (dy / d) * f;
+          }
+        }
+        // gentle speed cap so repulsion never accumulates into chaos
+        const sp = Math.hypot(n.vx, n.vy), cap = SPEED * 2.4;
+        if (sp > cap) { n.vx = (n.vx / sp) * cap; n.vy = (n.vy / sp) * cap; }
+        n.x += n.vx * dpr * dt; n.y += n.vy * dpr * dt;
+        if (n.x < -MARGIN) n.x = W + MARGIN; else if (n.x > W + MARGIN) n.x = -MARGIN;
+        if (n.y < -MARGIN) n.y = H + MARGIN; else if (n.y > H + MARGIN) n.y = -MARGIN;
+      }
+    }
+
+    function draw() {
+      // Lerp pointer (when active) and ease the parallax offset toward its
+      // target. When inactive the target is 0, so the field drifts back home
+      // smoothly instead of snapping.
+      if (active) { mx += (tx - mx) * 0.08; my += (ty - my) * 0.08; }
+      const tgtX = active ? ((mx / W) - 0.5) * -PARALLAX * dpr : 0;
+      const tgtY = active ? ((my / H) - 0.5) * -PARALLAX * dpr : 0;
+      pOffX += (tgtX - pOffX) * 0.05;
+      pOffY += (tgtY - pOffY) * 0.05;
+      const offX = pOffX, offY = pOffY;
+
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+
+      // Build links
+      const linkD = LINK * dpr;
+      lineVerts.length = 0;
+      for (let i = 0; i < nodes.length; i++) {
+        const a = nodes[i];
+        for (let j = i + 1; j < nodes.length; j++) {
+          const b = nodes[j];
+          const dx = a.x - b.x, dy = a.y - b.y;
+          const d2 = dx * dx + dy * dy;
+          if (d2 > linkD * linkD) continue;
+          const alpha = (1 - Math.sqrt(d2) / linkD) * 0.14;
+          const col = (a.coral || b.coral) ? CORAL : BLUE;
+          lineVerts.push(a.x, a.y, col[0], col[1], col[2], alpha,
+                         b.x, b.y, col[0], col[1], col[2], alpha);
+        }
+      }
+
+      // Lines
+      gl.useProgram(lineProg);
+      gl.uniform2f(gl.getUniformLocation(lineProg, 'u_res'), W, H);
+      gl.uniform2f(gl.getUniformLocation(lineProg, 'u_off'), offX, offY);
+      gl.bindBuffer(gl.ARRAY_BUFFER, lineBuf);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(lineVerts), gl.DYNAMIC_DRAW);
+      const lPos = gl.getAttribLocation(lineProg, 'a_pos');
+      const lCol = gl.getAttribLocation(lineProg, 'a_col');
+      gl.enableVertexAttribArray(lPos);
+      gl.enableVertexAttribArray(lCol);
+      gl.vertexAttribPointer(lPos, 2, gl.FLOAT, false, 24, 0);
+      gl.vertexAttribPointer(lCol, 4, gl.FLOAT, false, 24, 8);
+      gl.drawArrays(gl.LINES, 0, lineVerts.length / 6);
+
+      // Points
+      pointVerts.length = 0;
+      for (const n of nodes) {
+        const col = n.coral ? CORAL : BLUE;
+        const alpha = n.coral ? 0.85 : 0.55;
+        pointVerts.push(n.x, n.y, n.size, col[0], col[1], col[2], alpha);
+      }
+      gl.useProgram(pointProg);
+      gl.uniform2f(gl.getUniformLocation(pointProg, 'u_res'), W, H);
+      gl.uniform2f(gl.getUniformLocation(pointProg, 'u_off'), offX * 1.6, offY * 1.6);
+      gl.uniform1f(gl.getUniformLocation(pointProg, 'u_dpr'), dpr);
+      gl.bindBuffer(gl.ARRAY_BUFFER, pointBuf);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pointVerts), gl.DYNAMIC_DRAW);
+      const pPos  = gl.getAttribLocation(pointProg, 'a_pos');
+      const pSize = gl.getAttribLocation(pointProg, 'a_size');
+      const pCol  = gl.getAttribLocation(pointProg, 'a_col');
+      gl.enableVertexAttribArray(pPos);
+      gl.enableVertexAttribArray(pSize);
+      gl.enableVertexAttribArray(pCol);
+      gl.vertexAttribPointer(pPos,  2, gl.FLOAT, false, 28, 0);
+      gl.vertexAttribPointer(pSize, 1, gl.FLOAT, false, 28, 8);
+      gl.vertexAttribPointer(pCol,  4, gl.FLOAT, false, 28, 12);
+      gl.drawArrays(gl.POINTS, 0, pointVerts.length / 7);
+    }
+
+    // ── Loop ─────────────────────────────────────────────────────────────
+    resize();
+    new ResizeObserver(resize).observe(cv);
+
+    if (reduced) { draw(); return; } // one static frame
+
+    let raf = 0, last = performance.now();
+    const loop = (now: number) => {
+      const dt = Math.min((now - last) / 1000, 0.05);
+      last = now;
+      step(dt);
+      draw();
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) { cancelAnimationFrame(raf); raf = 0; }
+      else if (!raf) { last = performance.now(); raf = requestAnimationFrame(loop); }
+    });
+  }
+
+  if (canvas) boot(canvas);
+</script>

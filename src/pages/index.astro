@@ -1,7 +1,8 @@
 ---
-import BaseLayout    from '../layouts/BaseLayout.astro';
-import Logo          from '../components/Logo.astro';
-import ResumeChooser from '../components/ResumeChooser.astro';
+import BaseLayout        from '../layouts/BaseLayout.astro';
+import Logo              from '../components/Logo.astro';
+import ResumeChooser     from '../components/ResumeChooser.astro';
+import HeroConstellation from '../components/HeroConstellation.astro';
 import education      from '../data/education.json';
 import experience     from '../data/experience.json';
 import technologies   from '../data/technologies.json';
@@ -29,6 +30,7 @@ for (const [r, c] of [[2,6],[3,0],[3,1],[4,6],[5,6]]) boardCells[r * 8 + c].piec
 >
   <!-- ── Hero ─────────────────────────────────────────────────────── -->
   <div class="front-page">
+    <HeroConstellation />
     <div class="front-page-content">
       <div class="hero-status" aria-label="Current role">
         <span class="status-dot" aria-hidden="true"></span>
