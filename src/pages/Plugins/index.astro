@@ -36,6 +36,13 @@ const statusMeta: Record<Plugin['status'], { label: string; color: string }> = {
   'in-development': { label: 'In Development',   color: '#6b7280' },
   'coming-soon':    { label: 'Coming Soon',       color: '#8b5cf6' },
 };
+
+const total = plugins.length;
+const liveCount   = plugins.filter(p => p.status === 'live').length;
+const launchCount = plugins.filter(p => p.status === 'pre-launch').length;
+const wipCount    = plugins.filter(p => p.status === 'in-development' || p.status === 'coming-soon').length;
+// Distinct domains, for the hero meta line.
+const domains = [...new Set(plugins.map(p => p.domain).filter(Boolean))];
 ---
 
 <!DOCTYPE html>
@@ -48,7 +55,7 @@ const statusMeta: Record<Plugin['status'], { label: string; color: string }> = {
   <link rel="icon" href="/logo_head.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" />
   <!-- Open Graph (Facebook, LinkedIn, Discord, Slack, iMessage, WhatsApp) -->
   <meta property="og:type"        content="website" />
   <meta property="og:url"         content="https://toamig.github.io/Plugins" />
@@ -79,13 +86,27 @@ const statusMeta: Record<Plugin['status'], { label: string; color: string }> = {
   <!-- ── Hero ─────────────────────────────────────────────────────────── -->
   <section class="hero">
     <canvas id="hero-circuits" aria-hidden="true"></canvas>
-    <p class="eyebrow">Unreal Engine 5</p>
-    <h1>Plugins</h1>
-    <p class="sub">Production-grade tools for world-building, combat systems, and pipeline automation.</p>
+    <p class="eyebrow"><span class="eyebrow-mark" aria-hidden="true"></span>Unreal Engine 5</p>
+    <h1>Modular Plugins</h1>
+    <p class="sub">Production-grade systems for world-building, combat, and pipeline automation — fragment-based, multiplayer-ready, extensible per project.</p>
+    <ul class="hero-meta" aria-label="At a glance">
+      <li><strong>{total}</strong> plugins</li>
+      <li><strong>{domains.length}</strong> domains</li>
+      <li>UE&nbsp;5.x</li>
+      <li>Blueprint&nbsp;+&nbsp;C++</li>
+    </ul>
   </section>
 
   <!-- ── Grid ──────────────────────────────────────────────────────────── -->
   <section class="grid-wrap">
+    <header class="grid-head">
+      <h2 class="grid-title">The collection</h2>
+      <div class="grid-legend" aria-hidden="true">
+        {liveCount > 0 && <span class="lg lg-live">{liveCount} live</span>}
+        {launchCount > 0 && <span class="lg lg-launch">{launchCount} pre-launch</span>}
+        {wipCount > 0 && <span class="lg lg-wip">{wipCount} in development</span>}
+      </div>
+    </header>
     <div class="grid">
       {plugins.map((p, i) => {
         const meta = statusMeta[p.status];
@@ -132,8 +153,22 @@ const statusMeta: Record<Plugin['status'], { label: string; color: string }> = {
         );
       })}
     </div>
-    <p class="grid-foot">More plugins in development.</p>
   </section>
+
+  <!-- ── Footer ────────────────────────────────────────────────────────── -->
+  <footer class="site-foot">
+    <div class="foot-inner">
+      <div class="foot-brand">
+        <span class="foot-dot" aria-hidden="true"></span>
+        <span>More plugins in development</span>
+      </div>
+      <div class="foot-links">
+        <a href="/">migueltechlead.pt</a>
+        <span class="foot-sep" aria-hidden="true">·</span>
+        <span class="foot-by">Built by Miguel Vieira</span>
+      </div>
+    </div>
+  </footer>
 
 
 <script>
@@ -156,6 +191,8 @@ const statusMeta: Record<Plugin['status'], { label: string; color: string }> = {
   let base = null, segments = [], project = null;
   let W = 0, H = 0, OX = 0, OY = 0;
   let pulses = [];
+  // Pointer parallax: current offset eased toward the target.
+  let pxOff = 0, pyOff = 0, tpx = 0, tpy = 0;
 
   function build() {
     W = hero.offsetWidth;
@@ -287,17 +324,21 @@ const statusMeta: Record<Plugin['status'], { label: string; color: string }> = {
   }
 
   function frame(dt) {
+    // Ease the parallax offset toward the pointer target (0 when away).
+    pxOff += (tpx - pxOff) * 0.06;
+    pyOff += (tpy - pyOff) * 0.06;
+
     ctx.clearRect(0, 0, W, H);
-    if (base) ctx.drawImage(base, 0, 0);
+    if (base) ctx.drawImage(base, pxOff, pyOff);
 
     ctx.lineCap = 'round';
     for (const p of pulses) {
       p.t += p.speed * dt;
       if (p.t >= 1 || !p.seg) { Object.assign(p, spawn()); continue; }
       const a = project(p.seg.c1, p.seg.r1), b = project(p.seg.c2, p.seg.r2);
-      const x  = a.x + (b.x - a.x) * p.t,            y  = a.y + (b.y - a.y) * p.t;
+      const x  = a.x + (b.x - a.x) * p.t + pxOff,     y  = a.y + (b.y - a.y) * p.t + pyOff;
       const tt = Math.max(0, p.t - 0.34);
-      const tx = a.x + (b.x - a.x) * tt,             ty = a.y + (b.y - a.y) * tt;
+      const tx = a.x + (b.x - a.x) * tt + pxOff,      ty = a.y + (b.y - a.y) * tt + pyOff;
       const g = ctx.createLinearGradient(tx, ty, x, y);
       g.addColorStop(0, 'rgba(129,140,248,0)');
       g.addColorStop(1, 'rgba(165,172,255,0.55)');
@@ -307,6 +348,8 @@ const statusMeta: Record<Plugin['status'], { label: string; color: string }> = {
       ctx.beginPath(); ctx.arc(x, y, 1.8, 0, Math.PI * 2); ctx.fill();
     }
 
+    // Centre fade stays anchored to the title (no parallax) so the copy area
+    // is always clear regardless of pointer.
     centreFade();
   }
 
@@ -344,6 +387,13 @@ const statusMeta: Record<Plugin['status'], { label: string; color: string }> = {
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) stop(); else start();
     });
+    // Pointer parallax — subtle depth as the cursor moves over the hero.
+    hero.addEventListener('pointermove', (e) => {
+      const r = hero.getBoundingClientRect();
+      tpx = ((e.clientX - r.left) / r.width  - 0.5) * -16;
+      tpy = ((e.clientY - r.top)  / r.height - 0.5) * -10;
+    });
+    hero.addEventListener('pointerleave', () => { tpx = 0; tpy = 0; });
   }
 
   let rt = 0;
@@ -363,12 +413,28 @@ const statusMeta: Record<Plugin['status'], { label: string; color: string }> = {
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+:root {
+  --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+
 body {
   font-family: 'Inter', system-ui, sans-serif;
   background: #06090f;
   color: #e2e8f0;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Fine grain overlay — adds tooth/depth over the flat near-black so the page
+   doesn't read as a plastic gradient. Fixed, non-interactive, very low alpha. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  opacity: .035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* ── Back pill ───────────────────────────────────────────────────────── */
@@ -427,47 +493,116 @@ body {
 
 .hero .eyebrow,
 .hero h1,
-.hero .sub {
+.hero .sub,
+.hero .hero-meta {
   position: relative;
   z-index: 1;
 }
 
 .eyebrow {
-  font-size: .7rem;
-  font-weight: 600;
-  letter-spacing: .14em;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--mono);
+  font-size: .72rem;
+  font-weight: 500;
+  letter-spacing: .2em;
   text-transform: uppercase;
-  color: #6366f1;
-  margin-bottom: 14px;
+  color: #818cf8;
+  margin-bottom: 18px;
+}
+.eyebrow-mark {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #818cf8;
+  box-shadow: 0 0 10px 1px rgba(129,140,248,.7);
 }
 
 h1 {
-  font-size: clamp(2.6rem, 6vw, 4rem);
+  font-size: clamp(2.6rem, 6vw, 4.1rem);
   font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: -.03em;
+  line-height: 1.04;
+  letter-spacing: -.035em;
   margin-bottom: 18px;
   padding-bottom: 0.12em;
-  background: linear-gradient(140deg, #fff 40%, #64748b);
+  background: linear-gradient(140deg, #fff 38%, #7c89a8);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .sub {
-  font-size: 1rem;
-  color: #64748b;
+  font-size: 1.02rem;
+  color: #8493a6;
   line-height: 1.7;
-  max-width: 520px;
+  max-width: 560px;
   margin: 0 auto;
 }
 
+/* Hero meta — factual at-a-glance signals in mono */
+.hero-meta {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 4px 0;
+  margin: 26px auto 0;
+  font-family: var(--mono);
+  font-size: .76rem;
+  letter-spacing: .04em;
+  color: #64748b;
+}
+.hero-meta li { display: inline-flex; align-items: center; }
+.hero-meta li:not(:first-child)::before {
+  content: '·';
+  color: rgba(148,163,184,.45);
+  margin: 0 16px;
+}
+.hero-meta strong { color: #cbd5e1; font-weight: 700; }
+
 /* ── Grid ────────────────────────────────────────────────────────────── */
 .grid-wrap {
-  padding: 56px 24px 96px;
+  padding: 48px 24px 40px;
   max-width: 1100px;
   margin: 0 auto;
 }
+
+/* Section header — editorial label + live status legend */
+.grid-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 26px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+}
+.grid-title {
+  font-size: .82rem;
+  font-weight: 600;
+  letter-spacing: .02em;
+  color: #cbd5e1;
+}
+.grid-legend {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-family: var(--mono);
+  font-size: .68rem;
+  letter-spacing: .04em;
+  color: #64748b;
+}
+.grid-legend .lg { display: inline-flex; align-items: center; gap: 6px; }
+.grid-legend .lg::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+}
+.grid-legend .lg-live::before   { background: #22c55e; }
+.grid-legend .lg-launch::before { background: #f59e0b; }
+.grid-legend .lg-wip::before    { background: #6b7280; }
 
 .grid {
   display: grid;
@@ -539,9 +674,10 @@ h1 {
   gap: 6px;
   padding: 4px 11px 4px 9px;
   border-radius: 99px;
-  font-size: .65rem;
+  font-family: var(--mono);
+  font-size: .63rem;
   font-weight: 600;
-  letter-spacing: .12em;
+  letter-spacing: .1em;
   text-transform: uppercase;
   color: var(--s);
   background: color-mix(in srgb, var(--s) 14%, rgba(6,9,15,.72));
@@ -611,17 +747,19 @@ h2 {
   line-height: 1;
 }
 .domain {
-  font-size: .65rem;
-  font-weight: 700;
-  letter-spacing: .14em;
+  font-family: var(--mono);
+  font-size: .64rem;
+  font-weight: 600;
+  letter-spacing: .12em;
   text-transform: uppercase;
   color: color-mix(in srgb, var(--accent-l) 85%, #cbd5e1);
 }
 .meta-dot { color: rgba(148,163,184,.25); font-weight: 700; }
 .ver {
-  font-size: .67rem;
+  font-family: var(--mono);
+  font-size: .66rem;
   font-weight: 500;
-  color: rgba(148,163,184,.55);
+  color: rgba(148,163,184,.6);
   font-variant-numeric: tabular-nums;
 }
 
@@ -643,9 +781,10 @@ h2 {
   align-content: flex-start;
 }
 .chip {
-  font-size: .68rem;
-  font-weight: 600;
-  letter-spacing: .02em;
+  font-family: var(--mono);
+  font-size: .66rem;
+  font-weight: 500;
+  letter-spacing: .01em;
   color: #aeb9c8;
   padding: 3px 9px;
   border-radius: 6px;
@@ -700,20 +839,61 @@ h2 {
 }
 .btn-fab.disabled { cursor: default; pointer-events: none; }
 
-/* ── Closing line ────────────────────────────────────────────────────── */
-.grid-foot {
-  margin: 48px 0 0;
-  text-align: center;
+/* ── Footer ──────────────────────────────────────────────────────────── */
+.site-foot {
+  border-top: 1px solid rgba(255,255,255,.06);
+  background: linear-gradient(180deg, transparent, rgba(99,102,241,.03));
+}
+.foot-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 28px 24px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.foot-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: .76rem;
+  letter-spacing: .04em;
+  color: #64748b;
+}
+.foot-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #6366f1;
+  box-shadow: 0 0 8px 1px rgba(99,102,241,.6);
+}
+.foot-links {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
   font-size: .82rem;
   color: #475569;
 }
+.foot-links a {
+  color: #94a3b8;
+  text-decoration: none;
+  transition: color .15s;
+}
+.foot-links a:hover { color: #e2e8f0; }
+.foot-sep { color: rgba(148,163,184,.3); }
+.foot-by { font-family: var(--mono); font-size: .74rem; letter-spacing: .03em; }
 
 /* ── Responsive ──────────────────────────────────────────────────────── */
 @media (max-width: 600px) {
   .grid { grid-template-columns: 1fr; }
   .hero { padding: 90px 18px 44px; }
-  .grid-wrap { padding: 36px 18px 64px; }
+  .grid-wrap { padding: 36px 18px 28px; }
+  .grid-head { gap: 10px; }
   .home-pill { top: 14px; left: 14px; }
+  .hero-meta { font-size: .72rem; }
+  .foot-inner { padding: 24px 18px 36px; flex-direction: column; align-items: flex-start; gap: 12px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
