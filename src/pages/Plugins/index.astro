@@ -5,6 +5,7 @@ interface Plugin {
   name: string;
   tagline: string;
   domain: string;
+  tags?: string[];
   version: string;
   logo: string;
   cover: string;
@@ -86,18 +87,24 @@ const statusMeta: Record<Plugin['status'], { label: string; color: string }> = {
   <!-- ── Grid ──────────────────────────────────────────────────────────── -->
   <section class="grid-wrap">
     <div class="grid">
-      {plugins.map(p => {
+      {plugins.map((p, i) => {
         const meta = statusMeta[p.status];
         return (
-          <article class="card" style={`--accent:${p.accent};--accent-l:${p.accentLight};`}>
+          <article class="card" style={`--accent:${p.accent};--accent-l:${p.accentLight};--i:${i};`}>
+            <span class="card-rail" aria-hidden="true" />
             <div class="card-cover">
               <img src={p.cover} alt={`${p.name} cover`} loading="lazy" />
               <div class="cover-fade" />
-              <span class="badge" style={`--s:${meta.color};`}>{meta.label}</span>
+              <span class="badge" style={`--s:${meta.color};`}>
+                <span class="badge-dot" aria-hidden="true" />
+                {meta.label}
+              </span>
             </div>
             <div class="card-body">
               <div class="card-header">
-                <img src={p.logo} alt={`${p.name} logo`} class="card-logo" />
+                <span class="card-logo-tile">
+                  <img src={p.logo} alt={`${p.name} logo`} class="card-logo" />
+                </span>
                 <div class="card-title-block">
                   <h2>{p.name}</h2>
                   <div class="card-meta">
@@ -108,11 +115,16 @@ const statusMeta: Record<Plugin['status'], { label: string; color: string }> = {
                 </div>
               </div>
               <p class="tagline">{p.tagline}</p>
+              {p.tags && p.tags.length > 0 && (
+                <ul class="chips" aria-label="Capabilities">
+                  {p.tags.map(t => <li class="chip">{t}</li>)}
+                </ul>
+              )}
               <div class="actions">
                 {p.docsUrl && <a href={p.docsUrl} class="btn-docs">Documentation</a>}
                 {p.fabUrl
                   ? <a href={p.fabUrl} class="btn-fab" target="_blank" rel="noopener">Get on Fab ↗</a>
-                  : <span class="btn-fab disabled">Not on Fab yet</span>
+                  : <span class="btn-fab disabled">Fab soon</span>
                 }
               </div>
             </div>
@@ -134,106 +146,83 @@ const statusMeta: Record<Plugin['status'], { label: string; color: string }> = {
     };
   }
 
-  const canvas = document.getElementById('hero-circuits');
-  const hero   = canvas.parentElement;
+  const canvas  = document.getElementById('hero-circuits');
+  const hero    = canvas.parentElement;
+  const ctx     = canvas.getContext('2d');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  function draw() {
-    const W = hero.offsetWidth;
-    const H = hero.offsetHeight;
+  // Built once per layout: the static circuit baked to an offscreen canvas,
+  // plus the segment list + projection so pulses can travel the same traces.
+  let base = null, segments = [], project = null;
+  let W = 0, H = 0, OX = 0, OY = 0;
+  let pulses = [];
+
+  function build() {
+    W = hero.offsetWidth;
+    H = hero.offsetHeight;
     canvas.width  = W;
     canvas.height = H;
 
-    const ctx  = canvas.getContext('2d');
     const rand = rng(6487);
-
     const STEP   = 26;
-    const OX     = W / 2;
-    const OY     = H * 0.26;   // grid origin — upper hero, where the glow is
-    const FOLD_Y = H * 0.64;   // where the wall surface folds into the floor
-    const R_FOLD = Math.round((FOLD_Y - OY) / STEP); // grid row at the fold
-    const CAM    = 190;        // perspective camera distance — higher = gentler
-    const VS     = 0.52;       // floor vertical scale (< 1 = floor recedes at angle, not straight down)
+    OX = W / 2;
+    OY = H * 0.26;            // grid origin — upper hero, where the glow is
+    const FOLD_Y = H * 0.64;  // where the wall surface folds into the floor
+    const R_FOLD = Math.round((FOLD_Y - OY) / STEP);
+    const CAM    = 190;
+    const VS     = 0.52;
 
-    // Dual projection: flat wall above fold, perspective floor below
-    function project(c, r) {
+    project = function (c, r) {
       const flatY = OY + r * STEP;
-      if (flatY <= FOLD_Y) {
-        // Wall — straight H/V
-        return { x: OX + c * STEP, y: flatY };
-      }
-      // Floor — perspective diverging away from centre as depth grows
-      const depth  = r - R_FOLD;                        // steps below the fold
-      const spread = 1 + (depth * STEP) / CAM;          // grows with depth → traces fan outward
-      return {
-        x: OX + c * STEP * spread,
-        y: FOLD_Y + depth * STEP * VS,
-      };
-    }
+      if (flatY <= FOLD_Y) return { x: OX + c * STEP, y: flatY };
+      const depth  = r - R_FOLD;
+      const spread = 1 + (depth * STEP) / CAM;
+      return { x: OX + c * STEP * spread, y: FOLD_Y + depth * STEP * VS };
+    };
 
-    // 4 dirs: R / D / L / U
     const DC      = [ 1,  0, -1,  0];
     const DR      = [ 0,  1,  0, -1];
     const REVERSE = [ 2,  3,  0,  1];
-
-    const visited  = new Set();
-    const segments = [];
-    const dots     = [];
+    const visited = new Set();
+    segments = [];
+    const dots = [];
 
     function walk(c, r, dir, energy) {
       if (energy <= 0) return;
-
       const steps = 3 + Math.floor(rand() * 7);
       let pc = c, pr = r, walked = 0;
-
       for (let i = 0; i < steps; i++) {
-        const nc = pc + DC[dir];
-        const nr = pr + DR[dir];
-        const nk = `${nc},${nr}`;
+        const nc = pc + DC[dir], nr = pr + DR[dir], nk = `${nc},${nr}`;
         if (visited.has(nk)) break;
         const sp = project(nc, nr);
         if (sp.x < -STEP || sp.x > W + STEP || sp.y < -STEP || sp.y > H + STEP) break;
         visited.add(nk);
         segments.push({ c1: pc, r1: pr, c2: nc, r2: nr });
-        pc = nc; pr = nr;
-        walked++;
+        pc = nc; pr = nr; walked++;
       }
-
       if (walked === 0) return;
-
       const nextEnergy = energy - walked * 2 - rand() * 4;
       const { x: sx } = project(pc, pr);
-
-      if (nextEnergy < 6) {
-        dots.push({ c: pc, r: pr });
-        return;
-      }
-
-      const distFromCenter = Math.abs(sx - OX) / (W / 2); // 0 = centre, 1 = edge
+      if (nextEnergy < 6) { dots.push({ c: pc, r: pr }); return; }
+      const distFromCenter = Math.abs(sx - OX) / (W / 2);
       const options = [];
       for (let d = 0; d < 4; d++) {
         if (d === REVERSE[dir]) continue;
         let w = 1;
-        // Strong outward push — near centre gets no boost, edges get heavy boost
-        const goesRight = DC[d] > 0, goesLeft = DC[d] < 0;
-        if (goesRight && sx > OX) w += 1 + Math.round(distFromCenter * 4);
-        if (goesLeft  && sx < OX) w += 1 + Math.round(distFromCenter * 4);
+        if (DC[d] > 0 && sx > OX) w += 1 + Math.round(distFromCenter * 4);
+        if (DC[d] < 0 && sx < OX) w += 1 + Math.round(distFromCenter * 4);
         if (DR[d] > 0)            w += 1;
         for (let j = 0; j < w; j++) options.push(d);
       }
-
       const nd = options[Math.floor(rand() * options.length)];
       dots.push({ c: pc, r: pr });
       walk(pc, pr, nd, nextEnergy);
-
-      // Branch more eagerly and at lower energy threshold
       if (rand() < 0.55 && nextEnergy > 14) {
         const others = options.filter(d => d !== nd);
-        if (others.length)
-          walk(pc, pr, others[Math.floor(rand() * others.length)], nextEnergy * 0.6);
+        if (others.length) walk(pc, pr, others[Math.floor(rand() * others.length)], nextEnergy * 0.6);
       }
     }
 
-    // Seeds: cluster around the grid origin
     const seeds = 20 + Math.floor(rand() * 6);
     for (let i = 0; i < seeds; i++) {
       const c = Math.round((rand() - 0.5) * 20);
@@ -242,42 +231,51 @@ const statusMeta: Record<Plugin['status'], { label: string; color: string }> = {
       walk(c, r, Math.floor(rand() * 4), 95 + rand() * 95);
     }
 
-    // ── Glow pass ─────────────────────────────────────────────────────────
-    ctx.lineWidth   = 4;
-    ctx.lineCap     = 'round';
-    ctx.strokeStyle = 'rgba(99,102,241,0.05)';
-    ctx.beginPath();
+    // Bake the static circuit (no centre fade — that's applied per-frame so
+    // it dissolves the pulses behind the title too).
+    base = document.createElement('canvas');
+    base.width = W; base.height = H;
+    const bx = base.getContext('2d');
+
+    bx.lineWidth = 4; bx.lineCap = 'round'; bx.strokeStyle = 'rgba(99,102,241,0.05)';
+    bx.beginPath();
     for (const s of segments) {
       const p1 = project(s.c1, s.r1), p2 = project(s.c2, s.r2);
-      ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y);
+      bx.moveTo(p1.x, p1.y); bx.lineTo(p2.x, p2.y);
     }
-    ctx.stroke();
+    bx.stroke();
 
-    // ── Main traces ───────────────────────────────────────────────────────
-    ctx.lineWidth   = 1;
-    ctx.lineCap     = 'square';
-    ctx.strokeStyle = 'rgba(109,112,251,0.22)';
-    ctx.beginPath();
+    bx.lineWidth = 1; bx.lineCap = 'square'; bx.strokeStyle = 'rgba(109,112,251,0.22)';
+    bx.beginPath();
     for (const s of segments) {
       const p1 = project(s.c1, s.r1), p2 = project(s.c2, s.r2);
-      ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y);
+      bx.moveTo(p1.x, p1.y); bx.lineTo(p2.x, p2.y);
     }
-    ctx.stroke();
+    bx.stroke();
 
-    // ── Junction dots ─────────────────────────────────────────────────────
     for (const d of dots) {
       const p = project(d.c, d.r);
-      ctx.fillStyle = 'rgba(129,140,248,0.18)';
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, 4.5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = 'rgba(160,168,255,0.50)';
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, 1.8, 0, Math.PI * 2);
-      ctx.fill();
+      bx.fillStyle = 'rgba(129,140,248,0.18)';
+      bx.beginPath(); bx.arc(p.x, p.y, 4.5, 0, Math.PI * 2); bx.fill();
+      bx.fillStyle = 'rgba(160,168,255,0.50)';
+      bx.beginPath(); bx.arc(p.x, p.y, 1.8, 0, Math.PI * 2); bx.fill();
     }
 
-    // ── Radial centre fade — dissolves wires behind title/description ──────
+    // Seed pulses — glowing packets travelling random traces.
+    const n = Math.min(26, Math.max(10, Math.round(segments.length / 9)));
+    pulses = [];
+    for (let i = 0; i < n; i++) pulses.push(spawn());
+  }
+
+  function spawn() {
+    return {
+      seg:   segments[Math.floor(Math.random() * segments.length)],
+      t:     Math.random(),
+      speed: 0.16 + Math.random() * 0.34,   // fraction of the segment per second
+    };
+  }
+
+  function centreFade() {
     ctx.globalCompositeOperation = 'destination-out';
     const radial = ctx.createRadialGradient(OX, OY, W * 0.04, OX, OY, W * 0.38);
     radial.addColorStop(0,    'rgba(0,0,0,0.68)');
@@ -288,8 +286,74 @@ const statusMeta: Record<Plugin['status'], { label: string; color: string }> = {
     ctx.globalCompositeOperation = 'source-over';
   }
 
-  draw();
-  window.addEventListener('resize', draw);
+  function frame(dt) {
+    ctx.clearRect(0, 0, W, H);
+    if (base) ctx.drawImage(base, 0, 0);
+
+    ctx.lineCap = 'round';
+    for (const p of pulses) {
+      p.t += p.speed * dt;
+      if (p.t >= 1 || !p.seg) { Object.assign(p, spawn()); continue; }
+      const a = project(p.seg.c1, p.seg.r1), b = project(p.seg.c2, p.seg.r2);
+      const x  = a.x + (b.x - a.x) * p.t,            y  = a.y + (b.y - a.y) * p.t;
+      const tt = Math.max(0, p.t - 0.34);
+      const tx = a.x + (b.x - a.x) * tt,             ty = a.y + (b.y - a.y) * tt;
+      const g = ctx.createLinearGradient(tx, ty, x, y);
+      g.addColorStop(0, 'rgba(129,140,248,0)');
+      g.addColorStop(1, 'rgba(165,172,255,0.55)');
+      ctx.strokeStyle = g; ctx.lineWidth = 1.6;
+      ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(x, y); ctx.stroke();
+      ctx.fillStyle = 'rgba(196,201,255,0.9)';
+      ctx.beginPath(); ctx.arc(x, y, 1.8, 0, Math.PI * 2); ctx.fill();
+    }
+
+    centreFade();
+  }
+
+  // ── Lifecycle ──────────────────────────────────────────────────────────
+  let raf = 0, last = 0;
+  function loop(now) {
+    const dt = Math.min((now - last) / 1000, 0.05);
+    last = now;
+    frame(dt);
+    raf = requestAnimationFrame(loop);
+  }
+
+  function start() {
+    if (raf) return;
+    last = performance.now();
+    raf = requestAnimationFrame(loop);
+  }
+  function stop() { if (raf) { cancelAnimationFrame(raf); raf = 0; } }
+
+  function paintStatic() {
+    ctx.clearRect(0, 0, W, H);
+    if (base) ctx.drawImage(base, 0, 0);
+    centreFade();
+  }
+
+  build();
+  // Always paint one frame immediately so the canvas is never blank — rAF
+  // doesn't fire while the tab is hidden (background-tab load / SSR preview),
+  // and the loop would otherwise leave nothing on screen until it runs.
+  if (reduced) {
+    paintStatic();
+  } else {
+    frame(0);
+    start();
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stop(); else start();
+    });
+  }
+
+  let rt = 0;
+  window.addEventListener('resize', () => {
+    clearTimeout(rt);
+    rt = setTimeout(() => {
+      build();
+      if (reduced) paintStatic(); else frame(0);
+    }, 150);
+  });
 })();
 </script>
 
@@ -413,6 +477,7 @@ h1 {
 
 /* ── Card ────────────────────────────────────────────────────────────── */
 .card {
+  position: relative;
   background: #0b0f18;
   border: 1px solid rgba(255,255,255,.06);
   border-radius: 14px;
@@ -420,11 +485,31 @@ h1 {
   display: flex;
   flex-direction: column;
   transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+  animation: card-rise .55s cubic-bezier(.16,.7,.2,1) both;
+  animation-delay: calc(var(--i, 0) * 70ms + 200ms);
 }
 .card:hover {
   transform: translateY(-5px);
-  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
-  box-shadow: 0 20px 56px color-mix(in srgb, var(--accent) 10%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 42%, transparent);
+  box-shadow: 0 20px 56px color-mix(in srgb, var(--accent) 13%, transparent);
+}
+
+/* Per-plugin accent rail along the card's top edge — the product's colour
+   identity, brightening on hover. */
+.card-rail {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  z-index: 3;
+  background: linear-gradient(90deg, var(--accent), var(--accent-l));
+  opacity: .85;
+  transition: opacity .22s ease;
+}
+.card:hover .card-rail { opacity: 1; }
+
+@keyframes card-rise {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: none; }
 }
 
 .card-cover {
@@ -449,16 +534,32 @@ h1 {
 .badge {
   position: absolute;
   top: 11px; right: 11px;
-  padding: 3px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 11px 4px 9px;
   border-radius: 99px;
   font-size: .65rem;
   font-weight: 600;
-  letter-spacing: .14em;
+  letter-spacing: .12em;
   text-transform: uppercase;
   color: var(--s);
-  background: color-mix(in srgb, var(--s) 12%, #06090f);
-  border: 1px solid color-mix(in srgb, var(--s) 30%, transparent);
-  backdrop-filter: blur(6px);
+  background: color-mix(in srgb, var(--s) 14%, rgba(6,9,15,.72));
+  border: 1px solid color-mix(in srgb, var(--s) 32%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.badge-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--s);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--s) 60%, transparent);
+  animation: badge-pulse 2.4s ease-out infinite;
+}
+@keyframes badge-pulse {
+  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--s) 55%, transparent); }
+  70%  { box-shadow: 0 0 0 6px color-mix(in srgb, var(--s) 0%, transparent); }
+  100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--s) 0%, transparent); }
 }
 
 .card-body {
@@ -476,13 +577,23 @@ h1 {
 }
 .card-title-block { min-width: 0; flex: 1; }
 
-.card-logo {
-  width: 44px; height: 44px;
-  object-fit: contain;
-  border-radius: 9px;
-  background: rgba(255,255,255,.03);
-  padding: 3px;
+.card-logo-tile {
+  display: grid;
+  place-items: center;
+  width: 48px; height: 48px;
+  border-radius: 10px;
   flex-shrink: 0;
+  background: color-mix(in srgb, var(--accent) 12%, #0b0f18);
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+  transition: border-color .22s ease, background .22s ease;
+}
+.card:hover .card-logo-tile {
+  background: color-mix(in srgb, var(--accent) 18%, #0b0f18);
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+.card-logo {
+  width: 36px; height: 36px;
+  object-fit: contain;
 }
 
 h2 {
@@ -501,10 +612,10 @@ h2 {
 }
 .domain {
   font-size: .65rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: .14em;
   text-transform: uppercase;
-  color: #64748b;
+  color: color-mix(in srgb, var(--accent-l) 85%, #cbd5e1);
 }
 .meta-dot { color: rgba(148,163,184,.25); font-weight: 700; }
 .ver {
@@ -516,11 +627,39 @@ h2 {
 
 .tagline {
   font-size: .87rem;
-  color: #64748b;
+  color: #8493a6;
   line-height: 1.65;
-  margin-bottom: 18px;
-  flex: 1;
+  margin-bottom: 14px;
 }
+
+/* ── Capability chips — the at-a-glance technical scan for devs ───────── */
+.chips {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 18px;
+  flex: 1;
+  align-content: flex-start;
+}
+.chip {
+  font-size: .68rem;
+  font-weight: 600;
+  letter-spacing: .02em;
+  color: #aeb9c8;
+  padding: 3px 9px;
+  border-radius: 6px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  white-space: nowrap;
+  transition: color .2s ease, border-color .2s ease, background .2s ease;
+}
+.card:hover .chip {
+  border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+  color: #d7dee8;
+}
+/* No chips → tagline absorbs the slack so the actions stay bottom-aligned */
+.card-body:not(:has(.chips)) .tagline { flex: 1; margin-bottom: 18px; }
 
 .actions {
   display: flex;
@@ -575,5 +714,11 @@ h2 {
   .hero { padding: 90px 18px 44px; }
   .grid-wrap { padding: 36px 18px 64px; }
   .home-pill { top: 14px; left: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card { animation: none; }
+  .badge-dot { animation: none; }
+  #hero-circuits { animation: none; opacity: 1; }
 }
 </style>

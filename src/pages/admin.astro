@@ -1451,7 +1451,10 @@
   function collectPluginForm(): any {
     const get = (id: string) => (document.getElementById(id) as HTMLInputElement)?.value.trim() || '';
     const checked = (id: string) => (document.getElementById(id) as HTMLInputElement)?.checked ?? false;
+    // Spread the existing item first so fields the form doesn't expose
+    // (domain, tags) survive an edit instead of being silently dropped.
     return {
+      ...(state.editing?.item || {}),
       name:        get('f-name'),
       tagline:     get('f-tagline'),
       version:     get('f-version') || '1.0',
