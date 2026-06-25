@@ -577,7 +577,9 @@ h1 {
   color: rgba(148,163,184,.45);
   margin: 0 16px;
 }
-.hero-meta strong { color: #cbd5e1; font-weight: 700; }
+/* margin-right (not a literal space) because the inline-flex li collapses
+   whitespace between the <strong> number and its label. */
+.hero-meta strong { color: #cbd5e1; font-weight: 700; margin-right: .34em; }
 
 /* ── Grid ────────────────────────────────────────────────────────────── */
 .grid-wrap {
