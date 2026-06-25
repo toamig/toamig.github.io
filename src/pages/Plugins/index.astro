@@ -484,6 +484,9 @@ body::after {
 .home-pill svg { flex-shrink: 0; opacity: .7; }
 
 /* ── Hero ────────────────────────────────────────────────────────────── */
+/* NOTE: the circuit pattern is generated from the hero's W/H (OY = H*0.26,
+   FOLD_Y = H*0.64). Changing this padding / inner spacing changes the hero
+   height and therefore regenerates the pattern — keep these metrics stable. */
 .hero {
   position: relative;
   padding: 120px 24px 56px;
@@ -669,7 +672,7 @@ h1 {
 
 .card-cover {
   position: relative;
-  aspect-ratio: 16 / 7;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
 }
 .card-cover img {
@@ -820,31 +823,39 @@ h2 {
 /* No chips → tagline absorbs the slack so the actions stay bottom-aligned */
 .card-body:not(:has(.chips)) .tagline { flex: 1; margin-bottom: 18px; }
 
+/* Action row: hairline separates the CTAs from the content; the docs button
+   is the primary and fills the row, Fab sits secondary beside it. */
 .actions {
   display: flex;
   gap: 8px;
-  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 2px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,.06);
 }
 
 .btn-docs {
+  flex: 1;
   display: inline-flex;
   align-items: center;
-  padding: 7px 16px;
-  border-radius: 7px;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 8px;
   font-size: .82rem;
   font-weight: 600;
   text-decoration: none;
   background: var(--accent);
   color: #fff;
-  transition: opacity .15s;
+  transition: filter .15s, transform .15s;
 }
-.btn-docs:hover { opacity: .82; }
+.btn-docs:hover { filter: brightness(1.08); }
 
 .btn-fab {
   display: inline-flex;
   align-items: center;
-  padding: 7px 16px;
-  border-radius: 7px;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 8px;
   font-size: .82rem;
   font-weight: 500;
   text-decoration: none;
@@ -858,6 +869,15 @@ h2 {
   color: #94a3b8;
 }
 .btn-fab.disabled { cursor: default; pointer-events: none; }
+
+/* ── Focus visibility (keyboard) ─────────────────────────────────────── */
+.btn-docs:focus-visible,
+.btn-fab:focus-visible,
+.home-pill:focus-visible,
+.foot-links a:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent, #818cf8) 70%, #fff);
+  outline-offset: 2px;
+}
 
 /* ── Footer ──────────────────────────────────────────────────────────── */
 .site-foot {
