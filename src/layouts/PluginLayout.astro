@@ -109,6 +109,7 @@ const themeVars = [
         </svg>
       </a>
     </header>
+    <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
 
     <!-- ── Docs Shell ──────────────────────────────────────────────── -->
     <div class="docs-shell">
@@ -212,6 +213,68 @@ const themeVars = [
       // Hide "Get on Fab" button if no real URL
       const fab = document.getElementById('fab-btn') as HTMLAnchorElement;
       if (fab && fab.getAttribute('href') === '#') fab.style.display = 'none';
+
+      // ── Copy buttons on code blocks ──────────────────────────────
+      const copyIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+      document.querySelectorAll('.code-block').forEach(block => {
+        const header = block.querySelector('.code-block-header');
+        const pre = block.querySelector('pre');
+        if (!header || !pre) return;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'code-copy';
+        btn.setAttribute('aria-label', 'Copy code');
+        btn.innerHTML = copyIcon + '<span>Copy</span>';
+        const label = btn.querySelector('span')!;
+        btn.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText((pre as HTMLElement).innerText);
+            btn.classList.add('copied'); label.textContent = 'Copied';
+            setTimeout(() => { btn.classList.remove('copied'); label.textContent = 'Copy'; }, 1600);
+          } catch (e) {}
+        });
+        header.appendChild(btn);
+      });
+
+      // ── Hover-reveal anchor links on headings ────────────────────
+      const slugify = (s: string) => s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      const addAnchor = (titleEl: Element, id: string) => {
+        const a = document.createElement('a');
+        a.className = 'heading-anchor';
+        a.href = '#' + id;
+        a.textContent = '#';
+        a.setAttribute('aria-label', 'Link to this section');
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          history.replaceState(null, '', '#' + id);
+          document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          navigator.clipboard?.writeText(location.href).catch(() => {});
+          a.classList.add('copied');
+          setTimeout(() => a.classList.remove('copied'), 1200);
+        });
+        titleEl.appendChild(a);
+      };
+      document.querySelectorAll('.doc-section-title').forEach(t => {
+        const sec = t.closest('[id]');
+        if (sec) addAnchor(t, sec.id);
+      });
+      document.querySelectorAll('.doc-subsection').forEach(sub => {
+        const t = sub.querySelector('.doc-subsection-title');
+        if (!t) return;
+        if (!sub.id) sub.id = slugify(t.textContent || 'section');
+        addAnchor(t, sub.id);
+      });
+
+      // ── Scroll progress bar ──────────────────────────────────────
+      const progress = document.getElementById('scroll-progress');
+      function updateProgress() {
+        const h = document.documentElement.scrollHeight - window.innerHeight;
+        const pct = h > 0 ? Math.min(1, window.scrollY / h) : 0;
+        if (progress) progress.style.width = (pct * 100) + '%';
+      }
+      window.addEventListener('scroll', updateProgress, { passive: true });
+      window.addEventListener('resize', updateProgress, { passive: true });
+      updateProgress();
     </script>
 
   </body>
@@ -290,6 +353,33 @@ body {
   transform: translateY(-1px);
   box-shadow: 0 4px 16px color-mix(in srgb, var(--pl-blue) 35%, transparent);
 }
+
+/* ── Scroll progress ─────────────────────────────────────────────── */
+.scroll-progress {
+  position: fixed;
+  top: var(--pl-topbar-h);
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--pl-blue-l), var(--pl-blue));
+  z-index: 200;
+  pointer-events: none;
+  transition: width .08s linear;
+}
+
+/* ── Heading anchor links (deep-link a section on hover) ──────────── */
+.heading-anchor {
+  opacity: 0;
+  margin-left: 10px;
+  color: var(--pl-muted);
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity .15s, color .15s;
+}
+.doc-section-title:hover .heading-anchor,
+.doc-subsection-title:hover .heading-anchor { opacity: 1; }
+.heading-anchor:hover { color: var(--pl-blue-l); }
+.heading-anchor.copied { opacity: 1; color: #6bd4a0; }
 
 /* ── Docs shell ──────────────────────────────────────────────────── */
 .docs-shell {
@@ -549,8 +639,8 @@ body {
 }
 .doc-p {
   font-size: 15px;
-  line-height: 1.85;
-  color: rgba(255,255,255,.65);
+  line-height: 1.72;
+  color: rgba(255,255,255,.74);
   margin-bottom: 20px;
 }
 .doc-p strong { color: rgba(255,255,255,.9); font-weight: 600; }
@@ -807,6 +897,30 @@ body {
 .code-flag { color: #d2a8ff; }
 .code-val  { color: #a5d6ff; }
 .code-comment { color: rgba(255,255,255,.3); font-style: italic; }
+
+/* Copy button — injected into each code-block header by JS */
+.code-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,.12);
+  color: rgba(255,255,255,.5);
+  font-family: var(--pl-mono);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 9px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color .15s, border-color .15s, background .15s;
+}
+.code-copy:hover {
+  color: var(--pl-text);
+  border-color: var(--pl-border-h);
+  background: color-mix(in srgb, var(--pl-blue) 10%, transparent);
+}
+.code-copy.copied { color: #6bd4a0; border-color: rgba(56,161,105,.4); }
+.code-copy svg { width: 13px; height: 13px; }
 
 /* ── Info callout ────────────────────────────────────────────────── */
 .callout {
