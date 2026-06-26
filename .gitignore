@@ -23,6 +23,9 @@ Thumbs.db
 *.swp
 *.swo
 
+# Local Claude Code dev-server config (not site code)
+.claude/launch.json
+
 # Logs
 *.log
 
