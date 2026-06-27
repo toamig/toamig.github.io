@@ -1,137 +1,104 @@
 ---
+// Corner music widget: a small floating button that expands a styled panel
+// around the OFFICIAL Spotify playlist embed. This is the sanctioned route —
+// Spotify serves + renders the player under its own licence; we only style the
+// frame/placement around it. The embed is lazy-loaded on first open.
+const PLAYLIST_ID = '3tjedTZ6XSEjytY6pIJyh4';
+// Default theme (no theme=0) → Spotify's colourful art-derived gradient.
+const EMBED = `https://open.spotify.com/embed/playlist/${PLAYLIST_ID}?utm_source=generator`;
+const PLAYLIST_URL = `https://open.spotify.com/playlist/${PLAYLIST_ID}`;
 ---
 <div class="music-player" id="musicPlayer">
-  <button class="music-toggle" id="musicToggle" aria-label="Toggle music">
-    <span class="music-icon" id="musicIcon">▶</span>
+  <div class="mp-card" id="mpCard" aria-hidden="true">
+    <div class="mp-head">
+      <span class="mp-eq" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="mp-title">Soundtrack</span>
+      <a class="mp-open" href={PLAYLIST_URL} target="_blank" rel="noopener" aria-label="Open in Spotify">Spotify ↗</a>
+    </div>
+    <iframe
+      id="mpFrame"
+      title="Soundtrack — Spotify playlist"
+      data-src={EMBED}
+      width="100%"
+      height="152"
+      style="border-radius:12px"
+      frameborder="0"
+      loading="lazy"
+      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+      allowfullscreen
+    ></iframe>
+  </div>
+
+  <button class="music-toggle" id="musicToggle" aria-label="Music" aria-expanded="false">
+    <span class="music-icon" id="musicIcon">♫</span>
   </button>
-  <audio id="backgroundMusic" loop>
-    <source src="/music/AC DC - Shoot To Thrill.mp3" type="audio/mpeg">
-    Your browser does not support the audio element.
-  </audio>
 </div>
 
+<style>
+  .mp-card {
+    position: absolute;
+    bottom: calc(100% + 12px);
+    right: 0;
+    width: 340px;
+    max-width: calc(100vw - 36px);
+    border-radius: 16px;
+    background: linear-gradient(180deg, rgba(14,26,46,.96), rgba(8,16,30,.96));
+    border: 1px solid rgba(255,255,255,.12);
+    box-shadow: 0 16px 48px rgba(0,0,0,.5);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    padding: 12px;
+    opacity: 0;
+    transform: translateY(10px) scale(.97);
+    transform-origin: bottom right;
+    pointer-events: none;
+    transition: opacity .22s ease, transform .22s ease;
+  }
+  .music-player.open .mp-card { opacity: 1; transform: none; pointer-events: auto; }
+
+  .mp-head { display: flex; align-items: center; gap: 8px; padding: 2px 4px 10px; }
+  .mp-title { font-size: 13px; font-weight: 700; color: #fff; letter-spacing: -.01em; }
+  .mp-open {
+    margin-left: auto; font-family: var(--font-mono, monospace); font-size: 10.5px;
+    letter-spacing: .04em; color: rgba(255,255,255,.5); text-decoration: none;
+    transition: color .15s;
+  }
+  .mp-open:hover { color: #fff; }
+  .mp-eq { display: inline-flex; align-items: flex-end; gap: 2px; height: 13px; }
+  .mp-eq i { width: 3px; height: 45%; background: var(--accent, #ff8a4c); border-radius: 1px; }
+  .music-player.open .mp-eq i { animation: mp-eq 1s ease-in-out infinite; }
+  .music-player.open .mp-eq i:nth-child(2) { animation-delay: .3s; }
+  .music-player.open .mp-eq i:nth-child(3) { animation-delay: .6s; }
+  @keyframes mp-eq { 0%,100% { height: 35%; } 50% { height: 100%; } }
+
+  .mp-card iframe { display: block; width: 100%; border: 0; }
+
+  .music-player.open .music-toggle { background: rgba(41,128,185,.5); border-color: rgba(41,128,185,.6); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mp-card { transition: opacity .15s ease; transform: none; }
+    .music-player.open .mp-eq i { animation: none; }
+  }
+</style>
+
 <script>
-  const musicPlayer = document.getElementById('backgroundMusic') as HTMLAudioElement | null;
-  const musicToggle = document.getElementById('musicToggle') as HTMLButtonElement | null;
-  const musicIcon  = document.getElementById('musicIcon')  as HTMLElement | null;
+  const root   = document.getElementById('musicPlayer');
+  const toggle = document.getElementById('musicToggle');
+  const card   = document.getElementById('mpCard');
+  const frame  = document.getElementById('mpFrame') as HTMLIFrameElement | null;
 
-  if (musicPlayer && musicToggle && musicIcon) {
-    const isNavigating     = sessionStorage.getItem('isNavigating') === 'true';
-    const navEntry         = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
-    const isReload         = navEntry?.type === 'reload';
-    const referrer         = document.referrer || '';
-    const currentOrigin    = window.location.origin;
-    const isFromSameSite   = referrer && referrer.indexOf(currentOrigin) === 0;
-    const isInternalNav    = isNavigating && isFromSameSite;
-    const isHardRefresh    = isReload && !isInternalNav;
-    const userPreference   = localStorage.getItem('musicUserPreference');
-
-    if (!isInternalNav || isHardRefresh) {
-      localStorage.removeItem('musicPlaying');
-      localStorage.removeItem('musicStopped');
-      localStorage.removeItem('musicTime');
-    }
-    sessionStorage.removeItem('isNavigating');
-    musicPlayer.volume = 0.5;
-
-    let wasPlaying = false;
-    let wasStopped = false;
-    let savedTime  = 0;
-
-    if (userPreference === 'stopped') {
-      wasStopped = true;
-    } else if (isInternalNav) {
-      wasPlaying = localStorage.getItem('musicPlaying') === 'true';
-      wasStopped = localStorage.getItem('musicStopped') === 'true';
-      savedTime  = parseFloat(localStorage.getItem('musicTime') || '0') || 0;
-    } else {
-      wasStopped = userPreference === 'stopped';
-      wasPlaying = userPreference === 'playing';
-    }
-
-    function savePlayingState() {
-      if (!musicPlayer!.paused) {
-        localStorage.setItem('musicPlaying', 'true');
-        localStorage.setItem('musicStopped', 'false');
-        localStorage.setItem('musicTime', musicPlayer!.currentTime.toString());
-        localStorage.setItem('musicUserPreference', 'playing');
-      }
-    }
-    function savePausedState() {
-      localStorage.setItem('musicStopped', 'true');
-      localStorage.setItem('musicPlaying', 'false');
-      localStorage.setItem('musicTime', musicPlayer!.currentTime.toString());
-      localStorage.setItem('musicUserPreference', 'stopped');
-    }
-
-    musicPlayer.addEventListener('loadedmetadata', () => {
-      if (wasPlaying && !wasStopped && savedTime > 0) musicPlayer!.currentTime = savedTime;
-    });
-
-    if (wasPlaying && !wasStopped) {
-      musicPlayer.addEventListener('canplaythrough', () => {
-        if (savedTime > 0) musicPlayer!.currentTime = savedTime;
-        musicPlayer!.play()
-          .then(() => { musicIcon!.textContent = '⏸'; })
-          .catch(() => { musicIcon!.textContent = '▶'; });
-      }, { once: true });
-      musicPlayer.load();
-    } else if (!wasStopped) {
-      setTimeout(() => {
-        musicPlayer!.play()
-          .then(() => { musicIcon!.textContent = '⏸'; })
-          .catch(() => { musicIcon!.textContent = '▶'; });
-      }, 100);
-    } else {
-      if (savedTime > 0) {
-        musicPlayer.addEventListener('loadedmetadata', () => { musicPlayer!.currentTime = savedTime; }, { once: true });
-        musicPlayer.load();
-      }
-      musicIcon.textContent = '▶';
-    }
-
-    musicPlayer.addEventListener('play',  () => { musicIcon!.textContent = '⏸'; savePlayingState(); });
-    musicPlayer.addEventListener('pause', () => {
-      musicIcon!.textContent = '▶';
-      if (musicPlayer!.currentTime > 0 || wasPlaying) savePausedState();
-    });
-
-    const saveInterval = setInterval(() => {
-      if (!musicPlayer!.paused) localStorage.setItem('musicTime', musicPlayer!.currentTime.toString());
-    }, 200);
-
-    musicToggle.addEventListener('click', () => {
-      if (musicPlayer!.paused) musicPlayer!.play(); else musicPlayer!.pause();
-    });
-
-    document.addEventListener('click', (e) => {
-      const link = (e.target as Element).closest('a') as HTMLAnchorElement | null;
-      if (link?.href) {
-        try {
-          const linkUrl    = new URL(link.href, window.location.href);
-          const isSameOrigin  = linkUrl.origin === window.location.origin;
-          const opensNewTab   = link.target === '_blank' || link.hasAttribute('target');
-          if (isSameOrigin && !opensNewTab) sessionStorage.setItem('isNavigating', 'true');
-          else if (!isSameOrigin) sessionStorage.removeItem('isNavigating');
-        } catch { sessionStorage.removeItem('isNavigating'); }
-      }
-    }, true);
-
-    function saveOnNav() {
-      clearInterval(saveInterval);
-      if (sessionStorage.getItem('isNavigating') === 'true') {
-        if (!musicPlayer!.paused) {
-          localStorage.setItem('musicPlaying', 'true');
-          localStorage.setItem('musicStopped', 'false');
-          localStorage.setItem('musicTime', musicPlayer!.currentTime.toString());
-        } else {
-          localStorage.setItem('musicPlaying', 'false');
-          localStorage.setItem('musicTime', musicPlayer!.currentTime.toString());
-        }
-      }
-    }
-    window.addEventListener('beforeunload', saveOnNav);
-    window.addEventListener('pagehide', saveOnNav);
-    document.addEventListener('visibilitychange', () => { if (!musicPlayer!.paused) savePlayingState(); });
+  if (root && toggle && card && frame) {
+    const ensureLoaded = () => {
+      if (!frame.getAttribute('src') && frame.dataset.src) frame.setAttribute('src', frame.dataset.src);
+    };
+    const setOpen = (open: boolean) => {
+      root.classList.toggle('open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+      card.setAttribute('aria-hidden', String(!open));
+      if (open) ensureLoaded();   // lazy-load Spotify only when first opened
+      try { localStorage.setItem('soundtrackOpen', open ? '1' : '0'); } catch (e) {}
+    };
+    toggle.addEventListener('click', () => setOpen(!root.classList.contains('open')));
+    setOpen(localStorage.getItem('soundtrackOpen') === '1');
   }
 </script>
