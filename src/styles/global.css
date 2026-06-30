@@ -874,7 +874,7 @@ footer p { font-size: 13px; opacity: 0.4; letter-spacing: .02em; }
     linear-gradient(160deg, #0a1628 0%, #0f2040 50%, #07111e 100%);
   color: white;
   min-height: 100vh;
-  padding: 90px 0 80px;
+  padding: clamp(48px, 7vh, 88px) 0 clamp(44px, 6vh, 76px);
   text-align: center;
   /* Both axes: clips the decorative aurora/constellation overhang. Using
      only overflow-x here forces overflow-y to compute as `auto`, which
@@ -915,20 +915,20 @@ footer p { font-size: 13px; opacity: 0.4; letter-spacing: .02em; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 28px;
+  gap: clamp(16px, 2.4vh, 28px);
   width: 100%;
   max-width: 900px;
-  padding: 40px 20px;
+  padding: clamp(20px, 3vh, 40px) 20px;
   position: relative;
   z-index: 1;
 }
 .about-text-2 { max-width: 800px; width: 100%; padding: 0 20px; text-align: center; }
 .about-text-2 h2 { color: white; text-align: center; margin-bottom: 0; }
-.about-text-2 p { color: white; font-size: 17px; line-height: 1.85; margin-bottom: 22px; opacity: 0.75; }
+.about-text-2 p { color: white; font-size: clamp(15px, 1.05vw, 17px); line-height: 1.7; margin-bottom: clamp(12px, 1.8vh, 22px); opacity: 0.75; }
 .about-text-2 p.p1 { animation: fadeInUp 1s ease 0.4s both; }
 .about-text-2 p.p2 { animation: fadeInUp 1s ease 0.6s both; }
 .about-text-2 p.p3 { margin-bottom: 0; font-weight: 600; font-style: italic; opacity: 0.9; animation: fadeInUp 1s ease 0.8s both; }
-#about-2 .profile-image { animation: fadeInDown 1s ease; }
+#about-2 .profile-image { width: clamp(140px, 21vh, 200px); height: clamp(140px, 21vh, 200px); animation: fadeInDown 1s ease; }
 #about-2 .scroll-down { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); animation: fadeInUp 1s ease 1s both; pointer-events: none; }
 #about-2 .scroll-down a { display: inline-block; width: 32px; height: 32px; border: 1.5px solid rgba(255,255,255,.4); border-radius: 50%; position: relative; cursor: pointer; pointer-events: auto; }
 #about-2 .scroll-down a::before { content: ""; position: absolute; top: 50%; left: 50%; width: 7px; height: 7px; background-color: rgba(255,255,255,.7); border-radius: 50%; animation: bounce-dot 2s infinite; }
