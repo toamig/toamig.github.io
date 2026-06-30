@@ -217,7 +217,7 @@ const ACCENT_RULE_Y = RULE_Y;   // legacy alias kept for framing fn
 const COPY = {
   eyebrow:  'MIGUEL "TOAMIG" VIEIRA  ·  GAME ENGINEER · TECH LEAD',
   hero:     'Designing systems. Solving problems. Chasing dreams.',
-  sub:      'Drawn to the work behind the work — tooling, patterns, and tech direction that help teams ship without burning out.',
+  sub:      'Drawn to the work behind the work: tooling, patterns, and tech direction that help teams ship without burning out.',
   building: 'CURRENTLY BUILDING',
   url:      'migueltechlead.pt',
 };

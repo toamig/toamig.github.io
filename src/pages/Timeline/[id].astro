@@ -77,7 +77,7 @@ const paragraphs: string[] = Array.isArray(event.extendedDescription)
 const galleryImages = hasPhoto ? event.images!.slice(1) : [];
 ---
 <BaseLayout
-  title={`${event.title} — Toamig`}
+  title={`${event.title} · Toamig`}
   description={descText || event.title}
   ogUrl={pageUrl}
   ogImage={ogImage}
@@ -129,7 +129,7 @@ const galleryImages = hasPhoto ? event.images!.slice(1) : [];
         </a>
         <a
           class="share-pill"
-          href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(`${event.title}${descText ? ' — ' + descText : ''}`)}`}
+          href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(`${event.title}${descText ? ': ' + descText : ''}`)}`}
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Share on X"
@@ -161,7 +161,7 @@ const galleryImages = hasPhoto ? event.images!.slice(1) : [];
             const src = imgSrc.startsWith('/') ? imgSrc : `/${imgSrc}`;
             return (
               <a class="gallery-item" href={src} target="_blank" rel="noopener noreferrer">
-                <img src={src} alt={`${event.title} — image ${idx + 2}`} loading="lazy" decoding="async" />
+                <img src={src} alt={`${event.title}, image ${idx + 2}`} loading="lazy" decoding="async" />
               </a>
             );
           })}

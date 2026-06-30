@@ -4,8 +4,8 @@ import pluginsData from '../../data/plugins.json';
 const p = pluginsData.find(x => x.name === 'Cascade Combat System')!;
 ---
 <PluginLayout
-  title="Cascade Combat System — Action Combat Plugin for UE5"
-  description="A modular action-combat framework for Unreal Engine 5. Node-based combo trees, animation-driven abilities, melee detection, projectiles, targeting, and hit reactions — all built on GAS, multiplayer-ready without writing replication code."
+  title="Cascade Combat System · Action Combat Plugin for UE5"
+  description="A modular action-combat framework for Unreal Engine 5. Node-based combo trees, animation-driven abilities, melee detection, projectiles, targeting, and hit reactions, all built on GAS, multiplayer-ready without writing replication code."
   pluginName="Cascade Combat System"
   version={p.version}
   coverImage={p.cover}
@@ -81,7 +81,7 @@ const p = pluginsData.find(x => x.name === 'Cascade Combat System')!;
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>Cascade Combat System</strong> is an action-combat framework for Unreal Engine 5 built on the Gameplay Ability System. It solves the problem of wiring together melee detection, combo sequencing, input buffering, targeting, weakspots, and hit reactions without rewriting GAS boilerplate for every project. You define <strong>UCascadeComboDefinition</strong> data assets in a node graph editor, attach <strong>UCascadeAbilitySystemComponent</strong> to your characters, and call <code>InitializeCombat</code> — the plugin handles input routing, window management, and networking from there.
+      <strong>Cascade Combat System</strong> is an action-combat framework for Unreal Engine 5 built on the Gameplay Ability System. It solves the problem of wiring together melee detection, combo sequencing, input buffering, targeting, weakspots, and hit reactions without rewriting GAS boilerplate for every project. You define <strong>UCascadeComboDefinition</strong> data assets in a node graph editor, attach <strong>UCascadeAbilitySystemComponent</strong> to your characters, and call <code>InitializeCombat</code>, the plugin handles input routing, window management, and networking from there.
     </p>
     <p class="doc-p">
       Damage authoring lives on one structure: <strong>FCascadeDamageDescriptor</strong>. Each ability holds a <code>BaseDamage</code> descriptor (and an optional per-window override map) with the GE class, magnitude, hit tags, hit caps, weakspot resolution mode, and a project-extensible <strong>ProjectPayload</strong> (FInstancedStruct) where your game's faction / damage type / knockback / hit-stop fields live. The plugin reads only the universal fields; project listeners on <code>OnPreHitResolve</code> and <code>OnHitDetected</code> consume the rest.
@@ -103,7 +103,7 @@ const p = pluginsData.find(x => x.name === 'Cascade Combat System')!;
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
         </div>
         <p class="feature-title">Input Buffering</p>
-        <p class="feature-desc">Configurable pre-window input buffer stores one input or a full combo queue. Players who press ahead of the window still get smooth continuation — no manual timer management required.</p>
+        <p class="feature-desc">Configurable pre-window input buffer stores one input or a full combo queue. Players who press ahead of the window still get smooth continuation, no manual timer management required.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">
@@ -124,14 +124,14 @@ const p = pluginsData.find(x => x.name === 'Cascade Combat System')!;
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
         </div>
         <p class="feature-title">Damage-Agnostic</p>
-        <p class="feature-desc">Hit detection delivers FCascadeHitData — who hit whom, which tags, which custom values. Your GameplayEffect execution decides the outcome. Cascade never overrides your damage math.</p>
+        <p class="feature-desc">Hit detection delivers FCascadeHitData, who hit whom, which tags, which custom values. Your GameplayEffect execution decides the outcome. Cascade never overrides your damage math.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
         </div>
         <p class="feature-title">AI Support</p>
-        <p class="feature-desc"><code>UCascadeAIInputAdapter</code> lets NPCs submit combo inputs and activate abilities through the same pipeline as players — no special-casing in ability code.</p>
+        <p class="feature-desc"><code>UCascadeAIInputAdapter</code> lets NPCs submit combo inputs and activate abilities through the same pipeline as players, no special-casing in ability code.</p>
       </div>
     </div>
 
@@ -262,7 +262,7 @@ const p = pluginsData.find(x => x.name === 'Cascade Combat System')!;
     <div class="doc-subsection">
       <h3 class="doc-subsection-title">UCascadeCombo ability</h3>
       <p class="doc-p" style="margin-bottom:12px">
-        <strong>UCascadeCombo</strong> is the GAS ability that owns a combo. Assign a <code>UCascadeComboDefinition</code> to its <strong>ComboDefinition</strong> property and the ability reads all settings from the asset. You can also configure the combo directly on the ability if you prefer not to use a definition asset — set <strong>ComboTag</strong>, <strong>RootNode</strong>, and <strong>ActivationInputTags</strong> directly. <strong>UCascadeCombo_Runtime</strong> is the variant used when the definition is provided as a spec <code>SourceObject</code> at runtime (e.g. from the Runtime Builder).
+        <strong>UCascadeCombo</strong> is the GAS ability that owns a combo. Assign a <code>UCascadeComboDefinition</code> to its <strong>ComboDefinition</strong> property and the ability reads all settings from the asset. You can also configure the combo directly on the ability if you prefer not to use a definition asset, set <strong>ComboTag</strong>, <strong>RootNode</strong>, and <strong>ActivationInputTags</strong> directly. <strong>UCascadeCombo_Runtime</strong> is the variant used when the definition is provided as a spec <code>SourceObject</code> at runtime (e.g. from the Runtime Builder).
       </p>
     </div>
   </section>
@@ -299,7 +299,7 @@ const p = pluginsData.find(x => x.name === 'Cascade Combat System')!;
         </tr>
         <tr>
           <td class="prop-name">UCascadeComboNode_Loop</td>
-          <td class="prop-desc">Routes back to a <strong>TargetNode</strong> up to <strong>MaxIterations</strong> times. Set <code>MaxIterations</code> to 0 for unlimited looping — useful for sustained-fire or spin attacks.</td>
+          <td class="prop-desc">Routes back to a <strong>TargetNode</strong> up to <strong>MaxIterations</strong> times. Set <code>MaxIterations</code> to 0 for unlimited looping, useful for sustained-fire or spin attacks.</td>
         </tr>
         <tr>
           <td class="prop-name">UCascadeComboNode_Random</td>
@@ -352,7 +352,7 @@ const p = pluginsData.find(x => x.name === 'Cascade Combat System')!;
           </tr>
           <tr>
             <td class="prop-name">EndCombo / EndAllCombos</td>
-            <td class="prop-desc">Ends cleanly — waits for the current ability to finish before resetting.</td>
+            <td class="prop-desc">Ends cleanly, waits for the current ability to finish before resetting.</td>
           </tr>
           <tr>
             <td class="prop-name">CancelCombo / CancelAllCombos</td>
@@ -399,15 +399,15 @@ const p = pluginsData.find(x => x.name === 'Cascade Combat System')!;
           </tr>
           <tr>
             <td class="prop-name">OnComboWindowChanged</td>
-            <td class="prop-desc"><code>(FGameplayTag ComboTag, bool bIsOpen)</code> — fires when a combo window opens or closes.</td>
+            <td class="prop-desc"><code>(FGameplayTag ComboTag, bool bIsOpen)</code>, fires when a combo window opens or closes.</td>
           </tr>
           <tr>
             <td class="prop-name">OnHitDetected</td>
-            <td class="prop-desc"><code>(const FCascadeHitData&amp;)</code> — fires each time the damage window detects a new hit.</td>
+            <td class="prop-desc"><code>(const FCascadeHitData&amp;)</code>, fires each time the damage window detects a new hit.</td>
           </tr>
           <tr>
             <td class="prop-name">OnDamageTaken</td>
-            <td class="prop-desc"><code>(const FCascadeHitData&amp;, float DamageAmount)</code> — fires on this component's owner when damage is applied.</td>
+            <td class="prop-desc"><code>(const FCascadeHitData&amp;, float DamageAmount)</code>, fires on this component's owner when damage is applied.</td>
           </tr>
         </tbody>
       </table>
@@ -424,7 +424,7 @@ const p = pluginsData.find(x => x.name === 'Cascade Combat System')!;
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>UCascadeRuntimeComboBuilder</strong> lets players customize and assemble combos at runtime — a skill-equip screen where the player picks which abilities fill each combo slot. Load a <strong>UCascadeComboTemplate</strong> data asset that defines the available slots and per-slot ability tag requirements, fill them via <code>SetSlot</code>, then call <code>BuildCombo</code> to produce a <code>UCascadeComboDefinition</code> that can be registered with the ASC.
+      <strong>UCascadeRuntimeComboBuilder</strong> lets players customize and assemble combos at runtime, a skill-equip screen where the player picks which abilities fill each combo slot. Load a <strong>UCascadeComboTemplate</strong> data asset that defines the available slots and per-slot ability tag requirements, fill them via <code>SetSlot</code>, then call <code>BuildCombo</code> to produce a <code>UCascadeComboDefinition</code> that can be registered with the ASC.
     </p>
 
     <table class="prop-table">
@@ -478,10 +478,10 @@ if (Built)
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>UCascadeAnimAbility</strong> is the base class for montage-driven abilities. On activation it plays <strong>Montage</strong> at <strong>PlayRate</strong>, optionally jumping to <strong>MontageSectionName</strong>. When the montage completes or is cancelled, the ability ends automatically. <strong>UCascadeChargedAbility</strong> extends it with hold-to-charge mechanics — accumulates a 0–1 charge percentage between <code>MinChargeTime</code> and <code>MaxChargeTime</code>, fires <code>OnChargeReleased</code> on release.
+      <strong>UCascadeAnimAbility</strong> is the base class for montage-driven abilities. On activation it plays <strong>Montage</strong> at <strong>PlayRate</strong>, optionally jumping to <strong>MontageSectionName</strong>. When the montage completes or is cancelled, the ability ends automatically. <strong>UCascadeChargedAbility</strong> extends it with hold-to-charge mechanics, accumulates a 0–1 charge percentage between <code>MinChargeTime</code> and <code>MaxChargeTime</code>, fires <code>OnChargeReleased</code> on release.
     </p>
     <p class="doc-p">
-      Both classes are <strong>non-damaging by design</strong>. Damage is opt-in via composition — your project subclass holds a <code>FCascadeDamageDescriptor BaseDamage</code> field, implements <code>ICascadeHitContextProvider::GetActiveDamageDescriptor</code>, and spawns <strong>UCascadeAbilityTask_DamageHandler</strong> in the BP graph for per-hit reactions. See the Damage sections below.
+      Both classes are <strong>non-damaging by design</strong>. Damage is opt-in via composition, your project subclass holds a <code>FCascadeDamageDescriptor BaseDamage</code> field, implements <code>ICascadeHitContextProvider::GetActiveDamageDescriptor</code>, and spawns <strong>UCascadeAbilityTask_DamageHandler</strong> in the BP graph for per-hit reactions. See the Damage sections below.
     </p>
 
     <table class="prop-table">
@@ -492,7 +492,7 @@ if (Built)
         <tr>
           <td class="prop-name">Montage</td>
           <td class="prop-type">UAnimMontage*</td>
-          <td class="prop-desc">The animation to play. Required — the ability will not activate without a valid montage.</td>
+          <td class="prop-desc">The animation to play. Required, the ability will not activate without a valid montage.</td>
         </tr>
         <tr>
           <td class="prop-name">MontageSectionName</td>
@@ -561,7 +561,7 @@ if (Built)
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>FCascadeDamageDescriptor</strong> is the single struct that carries an ability's damage authoring — what GE to apply, magnitude, semantic tags, hit caps, weakspot resolution, project-extensible payload. Abilities that want to deal damage implement <strong>ICascadeHitContextProvider::GetActiveDamageDescriptor(WindowTag)</strong> and return the descriptor for the active window. Hit producers (notify state, projectile, direct dispatch) call this at hit construction time and stamp the result into <code>FCascadeHitData::SourceDescriptor</code>.
+      <strong>FCascadeDamageDescriptor</strong> is the single struct that carries an ability's damage authoring, what GE to apply, magnitude, semantic tags, hit caps, weakspot resolution, project-extensible payload. Abilities that want to deal damage implement <strong>ICascadeHitContextProvider::GetActiveDamageDescriptor(WindowTag)</strong> and return the descriptor for the active window. Hit producers (notify state, projectile, direct dispatch) call this at hit construction time and stamp the result into <code>FCascadeHitData::SourceDescriptor</code>.
     </p>
 
     <table class="prop-table">
@@ -577,7 +577,7 @@ if (Built)
         <tr>
           <td class="prop-name">Magnitude</td>
           <td class="prop-type">float</td>
-          <td class="prop-desc">Surfaced as a SetByCaller named <code>"Magnitude"</code> on the spec — Execution Calculations read it via <code>GetSetByCallerMagnitude(FName("Magnitude"), false, 1.f)</code>.</td>
+          <td class="prop-desc">Surfaced as a SetByCaller named <code>"Magnitude"</code> on the spec, Execution Calculations read it via <code>GetSetByCallerMagnitude(FName("Magnitude"), false, 1.f)</code>.</td>
         </tr>
         <tr>
           <td class="prop-name">HitTags</td>
@@ -597,7 +597,7 @@ if (Built)
         <tr>
           <td class="prop-name">GuardBreakEffect / ParryRetaliationEffect</td>
           <td class="prop-type">TSubclassOf&lt;UGameplayEffect&gt;</td>
-          <td class="prop-desc">Optional GE overrides — projects route to <code>GuardBreakEffect</code> when the victim is guard-broken, apply <code>ParryRetaliationEffect</code> to the attacker when parried. Empty = no special-case effect.</td>
+          <td class="prop-desc">Optional GE overrides, projects route to <code>GuardBreakEffect</code> when the victim is guard-broken, apply <code>ParryRetaliationEffect</code> to the attacker when parried. Empty = no special-case effect.</td>
         </tr>
         <tr>
           <td class="prop-name">WeakspotResolution</td>
@@ -607,7 +607,7 @@ if (Built)
         <tr>
           <td class="prop-name">WeakspotFilter</td>
           <td class="prop-type">FGameplayTagQuery</td>
-          <td class="prop-desc">Optional filter — only weakspots whose tags match this query contribute. Empty = all weakspots considered.</td>
+          <td class="prop-desc">Optional filter, only weakspots whose tags match this query contribute. Empty = all weakspots considered.</td>
         </tr>
         <tr>
           <td class="prop-name">ProjectPayload</td>
@@ -657,7 +657,7 @@ FCascadeDamageDescriptor GetActiveDamageDescriptor_Implementation(FGameplayTag I
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>UCascadeAbilityTask_DamageHandler</strong> is the single ability task damage-producing abilities spawn from their BP graph. One handler per ability — it listens for hits the ability produces (whether from a montage notify trace, a projectile collision, or a direct dispatch) and surfaces them as pins for designer-authored reactions. No timing parameters — animator owns timing, ability owns reactions.
+      <strong>UCascadeAbilityTask_DamageHandler</strong> is the single ability task damage-producing abilities spawn from their BP graph. One handler per ability, it listens for hits the ability produces (whether from a montage notify trace, a projectile collision, or a direct dispatch) and surfaces them as pins for designer-authored reactions. No timing parameters, animator owns timing, ability owns reactions.
     </p>
 
     <table class="prop-table">
@@ -667,7 +667,7 @@ FCascadeDamageDescriptor GetActiveDamageDescriptor_Implementation(FGameplayTag I
       <tbody>
         <tr>
           <td class="prop-name">OnFirstHit</td>
-          <td class="prop-desc">First time any hit lands. One-shot reactions — camera shake, hitstop request, ability-wide VFX spawn.</td>
+          <td class="prop-desc">First time any hit lands. One-shot reactions, camera shake, hitstop request, ability-wide VFX spawn.</td>
         </tr>
         <tr>
           <td class="prop-name">OnHitResolved</td>
@@ -675,7 +675,7 @@ FCascadeDamageDescriptor GetActiveDamageDescriptor_Implementation(FGameplayTag I
         </tr>
         <tr>
           <td class="prop-name">OnCancelled</td>
-          <td class="prop-desc">Force-cancelled before any hit fires — owning ability ended, external <code>EndTask</code>. Cleanup hook.</td>
+          <td class="prop-desc">Force-cancelled before any hit fires, owning ability ended, external <code>EndTask</code>. Cleanup hook.</td>
         </tr>
       </tbody>
     </table>
@@ -706,7 +706,7 @@ DamageHandler-&gt;DispatchDirectHits(Targets, BaseDamage, EBTags::Window::Shockw
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      Every hit — trace, projectile, or direct dispatch — converges on the same two-phase pipeline on the attacker's ASC. Both delegates pass <code>FCascadeHitData&amp;</code> by mutable reference so listeners can contribute resolution data.
+      Every hit, trace, projectile, or direct dispatch, converges on the same two-phase pipeline on the attacker's ASC. Both delegates pass <code>FCascadeHitData&amp;</code> by mutable reference so listeners can contribute resolution data.
     </p>
 
     <table class="prop-table">
@@ -726,7 +726,7 @@ DamageHandler-&gt;DispatchDirectHits(Targets, BaseDamage, EBTags::Window::Shockw
     </table>
 
     <p class="doc-p">
-      The plugin's default damage applicator (<code>UCascadeAbilitySystemComponent::HandleHitDetected</code>) provides a working baseline — applies <code>SourceDescriptor.DamageEffect</code> with <code>Magnitude</code> as a SetByCaller. Projects bind their own listener for richer behaviour (faction filtering, damage-type resists, knockback application, status proc rolls, etc).
+      The plugin's default damage applicator (<code>UCascadeAbilitySystemComponent::HandleHitDetected</code>) provides a working baseline, applies <code>SourceDescriptor.DamageEffect</code> with <code>Magnitude</code> as a SetByCaller. Projects bind their own listener for richer behaviour (faction filtering, damage-type resists, knockback application, status proc rolls, etc).
     </p>
 
     <div class="doc-subsection">
@@ -744,7 +744,7 @@ DamageHandler-&gt;DispatchDirectHits(Targets, BaseDamage, EBTags::Window::Shockw
           <tr>
             <td class="prop-name">ApplyHitPause(Attacker, Victim, Duration, TimeDilation)</td>
             <td class="prop-desc">ASC (BlueprintCallable)</td>
-            <td class="prop-desc">Utility function for freezing both actors briefly. Plugin does not auto-trigger — projects call it from their listener using their own hit-stop config (typically a field on a <code>FCascadeDamagePayloadBase</code>-derived payload).</td>
+            <td class="prop-desc">Utility function for freezing both actors briefly. Plugin does not auto-trigger, projects call it from their listener using their own hit-stop config (typically a field on a <code>FCascadeDamagePayloadBase</code>-derived payload).</td>
           </tr>
         </tbody>
       </table>
@@ -761,7 +761,7 @@ DamageHandler-&gt;DispatchDirectHits(Targets, BaseDamage, EBTags::Window::Shockw
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>UCascadePassiveAbility</strong> is granted and activated automatically by the ASC during <code>GrantCombatAbilities</code>. It does not need an input binding and is never directly activated by the player. Use it for persistent effects — bleed-on-hit procs, damage auras, combo extension bonuses — that live as long as the character has the ability in their spec.
+      <strong>UCascadePassiveAbility</strong> is granted and activated automatically by the ASC during <code>GrantCombatAbilities</code>. It does not need an input binding and is never directly activated by the player. Use it for persistent effects, bleed-on-hit procs, damage auras, combo extension bonuses, that live as long as the character has the ability in their spec.
     </p>
 
     <table class="prop-table">
@@ -797,7 +797,7 @@ DamageHandler-&gt;DispatchDirectHits(Targets, BaseDamage, EBTags::Window::Shockw
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>UCascadeANS_DamageWindow</strong> is the AnimNotifyState that activates hit detection for the duration it is active in the montage. Place it on any frame range where an attack should connect. It polls socket positions each tick, performs swept-volume traces, and broadcasts <code>FCascadeHitData</code> for every new hit — automatically deduplicating within a single swing.
+      <strong>UCascadeANS_DamageWindow</strong> is the AnimNotifyState that activates hit detection for the duration it is active in the montage. Place it on any frame range where an attack should connect. It polls socket positions each tick, performs swept-volume traces, and broadcasts <code>FCascadeHitData</code> for every new hit, automatically deduplicating within a single swing.
     </p>
 
     <table class="prop-table">
@@ -933,7 +933,7 @@ DamageHandler-&gt;DispatchDirectHits(Targets, BaseDamage, EBTags::Window::Shockw
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>ACascadeWeaponActor</strong> is the base class for any weapon that participates in Cascade hit detection. It implements <code>ICascadeTraceConfigProvider</code> so <code>UCascadeANS_DamageWindow</code> can read socket positions from the weapon mesh directly. Attach it to a character socket; call <code>DrawWeapon()</code> and <code>SheathWeapon()</code> to transition states — the weapon re-attaches to <strong>DrawnSocket</strong> or <strong>SheathSocket</strong> automatically.
+      <strong>ACascadeWeaponActor</strong> is the base class for any weapon that participates in Cascade hit detection. It implements <code>ICascadeTraceConfigProvider</code> so <code>UCascadeANS_DamageWindow</code> can read socket positions from the weapon mesh directly. Attach it to a character socket; call <code>DrawWeapon()</code> and <code>SheathWeapon()</code> to transition states, the weapon re-attaches to <strong>DrawnSocket</strong> or <strong>SheathSocket</strong> automatically.
     </p>
 
     <table class="prop-table">
@@ -964,7 +964,7 @@ DamageHandler-&gt;DispatchDirectHits(Targets, BaseDamage, EBTags::Window::Shockw
         <tr>
           <td class="prop-name">EquipEffect</td>
           <td class="prop-type">TSubclassOf&lt;UGameplayEffect&gt;</td>
-          <td class="prop-desc">Optional GameplayEffect applied while the weapon is drawn — stat bonuses, passive auras.</td>
+          <td class="prop-desc">Optional GameplayEffect applied while the weapon is drawn, stat bonuses, passive auras.</td>
         </tr>
       </tbody>
     </table>
@@ -994,7 +994,7 @@ UMeshComponent* Mesh =
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>ACascadeProjectile</strong> is the base actor for ranged attacks. Spawn it from <code>UCascadeAN_SpawnProjectile</code> or from an ability directly. Call <code>InitializeProjectile(CascadeASC, SourceAbility, HitTags)</code> after spawning so the owning ASC receives <code>FCascadeHitData</code> on impact. Movement behavior is a swappable <strong>UCascadeProjectileMovementStrategy</strong> — set <strong>MovementStrategyClass</strong> on the projectile to choose one.
+      <strong>ACascadeProjectile</strong> is the base actor for ranged attacks. Spawn it from <code>UCascadeAN_SpawnProjectile</code> or from an ability directly. Call <code>InitializeProjectile(CascadeASC, SourceAbility, HitTags)</code> after spawning so the owning ASC receives <code>FCascadeHitData</code> on impact. Movement behavior is a swappable <strong>UCascadeProjectileMovementStrategy</strong>, set <strong>MovementStrategyClass</strong> on the projectile to choose one.
     </p>
 
     <table class="prop-table">
@@ -1067,7 +1067,7 @@ UMeshComponent* Mesh =
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      The targeting system has two layers. <strong>UCascadeTargetingSubsystem</strong> is a world subsystem for soft-lock management — it scores candidates by angle and distance and can hold a locked target across frames. <strong>UCascadeTargetingQuery</strong> subclasses are GAS-integrated query objects used inside abilities to resolve target data for a single activation.
+      The targeting system has two layers. <strong>UCascadeTargetingSubsystem</strong> is a world subsystem for soft-lock management, it scores candidates by angle and distance and can hold a locked target across frames. <strong>UCascadeTargetingQuery</strong> subclasses are GAS-integrated query objects used inside abilities to resolve target data for a single activation.
     </p>
 
     <div class="doc-subsection">
@@ -1168,7 +1168,7 @@ bool IsTargetable_Implementation() override
       <tbody>
         <tr>
           <td class="prop-name">UCascadeTargetableComponent</td>
-          <td class="prop-desc">Aggregator on the victim — holds the replicated <code>bIsTargetable</code> flag, the primary target point (socket + offset), and the registry of weakspot components on this actor. Required for any weakspot to function. Companion <code>UCascadeTargetingHelpers</code> Blueprint library exposes <code>IsTargetable</code> / <code>GetPrimaryPoint</code> queries.</td>
+          <td class="prop-desc">Aggregator on the victim, holds the replicated <code>bIsTargetable</code> flag, the primary target point (socket + offset), and the registry of weakspot components on this actor. Required for any weakspot to function. Companion <code>UCascadeTargetingHelpers</code> Blueprint library exposes <code>IsTargetable</code> / <code>GetPrimaryPoint</code> queries.</td>
         </tr>
         <tr>
           <td class="prop-name">UCascadeWeakspotSphere / Box / Capsule</td>
@@ -1220,7 +1220,7 @@ bool IsTargetable_Implementation() override
           <tr>
             <td class="prop-name">DeathHandlers</td>
             <td class="prop-type">TArray&lt;UCascadeReactionHandler*&gt;</td>
-            <td class="prop-desc">Handlers evaluated on death — typically a ragdoll entry and a death montage variant.</td>
+            <td class="prop-desc">Handlers evaluated on death, typically a ragdoll entry and a death montage variant.</td>
           </tr>
           <tr>
             <td class="prop-name">GlobalHitReactionCooldown</td>
@@ -1239,7 +1239,7 @@ bool IsTargetable_Implementation() override
     <div class="doc-subsection">
       <h3 class="doc-subsection-title">UCascadeReactionHandler_Montage</h3>
       <p class="doc-p" style="margin-bottom:12px">
-        The built-in <strong>UCascadeReactionHandler_Montage</strong> covers the common reaction case: it plays an animation (with optional directional variants for front/back/left/right), spawns a Niagara VFX, plays a sound, and fires a gameplay cue — all configured in the data asset, no code. Subclass <strong>UCascadeReactionHandler</strong> for custom reaction logic, overriding <code>CanHandle</code> and <code>Execute</code>.
+        The built-in <strong>UCascadeReactionHandler_Montage</strong> covers the common reaction case: it plays an animation (with optional directional variants for front/back/left/right), spawns a Niagara VFX, plays a sound, and fires a gameplay cue, all configured in the data asset, no code. Subclass <strong>UCascadeReactionHandler</strong> for custom reaction logic, overriding <code>CanHandle</code> and <code>Execute</code>.
       </p>
       <table class="prop-table">
         <thead>
@@ -1277,7 +1277,7 @@ bool IsTargetable_Implementation() override
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      Cascade is movement-system-agnostic. Plugin features that need to read or manipulate the avatar's movement state — anim flying-mode toggle, drag-target freeze, gravity-scale GE, airborne tag, cancel-on-input, directional input adapter — call through <strong>ICascadeMovementBridge</strong>. Projects supply a bridge component implementing the interface; the ASC discovers it on <code>InitAbilityActorInfo</code>.
+      Cascade is movement-system-agnostic. Plugin features that need to read or manipulate the avatar's movement state, anim flying-mode toggle, drag-target freeze, gravity-scale GE, airborne tag, cancel-on-input, directional input adapter, call through <strong>ICascadeMovementBridge</strong>. Projects supply a bridge component implementing the interface; the ASC discovers it on <code>InitAbilityActorInfo</code>.
     </p>
 
     <table class="prop-table">
@@ -1295,7 +1295,7 @@ bool IsTargetable_Implementation() override
         </tr>
         <tr>
           <td class="prop-name">GetMovementModeTag() / IsAirborne()</td>
-          <td class="prop-desc">Current mode as a <code>Cascade.Movement.*</code> tag — Walking, Falling, Flying, Swimming, Frozen, Custom.</td>
+          <td class="prop-desc">Current mode as a <code>Cascade.Movement.*</code> tag, Walking, Falling, Flying, Swimming, Frozen, Custom.</td>
         </tr>
         <tr>
           <td class="prop-name">SetMovementMode(Tag)</td>
@@ -1303,7 +1303,7 @@ bool IsTargetable_Implementation() override
         </tr>
         <tr>
           <td class="prop-name">FreezeMovement() / RestoreMovement()</td>
-          <td class="prop-desc">Capture and restore the avatar's mode — used by <code>UCascadeANS_DragTarget</code> to suspend the victim during a drag.</td>
+          <td class="prop-desc">Capture and restore the avatar's mode, used by <code>UCascadeANS_DragTarget</code> to suspend the victim during a drag.</td>
         </tr>
         <tr>
           <td class="prop-name">GetGravityScale() / SetGravityScale(scale)</td>
@@ -1333,7 +1333,7 @@ bool IsTargetable_Implementation() override
     <div class="doc-subsection">
       <h3 class="doc-subsection-title">Project bridges</h3>
       <p class="doc-p" style="margin-bottom:12px">
-        Projects on Mover, GMC, or custom systems ship their own bridge component. Mover example: maps <code>Cascade.Movement.*</code> tags to Mover's <code>DefaultModeNames</code> via <code>QueueNextMode</code>, reads input from the Mover input collection, translates <code>SetGravityScale</code> to <code>SetGravityOverride</code>. Plugin doesn't depend on the Mover module — that stays project-side.
+        Projects on Mover, GMC, or custom systems ship their own bridge component. Mover example: maps <code>Cascade.Movement.*</code> tags to Mover's <code>DefaultModeNames</code> via <code>QueueNextMode</code>, reads input from the Mover input collection, translates <code>SetGravityScale</code> to <code>SetGravityOverride</code>. Plugin doesn't depend on the Mover module, that stays project-side.
       </p>
     </div>
   </section>
@@ -1490,7 +1490,7 @@ Adapter->RequestAbilityInput(SpecHandle);</code></pre>
           <td class="prop-desc"><code>CascadeGodMode</code> applies <code>Cascade.Cheat.GodMode</code> (block all damage). <code>CascadeDemigod</code> applies <code>Cascade.Cheat.DemigodMode</code> (block damage that would kill).</td>
         </tr>
         <tr>
-          <td class="prop-name">Gameplay Debugger — CascadeTargeting</td>
+          <td class="prop-name">Gameplay Debugger, CascadeTargeting</td>
           <td class="prop-desc">Press <kbd>'</kbd> in PIE and enable the <strong>CascadeTargeting</strong> category. Auto-focuses on the actor under the camera; renders its targetable flag, primary point, every registered weakspot (with state, identifier, priority, tags, dimensions), and the currently locked region. Server-replicated text and shapes so dedicated-server runs show authoritative state.</td>
         </tr>
         <tr>
@@ -1510,7 +1510,7 @@ Adapter->RequestAbilityInput(SpecHandle);</code></pre>
       Replication
     </h2>
     <div class="section-divider"></div>
-    <p class="doc-p">Cascade is server-authoritative. All combat decisions — hit detection, combo progression, ability activation — happen on the server. Below is a summary of each system's replication model.</p>
+    <p class="doc-p">Cascade is server-authoritative. All combat decisions, hit detection, combo progression, ability activation, happen on the server. Below is a summary of each system's replication model.</p>
 
     <table class="prop-table">
       <thead>
@@ -1552,7 +1552,7 @@ Adapter->RequestAbilityInput(SpecHandle);</code></pre>
       <span class="callout-icon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       </span>
-      <span>Call <code>InitializeCombat</code> from <code>PossessedBy</code> on the server and bind input from <code>SetupPlayerInputComponent</code> on the client. Both must run before the player can trigger abilities — the ASC coordinates the two through standard GAS cross-machine flow.</span>
+      <span>Call <code>InitializeCombat</code> from <code>PossessedBy</code> on the server and bind input from <code>SetupPlayerInputComponent</code> on the client. Both must run before the player can trigger abilities, the ASC coordinates the two through standard GAS cross-machine flow.</span>
     </div>
   </section>
 

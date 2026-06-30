@@ -61,7 +61,7 @@
   },
   {
     "name": "PlayLink",
-    "tagline": "OSS-agnostic multiplayer social layer for UE5. Identity, friends, parties, lobbies, sessions, matchmaking, achievements, stats, and leaderboards — across Null, Steam, EOS, and EOSPlus.",
+    "tagline": "OSS-agnostic multiplayer social layer for UE5. Identity, friends, parties, lobbies, sessions, matchmaking, achievements, stats, and leaderboards across Null, Steam, EOS, and EOSPlus.",
     "domain": "Multiplayer",
     "tags": ["Steam", "EOS", "Matchmaking"],
     "version": "0.5",

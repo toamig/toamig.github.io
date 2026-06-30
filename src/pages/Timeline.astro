@@ -9,7 +9,7 @@ const filterTags = timelineTags.filter(t => t.filter);
 ---
 <BaseLayout
   title="Toamig - Timeline"
-  description="Learn more about Miguel Vieira — game developer, traveller, and lifelong learner."
+  description="Learn more about Miguel Vieira: game developer, traveller, and serial hobbyist."
   ogUrl="https://migueltechlead.pt/Timeline/"
 >
   <!-- ── About Hero ────────────────────────────────────────────────── -->
@@ -21,7 +21,7 @@ const filterTags = timelineTags.filter(t => t.filter);
         <div class="section-header">
           <p class="section-eyebrow">
             <span class="num">00</span>
-            <span class="sep">—</span>
+            <span class="sep">·</span>
             <span class="tag">Who</span>
           </p>
           <h2>About <em>me</em>.</h2>
@@ -42,7 +42,7 @@ const filterTags = timelineTags.filter(t => t.filter);
       <div class="section-header">
         <p class="section-eyebrow">
           <span class="num">01</span>
-          <span class="sep">—</span>
+          <span class="sep">·</span>
           <span class="tag">Chronicle</span>
         </p>
         <h2>Life <em>timeline</em>.</h2>
@@ -535,7 +535,7 @@ function initShareMenu() {
       window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank', 'noopener,noreferrer');
       closeShareMenu();
     } else if (action === 'twitter') {
-      const text = `${title} — ${desc}`.trim();
+      const text = `${title}: ${desc}`.trim();
       window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
       closeShareMenu();
     } else if (action === 'copy') {

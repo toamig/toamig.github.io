@@ -4,7 +4,7 @@ import pluginsData from '../../data/plugins.json';
 const p = pluginsData.find(x => x.name === 'WorldSweep')!;
 ---
 <PluginLayout
-  title="WorldSweep — UE5 Batch Scripting for World Partition"
+  title="WorldSweep · UE5 Batch Scripting for World Partition"
   description="A batch scripting system for executing custom operations across large UE5 World Partition maps, cell by cell."
   pluginName="WorldSweep"
   version={p.version}
@@ -60,10 +60,10 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>WorldSweep</strong> is an Unreal Engine 5 editor plugin that lets you run custom batch operations across your entire world — regardless of how large it is. Instead of manually iterating through levels or writing boilerplate asset tooling, WorldSweep handles all the cell loading, unloading, and iteration for you. You define what to do; WorldSweep figures out how to do it efficiently.
+      <strong>WorldSweep</strong> is an Unreal Engine 5 editor plugin that lets you run custom batch operations across your entire world, regardless of how large it is. Instead of manually iterating through levels or writing boilerplate asset tooling, WorldSweep handles all the cell loading, unloading, and iteration for you. You define what to do; WorldSweep figures out how to do it efficiently.
     </p>
     <p class="doc-p">
-      It works with <strong>World Partition maps</strong>, <strong>Streaming Level setups</strong>, and <strong>flat single-level worlds</strong> — detected automatically. From auditing actor names to mass-replacing classes or enforcing Nanite standards, any repeatable world operation becomes a clean, cancellable, resumable batch job.
+      It works with <strong>World Partition maps</strong>, <strong>Streaming Level setups</strong>, and <strong>flat single-level worlds</strong>, detected automatically. From auditing actor names to mass-replacing classes or enforcing Nanite standards, any repeatable world operation becomes a clean, cancellable, resumable batch job.
     </p>
 
     <div class="feature-grid">
@@ -74,7 +74,7 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
           </svg>
         </div>
         <p class="feature-title">Cell-by-Cell Iteration</p>
-        <p class="feature-desc">Automatically partitions any world into cells and processes them one at a time — no memory spikes, no editor freezes.</p>
+        <p class="feature-desc">Automatically partitions any world into cells and processes them one at a time, no memory spikes, no editor freezes.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">
@@ -153,7 +153,7 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
       Getting Started
     </h2>
     <div class="section-divider"></div>
-    <p class="doc-p">Running your first sweep takes five steps. No configuration files, no project settings — just a data asset and your script.</p>
+    <p class="doc-p">Running your first sweep takes five steps. No configuration files, no project settings, just a data asset and your script.</p>
     <div class="steps">
       <div class="step">
         <span class="step-num">1</span>
@@ -173,7 +173,7 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
         <span class="step-num">3</span>
         <div class="step-body">
           <p class="step-title">Add scripts to the batch</p>
-          <p class="step-desc">Open the batch asset. In the <strong>Scripts</strong> array, add one or more <strong>WorldSweepScript</strong> instances — choose from the built-in scripts or your own custom ones. Configure each script's properties.</p>
+          <p class="step-desc">Open the batch asset. In the <strong>Scripts</strong> array, add one or more <strong>WorldSweepScript</strong> instances, choose from the built-in scripts or your own custom ones. Configure each script's properties.</p>
         </div>
       </div>
       <div class="step">
@@ -205,7 +205,7 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      A <strong>WorldSweepBatch</strong> is a data asset you create in the Content Browser. It acts as the recipe for a batch run — it holds which scripts to execute, how the world should be partitioned, and whether changes should be saved automatically. Create one per logical operation and reuse them as needed.
+      A <strong>WorldSweepBatch</strong> is a data asset you create in the Content Browser. It acts as the recipe for a batch run, it holds which scripts to execute, how the world should be partitioned, and whether changes should be saved automatically. Create one per logical operation and reuse them as needed.
     </p>
     <table class="prop-table">
       <thead>
@@ -221,7 +221,7 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
           <td class="prop-name">Scripts</td>
           <td class="prop-type">Array</td>
           <td class="prop-desc">The scripts to execute. Scripts run in array order within the same priority group for each cell.</td>
-          <td class="prop-default">—</td>
+          <td class="prop-default">, </td>
         </tr>
         <tr>
           <td class="prop-name">CellSize</td>
@@ -238,13 +238,13 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
         <tr>
           <td class="prop-name">SweepMode</td>
           <td class="prop-type">Enum</td>
-          <td class="prop-desc">The iteration strategy to use. <span class="badge badge-green">Auto</span> is recommended — it detects the correct mode from the world type at runtime.</td>
+          <td class="prop-desc">The iteration strategy to use. <span class="badge badge-green">Auto</span> is recommended, it detects the correct mode from the world type at runtime.</td>
           <td class="prop-default">Auto</td>
         </tr>
         <tr>
           <td class="prop-name">bSaveModifications</td>
           <td class="prop-type">bool</td>
-          <td class="prop-desc">Auto-saves and checks out packages dirtied by scripts during the sweep. Only packages made dirty after the batch started are tracked — pre-existing dirty packages are left untouched. In World Partition / Streaming Levels mode, packages are saved per cell before GC. In Flat Level mode, at the end of the batch. Attempts source control checkout automatically when active.</td>
+          <td class="prop-desc">Auto-saves and checks out packages dirtied by scripts during the sweep. Only packages made dirty after the batch started are tracked, pre-existing dirty packages are left untouched. In World Partition / Streaming Levels mode, packages are saved per cell before GC. In Flat Level mode, at the end of the batch. Attempts source control checkout automatically when active.</td>
           <td class="prop-default">false</td>
         </tr>
       </tbody>
@@ -269,12 +269,12 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
     <div class="doc-subsection" id="script-scopes" data-section="script-scopes">
       <h3 class="doc-subsection-title">Event Flags</h3>
       <p class="doc-p">
-        Scripts declare which events they need via an <strong>EventFlags</strong> bitmask. The runner uses this to skip unnecessary cell loads — a script that only needs batch-level events never triggers streaming at all. Flags can be combined freely.
+        Scripts declare which events they need via an <strong>EventFlags</strong> bitmask. The runner uses this to skip unnecessary cell loads, a script that only needs batch-level events never triggers streaming at all. Flags can be combined freely.
       </p>
       <div class="mode-grid" style="grid-template-columns: repeat(auto-fill, minmax(220px,1fr))">
         <div class="mode-card">
           <p class="mode-card-name"><span class="badge badge-amber">CellEvents</span></p>
-          <p class="mode-card-desc">Opt in to cell lifecycle events — <code style="font-family:var(--pl-mono);font-size:12px">OnPreCellLoad</code>, <code style="font-family:var(--pl-mono);font-size:12px">OnCellStarted</code>, <code style="font-family:var(--pl-mono);font-size:12px">OnCellCompleted</code>. No actor or component callbacks.</p>
+          <p class="mode-card-desc">Opt in to cell lifecycle events, <code style="font-family:var(--pl-mono);font-size:12px">OnPreCellLoad</code>, <code style="font-family:var(--pl-mono);font-size:12px">OnCellStarted</code>, <code style="font-family:var(--pl-mono);font-size:12px">OnCellCompleted</code>. No actor or component callbacks.</p>
         </div>
         <div class="mode-card">
           <p class="mode-card-name"><span class="badge badge-blue">Actors</span></p>
@@ -282,7 +282,7 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
         </div>
         <div class="mode-card">
           <p class="mode-card-name"><span class="badge badge-green">Components</span></p>
-          <p class="mode-card-desc">Opt in to <code style="font-family:var(--pl-mono);font-size:12px">OnComponentFound</code> for every component on every matching actor. Implies actor iteration — no need to also set <span class="badge badge-blue" style="font-size:10px">Actors</span>.</p>
+          <p class="mode-card-desc">Opt in to <code style="font-family:var(--pl-mono);font-size:12px">OnComponentFound</code> for every component on every matching actor. Implies actor iteration, no need to also set <span class="badge badge-blue" style="font-size:10px">Actors</span>.</p>
         </div>
       </div>
       <div class="callout callout-info">
@@ -291,7 +291,7 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
             <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
           </svg>
         </span>
-        <span>When no flags are set, the script only receives <code style="font-family:var(--pl-mono);font-size:12px">OnBatchStarted</code> and <code style="font-family:var(--pl-mono);font-size:12px">OnBatchCompleted</code> — no cell loading is performed at all.</span>
+        <span>When no flags are set, the script only receives <code style="font-family:var(--pl-mono);font-size:12px">OnBatchStarted</code> and <code style="font-family:var(--pl-mono);font-size:12px">OnBatchCompleted</code>, no cell loading is performed at all.</span>
       </div>
     </div>
 
@@ -355,7 +355,7 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
           <tr>
             <td class="prop-name">EventFlags</td>
             <td class="prop-type">Bitmask</td>
-            <td class="prop-desc">Declares which events this script receives. Combine <span class="badge badge-amber" style="font-size:10.5px">CellEvents</span> <span class="badge badge-blue" style="font-size:10.5px">Actors</span> <span class="badge badge-green" style="font-size:10.5px">Components</span> freely. The runner uses this to skip unnecessary cell streaming — set only the flags you actually need.</td>
+            <td class="prop-desc">Declares which events this script receives. Combine <span class="badge badge-amber" style="font-size:10.5px">CellEvents</span> <span class="badge badge-blue" style="font-size:10.5px">Actors</span> <span class="badge badge-green" style="font-size:10.5px">Components</span> freely. The runner uses this to skip unnecessary cell streaming, set only the flags you actually need.</td>
           </tr>
           <tr>
             <td class="prop-name">ActorTagFilter</td>
@@ -389,7 +389,7 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      WorldSweep supports three world architectures, each with a dedicated execution strategy. Setting the batch's <code style="font-family:var(--pl-mono);font-size:12.5px;color:var(--pl-blue-l)">SweepMode</code> to <span class="badge badge-green">Auto</span> detects the correct mode automatically — you only need to override this manually in edge cases.
+      WorldSweep supports three world architectures, each with a dedicated execution strategy. Setting the batch's <code style="font-family:var(--pl-mono);font-size:12.5px;color:var(--pl-blue-l)">SweepMode</code> to <span class="badge badge-green">Auto</span> detects the correct mode automatically, you only need to override this manually in edge cases.
     </p>
     <div class="mode-grid" style="grid-template-columns: repeat(auto-fill, minmax(220px,1fr))">
       <div class="mode-card">
@@ -423,7 +423,7 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      WorldSweep ships with seven ready-to-use scripts covering the most common world auditing and maintenance tasks. Every script that modifies data includes a <code style="font-family:var(--pl-mono);font-size:12.5px;color:var(--pl-blue-l)">bApplyChanges</code> toggle — leave it off to run a safe dry-run first and review what would change.
+      WorldSweep ships with seven ready-to-use scripts covering the most common world auditing and maintenance tasks. Every script that modifies data includes a <code style="font-family:var(--pl-mono);font-size:12.5px;color:var(--pl-blue-l)">bApplyChanges</code> toggle, leave it off to run a safe dry-run first and review what would change.
     </p>
     <div class="script-grid">
 
@@ -470,10 +470,10 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
           <span class="badge badge-purple">Performance</span>
         </div>
         <div class="script-card-body">
-          <p class="script-card-desc">Measures and logs how long each cell takes to stream in. After the batch completes, reports the minimum, maximum, and average load times across all cells — helping you identify slow-loading regions before they become runtime streaming hitches.</p>
+          <p class="script-card-desc">Measures and logs how long each cell takes to stream in. After the batch completes, reports the minimum, maximum, and average load times across all cells, helping you identify slow-loading regions before they become runtime streaming hitches.</p>
           <p class="use-case-tag">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            No configuration required — add it to any batch and it runs automatically.
+            No configuration required, add it to any batch and it runs automatically.
           </p>
         </div>
       </div>
@@ -488,7 +488,7 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
         <div class="script-card-body">
           <p class="script-card-desc">Audits or sets the collision profile on all primitive components of every actor visited. Ensures collision standards are consistent across a world that may have been modified by multiple team members over time.</p>
           <div class="script-props">
-            <div class="script-prop"><span class="script-prop-name">CollisionProfileName</span><span class="script-prop-desc">The collision profile name to check for — or to apply to — all primitive components.</span></div>
+            <div class="script-prop"><span class="script-prop-name">CollisionProfileName</span><span class="script-prop-desc">The collision profile name to check for, or to apply to, all primitive components.</span></div>
             <div class="script-prop"><span class="script-prop-name">bApplyChanges</span><span class="script-prop-desc">When disabled, logs components that don't use the target profile. When enabled, applies the profile and marks the package dirty.</span></div>
           </div>
         </div>
@@ -507,7 +507,7 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
               <span class="script-prop-name">Pattern</span>
               <span class="script-prop-desc">Regular expression matched against each actor's display name. Example: <code style="font-family:var(--pl-mono);font-size:12px;color:var(--pl-blue-l)">^SM_</code> flags any actor whose label does not start with <code style="font-family:var(--pl-mono);font-size:12px;color:var(--pl-blue-l)">SM_</code>.</span>
             </div>
-            <div class="script-prop"><span class="script-prop-name">bLogMatchingActors</span><span class="script-prop-desc">When enabled, also logs actors that do match the pattern — useful for a full inventory rather than just violations.</span></div>
+            <div class="script-prop"><span class="script-prop-name">bLogMatchingActors</span><span class="script-prop-desc">When enabled, also logs actors that do match the pattern, useful for a full inventory rather than just violations.</span></div>
           </div>
         </div>
       </div>
@@ -523,7 +523,7 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
           <p class="script-card-desc">Audits or toggles Nanite on static mesh assets referenced by actors in the world. Automatically deduplicates by asset path so each mesh is evaluated exactly once, regardless of how many actors reference it.</p>
           <div class="script-props">
             <div class="script-prop"><span class="script-prop-name">bEnableNanite</span><span class="script-prop-desc">The target Nanite state. Enable to turn Nanite on for non-conforming meshes; disable to turn it off.</span></div>
-            <div class="script-prop"><span class="script-prop-name">bApplyChanges</span><span class="script-prop-desc">When disabled, audit mode — logs meshes that don't match the target state. When enabled, applies the change and marks packages dirty.</span></div>
+            <div class="script-prop"><span class="script-prop-name">bApplyChanges</span><span class="script-prop-desc">When disabled, audit mode, logs meshes that don't match the target state. When enabled, applies the change and marks packages dirty.</span></div>
           </div>
         </div>
       </div>
@@ -536,7 +536,7 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
           <span class="badge badge-green">OnComponentFound</span>
         </div>
         <div class="script-card-body">
-          <p class="script-card-desc">Scans actors for Static Mesh or Skeletal Mesh components that have no mesh asset assigned. Unset mesh references are a common source of invisible geometry and silent runtime errors — this script surfaces them all in a single pass.</p>
+          <p class="script-card-desc">Scans actors for Static Mesh or Skeletal Mesh components that have no mesh asset assigned. Unset mesh references are a common source of invisible geometry and silent runtime errors, this script surfaces them all in a single pass.</p>
           <div class="script-props">
             <div class="script-prop"><span class="script-prop-name">bCheckStaticMeshes</span><span class="script-prop-desc">Audits UStaticMeshComponent instances for null mesh assets.</span></div>
             <div class="script-prop"><span class="script-prop-name">bCheckSkeletalMeshes</span><span class="script-prop-desc">Audits USkeletalMeshComponent instances for null mesh assets.</span></div>
@@ -559,7 +559,7 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      WorldSweep includes a commandlet for running batches headlessly — ideal for automating world validation, mass-updates, or QA checks in CI/CD pipelines without opening the editor UI.
+      WorldSweep includes a commandlet for running batches headlessly, ideal for automating world validation, mass-updates, or QA checks in CI/CD pipelines without opening the editor UI.
     </p>
 
     <div class="callout callout-info">
@@ -631,9 +631,9 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
 </PluginLayout>
 
 <style is:global>
-  /* ── WorldSweep — only genuine per-plugin customisations ─────── */
+  /* ── WorldSweep, only genuine per-plugin customisations ─────── */
 
-  /* Nav hover — cyan tint */
+  /* Nav hover, cyan tint */
   .nav-group a:hover { color: var(--pl-blue-l); }
 
   /* Section divider */

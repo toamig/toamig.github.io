@@ -23,7 +23,7 @@ export const GET: APIRoute = async () => {
       <div style="display:flex;flex-direction:column;margin-top:48px;flex-grow:1">
         <div style="display:flex;padding:8px 18px;border-radius:999px;background:#f1f5f9;color:#475569;font-size:18px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;align-self:flex-start">UE5 Pre-Production Consulting</div>
         <div style="display:flex;font-size:76px;font-weight:800;line-height:1.05;letter-spacing:-0.03em;color:#0f172a;margin-top:32px;max-width:1040px">Start your UE5 project with architecture that scales.</div>
-        <div style="display:flex;margin-top:28px;font-size:28px;line-height:1.4;color:#475569;font-weight:400;max-width:1000px">Gameplay architecture, pipelines, and reference implementations — defined in pre-production, so you don't pay for rewrites later.</div>
+        <div style="display:flex;margin-top:28px;font-size:28px;line-height:1.4;color:#475569;font-weight:400;max-width:1000px">Gameplay architecture, pipelines, and reference implementations, defined in pre-production, so you don't pay for rewrites later.</div>
       </div>
 
       <div style="display:flex;justify-content:space-between;align-items:center;padding-top:28px;border-top:1px solid #e2e8f0">

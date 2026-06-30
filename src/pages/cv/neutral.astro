@@ -24,7 +24,7 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex,nofollow" />
-  <title>Miguel Vieira — CV</title>
+  <title>Miguel Vieira · CV</title>
   <link rel="icon" href="/logo_head.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -310,7 +310,7 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
       <a href="/#resume">← Back</a>
       <a href="/cv/editorial">Switch to editorial →</a>
     </div>
-    <a class="primary" href="/cv/miguel-vieira-cv-neutral.pdf" download="Miguel Vieira — CV.pdf">Download PDF</a>
+    <a class="primary" href="/cv/miguel-vieira-cv-neutral.pdf" download="Miguel Vieira - CV.pdf">Download PDF</a>
   </div>
 
   <!-- ──────────────────────── PAGE 1 ──────────────────────── -->
@@ -348,7 +348,7 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
         <div class="entry">
           <div class="entry-head">
             <div class="entry-title">
-              {e.name}<span class="sep">—</span><span class="role">{e.role}</span>
+              {e.name}<span class="sep">·</span><span class="role">{e.role}</span>
             </div>
             <div class="entry-date">{e.period}</div>
           </div>
@@ -365,7 +365,7 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
       {education.map(e => (
         <div class="entry">
           <div class="entry-head">
-            <div class="entry-title">{e.role}<span class="sep">—</span><span class="role">{e.name}</span></div>
+            <div class="entry-title">{e.role}<span class="sep">·</span><span class="role">{e.name}</span></div>
             <div class="entry-date">{e.period}</div>
           </div>
         </div>
@@ -408,7 +408,7 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
       <h2>Selected Projects</h2>
       <div class="two-up">
         {featuredProjects.map(p => (
-          <div class="row"><span class="name">{p.name}</span> — <span class="desc">{p.desc}</span></div>
+          <div class="row"><span class="name">{p.name}</span>, <span class="desc">{p.desc}</span></div>
         ))}
       </div>
     </section>
@@ -428,7 +428,7 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
       <h2>Languages</h2>
       <div class="inline-list">
         {cv.languages.map((l, i) => (
-          <>{i > 0 && <span class="sep">·</span>}<span><strong>{l.name}</strong> — {l.level}</span></>
+          <>{i > 0 && <span class="sep">·</span>}<span><strong>{l.name}</strong>, {l.level}</span></>
         ))}
       </div>
     </section>
@@ -440,7 +440,7 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
           <div class="row">
             <span>
               <span class="label">{c.name}</span>
-              {c.issuer && <span class="iss"> — {c.issuer}</span>}
+              {c.issuer && <span class="iss">, {c.issuer}</span>}
             </span>
             <span class="yr">{c.year}</span>
           </div>

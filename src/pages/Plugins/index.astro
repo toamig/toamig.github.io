@@ -50,7 +50,7 @@ const domains = [...new Set(plugins.map(p => p.domain).filter(Boolean))];
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Plugins — Miguel Techlead</title>
+  <title>Plugins · Miguel Techlead</title>
   <meta name="description" content="Unreal Engine 5 plugins for world-building, combat, and tooling." />
   <link rel="icon" href="/logo_head.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -60,18 +60,18 @@ const domains = [...new Set(plugins.map(p => p.domain).filter(Boolean))];
   <meta property="og:type"        content="website" />
   <meta property="og:url"         content="https://toamig.github.io/Plugins" />
   <meta property="og:site_name"   content="Miguel Techlead" />
-  <meta property="og:title"       content="Modular Plugins — Miguel Techlead" />
+  <meta property="og:title"       content="Modular Plugins · Miguel Techlead" />
   <meta property="og:description" content="Production-grade UE5 plugins for inventory, combat, dialog, and world-building. Fragment-based, multiplayer-ready, extensible per project." />
   <meta property="og:image"       content="https://toamig.github.io/og-plugins.png" />
   <meta property="og:image:width"  content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt"   content="Modular Plugins — Unreal Engine 5" />
+  <meta property="og:image:alt"   content="Modular Plugins · Unreal Engine 5" />
   <!-- Twitter / X -->
   <meta name="twitter:card"        content="summary_large_image" />
-  <meta name="twitter:title"       content="Modular Plugins — Miguel Techlead" />
+  <meta name="twitter:title"       content="Modular Plugins · Miguel Techlead" />
   <meta name="twitter:description" content="Production-grade UE5 plugins for inventory, combat, dialog, and world-building." />
   <meta name="twitter:image"       content="https://toamig.github.io/og-plugins.png" />
-  <meta name="twitter:image:alt"   content="Modular Plugins — Unreal Engine 5" />
+  <meta name="twitter:image:alt"   content="Modular Plugins · Unreal Engine 5" />
 </head>
 <body>
 
@@ -88,7 +88,7 @@ const domains = [...new Set(plugins.map(p => p.domain).filter(Boolean))];
     <canvas id="hero-circuits" aria-hidden="true"></canvas>
     <p class="eyebrow"><span class="eyebrow-mark" aria-hidden="true"></span>Unreal Engine 5</p>
     <h1>Modular Plugins</h1>
-    <p class="sub">Production-grade systems for world-building, combat, and pipeline automation — fragment-based, multiplayer-ready, extensible per project.</p>
+    <p class="sub">Production-grade systems for world-building, combat, and pipeline automation, fragment-based, multiplayer-ready, extensible per project.</p>
     <ul class="hero-meta" aria-label="At a glance">
       <li><strong>{total}</strong> plugins</li>
       <li><strong>{domains.length}</strong> domains</li>
@@ -192,7 +192,7 @@ const domains = [...new Set(plugins.map(p => p.domain).filter(Boolean))];
   let W = 0, H = 0, OX = 0, OY = 0;
   // Routing graph built from the circuit segments.
   let nodes = {}, adj = {}, nodeList = [], visNodes = [], visSet = new Set();
-  // Only these keys are rendered junction dots — charges may only flare here,
+  // Only these keys are rendered junction dots, charges may only flare here,
   // never at the degree-2 pass-through cells between them.
   let dotSet = new Set();
   let pulses = [], flare = {}, flashes = [];
@@ -205,8 +205,8 @@ const domains = [...new Set(plugins.map(p => p.domain).filter(Boolean))];
   const CAP   = 16;
   const EMIT  = 1.0;       // s between charges, per in-range node
   const INFLUENCE = 110;   // px radius of the cursor's area of influence
-  const SPEED = 46;        // px/s — identical for every charge (normalized)
-  const TRAIL = 16;        // px — constant comet trail length
+  const SPEED = 46;        // px/s, identical for every charge (normalized)
+  const TRAIL = 16;        // px, constant comet trail length
   const AUTO = 0.55;   // s between charges on touch (no cursor)
 
   function build() {
@@ -218,7 +218,7 @@ const domains = [...new Set(plugins.map(p => p.domain).filter(Boolean))];
     const rand = rng(6487);
     const STEP   = 26;
     OX = W / 2;
-    OY = H * 0.26;            // grid origin — upper hero, where the glow is
+    OY = H * 0.26;            // grid origin, upper hero, where the glow is
     const FOLD_Y = H * 0.64;  // where the wall surface folds into the floor
     const R_FOLD = Math.round((FOLD_Y - OY) / STEP);
     const CAM    = 190;
@@ -283,7 +283,7 @@ const domains = [...new Set(plugins.map(p => p.domain).filter(Boolean))];
       walk(c, r, Math.floor(rand() * 4), 95 + rand() * 95);
     }
 
-    // Bake the static circuit (no centre fade — that's applied per-frame so
+    // Bake the static circuit (no centre fade, that's applied per-frame so
     // it dissolves the pulses behind the title too).
     base = document.createElement('canvas');
     base.width = W; base.height = H;
@@ -325,14 +325,14 @@ const domains = [...new Set(plugins.map(p => p.domain).filter(Boolean))];
     for (const key in adj) adj[key] = [...adj[key]];
     nodeList = Object.keys(nodes);
     dotSet = new Set(dots.map(d => d.c + ',' + d.r));   // the only flare-able nodes
-    // Nodes whose projection lands near the visible canvas — used for the
+    // Nodes whose projection lands near the visible canvas, used for the
     // load wake and the touch auto-flow so charges light what people see.
     visNodes = nodeList.filter(key => {
       const p = projKey(key);
       return p.x > -20 && p.x < W + 20 && p.y > -20 && p.y < H + 20;
     });
     visSet = new Set(visNodes);   // charges route within the visible board only
-    // Eligible spawn origins: nodes in the clearly-visible region — excludes
+    // Eligible spawn origins: nodes in the clearly-visible region, excludes
     // the mask-faded bottom and the centre-fade behind the title.
     eligible = [...dotSet].filter(key => {
       const p = projKey(key);
@@ -348,7 +348,7 @@ const domains = [...new Set(plugins.map(p => p.domain).filter(Boolean))];
   // Approximate the rendered opacity of a point: the canvas mask fades the
   // bottom (opaque to 35% height, transparent by 92%) and the centre-fade
   // erases up to ~68% behind the title. A dot is a valid spawn origin if what
-  // shows through is more than faint — so dim-but-visible dots still spawn.
+  // shows through is more than faint, so dim-but-visible dots still spawn.
   function visAlpha(p) {
     const fy = p.y / H;
     let m = 1;
@@ -517,7 +517,7 @@ const domains = [...new Set(plugins.map(p => p.domain).filter(Boolean))];
   let raf = 0, last = 0;
   function idle() {
     // On desktop, once the wake has tapered and nothing's flowing and the
-    // cursor's away, the board is a static frame — stop the loop to save CPU
+    // cursor's away, the board is a static frame, stop the loop to save CPU
     // (pointermove restarts it). Touch always animates (auto-flow).
     return HOVER && !cursorActive && wakeLeft <= 0 && pulses.length === 0 && flashes.length === 0;
   }
@@ -543,7 +543,7 @@ const domains = [...new Set(plugins.map(p => p.domain).filter(Boolean))];
   }
 
   build();
-  // Always paint one frame immediately so the canvas is never blank — rAF
+  // Always paint one frame immediately so the canvas is never blank, rAF
   // doesn't fire while the tab is hidden (background-tab load / SSR preview),
   // and the loop would otherwise leave nothing on screen until it runs.
   if (reduced) {
@@ -594,7 +594,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Fine grain overlay — adds tooth/depth over the flat near-black so the page
+/* Fine grain overlay, adds tooth/depth over the flat near-black so the page
    doesn't read as a plastic gradient. Fixed, non-interactive, very low alpha. */
 body::after {
   content: '';
@@ -637,7 +637,7 @@ body::after {
 /* ── Hero ────────────────────────────────────────────────────────────── */
 /* NOTE: the circuit pattern is generated from the hero's W/H (OY = H*0.26,
    FOLD_Y = H*0.64). Changing this padding / inner spacing changes the hero
-   height and therefore regenerates the pattern — keep these metrics stable. */
+   height and therefore regenerates the pattern, keep these metrics stable. */
 .hero {
   position: relative;
   padding: 120px 24px 56px;
@@ -711,7 +711,7 @@ h1 {
   margin: 0 auto;
 }
 
-/* Hero meta — factual at-a-glance signals in mono */
+/* Hero meta, factual at-a-glance signals in mono */
 .hero-meta {
   list-style: none;
   display: flex;
@@ -742,7 +742,7 @@ h1 {
   margin: 0 auto;
 }
 
-/* Section header — editorial label + live status legend */
+/* Section header, editorial label + live status legend */
 .grid-head {
   display: flex;
   align-items: baseline;
@@ -803,7 +803,7 @@ h1 {
   box-shadow: 0 20px 56px color-mix(in srgb, var(--accent) 13%, transparent);
 }
 
-/* Per-plugin accent rail along the card's top edge — the product's colour
+/* Per-plugin accent rail along the card's top edge, the product's colour
    identity, brightening on hover. */
 .card-rail {
   position: absolute;
@@ -944,7 +944,7 @@ h2 {
   margin-bottom: 14px;
 }
 
-/* ── Capability chips — the at-a-glance technical scan for devs ───────── */
+/* ── Capability chips, the at-a-glance technical scan for devs ───────── */
 .chips {
   list-style: none;
   display: flex;

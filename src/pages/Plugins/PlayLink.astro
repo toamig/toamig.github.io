@@ -5,8 +5,8 @@ import pluginsData from '../../data/plugins.json';
 const p = pluginsData.find(x => x.name === 'PlayLink')!;
 ---
 <PluginLayout
-  title="PlayLink — OSS-Agnostic Multiplayer Social Layer for UE5"
-  description="An OSS-agnostic multiplayer social layer for Unreal Engine 5. One API for identity, friends, parties, lobbies, sessions, matchmaking, achievements, stats, and leaderboards — running unchanged across Null, Steam, EOS, and EOSPlus. Drop in, route, ship."
+  title="PlayLink · OSS-Agnostic Multiplayer Social Layer for UE5"
+  description="An OSS-agnostic multiplayer social layer for Unreal Engine 5. One API for identity, friends, parties, lobbies, sessions, matchmaking, achievements, stats, and leaderboards, running unchanged across Null, Steam, EOS, and EOSPlus. Drop in, route, ship."
   pluginName="PlayLink"
   version={p.version}
   coverImage={p.cover}
@@ -69,10 +69,10 @@ const p = pluginsData.find(x => x.name === 'PlayLink')!;
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>PlayLink</strong> is an OSS-agnostic multiplayer social layer for Unreal Engine 5. One API surface covers identity, friends, parties, lobbies, sessions, and invites — and it runs unchanged across the Null, Steam, EOS, and EOSPlus Online Subsystems. The <strong>UPlayLinkSubsystem</strong> resolves the active backend at runtime, and per-domain Game Instance Subsystems hang off it: <strong>UPlayLinkIdentitySubsystem</strong>, <strong>UPlayLinkFriendsSubsystem</strong>, <strong>UPlayLinkLobbySubsystem</strong>, <strong>UPlayLinkSessionSubsystem</strong>, and <strong>UPlayLinkPartySubsystem</strong>.
+      <strong>PlayLink</strong> is an OSS-agnostic multiplayer social layer for Unreal Engine 5. One API surface covers identity, friends, parties, lobbies, sessions, and invites, and it runs unchanged across the Null, Steam, EOS, and EOSPlus Online Subsystems. The <strong>UPlayLinkSubsystem</strong> resolves the active backend at runtime, and per-domain Game Instance Subsystems hang off it: <strong>UPlayLinkIdentitySubsystem</strong>, <strong>UPlayLinkFriendsSubsystem</strong>, <strong>UPlayLinkLobbySubsystem</strong>, <strong>UPlayLinkSessionSubsystem</strong>, and <strong>UPlayLinkPartySubsystem</strong>.
     </p>
     <p class="doc-p">
-      Each domain exposes BlueprintAssignable dynamic multicast delegates (<code>OnFriendsListUpdated</code>, <code>OnLobbyMemberJoined</code>, <code>OnSessionsFound</code>, etc.) that re-broadcast OSS events as project-friendly types — <code>FPlayLinkUserId</code>, <code>FPlayLinkLobbyHandle</code>, <code>FPlayLinkSessionSearchResult</code>, <code>FPlayLinkPartyMember</code>. There's no Online Subsystem coupling in your project code: you call the PlayLink subsystem, it routes to the active OSS, and you handle the result by event.
+      Each domain exposes BlueprintAssignable dynamic multicast delegates (<code>OnFriendsListUpdated</code>, <code>OnLobbyMemberJoined</code>, <code>OnSessionsFound</code>, etc.) that re-broadcast OSS events as project-friendly types, <code>FPlayLinkUserId</code>, <code>FPlayLinkLobbyHandle</code>, <code>FPlayLinkSessionSearchResult</code>, <code>FPlayLinkPartyMember</code>. There's no Online Subsystem coupling in your project code: you call the PlayLink subsystem, it routes to the active OSS, and you handle the result by event.
     </p>
 
     <div class="feature-grid">
@@ -81,14 +81,14 @@ const p = pluginsData.find(x => x.name === 'PlayLink')!;
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
         </div>
         <p class="feature-title">Backend Routing</p>
-        <p class="feature-desc"><code>UPlayLinkSubsystem</code> resolves the active <code>EPlayLinkBackend</code> (<code>Null</code>, <code>Steam</code>, <code>EOS</code>, <code>EOSPlus</code>) at startup. Your gameplay code stays OSS-agnostic — switch backends in <code>DefaultEngine.ini</code>, the same calls keep working.</p>
+        <p class="feature-desc"><code>UPlayLinkSubsystem</code> resolves the active <code>EPlayLinkBackend</code> (<code>Null</code>, <code>Steam</code>, <code>EOS</code>, <code>EOSPlus</code>) at startup. Your gameplay code stays OSS-agnostic, switch backends in <code>DefaultEngine.ini</code>, the same calls keep working.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         </div>
         <p class="feature-title">Identity &amp; Friends</p>
-        <p class="feature-desc">Login state, display names, friend lists, and presence — all surfaced through <code>UPlayLinkIdentitySubsystem</code> and <code>UPlayLinkFriendsSubsystem</code>. Steam auto-detects an already-authed client; no explicit dialog.</p>
+        <p class="feature-desc">Login state, display names, friend lists, and presence, all surfaced through <code>UPlayLinkIdentitySubsystem</code> and <code>UPlayLinkFriendsSubsystem</code>. Steam auto-detects an already-authed client; no explicit dialog.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">
@@ -127,7 +127,7 @@ const p = pluginsData.find(x => x.name === 'PlayLink')!;
       <span class="section-icon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/><line x1="8" y1="6" x2="11" y2="11"/><line x1="16" y1="6" x2="13" y2="11"/><line x1="8" y1="18" x2="11" y2="13"/><line x1="16" y1="18" x2="13" y2="13"/></svg>
       </span>
-      Concepts — Party vs Lobby vs Session
+      Concepts, Party vs Lobby vs Session
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
@@ -147,30 +147,30 @@ const p = pluginsData.find(x => x.name === 'PlayLink')!;
     </div>
 
     <div class="doc-subsection">
-      <h3 class="doc-subsection-title">Lobby — metadata bulletin board</h3>
+      <h3 class="doc-subsection-title">Lobby, metadata bulletin board</h3>
       <p class="doc-p">
         Backed by an OSS object (Steam Lobby, EOS Lobby) that stores key/value pairs: name, max players, custom flags (<code>region=eu</code>, <code>mode=ranked</code>), chat. Members read/write metadata and exchange messages. Settings round-trip via <code>OnLobbySettingsChanged</code> + <code>OnUpdateSessionComplete</code>.
       </p>
       <p class="doc-p">
-        <strong>A lobby has no IP, no port, no <code>NetDriver</code>.</strong> You cannot <code>ClientTravel</code> to a lobby — there is nothing on the wire to connect to. Use lobbies to wait for friends, configure match rules, decide what to play next, and hold pre-game chat.
+        <strong>A lobby has no IP, no port, no <code>NetDriver</code>.</strong> You cannot <code>ClientTravel</code> to a lobby, there is nothing on the wire to connect to. Use lobbies to wait for friends, configure match rules, decide what to play next, and hold pre-game chat.
       </p>
     </div>
 
     <div class="doc-subsection">
-      <h3 class="doc-subsection-title">Party — cross-game social grouping</h3>
+      <h3 class="doc-subsection-title">Party, cross-game social grouping</h3>
       <p class="doc-p">
-        "I'm queueing with these three people, drag us together wherever we go." Parties span sessions, lobbies, and even sequential matches — they survive a match ending so the same group can re-queue without losing its membership.
+        "I'm queueing with these three people, drag us together wherever we go." Parties span sessions, lobbies, and even sequential matches, they survive a match ending so the same group can re-queue without losing its membership.
       </p>
       <p class="doc-p">
         Implementation differs per backend. Steam has no native parties; PlayLink ships <code>UPlayLinkLobbyPartyService</code>, a presence-true OSS session named <code>PlayLinkParty</code> that stands in for a party. EOS has a real <code>IOnlineParty</code> service planned as a sibling plugin (<code>PlayLinkEOSParty</code>). Either way the public API stays the same.
       </p>
       <p class="doc-p">
-        <strong>A party also has no network endpoint.</strong> Parties don't host gameplay — they track who's grouped together so when a match starts, the matchmaker pulls everyone into the same session. Use parties to persist a friend group across multiple matches.
+        <strong>A party also has no network endpoint.</strong> Parties don't host gameplay, they track who's grouped together so when a match starts, the matchmaker pulls everyone into the same session. Use parties to persist a friend group across multiple matches.
       </p>
     </div>
 
     <div class="doc-subsection">
-      <h3 class="doc-subsection-title">Session — the actual game match</h3>
+      <h3 class="doc-subsection-title">Session, the actual game match</h3>
       <p class="doc-p">
         Backed by an OSS session <em>and</em> a UE listen-server <code>NetDriver</code>. A session has an IP:port. <code>JoinSession</code> returns a connect string that <code>APlayerController::ClientTravel</code> hands to the engine's net layer; the client lands on the host. This is the only one of the three where "transport me to the host's level" is a meaningful operation.
       </p>
@@ -236,7 +236,7 @@ const p = pluginsData.find(x => x.name === 'PlayLink')!;
       <span class="callout-icon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       </span>
-      <span>The dev panel reflects this distinction: only the <strong>Session</strong> card has a Travel button. Asking a lobby or party to travel is a category error — they are coordination state, not transport endpoints.</span>
+      <span>The dev panel reflects this distinction: only the <strong>Session</strong> card has a Travel button. Asking a lobby or party to travel is a category error, they are coordination state, not transport endpoints.</span>
     </div>
   </section>
 
@@ -263,7 +263,7 @@ const p = pluginsData.find(x => x.name === 'PlayLink')!;
         <span class="step-num">2</span>
         <div class="step-body">
           <p class="step-title">Pick a backend</p>
-          <p class="step-desc">In <code>DefaultEngine.ini</code> set <code>[OnlineSubsystem] DefaultPlatformService=Steam</code> (or <code>EOS</code>, <code>EOSPlus</code>, or leave unset for <code>Null</code>). PlayLink resolves whichever OSS is active at startup — no plugin code change needed when you switch.</p>
+          <p class="step-desc">In <code>DefaultEngine.ini</code> set <code>[OnlineSubsystem] DefaultPlatformService=Steam</code> (or <code>EOS</code>, <code>EOSPlus</code>, or leave unset for <code>Null</code>). PlayLink resolves whichever OSS is active at startup, no plugin code change needed when you switch.</p>
         </div>
       </div>
       <div class="step">
@@ -277,7 +277,7 @@ const p = pluginsData.find(x => x.name === 'PlayLink')!;
         <span class="step-num">4</span>
         <div class="step-body">
           <p class="step-title">Bind the events you need</p>
-          <p class="step-desc">In your game subsystem or controller, get a per-domain subsystem and subscribe to its delegates. Treat the delegates as your only source of truth — gameplay code never queries the OSS directly.</p>
+          <p class="step-desc">In your game subsystem or controller, get a per-domain subsystem and subscribe to its delegates. Treat the delegates as your only source of truth, gameplay code never queries the OSS directly.</p>
         </div>
       </div>
       <div class="step">
@@ -328,7 +328,7 @@ Lobby->Action_HostLobby(<span class="code-val">0</span>, <span class="code-val">
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>UPlayLinkSubsystem</strong> is the routing layer. It resolves the active <code>IOnlineSubsystem</code> at game-instance init, classifies it into an <code>EPlayLinkBackend</code>, and binds the per-domain subsystems to the matching OSS interfaces. Every PlayLink subsystem holds a weak reference to the resolved OSS — when the OSS drops, the subsystems drop their interface pointers.
+      <strong>UPlayLinkSubsystem</strong> is the routing layer. It resolves the active <code>IOnlineSubsystem</code> at game-instance init, classifies it into an <code>EPlayLinkBackend</code>, and binds the per-domain subsystems to the matching OSS interfaces. Every PlayLink subsystem holds a weak reference to the resolved OSS, when the OSS drops, the subsystems drop their interface pointers.
     </p>
 
     <table class="prop-table">
@@ -349,7 +349,7 @@ Lobby->Action_HostLobby(<span class="code-val">0</span>, <span class="code-val">
         <tr>
           <td class="prop-name">EPlayLinkBackend::EOS</td>
           <td class="prop-desc"><code>DefaultPlatformService=EOS</code>.</td>
-          <td class="prop-desc">Standalone EOS — no Steam piggyback. Login flows depend on configured EOS auth scopes.</td>
+          <td class="prop-desc">Standalone EOS, no Steam piggyback. Login flows depend on configured EOS auth scopes.</td>
         </tr>
         <tr>
           <td class="prop-name">EPlayLinkBackend::EOSPlus</td>
@@ -382,7 +382,7 @@ if (Router-&gt;IsReady())
       <span class="callout-icon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       </span>
-      <span>The router resolves once per game-instance lifetime. Switching <code>DefaultPlatformService</code> at runtime is not supported — change the ini and restart the project.</span>
+      <span>The router resolves once per game-instance lifetime. Switching <code>DefaultPlatformService</code> at runtime is not supported, change the ini and restart the project.</span>
     </div>
   </section>
 
@@ -396,7 +396,7 @@ if (Router-&gt;IsReady())
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>UPlayLinkIdentitySubsystem</strong> wraps <code>IOnlineIdentity</code>. It tracks login state per local user, surfaces the platform-agnostic <code>FPlayLinkUserId</code>, and exposes display-name resolution. On Steam the local user is auto-detected from the running client at startup — calling <code>Login()</code> just verifies and broadcasts <code>OnLoginStateChanged</code>. On EOS the call drives the configured auth flow (Account Portal, Persistent Auth, Exchange Code, etc.).
+      <strong>UPlayLinkIdentitySubsystem</strong> wraps <code>IOnlineIdentity</code>. It tracks login state per local user, surfaces the platform-agnostic <code>FPlayLinkUserId</code>, and exposes display-name resolution. On Steam the local user is auto-detected from the running client at startup, calling <code>Login()</code> just verifies and broadcasts <code>OnLoginStateChanged</code>. On EOS the call drives the configured auth flow (Account Portal, Persistent Auth, Exchange Code, etc.).
     </p>
 
     <table class="prop-table">
@@ -465,17 +465,17 @@ if (Router-&gt;IsReady())
           </tr>
           <tr>
             <td class="prop-name">Online</td>
-            <td class="prop-desc">Default — neither in lobby nor session</td>
+            <td class="prop-desc">Default, neither in lobby nor session</td>
             <td class="prop-desc">empty</td>
           </tr>
         </tbody>
       </table>
       <p class="doc-p">
-        Override the status string mid-match by calling <code>SetLocalUserPresence(LocalUserNum, State, StatusString)</code> directly — useful for richer presence like <em>"In Arena 4 — 12/20"</em>. The next lifecycle event will re-apply the auto-state unless auto-writes are disabled.
+        Override the status string mid-match by calling <code>SetLocalUserPresence(LocalUserNum, State, StatusString)</code> directly, useful for richer presence like <em>"In Arena 4, 12/20"</em>. The next lifecycle event will re-apply the auto-state unless auto-writes are disabled.
       </p>
       <div class="code-block">
         <div class="code-block-header"><span class="code-lang">ini</span></div>
-        <pre><code><span class="code-comment">; DefaultEngine.ini — disable automatic presence writes</span>
+        <pre><code><span class="code-comment">; DefaultEngine.ini, disable automatic presence writes</span>
 [PlayLink]
 bAutoWritePresence=False</code></pre>
       </div>
@@ -570,7 +570,7 @@ bAutoWritePresence=False</code></pre>
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      Invites are unified under <strong>FPlayLinkInvite</strong>. The struct carries the inviter's <code>FPlayLinkUserId</code>, an <code>EPlayLinkInviteKind</code> (<code>Lobby</code>, <code>Session</code>, or <code>Party</code>), and the opaque OSS payload needed to accept. Inbound invites land on whichever subsystem owns the kind — the friends subsystem broadcasts <code>OnInviteReceived</code> for unified UI handling, and the destination subsystem resolves the accept path.
+      Invites are unified under <strong>FPlayLinkInvite</strong>. The struct carries the inviter's <code>FPlayLinkUserId</code>, an <code>EPlayLinkInviteKind</code> (<code>Lobby</code>, <code>Session</code>, or <code>Party</code>), and the opaque OSS payload needed to accept. Inbound invites land on whichever subsystem owns the kind, the friends subsystem broadcasts <code>OnInviteReceived</code> for unified UI handling, and the destination subsystem resolves the accept path.
     </p>
 
     <div class="doc-subsection">
@@ -599,13 +599,13 @@ bAutoWritePresence=False</code></pre>
 
     <div class="doc-subsection">
       <h3 class="doc-subsection-title">Accepting invites</h3>
-      <p class="doc-p">When <code>OnInviteReceived</code> fires, hand the <code>FPlayLinkInvite</code> back to <code>AcceptInvite()</code>. PlayLink dispatches based on <code>Kind</code> — joining the right lobby, session, or party — and broadcasts the destination's join event when the join completes.</p>
+      <p class="doc-p">When <code>OnInviteReceived</code> fires, hand the <code>FPlayLinkInvite</code> back to <code>AcceptInvite()</code>. PlayLink dispatches based on <code>Kind</code>, joining the right lobby, session, or party, and broadcasts the destination's join event when the join completes.</p>
       <div class="code-block">
         <div class="code-block-header"><span class="code-lang">C++</span></div>
         <pre><code><span class="code-comment">// Bind once</span>
 Friends-&gt;OnInviteReceived.AddDynamic(this, &amp;UMySocialSubsystem::HandleInvite);
 
-<span class="code-comment">// Handler — accept everything for now; real UI would prompt the user</span>
+<span class="code-comment">// Handler, accept everything for now; real UI would prompt the user</span>
 void UMySocialSubsystem::HandleInvite(FPlayLinkInvite Invite)
 &#123;
     Friends-&gt;AcceptInvite(<span class="code-val">0</span>, Invite);
@@ -616,7 +616,7 @@ void UMySocialSubsystem::HandleInvite(FPlayLinkInvite Invite)
     <div class="doc-subsection">
       <h3 class="doc-subsection-title">Handling failures (project-side)</h3>
       <p class="doc-p">
-        Every PlayLink async op surfaces an <code>EPlayLinkResult</code> on its completion delegate (<code>OnInviteAccepted</code>, <code>OnSessionJoined</code>, <code>OnLobbyJoined</code>, etc.). The plugin ships a <strong>broad classification</strong> of failures — enough to drive generic UI flows — but does not enumerate every backend-specific cause.
+        Every PlayLink async op surfaces an <code>EPlayLinkResult</code> on its completion delegate (<code>OnInviteAccepted</code>, <code>OnSessionJoined</code>, <code>OnLobbyJoined</code>, etc.). The plugin ships a <strong>broad classification</strong> of failures, enough to drive generic UI flows, but does not enumerate every backend-specific cause.
       </p>
       <table class="prop-table">
         <thead>
@@ -633,11 +633,11 @@ void UMySocialSubsystem::HandleInvite(FPlayLinkInvite Invite)
           <tr><td class="prop-name">Failed_PermissionDenied</td><td class="prop-desc">Backend rejected for permissions / privacy / invite rules.</td></tr>
           <tr><td class="prop-name">Failed_Full</td><td class="prop-desc">Session or lobby is full.</td></tr>
           <tr><td class="prop-name">Failed_Cancelled</td><td class="prop-desc">User-initiated cancel.</td></tr>
-          <tr><td class="prop-name">Failed_BackendError</td><td class="prop-desc">Backend returned an error not mapped to a more specific code — inspect <code>LogPlayLink</code> for the native OSS error.</td></tr>
+          <tr><td class="prop-name">Failed_BackendError</td><td class="prop-desc">Backend returned an error not mapped to a more specific code, inspect <code>LogPlayLink</code> for the native OSS error.</td></tr>
         </tbody>
       </table>
       <p class="doc-p">
-        These cover the <strong>shape</strong> of failure — enough to show "couldn't join (full)" vs "couldn't join (permission denied)" vs "couldn't join (no network)". Beyond this, the realities of online platforms include many platform-specific failure modes that PlayLink intentionally <strong>does not</strong> enumerate:
+        These cover the <strong>shape</strong> of failure, enough to show "couldn't join (full)" vs "couldn't join (permission denied)" vs "couldn't join (no network)". Beyond this, the realities of online platforms include many platform-specific failure modes that PlayLink intentionally <strong>does not</strong> enumerate:
       </p>
       <table class="prop-table">
         <thead>
@@ -645,15 +645,15 @@ void UMySocialSubsystem::HandleInvite(FPlayLinkInvite Invite)
         </thead>
         <tbody>
           <tr>
-            <td class="prop-desc"><strong>Version mismatch</strong> — client / server <code>NetCL</code> or game build differs</td>
+            <td class="prop-desc"><strong>Version mismatch</strong>, client / server <code>NetCL</code> or game build differs</td>
             <td class="prop-desc">UE's <code>FNetworkVersion</code> check; surfaces as <code>NetworkFailure</code> on travel, not on PlayLink's delegates</td>
           </tr>
           <tr>
-            <td class="prop-desc"><strong>Friend doesn't own the game</strong> — invite sent to a friend who doesn't have the title installed / entitled</td>
+            <td class="prop-desc"><strong>Friend doesn't own the game</strong>, invite sent to a friend who doesn't have the title installed / entitled</td>
             <td class="prop-desc">Steam: filter <code>FPlayLinkFriend::bIsPlayingThisGame</code> before sending; EOS: entitlement check via project's storefront integration</td>
           </tr>
           <tr>
-            <td class="prop-desc"><strong>Rate-limited by backend</strong> — Steam throttles presence + invite spam, EOS rate-limits writes</td>
+            <td class="prop-desc"><strong>Rate-limited by backend</strong>, Steam throttles presence + invite spam, EOS rate-limits writes</td>
             <td class="prop-desc">Maps to <code>Failed_BackendError</code> with backend-specific error string in <code>LogPlayLink</code></td>
           </tr>
           <tr>
@@ -661,7 +661,7 @@ void UMySocialSubsystem::HandleInvite(FPlayLinkInvite Invite)
             <td class="prop-desc">Maps to <code>Failed_PermissionDenied</code> or <code>Failed_BackendError</code> depending on the backend</td>
           </tr>
           <tr>
-            <td class="prop-desc"><strong>Crossplay blocked</strong> — friend on different platform + crossplay disabled</td>
+            <td class="prop-desc"><strong>Crossplay blocked</strong>, friend on different platform + crossplay disabled</td>
             <td class="prop-desc">Project-side: check <code>EPlayLinkBackend</code> of both users before inviting</td>
           </tr>
           <tr>
@@ -669,8 +669,8 @@ void UMySocialSubsystem::HandleInvite(FPlayLinkInvite Invite)
             <td class="prop-desc">Maps to <code>Failed_NotLoggedIn</code> on Steam after the platform layer rejects auth</td>
           </tr>
           <tr>
-            <td class="prop-desc"><strong>Stale invite</strong> — session destroyed before user accepted</td>
-            <td class="prop-desc">Maps to <code>Failed_BackendError</code> — destination join broadcasts <code>Failed_NotInState</code> when the session no longer exists</td>
+            <td class="prop-desc"><strong>Stale invite</strong>, session destroyed before user accepted</td>
+            <td class="prop-desc">Maps to <code>Failed_BackendError</code>, destination join broadcasts <code>Failed_NotInState</code> when the session no longer exists</td>
           </tr>
         </tbody>
       </table>
@@ -682,7 +682,7 @@ void UMySocialSubsystem::HandleInvite(FPlayLinkInvite Invite)
       </p>
       <ol>
         <li>Inspect <code>LogPlayLink</code> for the native OSS error string PlayLink prints alongside each <code>Failed_BackendError</code>.</li>
-        <li>For richer fidelity, subscribe to your OSS's native error delegates directly (e.g. <code>IOnlineSubsystem::OnConnectionStatusChanged</code>, Steam's <code>SteamServersConnectFailure</code>, EOS's <code>EOS_Connect_OnAuthExpirationCallback</code>) — they live alongside PlayLink and don't conflict.</li>
+        <li>For richer fidelity, subscribe to your OSS's native error delegates directly (e.g. <code>IOnlineSubsystem::OnConnectionStatusChanged</code>, Steam's <code>SteamServersConnectFailure</code>, EOS's <code>EOS_Connect_OnAuthExpirationCallback</code>), they live alongside PlayLink and don't conflict.</li>
         <li>Map backend codes to project-specific user-facing strings ("update your game" / "this server isn't available in your region" / "your friend doesn't own this game") in your UI layer.</li>
       </ol>
       <div class="code-block">
@@ -695,7 +695,7 @@ void UMySocialSubsystem::HandleSessionJoined(EPlayLinkResult Result, FPlayLinkSe
         <span class="code-cmd">case</span> EPlayLinkResult::Success:             ClientTravel(ConnectString); <span class="code-cmd">break</span>;
         <span class="code-cmd">case</span> EPlayLinkResult::Failed_Full:         ShowToast(<span class="code-val">"Session is full"</span>); <span class="code-cmd">break</span>;
         <span class="code-cmd">case</span> EPlayLinkResult::Failed_NotLoggedIn:  ShowLoginPrompt(); <span class="code-cmd">break</span>;
-        <span class="code-cmd">case</span> EPlayLinkResult::Failed_Network:      ShowToast(<span class="code-val">"Network error — check connection"</span>); <span class="code-cmd">break</span>;
+        <span class="code-cmd">case</span> EPlayLinkResult::Failed_Network:      ShowToast(<span class="code-val">"Network error, check connection"</span>); <span class="code-cmd">break</span>;
         <span class="code-cmd">case</span> EPlayLinkResult::Failed_BackendError: ShowToast(<span class="code-val">"Could not join (see log)"</span>); <span class="code-cmd">break</span>;
         <span class="code-cmd">default</span>:                                  ShowToast(<span class="code-val">"Could not join"</span>); <span class="code-cmd">break</span>;
     &#125;
@@ -722,7 +722,7 @@ void UMySocialSubsystem::HandleSessionJoined(EPlayLinkResult Result, FPlayLinkSe
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>UPlayLinkLobbySubsystem</strong> implements lobbies as presence-true sessions on top of <code>IOnlineSession</code>. Use lobbies for the social layer that exists before a match — character select, ready checks, voice chat, party formation. Lobbies are discoverable through the friends list and rich presence; the <code>SEARCH_LOBBIES</code> filter returns presence-true sessions on Steam and dedicated lobbies on EOS.
+      <strong>UPlayLinkLobbySubsystem</strong> implements lobbies as presence-true sessions on top of <code>IOnlineSession</code>. Use lobbies for the social layer that exists before a match, character select, ready checks, voice chat, party formation. Lobbies are discoverable through the friends list and rich presence; the <code>SEARCH_LOBBIES</code> filter returns presence-true sessions on Steam and dedicated lobbies on EOS.
     </p>
 
     <div class="doc-subsection">
@@ -783,7 +783,7 @@ void UMySocialSubsystem::HandleSessionJoined(EPlayLinkResult Result, FPlayLinkSe
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>UPlayLinkSessionSubsystem</strong> handles in-match sessions — listen-server hosts, search, and join with ServerTravel. Sessions differ from lobbies: they correspond to the actual gameplay world. Hosting a session opens a listen server and travels the host into the gameplay map; joining a session resolves a connect string and travels the client.
+      <strong>UPlayLinkSessionSubsystem</strong> handles in-match sessions, listen-server hosts, search, and join with ServerTravel. Sessions differ from lobbies: they correspond to the actual gameplay world. Hosting a session opens a listen server and travels the host into the gameplay map; joining a session resolves a connect string and travels the client.
     </p>
 
     <div class="doc-subsection">
@@ -939,7 +939,7 @@ void UMySocialSubsystem::HandleSessionJoined(EPlayLinkResult Result, FPlayLinkSe
           <tr>
             <td class="prop-name">NumericAttributes</td>
             <td class="prop-type">TMap&lt;FString, int32&gt;</td>
-            <td class="prop-desc">Skill / region / level filters. Service-specific semantics — the default service ignores these; project subclasses use them for ELO bucketing.</td>
+            <td class="prop-desc">Skill / region / level filters. Service-specific semantics, the default service ignores these; project subclasses use them for ELO bucketing.</td>
           </tr>
           <tr>
             <td class="prop-name">StringAttributes</td>
@@ -971,11 +971,11 @@ void UMySocialSubsystem::HandleSessionJoined(EPlayLinkResult Result, FPlayLinkSe
     </div>
 
     <div class="doc-subsection">
-      <h3 class="doc-subsection-title">Default service — UPlayLinkSessionSearchMatchmaker</h3>
+      <h3 class="doc-subsection-title">Default service, UPlayLinkSessionSearchMatchmaker</h3>
       <p class="doc-p">Shipped as the fallback when no <code>[PlayLink] MatchmakingServiceClass=...</code> is set in <code>DefaultGame.ini</code>. Implements:</p>
       <ol>
         <li><code>FindSessions</code> filtered by the first <code>GameModeTag</code> and the <code>bLanOnly</code> flag</li>
-        <li>Picks the best candidate — lowest ping with at least <code>PartySize</code> open slots</li>
+        <li>Picks the best candidate, lowest ping with at least <code>PartySize</code> open slots</li>
         <li><code>JoinSession</code> on the chosen result</li>
         <li>If no candidate appears within <code>MaxWaitSeconds</code>:
           <ul>
@@ -1015,14 +1015,14 @@ MM-&gt;StartMatchmaking(<span class="code-val">0</span>, Ticket);</code></pre>
         <pre><code>[PlayLink]
 MatchmakingServiceClass=/Script/MyGame.MyEloMatchmaker</code></pre>
       </div>
-      <p class="doc-p">The subsystem instantiates the configured class at <code>Initialize</code> and forwards every BP-callable function to it. Project code keeps calling the same <code>UPlayLinkMatchmakingSubsystem</code> API — only the strategy underneath changes.</p>
+      <p class="doc-p">The subsystem instantiates the configured class at <code>Initialize</code> and forwards every BP-callable function to it. Project code keeps calling the same <code>UPlayLinkMatchmakingSubsystem</code> API, only the strategy underneath changes.</p>
     </div>
 
     <div class="callout callout-info">
       <span class="callout-icon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       </span>
-      <span>The dev panel exposes <code>Scenario_QuickMatch(bLanOnly)</code> and <code>PlayLinkMatchmake</code> exec command for one-click testing — sensible defaults (60s search, fallback-to-host, solo party) so you can validate the loop without building any project UI.</span>
+      <span>The dev panel exposes <code>Scenario_QuickMatch(bLanOnly)</code> and <code>PlayLinkMatchmake</code> exec command for one-click testing, sensible defaults (60s search, fallback-to-host, solo party) so you can validate the loop without building any project UI.</span>
     </div>
   </section>
 
@@ -1036,7 +1036,7 @@ MatchmakingServiceClass=/Script/MyGame.MyEloMatchmaker</code></pre>
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      Hosting a session advertises it through the OSS, but the host's UE network listener only spins up after a <code>ServerTravel</code> with <code>?listen</code> appended to the URL. PlayLink does not own the gameplay map — your project picks the destination and drives travel. The <code>PlayLinkDev</code> module ships C++ wrappers on <strong>UPlayLinkDevWidgetBase</strong> that codify the canonical pattern, so dev-panel travel works out of the box and your project subclass can call the same functions.
+      Hosting a session advertises it through the OSS, but the host's UE network listener only spins up after a <code>ServerTravel</code> with <code>?listen</code> appended to the URL. PlayLink does not own the gameplay map, your project picks the destination and drives travel. The <code>PlayLinkDev</code> module ships C++ wrappers on <strong>UPlayLinkDevWidgetBase</strong> that codify the canonical pattern, so dev-panel travel works out of the box and your project subclass can call the same functions.
     </p>
 
     <div class="doc-subsection">
@@ -1046,35 +1046,35 @@ MatchmakingServiceClass=/Script/MyGame.MyEloMatchmaker</code></pre>
           <span class="step-num">1</span>
           <div class="step-body">
             <p class="step-title">Host advertises the session</p>
-            <p class="step-desc"><code>Action_HostListenSession</code> — the OSS session is created with <code>bShouldAdvertise=true</code> and registered with the matchmaking layer.</p>
+            <p class="step-desc"><code>Action_HostListenSession</code>, the OSS session is created with <code>bShouldAdvertise=true</code> and registered with the matchmaking layer.</p>
           </div>
         </div>
         <div class="step">
           <span class="step-num">2</span>
           <div class="step-body">
             <p class="step-title">Host opens the listen server</p>
-            <p class="step-desc"><code>Action_HostTravelToListenServer</code> — <code>UWorld::ServerTravel(MapPath + "?listen", true)</code>. By default <code>MapPath</code> is the host's current map (no configuration required); set <code>DevTravelMapOverride</code> in Project Settings to route across maps. The <code>?listen</code> suffix tells UE to spin up the listen-server <code>NetDriver</code>; the OSS attaches its session info to the listening port.</p>
+            <p class="step-desc"><code>Action_HostTravelToListenServer</code>, <code>UWorld::ServerTravel(MapPath + "?listen", true)</code>. By default <code>MapPath</code> is the host's current map (no configuration required); set <code>DevTravelMapOverride</code> in Project Settings to route across maps. The <code>?listen</code> suffix tells UE to spin up the listen-server <code>NetDriver</code>; the OSS attaches its session info to the listening port.</p>
           </div>
         </div>
         <div class="step">
           <span class="step-num">3</span>
           <div class="step-body">
             <p class="step-title">Client finds the session</p>
-            <p class="step-desc"><code>Action_FindSessions</code> — locates the host's advertised session via the OSS search interface.</p>
+            <p class="step-desc"><code>Action_FindSessions</code>, locates the host's advertised session via the OSS search interface.</p>
           </div>
         </div>
         <div class="step">
           <span class="step-num">4</span>
           <div class="step-body">
             <p class="step-title">Client joins and receives the connect string</p>
-            <p class="step-desc"><code>Action_JoinSession(searchResult)</code> — the OSS resolves the connect string. <code>OnSessionJoined</code> fires with <code>(Result, Handle, ConnectString)</code>.</p>
+            <p class="step-desc"><code>Action_JoinSession(searchResult)</code>, the OSS resolves the connect string. <code>OnSessionJoined</code> fires with <code>(Result, Handle, ConnectString)</code>.</p>
           </div>
         </div>
         <div class="step">
           <span class="step-num">5</span>
           <div class="step-body">
             <p class="step-title">Client travels to the host</p>
-            <p class="step-desc"><code>Action_TravelToJoinedSession</code> — calls <code>APlayerController::ClientTravel(ConnectString, TRAVEL_Absolute, false)</code>. The client lands in the host's map.</p>
+            <p class="step-desc"><code>Action_TravelToJoinedSession</code>, calls <code>APlayerController::ClientTravel(ConnectString, TRAVEL_Absolute, false)</code>. The client lands in the host's map.</p>
           </div>
         </div>
       </div>
@@ -1083,7 +1083,7 @@ MatchmakingServiceClass=/Script/MyGame.MyEloMatchmaker</code></pre>
     <div class="doc-subsection">
       <h3 class="doc-subsection-title">UPlayLinkDevWidgetBase travel API</h3>
       <p class="doc-p">
-        The dev widget caches the connect string from the most recent successful <code>OnSessionJoined</code> and exposes BlueprintCallable wrappers. Subclass the widget in your project (or call the C++ directly) — no need for BP graphs to reach <code>Get World</code> or <code>Get Game Mode</code>.
+        The dev widget caches the connect string from the most recent successful <code>OnSessionJoined</code> and exposes BlueprintCallable wrappers. Subclass the widget in your project (or call the C++ directly), no need for BP graphs to reach <code>Get World</code> or <code>Get Game Mode</code>.
       </p>
       <table class="prop-table">
         <thead>
@@ -1092,7 +1092,7 @@ MatchmakingServiceClass=/Script/MyGame.MyEloMatchmaker</code></pre>
         <tbody>
           <tr>
             <td class="prop-name">Action_HostTravelToListenServer()</td>
-            <td class="prop-desc">Validates host state, then <code>World-&gt;ServerTravel(MapPath + "?listen", true)</code>. By default reloads the host's current map as a listen server — no project configuration required. Returns <code>true</code> if travel was initiated.</td>
+            <td class="prop-desc">Validates host state, then <code>World-&gt;ServerTravel(MapPath + "?listen", true)</code>. By default reloads the host's current map as a listen server, no project configuration required. Returns <code>true</code> if travel was initiated.</td>
           </tr>
           <tr>
             <td class="prop-name">Action_TravelToJoinedSession()</td>
@@ -1100,7 +1100,7 @@ MatchmakingServiceClass=/Script/MyGame.MyEloMatchmaker</code></pre>
           </tr>
           <tr>
             <td class="prop-name">HasPendingClientTravel()</td>
-            <td class="prop-desc">BlueprintPure helper for binding the Travel button's <code>IsEnabled</code> — true only after a successful <code>OnSessionJoined</code>.</td>
+            <td class="prop-desc">BlueprintPure helper for binding the Travel button's <code>IsEnabled</code>, true only after a successful <code>OnSessionJoined</code>.</td>
           </tr>
           <tr>
             <td class="prop-name">UPlayLinkDevSettings::DevTravelMapOverride</td>
@@ -1113,7 +1113,7 @@ MatchmakingServiceClass=/Script/MyGame.MyEloMatchmaker</code></pre>
     <div class="doc-subsection">
       <h3 class="doc-subsection-title">Connect string lifecycle</h3>
       <p class="doc-p">
-        <code>OnSessionJoined</code> hands the resolved connect string back through the third delegate parameter. The dev widget caches it on success only — failed joins clear the cache so a stale URL can't fire later. <code>OnSessionDestroyed</code> also clears the cache: a destroyed session's URL belongs to a session that no longer exists.
+        <code>OnSessionJoined</code> hands the resolved connect string back through the third delegate parameter. The dev widget caches it on success only, failed joins clear the cache so a stale URL can't fire later. <code>OnSessionDestroyed</code> also clears the cache: a destroyed session's URL belongs to a session that no longer exists.
       </p>
       <div class="code-block">
         <div class="code-block-header"><span class="code-lang">C++</span></div>
@@ -1142,7 +1142,7 @@ void UMyClass::HandleJoined(EPlayLinkResult Result, FPlayLinkSessionHandle Handl
       <span class="callout-icon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       </span>
-      <span>Pure-Blueprint projects can also use <code>UGameplayStatics::OpenLevel("MyMap?listen")</code> as an alternative to <code>ServerTravel</code> — but the C++ wrappers above are the recommended path because they share state with the dev panel and validate host/client status before firing.</span>
+      <span>Pure-Blueprint projects can also use <code>UGameplayStatics::OpenLevel("MyMap?listen")</code> as an alternative to <code>ServerTravel</code>, but the C++ wrappers above are the recommended path because they share state with the dev panel and validate host/client status before firing.</span>
     </div>
   </section>
 
@@ -1156,7 +1156,7 @@ void UMyClass::HandleJoined(EPlayLinkResult Result, FPlayLinkSessionHandle Handl
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      <strong>UPlayLinkAchievementsSubsystem</strong> wraps <code>IOnlineAchievements</code> with the BP-callable surface most projects actually use. Achievement IDs are defined at the OSS level (Steam Achievements admin, EOS Achievement Service definitions) — the subsystem doesn't validate IDs, it just routes the OSS calls and surfaces results as <code>EPlayLinkResult</code>.
+      <strong>UPlayLinkAchievementsSubsystem</strong> wraps <code>IOnlineAchievements</code> with the BP-callable surface most projects actually use. Achievement IDs are defined at the OSS level (Steam Achievements admin, EOS Achievement Service definitions), the subsystem doesn't validate IDs, it just routes the OSS calls and surfaces results as <code>EPlayLinkResult</code>.
     </p>
 
     <div class="doc-subsection">
@@ -1172,7 +1172,7 @@ void UMyClass::HandleJoined(EPlayLinkResult Result, FPlayLinkSessionHandle Handl
           </tr>
           <tr>
             <td class="prop-name">GetAchievementProgress(LocalUserNum, AchievementId)</td>
-            <td class="prop-desc">BP-pure. Returns 0.0–1.0 for the local player's cached progress. Returns 0 if the achievement isn't loaded — call <code>RefreshAchievements</code> first if needed.</td>
+            <td class="prop-desc">BP-pure. Returns 0.0–1.0 for the local player's cached progress. Returns 0 if the achievement isn't loaded, call <code>RefreshAchievements</code> first if needed.</td>
           </tr>
           <tr>
             <td class="prop-name">IsAchievementUnlocked(LocalUserNum, AchievementId)</td>
@@ -1203,7 +1203,7 @@ void UMyClass::HandleJoined(EPlayLinkResult Result, FPlayLinkSessionHandle Handl
       <span class="callout-icon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       </span>
-      <span>Incremental achievements (e.g. "kill 100 enemies") are project-side bookkeeping. Track the counter in your save game or PlayerState; call <code>UnlockAchievement</code> once it crosses the threshold. PlayLink always writes 100% — the OSS handles the actual unlock transition.</span>
+      <span>Incremental achievements (e.g. "kill 100 enemies") are project-side bookkeeping. Track the counter in your save game or PlayerState; call <code>UnlockAchievement</code> once it crosses the threshold. PlayLink always writes 100%, the OSS handles the actual unlock transition.</span>
     </div>
   </section>
 
@@ -1222,16 +1222,16 @@ void UMyClass::HandleJoined(EPlayLinkResult Result, FPlayLinkSessionHandle Handl
 
     <div class="doc-subsection">
       <h3 class="doc-subsection-title">Buffered-write pattern</h3>
-      <p class="doc-p">Writes go to the local cache instantly; the backend round-trip happens on Flush. This matches how most projects want to track stats — increment per-event, persist on match end or interval.</p>
+      <p class="doc-p">Writes go to the local cache instantly; the backend round-trip happens on Flush. This matches how most projects want to track stats, increment per-event, persist on match end or interval.</p>
       <div class="code-block">
         <div class="code-block-header"><span class="code-lang">C++</span></div>
         <pre><code>UPlayLinkStatsSubsystem* Stats = GI-&gt;GetSubsystem&lt;UPlayLinkStatsSubsystem&gt;();
 
-<span class="code-comment">// During gameplay — cheap, local-only</span>
+<span class="code-comment">// During gameplay, cheap, local-only</span>
 Stats-&gt;IncrementStatInt(<span class="code-val">0</span>, <span class="code-val">TEXT("stat_kills")</span>, <span class="code-val">1</span>);
 Stats-&gt;SetStatFloat(<span class="code-val">0</span>, <span class="code-val">TEXT("stat_best_combo_time")</span>, <span class="code-val">12.4f</span>);
 
-<span class="code-comment">// On match end — persist to backend</span>
+<span class="code-comment">// On match end, persist to backend</span>
 Stats-&gt;OnStatsFlushed.AddDynamic(this, &amp;ThisClass::HandleStatsFlushed);
 Stats-&gt;FlushStats(<span class="code-val">0</span>);</code></pre>
       </div>
@@ -1246,7 +1246,7 @@ Stats-&gt;FlushStats(<span class="code-val">0</span>);</code></pre>
         <tbody>
           <tr><td class="prop-name">SetStatInt / SetStatFloat</td><td class="prop-desc">Write to local cache (no backend hit).</td></tr>
           <tr><td class="prop-name">IncrementStatInt(StatName, Delta)</td><td class="prop-desc">Read-modify-write on local cache. Creates the stat at 0 if not yet cached.</td></tr>
-          <tr><td class="prop-name">GetStatInt / GetStatFloat</td><td class="prop-desc">BP-pure cache read. Returns 0 if not cached — call <code>QueryStats</code> first if needed.</td></tr>
+          <tr><td class="prop-name">GetStatInt / GetStatFloat</td><td class="prop-desc">BP-pure cache read. Returns 0 if not cached, call <code>QueryStats</code> first if needed.</td></tr>
           <tr><td class="prop-name">FlushStats(LocalUserNum)</td><td class="prop-desc">Pushes buffered writes via <code>IOnlineStats::UpdateStats</code>. Result on <code>OnStatsFlushed</code>.</td></tr>
           <tr><td class="prop-name">QueryStats(LocalUserNum, StatNames)</td><td class="prop-desc">Refreshes local cache from OSS. Result on <code>OnStatsQueried</code>.</td></tr>
         </tbody>
@@ -1256,7 +1256,7 @@ Stats-&gt;FlushStats(<span class="code-val">0</span>);</code></pre>
     <div class="doc-subsection">
       <h3 class="doc-subsection-title">Pairing with Achievements</h3>
       <p class="doc-p">
-        Stats hold the counter; Achievements hold the unlock state — two different concerns that pair naturally:
+        Stats hold the counter; Achievements hold the unlock state, two different concerns that pair naturally:
       </p>
       <div class="code-block">
         <div class="code-block-header"><span class="code-lang">C++</span></div>
@@ -1292,7 +1292,7 @@ Stats-&gt;IncrementStatInt(<span class="code-val">0</span>, <span class="code-va
           <tr><th>Function</th><th>Description</th></tr>
         </thead>
         <tbody>
-          <tr><td class="prop-name">SubmitScore(LocalUserNum, BoardName, Score)</td><td class="prop-desc">Pushes the local player's score. Sync on most backends — result fires immediately.</td></tr>
+          <tr><td class="prop-name">SubmitScore(LocalUserNum, BoardName, Score)</td><td class="prop-desc">Pushes the local player's score. Sync on most backends, result fires immediately.</td></tr>
           <tr><td class="prop-name">FetchRange(LocalUserNum, BoardName, StartRank, Count)</td><td class="prop-desc">Top N entries starting at <code>StartRank</code>. Pass <code>StartRank=0</code> for the top of the board.</td></tr>
           <tr><td class="prop-name">FetchAroundMe(LocalUserNum, BoardName, Range)</td><td class="prop-desc">Up to <code>Range</code> entries above and below the local user's rank.</td></tr>
           <tr><td class="prop-name">FetchFriendsBoard(LocalUserNum, BoardName)</td><td class="prop-desc">Friend-filtered ranking.</td></tr>
@@ -1323,7 +1323,7 @@ Stats-&gt;IncrementStatInt(<span class="code-val">0</span>, <span class="code-va
         <pre><code>UPlayLinkLeaderboardsSubsystem* LB = GI-&gt;GetSubsystem&lt;UPlayLinkLeaderboardsSubsystem&gt;();
 LB-&gt;OnLeaderboardFetched.AddDynamic(this, &amp;ThisClass::HandleLeaderboardFetched);
 
-<span class="code-comment">// On match end — push the score</span>
+<span class="code-comment">// On match end, push the score</span>
 LB-&gt;SubmitScore(<span class="code-val">0</span>, <span class="code-val">TEXT("lb_weekly_kills")</span>, MyMatchKills);
 
 <span class="code-comment">// On opening the leaderboard UI</span>
@@ -1335,7 +1335,7 @@ LB-&gt;FetchRange(<span class="code-val">0</span>, <span class="code-val">TEXT("
       <span class="callout-icon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       </span>
-      <span>Default write policy is <code>KeepBest</code> + descending sort (highest score wins). Projects needing different sort/update semantics should register the board with custom metadata in the OSS dashboard — the subsystem submits the score, the backend resolves the ranking rules.</span>
+      <span>Default write policy is <code>KeepBest</code> + descending sort (highest score wins). Projects needing different sort/update semantics should register the board with custom metadata in the OSS dashboard, the subsystem submits the score, the backend resolves the ranking rules.</span>
     </div>
   </section>
 
@@ -1349,7 +1349,7 @@ LB-&gt;FetchRange(<span class="code-val">0</span>, <span class="code-val">TEXT("
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      Every async PlayLink operation ships as a <code>UBlueprintAsyncActionBase</code> node with <strong>On Success</strong> / <strong>On Failure</strong> execution pins. Designers get a single graph node that drives the operation and returns through the matching pin when it resolves — no manual delegate binding. The subsystem APIs remain available for C++ users and project code that prefers delegate-driven flows.
+      Every async PlayLink operation ships as a <code>UBlueprintAsyncActionBase</code> node with <strong>On Success</strong> / <strong>On Failure</strong> execution pins. Designers get a single graph node that drives the operation and returns through the matching pin when it resolves, no manual delegate binding. The subsystem APIs remain available for C++ users and project code that prefers delegate-driven flows.
     </p>
 
     <div class="doc-subsection">
@@ -1423,7 +1423,7 @@ LB-&gt;FetchRange(<span class="code-val">0</span>, <span class="code-val">TEXT("
           </tr>
           <tr>
             <td class="prop-desc">Matchmaking flow with progress UI showing search/found/joining state</td>
-            <td class="prop-name">Both — async node for the final outcome, subsystem's <code>OnStatusChanged</code> for intermediate states</td>
+            <td class="prop-name">Both, async node for the final outcome, subsystem's <code>OnStatusChanged</code> for intermediate states</td>
           </tr>
         </tbody>
       </table>
@@ -1433,7 +1433,7 @@ LB-&gt;FetchRange(<span class="code-val">0</span>, <span class="code-val">TEXT("
       <span class="callout-icon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       </span>
-      <span>Async actions are one-shot: each node creates a fresh instance, fires once on its matching pin, and self-destroys. Don't try to hold a reference across multiple operations — create a new node per call.</span>
+      <span>Async actions are one-shot: each node creates a fresh instance, fires once on its matching pin, and self-destroys. Don't try to hold a reference across multiple operations, create a new node per call.</span>
     </div>
   </section>
 
@@ -1474,7 +1474,7 @@ LB-&gt;FetchRange(<span class="code-val">0</span>, <span class="code-val">TEXT("
     <div class="doc-subsection">
       <h3 class="doc-subsection-title">Debug panel</h3>
       <p class="doc-p">
-        The dev panel ships as a UMG widget at <code>/PlayLink/WBP_PlayLinkDevWidget</code>. <code>PlayLinkOpen</code> spawns it on the local player controller and switches input mode to UI-only with the cursor visible — same pattern as a pause menu. <code>Esc</code> closes the panel via <code>NativeOnKeyDown</code>; no per-project BP wiring needed for the dismiss shortcut.
+        The dev panel ships as a UMG widget at <code>/PlayLink/WBP_PlayLinkDevWidget</code>. <code>PlayLinkOpen</code> spawns it on the local player controller and switches input mode to UI-only with the cursor visible, same pattern as a pause menu. <code>Esc</code> closes the panel via <code>NativeOnKeyDown</code>; no per-project BP wiring needed for the dismiss shortcut.
       </p>
       <p class="doc-p">
         The panel renders one card per subsystem (Backend, Identity, Friends, Lobby, Session, Party, Event Log). The C++ base class <strong>UPlayLinkDevWidgetBase</strong> exposes BP-pure getters for every subsystem's state and BlueprintImplementableEvent refresh hooks designers override to repopulate cards. Project authors can subclass <code>UPlayLinkDevWidgetBase</code> in their own project to customize the layout and point <strong>Project Settings → Plugins → PlayLink Dev → Dev Widget Class</strong> at the subclass.
@@ -1492,7 +1492,7 @@ LB-&gt;FetchRange(<span class="code-val">0</span>, <span class="code-val">TEXT("
       <span class="callout-icon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       </span>
-      <span><code>PlayLinkDev</code> is a <code>Type: "Developer"</code> module. It is stripped from Shipping builds automatically — no manual exclusion needed when you cook for release.</span>
+      <span><code>PlayLinkDev</code> is a <code>Type: "Developer"</code> module. It is stripped from Shipping builds automatically, no manual exclusion needed when you cook for release.</span>
     </div>
   </section>
 

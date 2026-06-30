@@ -29,7 +29,7 @@ export const GET: APIRoute = async () => {
           <div style="display:flex;font-size:88px;font-weight:800;line-height:1.02;letter-spacing:-0.035em;color:#d4a574">built for game studios.</div>
         </div>
 
-        <div style="display:flex;margin-top:32px;font-size:26px;line-height:1.4;color:#a3a3a8;font-weight:400;max-width:1000px">Claude Code, MCPs, and AI workflows for Unreal Engine teams — with guardrails for C++, Perforce, and proprietary IP.</div>
+        <div style="display:flex;margin-top:32px;font-size:26px;line-height:1.4;color:#a3a3a8;font-weight:400;max-width:1000px">Claude Code, MCPs, and AI workflows for Unreal Engine teams, with guardrails for C++, Perforce, and proprietary IP.</div>
       </div>
 
       <div style="display:flex;justify-content:space-between;align-items:center;padding-top:28px;border-top:1px solid #26262c;z-index:1">

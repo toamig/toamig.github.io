@@ -36,7 +36,7 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex,nofollow" />
-  <title>Miguel Vieira — CV</title>
+  <title>Miguel Vieira · CV</title>
   <link rel="icon" href="/logo_head.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -417,7 +417,7 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
       <a href="/#resume">← Back</a>
       <a href="/cv/neutral">Switch to neutral →</a>
     </div>
-    <a class="primary" href="/cv/miguel-vieira-cv-editorial.pdf" download="Miguel Vieira — CV.pdf">Download PDF</a>
+    <a class="primary" href="/cv/miguel-vieira-cv-editorial.pdf" download="Miguel Vieira - CV.pdf">Download PDF</a>
   </div>
 
   <!-- ──────────────────────── PAGE 1 ──────────────────────── -->
@@ -586,7 +586,7 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
         <div class="cert-list">
           {cv.certifications.map((c: any) => (
             <div class="row">
-              <span class="name">{c.name}{c.issuer && <span class="iss"> — {c.issuer}</span>}</span>
+              <span class="name">{c.name}{c.issuer && <span class="iss">, {c.issuer}</span>}</span>
               <span class="yr">{c.year}</span>
             </div>
           ))}
