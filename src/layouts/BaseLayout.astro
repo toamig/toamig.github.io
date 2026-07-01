@@ -8,6 +8,7 @@ interface Props {
   title: string;
   description?: string;
   ogImage?: string;
+  ogImageAlt?: string;
   ogUrl?: string;
   ogType?: 'website' | 'article';
   ogImageWidth?: number;
@@ -17,14 +18,62 @@ interface Props {
 
 const {
   title,
-  description = 'Discover my projects, skills, and experience.',
+  description = 'Miguel Vieira (Toamig), game engineer and tech lead. Gameplay, multiplayer, tools, and the teams that ship games.',
   ogImage     = 'https://migueltechlead.pt/me/IMG_7.JPEG',
+  ogImageAlt  = 'Miguel Vieira (Toamig), game engineer and tech lead',
   ogUrl       = 'https://migueltechlead.pt/',
   ogType      = 'website',
   ogImageWidth,
   ogImageHeight,
   bodyClass,
 } = Astro.props;
+
+// Identity graph: who Miguel is + the site, so searches for "Miguel Vieira",
+// "Toamig", or the game-dev/tech-lead role resolve to one entity. Emitted on
+// every portfolio page to reinforce the entity across the site.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': 'https://migueltechlead.pt/#miguel',
+      name: 'Miguel Vieira',
+      alternateName: 'Toamig',
+      jobTitle: 'Game Engineer & Tech Lead',
+      description:
+        'Game engineer turned tech lead, working across gameplay, multiplayer, tools, animation, and AI systems on PC, console, and VR.',
+      url: 'https://migueltechlead.pt/',
+      image: 'https://migueltechlead.pt/me/IMG_7.JPEG',
+      worksFor: { '@type': 'Organization', name: 'Flama Craftworks', url: 'https://www.flamacraftworks.com/' },
+      address: { '@type': 'PostalAddress', addressLocality: 'Vila Nova de Gaia', addressCountry: 'PT' },
+      knowsAbout: [
+        'Unreal Engine 5',
+        'Game development',
+        'Gameplay programming',
+        'Multiplayer networking',
+        'Game tools programming',
+        'Technical leadership',
+      ],
+      sameAs: [
+        'https://www.linkedin.com/in/toamig/',
+        'https://github.com/toamig',
+        'https://www.instagram.com/toamig/',
+        'https://toamig.itch.io',
+        'https://www.twitch.tv/toamig',
+        'https://www.youtube.com/@ToaAerials',
+      ],
+    },
+    {
+      '@type': 'WebSite',
+      '@id': 'https://migueltechlead.pt/#website',
+      url: 'https://migueltechlead.pt/',
+      name: 'Miguel Vieira (Toamig)',
+      description: 'Portfolio of Miguel Vieira (Toamig), game engineer and tech lead.',
+      inLanguage: 'en',
+      publisher: { '@id': 'https://migueltechlead.pt/#miguel' },
+    },
+  ],
+};
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -33,7 +82,11 @@ const {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    <meta name="author" content="Miguel Vieira" />
+    <meta name="theme-color" content="#0a1628" />
     <link rel="icon" href="/logo_head.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/logo.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link rel="canonical" href={ogUrl} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -44,17 +97,22 @@ const {
     <meta property="og:title"       content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image"       content={ogImage} />
+    <meta property="og:image:alt"   content={ogImageAlt} />
     {ogImageWidth  && <meta property="og:image:width"  content={String(ogImageWidth)} />}
     {ogImageHeight && <meta property="og:image:height" content={String(ogImageHeight)} />}
     <meta property="og:url"         content={ogUrl} />
     <meta property="og:type"        content={ogType} />
-    <meta property="og:site_name"   content="Toamig" />
+    <meta property="og:locale"      content="en_US" />
+    <meta property="og:site_name"   content="Miguel Vieira (Toamig)" />
 
     <!-- Twitter / X -->
     <meta name="twitter:card"        content="summary_large_image" />
     <meta name="twitter:title"       content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image"       content={ogImage} />
+    <meta name="twitter:image:alt"   content={ogImageAlt} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </head>
   <body class={bodyClass}>
     <MusicPlayer />

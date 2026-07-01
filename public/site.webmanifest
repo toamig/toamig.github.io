@@ -1,0 +1,23 @@
+{
+  "name": "Miguel Vieira (Toamig)",
+  "short_name": "Toamig",
+  "description": "Miguel Vieira (Toamig), game engineer and tech lead.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a1628",
+  "theme_color": "#0a1628",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
