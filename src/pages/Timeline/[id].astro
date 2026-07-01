@@ -25,7 +25,7 @@ interface LifeEvent {
 
 const { event } = Astro.props as { event: LifeEvent };
 
-const SITE = 'https://migueltechlead.pt';
+const SITE = 'https://toamig.com';
 const pageUrl = `${SITE}/Timeline/${encodeURIComponent(event.id)}/`;
 
 function getTags(ev: LifeEvent): string[] {

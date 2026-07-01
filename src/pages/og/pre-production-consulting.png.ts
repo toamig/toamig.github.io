@@ -34,7 +34,7 @@ export const GET: APIRoute = async () => {
           <div style="display:flex;font-size:20px;color:#cbd5e1">·</div>
           <div style="display:flex;font-size:20px;font-weight:600;color:#0f172a">Standards & Pipelines</div>
         </div>
-        <div style="display:flex;font-size:20px;font-weight:700;color:#0f172a;letter-spacing:0.02em">migueltechlead.pt</div>
+        <div style="display:flex;font-size:20px;font-weight:700;color:#0f172a;letter-spacing:0.02em">toamig.com</div>
       </div>
     </div>
   `;

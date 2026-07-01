@@ -1,6 +1,6 @@
 # Claude Code — Docs Site Guidelines
 
-Documentation site for Imperion Games plugins at **migueltechlead.pt**.
+Documentation site for Imperion Games plugins at **toamig.com**.
 Astro + Tailwind CSS, deployed to GitHub Pages on push to `master`.
 
 ---

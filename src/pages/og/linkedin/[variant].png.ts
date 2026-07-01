@@ -101,7 +101,7 @@ function showcaseMarkup(logos: LogoData[]): string {
         <div style="display:flex;font-size:22px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#5cb1e8">Miguel "Toamig" Vieira</div>
         <div style="display:flex;margin-top:8px;font-size:54px;font-weight:800;line-height:1.05;letter-spacing:-0.02em;color:#ffffff">Lead Software Engineer</div>
         <div style="display:flex;margin-top:14px;font-size:22px;line-height:1.4;color:#b8c5d6;max-width:560px">Building UE5 plugins for combat, inventory, dialog, multiplayer, and world tooling.</div>
-        <div style="display:flex;margin-top:18px;font-size:18px;font-weight:700;color:#ffffff;letter-spacing:0.02em">migueltechlead.pt</div>
+        <div style="display:flex;margin-top:18px;font-size:18px;font-weight:700;color:#ffffff;letter-spacing:0.02em">toamig.com</div>
       </div>
 
       <div style="display:flex;flex-direction:row;align-items:center;margin-left:32px">
@@ -124,7 +124,7 @@ function heroMarkup(): string {
       </div>
 
       <div style="display:flex;margin-top:18px;font-size:108px;font-weight:800;line-height:1;letter-spacing:-0.04em;color:#ffffff">TOAMIG</div>
-      <div style="display:flex;margin-top:6px;font-size:24px;font-weight:600;color:#5cb1e8;letter-spacing:-0.01em">Miguel "Toamig" Vieira · migueltechlead.pt</div>
+      <div style="display:flex;margin-top:6px;font-size:24px;font-weight:600;color:#5cb1e8;letter-spacing:-0.01em">Miguel "Toamig" Vieira · toamig.com</div>
       <div style="display:flex;margin-top:14px;font-size:20px;line-height:1.35;color:#b8c5d6;max-width:900px;text-align:center">Software engineer specialized in game development and interactive systems.</div>
     </div>
   `;
@@ -153,7 +153,7 @@ function splitMarkup(logos: LogoData[]): string {
         <div style="display:flex;font-size:20px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#5cb1e8">Miguel "Toamig" Vieira</div>
         <div style="display:flex;margin-top:6px;font-size:48px;font-weight:800;line-height:1.05;letter-spacing:-0.02em;color:#ffffff">Game Tech · UE5</div>
         <div style="display:flex;margin-top:10px;font-size:20px;line-height:1.4;color:#b8c5d6;max-width:500px">Lead engineer shipping reusable plugins for Unreal Engine.</div>
-        <div style="display:flex;margin-top:14px;font-size:17px;font-weight:700;color:#ffffff">migueltechlead.pt</div>
+        <div style="display:flex;margin-top:14px;font-size:17px;font-weight:700;color:#ffffff">toamig.com</div>
       </div>
 
       <div style="display:flex;flex-direction:column;align-items:flex-end;margin-left:32px">
@@ -219,7 +219,7 @@ const COPY = {
   hero:     'Designing systems. Solving problems. Chasing dreams.',
   sub:      'Drawn to the work behind the work: tooling, patterns, and tech direction that help teams ship without burning out.',
   building: 'CURRENTLY BUILDING',
-  url:      'migueltechlead.pt',
+  url:      'toamig.com',
 };
 
 // Personal monogram built inline so each path gets a flat colour fill —

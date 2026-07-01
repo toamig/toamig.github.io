@@ -159,7 +159,7 @@ export const GET: APIRoute = async ({ props }) => {
 
       <div style="display:flex;justify-content:space-between;align-items:center;padding-top:24px;border-top:2px solid rgba(255,255,255,0.18)">
         <div style="display:flex;font-size:24px;font-weight:600;color:${accentLight}">Unreal Engine 5 Plugin${version ? ' · v' + escapeForSatori(version) : ''}</div>
-        <div style="display:flex;font-size:22px;font-weight:700;color:#ffffff;letter-spacing:0.02em">migueltechlead.pt</div>
+        <div style="display:flex;font-size:22px;font-weight:700;color:#ffffff;letter-spacing:0.02em">toamig.com</div>
       </div>
     </div>
   `;

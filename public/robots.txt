@@ -4,4 +4,4 @@ Allow: /
 Disallow: /admin
 Disallow: /cv/
 
-Sitemap: https://migueltechlead.pt/sitemap-index.xml
+Sitemap: https://toamig.com/sitemap-index.xml

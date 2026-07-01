@@ -28,7 +28,7 @@ export const GET: APIRoute = async () => {
 
       <div style="display:flex;justify-content:space-between;align-items:center;padding-top:32px;border-top:2px solid rgba(255,255,255,0.12)">
         <div style="display:flex;font-size:26px;font-weight:600;color:#3b97d3">Projects · Skills · Experience</div>
-        <div style="display:flex;font-size:22px;font-weight:700;color:#ffffff;letter-spacing:0.02em">migueltechlead.pt</div>
+        <div style="display:flex;font-size:22px;font-weight:700;color:#ffffff;letter-spacing:0.02em">toamig.com</div>
       </div>
     </div>
   `;
