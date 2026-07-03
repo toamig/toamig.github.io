@@ -213,15 +213,44 @@ const jsonLd = {
           }).observe(document.body, { childList: true, subtree: true });
         }
 
-        // ── Pointer glare on cards ─────────────────────────────────────
+        // ── Pointer glare + tilt on cards ──────────────────────────────
+        // One delegated listener drives both the specular glare (--mx/--my)
+        // and a subtle 3D tilt toward the cursor. The tilt lives entirely in
+        // an inline transform (perspective + lift + scale + rotate), so it
+        // carries the CSS :hover lift itself — otherwise the inline transform
+        // would clobber it. Hover polish on pseudo-elements is untouched.
         if (!reduced && matchMedia('(hover: hover)').matches) {
+          const TILT = 10;     // max degrees of rotation at the card edges
+          const LIFT = -6;     // px, mirrors the existing :hover lift
+          const SCALE = 1.015; // slight grow while engaged
+          let active: HTMLElement | null = null;
+
+          const rest = (el: HTMLElement | null) => { if (el) el.style.transform = ''; };
+
           document.addEventListener('pointermove', (e) => {
             const card = (e.target as Element | null)?.closest?.('.extended-card, .project-card') as HTMLElement | null;
+            // Left the current card (onto another card or into a gap): spring it back.
+            if (card !== active) { rest(active); active = card; }
             if (!card) return;
+
             const r = card.getBoundingClientRect();
-            card.style.setProperty('--mx', `${((e.clientX - r.left) / r.width * 100).toFixed(2)}%`);
-            card.style.setProperty('--my', `${((e.clientY - r.top) / r.height * 100).toFixed(2)}%`);
+            const px = (e.clientX - r.left) / r.width;
+            const py = (e.clientY - r.top) / r.height;
+            card.style.setProperty('--mx', `${(px * 100).toFixed(2)}%`);
+            card.style.setProperty('--my', `${(py * 100).toFixed(2)}%`);
+
+            // Don't tilt while the card is still animating its scroll-reveal —
+            // that reveal also owns `transform`, and we'd snap it mid-flight.
+            if (card.classList.contains('rv') && !card.classList.contains('rv-in')) return;
+
+            const rx = ((0.5 - py) * TILT).toFixed(2);
+            const ry = ((px - 0.5) * TILT).toFixed(2);
+            card.style.transform =
+              `perspective(900px) translateY(${LIFT}px) scale(${SCALE}) rotateX(${rx}deg) rotateY(${ry}deg)`;
           }, { passive: true });
+
+          // Pointer left the window entirely — release any held tilt.
+          document.addEventListener('pointerleave', () => { rest(active); active = null; });
         }
       });
     </script>
