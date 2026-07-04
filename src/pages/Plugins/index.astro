@@ -113,6 +113,7 @@ const domains = [...new Set(plugins.map(p => p.domain).filter(Boolean))];
         const meta = statusMeta[p.status];
         return (
           <article class="card" style={`--accent:${p.accent};--accent-l:${p.accentLight};--i:${i};`}>
+            <div class="card-clip">
             <span class="card-rail" aria-hidden="true" />
             <div class="card-cover">
               <img src={p.cover} alt={`${p.name} cover`} loading="lazy" />
@@ -149,6 +150,7 @@ const domains = [...new Set(plugins.map(p => p.domain).filter(Boolean))];
                   : <span class="btn-fab disabled">Fab soon</span>
                 }
               </div>
+            </div>
             </div>
           </article>
         );
@@ -577,6 +579,54 @@ const domains = [...new Set(plugins.map(p => p.domain).filter(Boolean))];
 })();
 </script>
 
+<!-- ── Pointer-driven 3D card tilt (vanilla, matches the home-page cards) ── -->
+<script>
+(function () {
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced || !matchMedia('(hover: hover)').matches) return;
+
+  const grid = document.querySelector('.grid');
+  if (!grid) return;
+
+  // card-rise fills transform:none and, being a CSS animation, outranks any
+  // inline transform we set. Drop the animation once a card has risen so the
+  // tilt can drive transform. A timeout backstops any missed animationend.
+  const release = (card) => { card.style.animation = 'none'; card.classList.add('risen'); };
+  const cards = grid.querySelectorAll('.card');
+  cards.forEach(card => card.addEventListener('animationend', () => release(card), { once: true }));
+  setTimeout(() => cards.forEach(release), 2600);
+
+  const TILT = 10, LIFT = -5, SCALE = 1.015;   // LIFT mirrors the card's :hover lift
+  const FOLLOW = 'transform .12s ease-out, border-color .22s ease, box-shadow .22s ease';
+  const RETURN = 'transform .45s cubic-bezier(.16,.7,.2,1), border-color .22s ease, box-shadow .22s ease';
+  let active = null;
+
+  const rest = (el) => { if (el) { el.style.transition = RETURN; el.style.transform = ''; } };
+
+  grid.addEventListener('pointermove', (e) => {
+    const card = e.target.closest('.card');
+    if (card !== active) { rest(active); active = card; }
+    if (!card) return;
+    // Still animating in — the animation would clobber the tilt. Wait for it.
+    if (!card.classList.contains('risen')) return;
+
+    const r = card.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width;
+    const py = (e.clientY - r.top) / r.height;
+    card.style.setProperty('--mx', (px * 100).toFixed(2) + '%');
+    card.style.setProperty('--my', (py * 100).toFixed(2) + '%');
+
+    const rx = ((0.5 - py) * TILT).toFixed(2);
+    const ry = ((px - 0.5) * TILT).toFixed(2);
+    card.style.transition = FOLLOW;
+    card.style.transform =
+      'perspective(900px) translateY(' + LIFT + 'px) scale(' + SCALE + ') rotateX(' + rx + 'deg) rotateY(' + ry + 'deg)';
+  }, { passive: true });
+
+  grid.addEventListener('pointerleave', () => { rest(active); active = null; });
+})();
+</script>
+
 </body>
 </html>
 
@@ -804,6 +854,22 @@ h1 {
   box-shadow: 0 20px 56px color-mix(in srgb, var(--accent) 13%, transparent);
 }
 
+/* Inner clip layer. The card's own overflow:hidden rounds children at rest,
+   but the tilt is a 3D transform, which promotes the card to its own layer
+   where that rounded child-clip no longer applies (the square rail corners
+   poke out). This wrapper is never transformed, so its rounded overflow clip
+   is flattened into the layer *before* the card's tilt is applied, and the
+   corners stay crisp under tilt. The shadow lives on .card, so it's unclipped.
+   Radius = card radius (14px) minus the card's 1px border. */
+.card-clip {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  border-radius: 13px;
+  overflow: hidden;
+}
+
 /* Per-plugin accent rail along the card's top edge, the product's colour
    identity, brightening on hover. */
 .card-rail {
@@ -816,6 +882,29 @@ h1 {
   transition: opacity .22s ease;
 }
 .card:hover .card-rail { opacity: 1; }
+
+/* Pointer glare — soft specular sheen that tracks the cursor, matching the
+   home-page cards. Position driven by --mx / --my (set per-card by the tilt
+   script below); it rides the hover state. */
+.card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .3s ease;
+  background: radial-gradient(
+    320px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(255, 255, 255, .13) 0%,
+    transparent 55%
+  );
+}
+.card:hover::after { opacity: 1; }
+@media (prefers-reduced-motion: reduce), (hover: none) {
+  .card::after { display: none; }
+}
 
 @keyframes card-rise {
   from { opacity: 0; transform: translateY(22px); }
