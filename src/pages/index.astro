@@ -1,7 +1,6 @@
 ---
 import BaseLayout        from '../layouts/BaseLayout.astro';
 import Logo              from '../components/Logo.astro';
-import ResumeChooser     from '../components/ResumeChooser.astro';
 import HeroConstellation from '../components/HeroConstellation.astro';
 import education      from '../data/education.json';
 import experience     from '../data/experience.json';
@@ -265,9 +264,6 @@ for (const [r, c] of [[2,6],[3,0],[3,1],[4,6],[5,6]]) boardCells[r * 8 + c].piec
         </a>
       </div>
     </section>
-
-    <!-- Resume / CV -->
-    <ResumeChooser eyebrowNum="07" />
 
   </div>
 </BaseLayout>
