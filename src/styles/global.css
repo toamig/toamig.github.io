@@ -680,9 +680,51 @@ header nav a.nav-resume:hover {
   .current-pill::before { animation: none; }
 }
 
-/* ─── Technologies ───────────────────────────────────────────────────────────────
-   The Technologies section is a self-contained "system graph" — its styles and
-   edge-drawing script live scoped inside src/pages/index.astro. */
+/* ─── Technologies ───────────────────────────────────────────────────────────── */
+#technologies { background-color: var(--surface); }
+.tech-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px 40px;
+  width: 100%;
+  max-width: 1200px;
+  align-items: flex-start;
+}
+.tech-category { display: flex; flex-direction: column; gap: 10px; flex: 0 0 auto; }
+.tech-category-label { font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.tech-group { display: flex; flex-wrap: wrap; gap: 12px; }
+.tech-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 12px;
+  box-shadow: var(--shadow);
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--border);
+  text-decoration: none;
+  cursor: pointer;
+}
+.tech-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.08), 0 16px 36px rgba(255,138,76,.10);
+  border-color: #fed7aa;
+}
+.tech-logo { width: 40px; height: 40px; object-fit: contain; transition: transform 0.3s ease; }
+.tech-card:hover .tech-logo { transform: scale(1.15) rotate(3deg); }
+/* Fallback shown when an icon SVG isn't uploaded yet — clean text mark. */
+.tech-label {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 40px; padding: 0 10px;
+  font-family: var(--font-mono);
+  font-size: 11.5px; font-weight: 700;
+  letter-spacing: .04em; text-transform: uppercase;
+  color: var(--text-sub);
+  white-space: nowrap;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+.tech-card:hover .tech-label { color: var(--accent-d); transform: scale(1.06); }
 
 /* ─── Projects ───────────────────────────────────────────────────────────────── */
 #projects {
