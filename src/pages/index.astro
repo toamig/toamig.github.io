@@ -126,7 +126,7 @@ for (const [r, c] of [[2,6],[3,0],[3,1],[4,6],[5,6]]) boardCells[r * 8 + c].piec
       </div>
     </section>
 
-    <!-- Technologies -->
+    <!-- Technologies — system graph (echoes the hero constellation) -->
     <section id="technologies">
       <div class="container">
         <div class="section-header">
@@ -137,22 +137,36 @@ for (const [r, c] of [[2,6],[3,0],[3,1],[4,6],[5,6]]) boardCells[r * 8 + c].piec
           </p>
           <h2>What I <em>build with</em>.</h2>
         </div>
-        <div class="tech-grid">
-          {techCategories.map(cat => (
-            <div class="tech-category">
-              <span class="tech-category-label">{cat.name}</span>
-              <div class="tech-group">
-                {technologies.filter(t => t.category === cat.id && !(t as any).cvOnly).map(t => (
-                  <a class="tech-card" href={t.href} title={t.name} target="_blank" rel="noopener noreferrer">
-                    {t.src
-                      ? <img class="tech-logo" src={t.src} alt={t.name} onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'tech-label',textContent:this.alt}));" />
-                      : <span class="tech-label">{t.name}</span>
-                    }
-                  </a>
-                ))}
+        <div class="tech-constellation">
+          <svg class="tech-edges" aria-hidden="true" preserveAspectRatio="none"></svg>
+          <div class="tech-clusters">
+            {techCategories.map(cat => (
+              <div class="tech-category" data-cat={cat.id}>
+                <div class="tech-hub" data-hub={cat.id}>
+                  <span class="tech-hub-dot" aria-hidden="true"></span>
+                  <span class="tech-hub-label">{cat.name}</span>
+                </div>
+                <div class="tech-group">
+                  {technologies.filter(t => t.category === cat.id && !(t as any).cvOnly).map((t, i) => (
+                    <a
+                      class="tech-node"
+                      data-cat={cat.id}
+                      data-node={`${cat.id}-${i}`}
+                      href={t.href}
+                      title={t.name}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {t.src
+                        ? <img class="tech-logo" src={t.src} alt={t.name} onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'tech-label',textContent:this.alt}));" />
+                        : <span class="tech-label">{t.name}</span>
+                      }
+                    </a>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -273,6 +287,167 @@ for (const [r, c] of [[2,6],[3,0],[3,1],[4,6],[5,6]]) boardCells[r * 8 + c].piec
 </BaseLayout>
 
 <style>
+  /* ─── Technologies · system graph ────────────────────────────────────────
+     A dark "engine room" section: the tech stack drawn as a node graph that
+     reprises the hero constellation. Category hubs are coral anchor nodes;
+     each tool is a bright node wired back to its hub, and the hubs chain into
+     one spine. Edges are SVG lines measured from layout (transform-immune),
+     drawn by the script at the bottom of this file. */
+  #technologies {
+    position: relative;
+    background:
+      radial-gradient(ellipse 60% 50% at 15% 0%, rgba(41,128,185,.16) 0%, transparent 60%),
+      radial-gradient(ellipse 55% 55% at 85% 100%, rgba(255,138,76,.10) 0%, transparent 60%),
+      linear-gradient(180deg, #0a1628 0%, #0d1c38 50%, #07111e 100%);
+    overflow: hidden;
+  }
+  /* Same faint dot grid the heroes use, tying the section to the constellation */
+  #technologies::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,.045) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+  }
+
+  /* Dark-section header treatment (mirrors the Timeline hero) */
+  #technologies .section-eyebrow { color: rgba(255,255,255,.4); }
+  #technologies .section-eyebrow .num { color: var(--accent-l); }
+  #technologies .section-eyebrow .tag { color: rgba(255,255,255,.85); }
+  #technologies .section-eyebrow .sep { color: rgba(255,255,255,.25); }
+  #technologies .section-header h2 { color: #fff; }
+  #technologies .section-header h2 em {
+    background: linear-gradient(180deg, #ffffff 0%, rgba(255,255,255,.78) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  #technologies .section-header h2 em::after { background: var(--accent-l); }
+
+  .tech-constellation {
+    position: relative;              /* offsetParent anchor for edge maths */
+    width: 100%;
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+  .tech-edges {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    overflow: visible;
+  }
+  .tech-edge {
+    stroke: rgba(120,170,220,.30);
+    stroke-width: 1.2;
+    transition: stroke .3s ease, stroke-width .3s ease;
+  }
+  .tech-edge--spine {
+    stroke: rgba(255,138,76,.32);
+    stroke-width: 1.4;
+    stroke-dasharray: 3 6;
+  }
+  .tech-edge.lit { stroke: rgba(255,156,96,.9); stroke-width: 1.9; }
+
+  .tech-clusters {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 46px 40px;
+  }
+  /* Break the grid out of a rigid row so it reads as a scattered constellation */
+  .tech-clusters .tech-category:nth-child(even) { margin-top: 44px; }
+
+  .tech-hub {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .tech-hub-dot {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 4px rgba(255,138,76,.14), 0 0 14px rgba(255,138,76,.55);
+  }
+  .tech-hub-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.74);
+  }
+
+  .tech-group { display: flex; flex-wrap: wrap; gap: 14px; }
+  .tech-node {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 62px; height: 62px;
+    border-radius: 16px;
+    background: rgba(255,255,255,.94);
+    border: 1px solid rgba(255,255,255,.5);
+    box-shadow:
+      0 2px 10px rgba(0,0,0,.3),
+      0 0 18px rgba(90,150,210,.20),
+      inset 0 1px 0 rgba(255,255,255,.7);
+    text-decoration: none;
+    transition: transform .25s cubic-bezier(.2,.7,.2,1), box-shadow .25s ease, border-color .25s ease;
+  }
+  .tech-node:hover,
+  .tech-node:focus-visible {
+    transform: translateY(-4px) scale(1.04);
+    border-color: rgba(255,180,120,.95);
+    box-shadow:
+      0 10px 26px rgba(0,0,0,.4),
+      0 0 26px rgba(255,138,76,.42),
+      inset 0 1px 0 rgba(255,255,255,.7);
+    outline: none;
+  }
+  .tech-logo {
+    width: 34px; height: 34px;
+    object-fit: contain;
+    transition: transform .3s ease;
+  }
+  .tech-node:hover .tech-logo,
+  .tech-node:focus-visible .tech-logo { transform: scale(1.12) rotate(3deg); }
+  .tech-label {
+    font-family: var(--font-mono);
+    font-size: 10.5px; font-weight: 700;
+    letter-spacing: .04em; text-transform: uppercase;
+    color: var(--text-sub);
+    text-align: center;
+    line-height: 1.1;
+    padding: 0 6px;
+  }
+
+  /* Clusters fade in place (no vertical slide) so the drawn edges never
+     detach from the nodes during the scroll-reveal. */
+  .tech-constellation .tech-category.rv { transform: none; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .tech-edges { animation: tech-edges-breathe 6.5s ease-in-out infinite; }
+    .tech-edge--spine { animation: tech-spine-flow 9s linear infinite; }
+  }
+  @keyframes tech-edges-breathe { 0%, 100% { opacity: .72; } 50% { opacity: 1; } }
+  @keyframes tech-spine-flow { to { stroke-dashoffset: -90; } }
+
+  @media (max-width: 900px) {
+    .tech-clusters { grid-template-columns: repeat(2, 1fr); gap: 38px 30px; }
+    .tech-clusters .tech-category:nth-child(even) { margin-top: 0; }
+  }
+  @media (max-width: 560px) {
+    .tech-clusters { grid-template-columns: 1fr; gap: 32px; }
+    .tech-node { width: 56px; height: 56px; }
+    .tech-logo { width: 30px; height: 30px; }
+  }
+
   /* ─── Personal Projects ──────────────────────────────────────────────── */
   #personal-projects {
     background-color: var(--bg);
@@ -451,4 +626,94 @@ for (const [r, c] of [[2,6],[3,0],[3,1],[4,6],[5,6]]) boardCells[r * 8 + c].piec
     .play-card:hover .sesqui-board { transform: none; }
   }
 </style>
+
+<!-- Technologies · system graph — draw the edges wiring each tool node back to
+     its category hub, then chain the hubs into one spine. Positions come from
+     layout offsets (immune to the scroll-reveal transform), and everything is
+     redrawn on resize / font load. Hovering a node or hub lights its wires. -->
+<script>
+  (() => {
+    const stage = document.querySelector<HTMLElement>('.tech-constellation');
+    const svg = stage?.querySelector<SVGSVGElement>('.tech-edges');
+    if (!stage || !svg) return;
+
+    const NS = 'http://www.w3.org/2000/svg';
+    const hubs  = Array.from(stage.querySelectorAll<HTMLElement>('.tech-hub'));
+    const nodes = Array.from(stage.querySelectorAll<HTMLElement>('.tech-node'));
+
+    // Centre of an element in stage-local coordinates. Uses offset* (layout
+    // position, ignores CSS transforms) so revealed/animating nodes still
+    // report their final resting spot.
+    const centre = (el: HTMLElement) => {
+      let x = el.offsetWidth / 2, y = el.offsetHeight / 2;
+      let n: HTMLElement | null = el;
+      while (n && n !== stage) { x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent as HTMLElement | null; }
+      return { x, y };
+    };
+
+    // id -> the SVG lines that should light when that id is hovered
+    let wires = new Map<string, SVGLineElement[]>();
+    const add = (id: string, ln: SVGLineElement) => {
+      (wires.get(id) ?? wires.set(id, []).get(id)!).push(ln);
+    };
+    const line = (a: {x:number;y:number}, b: {x:number;y:number}, cls: string) => {
+      const ln = document.createElementNS(NS, 'line');
+      ln.setAttribute('x1', String(a.x)); ln.setAttribute('y1', String(a.y));
+      ln.setAttribute('x2', String(b.x)); ln.setAttribute('y2', String(b.y));
+      ln.setAttribute('class', cls);
+      svg.appendChild(ln);
+      return ln;
+    };
+
+    function build() {
+      const W = stage!.offsetWidth, H = stage!.offsetHeight;
+      svg!.setAttribute('viewBox', `0 0 ${W} ${H}`);
+      svg!.replaceChildren();
+      wires = new Map();
+
+      // Branches: each hub dot out to every node in its category.
+      for (const hub of hubs) {
+        const cat = hub.dataset.hub!;
+        const dot = hub.querySelector<HTMLElement>('.tech-hub-dot') ?? hub;
+        const hc  = centre(dot);
+        for (const nd of nodes) {
+          if (nd.dataset.cat !== cat) continue;
+          const ln = line(hc, centre(nd), 'tech-edge');
+          add('hub:' + cat, ln);
+          add('node:' + nd.dataset.node, ln);
+        }
+      }
+
+      // Spine: chain consecutive hub dots into one system.
+      for (let i = 0; i < hubs.length - 1; i++) {
+        const a = hubs[i].querySelector<HTMLElement>('.tech-hub-dot') ?? hubs[i];
+        const b = hubs[i + 1].querySelector<HTMLElement>('.tech-hub-dot') ?? hubs[i + 1];
+        const ln = line(centre(a), centre(b), 'tech-edge tech-edge--spine');
+        add('hub:' + hubs[i].dataset.hub, ln);
+        add('hub:' + hubs[i + 1].dataset.hub, ln);
+      }
+    }
+
+    const lit = (id: string, on: boolean) =>
+      (wires.get(id) ?? []).forEach(l => l.classList.toggle('lit', on));
+
+    for (const nd of nodes) {
+      const id = 'node:' + nd.dataset.node;
+      nd.addEventListener('pointerenter', () => lit(id, true));
+      nd.addEventListener('pointerleave', () => lit(id, false));
+      nd.addEventListener('focus', () => lit(id, true));
+      nd.addEventListener('blur',  () => lit(id, false));
+    }
+    for (const hub of hubs) {
+      const id = 'hub:' + hub.dataset.hub;
+      hub.addEventListener('pointerenter', () => lit(id, true));
+      hub.addEventListener('pointerleave', () => lit(id, false));
+    }
+
+    build();
+    let t = 0;
+    addEventListener('resize', () => { clearTimeout(t); t = window.setTimeout(build, 120); }, { passive: true });
+    if ((document as any).fonts?.ready) (document as any).fonts.ready.then(build);
+  })();
+</script>
 
