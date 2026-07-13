@@ -89,6 +89,60 @@ export const BUILD_CARDS = [
   },
 ];
 
+// ── What it automates: concrete work taken off engineers, grouped by stage ─
+// Everything ships human-in-the-loop: AI drafts and proposes, engineers approve.
+export const AUTOMATIONS = [
+  {
+    icon: 'terminal',
+    title: 'Authoring',
+    items: [
+      'Convention-aware boilerplate that respects your gameplay framework and naming',
+      'Codebase Q&A: "where is damage applied?" answered from the brain, not a senior',
+    ],
+  },
+  {
+    icon: 'git-pull-request',
+    title: 'Review & submit',
+    items: [
+      'Automated review on every submit, catching convention and architecture drift',
+      'Perforce changelist and PR descriptions drafted from the diff',
+      'Plain-English summaries of large changelists for reviewers',
+    ],
+  },
+  {
+    icon: 'gauge',
+    title: 'Build & CI',
+    items: [
+      'Build-failure triage: reads the failing log, localizes the cause, opens a fix changelist for review',
+      'Flaky and failing test triage, clustered by likely cause',
+    ],
+  },
+  {
+    icon: 'book-open',
+    title: 'Docs & knowledge',
+    items: [
+      'Documentation drafted and kept in sync with the code',
+      'Release notes and changelogs generated from merged changelists',
+    ],
+  },
+  {
+    icon: 'repeat',
+    title: 'Testing & refactors',
+    items: [
+      'Test scaffolding for new gameplay code',
+      'Large mechanical refactors and API-deprecation sweeps applied consistently',
+    ],
+  },
+  {
+    icon: 'clipboard-check',
+    title: 'Project tracking',
+    items: [
+      'Jira tickets drafted from a change, a bug, or a discussion',
+      'Incoming issue triage: routed, labeled, and summarized',
+    ],
+  },
+];
+
 // ── Service packages (deep-dive pages + overview) ──────────────────────────
 export const SERVICES = [
   {

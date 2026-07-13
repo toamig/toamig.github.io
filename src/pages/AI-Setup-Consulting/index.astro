@@ -3,7 +3,7 @@ import ConsultingLayout from '../../layouts/ConsultingLayout.astro';
 import ConsultingIcon from '../../components/ConsultingIcon.astro';
 import {
   SITE, BRAND, EMAIL, LINKEDIN_URL, BASE, BOOK_PATH,
-  STACK, BUILD_CARDS, SEGMENTS, PHASES,
+  STACK, BUILD_CARDS, AUTOMATIONS, SEGMENTS, PHASES,
 } from '../../data/consulting';
 
 const title = 'AI engineering infrastructure for Unreal game studios · Miguel Vieira';
@@ -202,6 +202,42 @@ const jsonLd = {
               Learn more
               <ConsultingIcon name="arrow-right" size={14} class="stroke-[2.5] group-hover:translate-x-0.5 transition-transform" />
             </a>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── What It Automates ─────────────────────────────────────── -->
+  <section id="automate" class="py-24 md:py-32 border-b border-border/40">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="max-w-3xl mb-16">
+        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">What it automates</p>
+        <h2 data-fade data-fade-delay="60" class="text-[34px] md:text-[44px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+          Work you can take off your engineers.
+        </h2>
+        <p data-fade data-fade-delay="120" class="text-[17px] text-text-2 leading-[1.6]">
+          The infrastructure above unlocks the repetitive work your team does by hand today. Everything runs human-in-the-loop: AI drafts and proposes, your engineers approve.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {AUTOMATIONS.map((g, i) => (
+          <div data-fade data-fade-delay={i * 60} class="flex flex-col p-7 rounded-lg border border-border bg-surface">
+            <div class="flex items-center gap-3 mb-5">
+              <div class="w-10 h-10 rounded-md bg-amber/10 border border-amber/25 flex items-center justify-center text-amber flex-shrink-0">
+                <ConsultingIcon name={g.icon} size={19} />
+              </div>
+              <h3 class="text-[18px] font-semibold tracking-tight">{g.title}</h3>
+            </div>
+            <ul class="flex flex-col gap-3">
+              {g.items.map(it => (
+                <li class="flex items-start gap-2.5 text-[14.5px] text-text-2 leading-[1.55]">
+                  <span class="text-amber mt-0.5 flex-shrink-0"><ConsultingIcon name="check" size={14} class="stroke-[2.5]" /></span>
+                  {it}
+                </li>
+              ))}
+            </ul>
           </div>
         ))}
       </div>
