@@ -1,0 +1,83 @@
+---
+import ConsultingLayout from '../../layouts/ConsultingLayout.astro';
+import ConsultingIcon from '../../components/ConsultingIcon.astro';
+import { BASE, EMAIL, CALENDLY_URL } from '../../data/consulting';
+
+const title = 'Book a Discovery Call · AI Setup Consulting for Game Studios';
+const description = 'Book a free 30-minute Discovery Call. No pitch deck. We cover your AI adoption state, your stack and constraints, and whether structured AI integration pays back for your studio.';
+
+const cover = [
+  'Your current AI adoption state: what is working, what is not.',
+  'Your team size, stack, and constraints.',
+  'Whether structured AI integration would pay back for your studio.',
+  'Next steps if there is a fit, and honest reasons if there is not.',
+];
+
+const calUrl = `${CALENDLY_URL}?hide_gdpr_banner=1&background_color=141417&text_color=ededee&primary_color=d4a574`;
+---
+<ConsultingLayout
+  title={title}
+  description={description}
+  path={`${BASE}/discovery-call/`}
+>
+  <section class="hero-grid pt-32 pb-16 md:pt-40 md:pb-20 border-b border-border/40">
+    <div class="max-w-6xl mx-auto px-6 grid lg:grid-cols-[1fr_1.15fr] gap-12 lg:gap-16 items-start">
+      <!-- Left: context -->
+      <div>
+        <div data-fade class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-surface text-text-2 text-[12px] font-mono mb-7">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber"></span>
+          30 minutes · free · no pitch deck
+        </div>
+        <h1 data-fade data-fade-delay="80" class="text-[38px] md:text-[52px] font-bold tracking-[-0.03em] leading-[1.04] mb-6">
+          Book a Discovery Call.
+        </h1>
+        <p data-fade data-fade-delay="140" class="text-[17px] md:text-[18px] text-text-2 leading-[1.6] mb-9 max-w-lg">
+          A real conversation about your studio, not a sales call. Bring questions about your codebase, your team, and your blockers.
+        </p>
+
+        <p data-fade data-fade-delay="200" class="font-mono text-[12px] uppercase tracking-[0.14em] text-text-3 mb-4">What we cover</p>
+        <ul data-fade data-fade-delay="240" class="flex flex-col gap-3.5 mb-10 max-w-lg">
+          {cover.map(c => (
+            <li class="flex items-start gap-3 text-[15.5px] text-text-2 leading-[1.55]">
+              <span class="text-amber mt-0.5 flex-shrink-0"><ConsultingIcon name="check" size={16} class="stroke-[2.5]" /></span>
+              {c}
+            </li>
+          ))}
+        </ul>
+
+        <div data-fade class="flex flex-col gap-3 pt-6 border-t border-border/60 max-w-lg">
+          <a href={`${BASE}/technology`} class="inline-flex items-center gap-2 text-[14.5px] font-medium text-text-2 hover:text-amber transition-colors">
+            <ConsultingIcon name="file-text" size={16} />
+            Not ready for a call? Read the technical brief
+          </a>
+          <a href={`mailto:${EMAIL}`} class="inline-flex items-center gap-2 text-[14.5px] font-medium text-text-2 hover:text-amber transition-colors">
+            <ConsultingIcon name="mail" size={16} />
+            Prefer async? Email {EMAIL}
+          </a>
+        </div>
+      </div>
+
+      <!-- Right: booking widget -->
+      <div data-fade data-fade-delay="120">
+        <div class="rounded-lg border border-border bg-surface overflow-hidden">
+          <div class="calendly-inline-widget" data-url={calUrl} style="min-width:320px;height:680px;"></div>
+        </div>
+        <p class="mt-4 text-[13px] text-text-3 text-center">
+          Widget not loading?
+          <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" class="text-amber hover:underline">Open the booking page directly</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reassurance -->
+  <section class="py-14 md:py-20">
+    <div class="max-w-3xl mx-auto px-6 text-center">
+      <p data-fade class="text-[15px] text-text-2 leading-[1.7]">
+        By booking a call, you agree to a 30-minute conversation about your studio engineering context. We do not share your information with third parties. If there is no fit, we say so. No sales pressure.
+      </p>
+    </div>
+  </section>
+
+  <script is:inline src="https://assets.calendly.com/assets/external/widget.js" async></script>
+</ConsultingLayout>

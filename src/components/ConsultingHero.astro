@@ -1,0 +1,48 @@
+---
+import ConsultingIcon from './ConsultingIcon.astro';
+import { BOOK_PATH } from '../data/consulting';
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  accent?: string;        // optional accent-coloured tail of the title
+  subtitle: string;
+  primaryLabel?: string;
+  primaryHref?: string;
+  secondaryLabel?: string;
+  secondaryHref?: string;
+}
+const {
+  eyebrow,
+  title,
+  accent,
+  subtitle,
+  primaryLabel = 'Book Discovery Call',
+  primaryHref = BOOK_PATH,
+  secondaryLabel,
+  secondaryHref,
+} = Astro.props;
+---
+<section class="hero-grid pt-32 pb-20 md:pt-40 md:pb-28 border-b border-border/40">
+  <div class="max-w-5xl mx-auto px-6">
+    <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-5">{eyebrow}</p>
+    <h1 data-fade data-fade-delay="80" class="text-[38px] md:text-[56px] lg:text-[64px] font-bold tracking-[-0.03em] leading-[1.04] mb-6 max-w-4xl">
+      {title}{accent && <span class="text-amber"> {accent}</span>}
+    </h1>
+    <p data-fade data-fade-delay="160" class="text-[18px] md:text-[20px] text-text-2 leading-[1.55] max-w-2xl mb-9">
+      {subtitle}
+    </p>
+    <div data-fade data-fade-delay="240" class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+      <a href={primaryHref} class="inline-flex items-center gap-2 px-6 py-3 rounded-md bg-amber text-ink font-semibold text-[15px] hover:bg-amber-2 transition-colors">
+        {primaryLabel}
+        <ConsultingIcon name="arrow-right" size={16} class="stroke-[2.5]" />
+      </a>
+      {secondaryLabel && secondaryHref && (
+        <a href={secondaryHref} class="inline-flex items-center gap-2 px-6 py-3 text-text-2 hover:text-text text-[15px] font-medium transition-colors">
+          {secondaryLabel}
+          <ConsultingIcon name="arrow-right" size={16} />
+        </a>
+      )}
+    </div>
+  </div>
+</section>

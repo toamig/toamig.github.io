@@ -1,0 +1,72 @@
+---
+import ConsultingLayout from '../../layouts/ConsultingLayout.astro';
+import ConsultingHero from '../../components/ConsultingHero.astro';
+import ConsultingCta from '../../components/ConsultingCta.astro';
+import SegmentContent from '../../components/SegmentContent.astro';
+import { BASE } from '../../data/consulting';
+
+const title = 'For Indies & Small Studios · AI Setup Consulting for Game Studios';
+const description = 'AI engineering setup for indie and small Unreal studios of 10-30 developers: fast onboarding, consistent conventions on a single project, and shadow AI shut down and replaced with a sanctioned workflow.';
+
+const seen = [
+  'Developers use personal AI accounts because there is no sanctioned setup.',
+  'Onboarding a new hire eats a senior developer for a week.',
+  'Conventions live in a few people heads, not in a system anyone can query.',
+  'Nobody has spare time to own an AI rollout while shipping the game.',
+];
+
+const deliver = [
+  'A focused brain for your single project and its conventions.',
+  'MCP Perforce or Plastic server with safety controls and audit logs.',
+  'Lightweight review automation on submit.',
+  'Shadow AI shut down and replaced with a sanctioned, private workflow.',
+  'Team training in a couple of days, on your real codebase.',
+];
+
+const investment = {
+  caption: 'Typical first-year investment',
+  band: '€42,000 - €60,000',
+  points: [
+    { label: 'Focus', value: 'Single project' },
+    { label: 'Training', value: '2-3 days' },
+    { label: 'Billing', value: 'Fixed-fee + retainer' },
+  ],
+  note: 'Indicative range. Lighter on governance than larger tiers, weighted toward fast onboarding and eliminating shadow AI. Anthropic seats and tokens are billed directly by the studio, with no markup. Exact numbers are scoped in the Discovery Call.',
+};
+
+const faqs = [
+  {
+    q: 'We are under 10 developers. Is this worth it for us?',
+    a: 'Probably not yet. Below roughly 10 developers, off-the-shelf tools and public documentation usually get you far enough, and the investment does not pay back in a reasonable window. We will tell you honestly on the call if you are too small.',
+  },
+  {
+    q: 'We only have one project. Do we still need a brain?',
+    a: 'Yes, and it is simpler for you. A single-project brain captures the conventions currently living in people heads, which is exactly what makes onboarding slow and reviews repetitive. One focused brain solves both.',
+  },
+  {
+    q: 'We move fast and hate process. Will this slow us down?',
+    a: 'The opposite is the goal. The setup is deliberately lightweight for your size: enough guardrails to stop shadow AI and keep conventions consistent, without the governance weight that larger studios need.',
+  },
+];
+---
+<ConsultingLayout
+  title={title}
+  description={description}
+  path={`${BASE}/for-indies/`}
+>
+  <ConsultingHero
+    eyebrow="For Indies & Small Studios · 10-30 developers"
+    title="Built for indie and"
+    accent="small Unreal teams."
+    subtitle="Single project, tight team, moving fast. You do not need heavy governance. You need shadow AI gone, onboarding faster, and conventions that stay consistent while you ship."
+    secondaryLabel="Compare other segments"
+    secondaryHref={`${BASE}/#segments`}
+  />
+
+  <SegmentContent seen={seen} deliver={deliver} investment={investment} faqs={faqs} />
+
+  <ConsultingCta
+    title="Find out if you are ready for this."
+    subtitle="A 30-minute Discovery Call ends with a straight answer: worth it now, or come back when you are bigger. Free, and no sales pressure."
+  />
+</ConsultingLayout>

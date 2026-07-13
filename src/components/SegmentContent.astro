@@ -1,0 +1,107 @@
+---
+import ConsultingIcon from './ConsultingIcon.astro';
+
+interface InvestPoint { label: string; value: string; }
+interface Faq { q: string; a: string; }
+interface Props {
+  seen: string[];
+  deliver: string[];
+  investment: {
+    caption: string;
+    band: string;
+    points: InvestPoint[];
+    note: string;
+  };
+  faqs: Faq[];
+}
+const { seen, deliver, investment, faqs } = Astro.props;
+---
+<!-- ── What we've seen at your scale ─────────────────────────── -->
+<section class="py-20 md:py-28 border-b border-border/40">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="max-w-3xl mb-14">
+      <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">What we have seen at your scale</p>
+      <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[38px] font-bold tracking-[-0.02em] leading-[1.1]">
+        The patterns show up again and again.
+      </h2>
+    </div>
+    <ul class="grid md:grid-cols-2 gap-x-10 gap-y-1">
+      {seen.map((s, i) => (
+        <li data-fade data-fade-delay={i * 40} class="flex items-start gap-4 py-4 border-b border-border/50">
+          <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-amber flex-shrink-0"></span>
+          <span class="text-[15.5px] text-text-2 leading-[1.6]">{s}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<!-- ── What we deliver ──────────────────────────────────────── -->
+<section class="py-20 md:py-28 border-b border-border/40">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="max-w-3xl mb-14">
+      <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">What we deliver</p>
+      <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[38px] font-bold tracking-[-0.02em] leading-[1.1]">
+        Scoped to how you actually work.
+      </h2>
+    </div>
+    <ul class="grid md:grid-cols-2 gap-x-10 gap-y-4">
+      {deliver.map((d, i) => (
+        <li data-fade data-fade-delay={i * 40} class="flex items-start gap-3 text-[15.5px] text-text-2 leading-[1.55]">
+          <span class="text-amber mt-0.5 flex-shrink-0"><ConsultingIcon name="check" size={16} class="stroke-[2.5]" /></span>
+          {d}
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<!-- ── Investment ───────────────────────────────────────────── -->
+<section class="py-20 md:py-28 border-b border-border/40">
+  <div class="max-w-4xl mx-auto px-6">
+    <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Investment</p>
+    <div data-fade data-fade-delay="60" class="rounded-lg border border-amber/30 bg-amber-soft/30 p-8 md:p-10 mb-6">
+      <p class="text-[13.5px] text-text-2 mb-2">{investment.caption}</p>
+      <p class="font-mono text-[32px] md:text-[40px] font-bold text-amber tracking-tight mb-8">{investment.band}</p>
+      <div class="grid sm:grid-cols-3 gap-6">
+        {investment.points.map(p => (
+          <div>
+            <p class="font-mono text-[11.5px] uppercase tracking-[0.1em] text-text-3 mb-1.5">{p.label}</p>
+            <p class="text-[16px] text-text font-medium">{p.value}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+    <p data-fade class="text-[14px] text-text-3 leading-[1.6]">{investment.note}</p>
+  </div>
+</section>
+
+<!-- optional extra section (e.g. procurement) -->
+<slot name="extra" />
+
+<!-- ── Segment FAQ ──────────────────────────────────────────── -->
+<section class="py-20 md:py-28 border-b border-border/40">
+  <div class="max-w-4xl mx-auto px-6">
+    <div class="mb-12">
+      <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Common questions</p>
+      <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[38px] font-bold tracking-[-0.02em] leading-[1.1]">
+        For studios at your scale.
+      </h2>
+    </div>
+    <div class="border-t border-border/60">
+      {faqs.map((f) => (
+        <details data-faq class="group border-b border-border/60">
+          <summary class="flex items-start justify-between gap-6 py-6">
+            <span class="text-[16.5px] md:text-[17.5px] font-medium text-text leading-snug">{f.q}</span>
+            <span class="chevron flex-shrink-0 mt-1 text-text-3 group-hover:text-amber transition-colors">
+              <ConsultingIcon name="chevron-down" size={18} />
+            </span>
+          </summary>
+          <div class="answer pb-6 max-w-3xl">
+            <p class="text-[15.5px] text-text-2 leading-[1.7]">{f.a}</p>
+          </div>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>

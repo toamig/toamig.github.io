@@ -1,0 +1,177 @@
+---
+import ConsultingLayout from '../../../layouts/ConsultingLayout.astro';
+import ConsultingHero from '../../../components/ConsultingHero.astro';
+import ConsultingCta from '../../../components/ConsultingCta.astro';
+import ConsultingIcon from '../../../components/ConsultingIcon.astro';
+import { BASE, BOOK_PATH } from '../../../data/consulting';
+
+const title = 'AI Readiness Audit · AI Setup Consulting for Game Studios';
+const description = 'A fixed-fee, time-boxed AI Readiness Audit for Unreal studios: codebase review, workflow mapping, shadow AI scan, recommended privacy tier, phased roadmap, and a written report with a quantified ROI estimate you keep.';
+
+const facts = [
+  { label: 'Duration', value: '1-3 weeks' },
+  { label: 'Billing', value: 'Fixed-fee' },
+  { label: 'Deliverable', value: 'Written report you keep' },
+];
+
+const lookAt = [
+  { title: 'Codebase structure', body: 'Module layout, gameplay framework, and where AI can safely operate versus where it must not.' },
+  { title: 'Workflow analysis', body: 'How work moves from task to submit today, and where AI removes friction without adding risk.' },
+  { title: 'Shadow AI scan', body: 'Where developers are already using consumer AI accounts on proprietary code, and the exposure that creates.' },
+  { title: 'Coding standards review', body: 'The conventions that exist on paper versus the ones actually enforced in review.' },
+  { title: 'Tooling assessment', body: 'Perforce or Plastic setup, CI, review tools, and how AI integrates with them safely.' },
+  { title: 'IP sensitivity assessment', body: 'NDA scope, licensed IP, and console-SDK constraints that determine your privacy tier.' },
+];
+
+const receive = [
+  'Current state assessment',
+  'Recommended privacy tier',
+  'Phased implementation roadmap',
+  'Quantified ROI estimate for your team',
+  'Cost projections',
+  'Risk register',
+];
+
+const why = [
+  { icon: 'shield-check', title: 'Reduces risk', body: 'You commit to Setup with a scoped plan, not a leap of faith. Every recommendation is grounded in your actual codebase.' },
+  { icon: 'target', title: 'Decision-ready', body: 'The report gives leadership the numbers to approve or decline. ROI, cost, and risk in one place.' },
+  { icon: 'file-text', title: 'Standalone value', body: 'You keep the report regardless of whether you proceed. It is useful even if you implement it yourself.' },
+];
+---
+<ConsultingLayout
+  title={title}
+  description={description}
+  path={`${BASE}/services/audit/`}
+  active={`${BASE}/services`}
+>
+  <ConsultingHero
+    eyebrow="AI Readiness Audit"
+    title="Fixed-fee, time-boxed,"
+    accent="deliverable-based."
+    subtitle="Before you build anything, you get a clear picture of where AI pays back for your studio and where it does not. The Audit is the lowest-risk way to start."
+    primaryLabel="Book a call to scope your Audit"
+    secondaryLabel="See the full process"
+    secondaryHref={`${BASE}/approach`}
+  />
+
+  <!-- ── What it is ────────────────────────────────────────── -->
+  <section class="py-20 md:py-28 border-b border-border/40">
+    <div class="max-w-4xl mx-auto px-6">
+      <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">What it is</p>
+      <p data-fade data-fade-delay="60" class="text-[19px] md:text-[22px] text-text leading-[1.5] mb-10">
+        A structured review of your codebase, workflows, and constraints, delivered as a written report. One to three weeks depending on studio size. No open-ended discovery, no hourly billing.
+      </p>
+      <div data-fade data-fade-delay="120" class="grid grid-cols-1 sm:grid-cols-3 gap-px bg-border/60 border border-border/60 rounded-lg overflow-hidden">
+        {facts.map(f => (
+          <div class="bg-surface p-6">
+            <p class="font-mono text-[11.5px] uppercase tracking-[0.12em] text-text-3 mb-2">{f.label}</p>
+            <p class="text-[16px] text-text font-medium">{f.value}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── What we look at ───────────────────────────────────── -->
+  <section class="py-20 md:py-28 border-b border-border/40">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="max-w-3xl mb-14">
+        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">What we look at</p>
+        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[38px] font-bold tracking-[-0.02em] leading-[1.1]">
+          Six areas, one pass.
+        </h2>
+      </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {lookAt.map((l, i) => (
+          <div data-fade data-fade-delay={i * 60} class="p-7 rounded-lg border border-border bg-surface">
+            <h3 class="text-[17px] font-semibold text-text mb-2.5 leading-snug">{l.title}</h3>
+            <p class="text-[14.5px] text-text-2 leading-[1.6]">{l.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── What you receive ──────────────────────────────────── -->
+  <section class="py-20 md:py-28 border-b border-border/40">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid lg:grid-cols-[1fr_1.1fr] gap-12 lg:gap-16 items-start">
+        <div>
+          <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">What you receive</p>
+          <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[38px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+            One written report. Six sections.
+          </h2>
+          <p data-fade data-fade-delay="120" class="text-[16px] text-text-2 leading-[1.65]">
+            Everything leadership needs to make a decision, and everything an engineer needs to implement it. Yours to keep, use, and share internally.
+          </p>
+        </div>
+        <div data-fade data-fade-delay="120" class="rounded-lg border border-border bg-surface p-7 md:p-9">
+          <ul class="flex flex-col divide-y divide-border/60">
+            {receive.map((r, i) => (
+              <li class="flex items-center gap-4 py-4 first:pt-0 last:pb-0">
+                <span class="font-mono text-[12px] text-text-3 w-6 flex-shrink-0">0{i + 1}</span>
+                <span class="text-amber flex-shrink-0"><ConsultingIcon name="check" size={16} class="stroke-[2.5]" /></span>
+                <span class="text-[15.5px] text-text">{r}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Why start here ────────────────────────────────────── -->
+  <section class="py-20 md:py-28 border-b border-border/40">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="max-w-3xl mb-14">
+        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Why start here</p>
+        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[38px] font-bold tracking-[-0.02em] leading-[1.1]">
+          The Audit de-risks everything after it.
+        </h2>
+      </div>
+      <div class="grid md:grid-cols-3 gap-5">
+        {why.map((w, i) => (
+          <div data-fade data-fade-delay={i * 70} class="p-7 rounded-lg border border-border bg-surface">
+            <div class="w-10 h-10 rounded-md bg-amber/10 border border-amber/25 flex items-center justify-center text-amber mb-5">
+              <ConsultingIcon name={w.icon} size={19} />
+            </div>
+            <h3 class="text-[18px] font-semibold text-text mb-2.5">{w.title}</h3>
+            <p class="text-[14.5px] text-text-2 leading-[1.6]">{w.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Timeline & format ─────────────────────────────────── -->
+  <section class="py-20 md:py-28 border-b border-border/40">
+    <div class="max-w-4xl mx-auto px-6">
+      <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Timeline &amp; format</p>
+      <div class="grid sm:grid-cols-2 gap-5 mt-6">
+        <div data-fade class="p-7 rounded-lg border border-border bg-surface">
+          <div class="w-10 h-10 rounded-md bg-amber/10 border border-amber/25 flex items-center justify-center text-amber mb-5">
+            <ConsultingIcon name="route" size={19} />
+          </div>
+          <h3 class="text-[18px] font-semibold text-text mb-2.5">Remote or on-site kickoff</h3>
+          <p class="text-[14.5px] text-text-2 leading-[1.6]">Most Audits run remotely, with an optional on-site kickoff. A mutual NDA is signed before any work begins.</p>
+        </div>
+        <div data-fade data-fade-delay="80" class="p-7 rounded-lg border border-border bg-surface">
+          <div class="w-10 h-10 rounded-md bg-amber/10 border border-amber/25 flex items-center justify-center text-amber mb-5">
+            <ConsultingIcon name="clock" size={19} />
+          </div>
+          <h3 class="text-[18px] font-semibold text-text mb-2.5">Written delivery</h3>
+          <p class="text-[14.5px] text-text-2 leading-[1.6]">The report is delivered within days of the review closing, followed by a walkthrough call so your team can question every recommendation.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <ConsultingCta
+    title="Book a Discovery Call to scope your Audit."
+    subtitle="We confirm your stack and constraints, then scope the Audit to your studio size. Fixed price agreed before any work starts."
+    primaryLabel="Book Discovery Call"
+    primaryHref={BOOK_PATH}
+    secondaryLabel="Explore Setup & Integration"
+    secondaryHref={`${BASE}/services/setup`}
+  />
+</ConsultingLayout>

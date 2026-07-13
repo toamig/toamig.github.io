@@ -1,0 +1,44 @@
+---
+import ConsultingIcon from './ConsultingIcon.astro';
+import { BOOK_PATH, BASE } from '../data/consulting';
+
+interface Props {
+  title: string;
+  subtitle?: string;
+  primaryLabel?: string;
+  primaryHref?: string;
+  secondaryLabel?: string;
+  secondaryHref?: string;
+}
+const {
+  title,
+  subtitle,
+  primaryLabel = 'Book Discovery Call',
+  primaryHref = BOOK_PATH,
+  secondaryLabel = 'Read the technical brief',
+  secondaryHref = `${BASE}/technology`,
+} = Astro.props;
+---
+<section class="py-24 md:py-36">
+  <div class="max-w-3xl mx-auto px-6 text-center">
+    <h2 data-fade class="text-[30px] md:text-[42px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+      {title}
+    </h2>
+    {subtitle && (
+      <p data-fade data-fade-delay="100" class="text-[17px] md:text-[18px] text-text-2 leading-[1.6] mb-10 max-w-2xl mx-auto">
+        {subtitle}
+      </p>
+    )}
+    <div data-fade data-fade-delay="180" class="flex flex-col sm:flex-row items-center justify-center gap-3">
+      <a href={primaryHref} class="inline-flex items-center gap-2 px-7 py-3.5 rounded-md bg-amber text-ink font-semibold text-[15px] hover:bg-amber-2 transition-colors">
+        {primaryLabel}
+        <ConsultingIcon name="arrow-right" size={16} class="stroke-[2.5]" />
+      </a>
+      {secondaryLabel && secondaryHref && (
+        <a href={secondaryHref} class="inline-flex items-center gap-2 px-7 py-3.5 rounded-md border border-border text-text hover:border-border-2 hover:bg-surface text-[15px] font-medium transition-colors">
+          {secondaryLabel}
+        </a>
+      )}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,137 @@
+---
+import ConsultingLayout from '../../../layouts/ConsultingLayout.astro';
+import ConsultingHero from '../../../components/ConsultingHero.astro';
+import ConsultingCta from '../../../components/ConsultingCta.astro';
+import ConsultingIcon from '../../../components/ConsultingIcon.astro';
+import { BASE, BOOK_PATH } from '../../../data/consulting';
+
+const title = 'Setup & Integration · AI Setup Consulting for Game Studios';
+const description = 'Setup & Integration for Unreal studios: a governed central brain, custom MCP servers for Perforce and Plastic, automated review pipelines, permissions, cost monitoring, and team training. Built module by module.';
+
+const facts = [
+  { label: 'Duration', value: '3-16 weeks' },
+  { label: 'Billing', value: 'Fixed-fee' },
+  { label: 'Rollout', value: 'Module by module' },
+];
+
+const build = [
+  { icon: 'cpu', title: 'Central brain', body: 'A governed, hierarchical knowledge layer tuned to your gameplay framework, networking, UI, and shaders. Read-only for developers, updated only through approved automation.' },
+  { icon: 'server', title: 'Custom MCP servers', body: 'Perforce and Plastic SCM integrations with safety controls and audit logs, plus connectors for your build and review tooling. Configuration-driven, not hardcoded.' },
+  { icon: 'git-pull-request', title: 'Automated review pipelines', body: 'Server-side AI review that runs on every submit and posts to Swarm, Jira, or your review tool. Catches convention violations before a senior sees them.' },
+  { icon: 'lock', title: 'Permissions & guardrails', body: 'Engine source off-limits unless explicitly flagged. Protected paths, operation whitelisting, and human-in-the-loop for destructive operations.' },
+  { icon: 'gauge', title: 'Cost monitoring', body: 'Per-team token budgets, prompt caching, and a dashboard so spend never surprises you. Viable economics at team scale.' },
+  { icon: 'graduation-cap', title: 'Team training', body: 'Hands-on sessions on your real codebase: prompting patterns for performance-critical C++, and how to review AI output for red flags.' },
+];
+
+const measure = [
+  'Baseline metrics captured before any change ships',
+  'Review cycle time, PR throughput, and onboarding time tracked',
+  'Before and after comparison so the ROI is defensible when your CFO asks',
+];
+---
+<ConsultingLayout
+  title={title}
+  description={description}
+  path={`${BASE}/services/setup/`}
+  active={`${BASE}/services`}
+>
+  <ConsultingHero
+    eyebrow="Setup & Integration"
+    title="Built module by module,"
+    accent="not big bang."
+    subtitle="The Audit roadmap becomes working infrastructure: a governed brain, safe MCP servers, automated review, and a team trained to use them. Deployed incrementally, measured throughout."
+    primaryLabel="Book a call to plan your Setup"
+    secondaryLabel="Read the technical brief"
+    secondaryHref={`${BASE}/technology`}
+  />
+
+  <!-- ── What it is ────────────────────────────────────────── -->
+  <section class="py-20 md:py-28 border-b border-border/40">
+    <div class="max-w-4xl mx-auto px-6">
+      <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">What it is</p>
+      <p data-fade data-fade-delay="60" class="text-[19px] md:text-[22px] text-text leading-[1.5] mb-10">
+        We build the infrastructure from your Audit roadmap and integrate it with the tools your team already uses. Three to sixteen weeks depending on studio size, delivered one module at a time so nothing breaks all at once.
+      </p>
+      <div data-fade data-fade-delay="120" class="grid grid-cols-1 sm:grid-cols-3 gap-px bg-border/60 border border-border/60 rounded-lg overflow-hidden">
+        {facts.map(f => (
+          <div class="bg-surface p-6">
+            <p class="font-mono text-[11.5px] uppercase tracking-[0.12em] text-text-3 mb-2">{f.label}</p>
+            <p class="text-[16px] text-text font-medium">{f.value}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── What we build ─────────────────────────────────────── -->
+  <section class="py-20 md:py-28 border-b border-border/40">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="max-w-3xl mb-14">
+        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">What we build</p>
+        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[38px] font-bold tracking-[-0.02em] leading-[1.1]">
+          Six systems, integrated with your stack.
+        </h2>
+      </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {build.map((b, i) => (
+          <div data-fade data-fade-delay={i * 60} class="p-7 rounded-lg border border-border bg-surface">
+            <div class="w-10 h-10 rounded-md bg-amber/10 border border-amber/25 flex items-center justify-center text-amber mb-5">
+              <ConsultingIcon name={b.icon} size={19} />
+            </div>
+            <h3 class="text-[17.5px] font-semibold text-text mb-2.5 leading-snug">{b.title}</h3>
+            <p class="text-[14.5px] text-text-2 leading-[1.6]">{b.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Measurement ───────────────────────────────────────── -->
+  <section class="py-20 md:py-28 border-b border-border/40">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid lg:grid-cols-[1fr_1.1fr] gap-12 lg:gap-16 items-start">
+        <div>
+          <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Measurement</p>
+          <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[38px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+            We measure before we change anything.
+          </h2>
+          <p data-fade data-fade-delay="120" class="text-[16px] text-text-2 leading-[1.65]">
+            Setup includes baselining the metrics that matter to your studio, then re-measuring after rollout. "It feels faster" does not renew a budget. Numbers do.
+          </p>
+        </div>
+        <div data-fade data-fade-delay="120" class="rounded-lg border border-border bg-surface p-7 md:p-9">
+          <ul class="flex flex-col gap-4">
+            {measure.map(m => (
+              <li class="flex items-start gap-3 text-[15px] text-text-2 leading-[1.55]">
+                <span class="text-amber mt-0.5 flex-shrink-0"><ConsultingIcon name="check" size={16} class="stroke-[2.5]" /></span>
+                {m}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── What stays with you ───────────────────────────────── -->
+  <section class="py-20 md:py-28 border-b border-border/40">
+    <div class="max-w-4xl mx-auto px-6">
+      <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">What stays with you</p>
+      <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[38px] font-bold tracking-[-0.02em] leading-[1.1] mb-6">
+        Everything we build is yours.
+      </h2>
+      <p data-fade data-fade-delay="120" class="text-[16.5px] text-text-2 leading-[1.7]">
+        All code, configuration, documentation, and infrastructure remain your IP. Your Anthropic account stays yours. There is no lock-in: if you walk away, you walk away with everything, and an onboarding guide so a lead can own it after handover.
+      </p>
+    </div>
+  </section>
+
+  <ConsultingCta
+    title="Plan your Setup in a Discovery Call."
+    subtitle="Setup scope is agreed after the Audit, so the price and timeline reflect your codebase, not a template. Start with a 30-minute call."
+    primaryLabel="Book Discovery Call"
+    primaryHref={BOOK_PATH}
+    secondaryLabel="Explore the Retainer"
+    secondaryHref={`${BASE}/services/retainer`}
+  />
+</ConsultingLayout>

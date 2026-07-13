@@ -1,0 +1,234 @@
+---
+import '../styles/ai-setup.css';
+import ConsultingIcon from '../components/ConsultingIcon.astro';
+import {
+  SITE, BRAND, CALENDLY_URL, EMAIL, LINKEDIN_URL, CITY,
+  BASE, BOOK_PATH, OG_IMAGE, NAV,
+} from '../data/consulting';
+
+interface Props {
+  title: string;
+  description: string;
+  path: string;            // e.g. "/AI-Setup-Consulting/services/"
+  ogImage?: string;
+  jsonLd?: unknown;
+  active?: string;         // matches a NAV href for active styling
+}
+
+const {
+  title,
+  description,
+  path,
+  ogImage = OG_IMAGE,
+  jsonLd,
+  active,
+} = Astro.props;
+
+const ogUrl = `${SITE}${path}`;
+const CURRENT_YEAR = new Date().getFullYear();
+
+const footerCols = [
+  {
+    label: 'Services',
+    links: [
+      { href: `${BASE}/services/audit`,    label: 'Audit' },
+      { href: `${BASE}/services/setup`,    label: 'Setup' },
+      { href: `${BASE}/services/retainer`, label: 'Retainer' },
+      { href: `${BASE}/technology`,        label: 'Technology' },
+    ],
+  },
+  {
+    label: 'Segments',
+    links: [
+      { href: `${BASE}/for-indies`,   label: 'For Indies' },
+      { href: `${BASE}/for-mid-size`, label: 'For Mid-Size' },
+      { href: `${BASE}/for-aaa`,      label: 'For AAA' },
+    ],
+  },
+  {
+    label: 'Company',
+    links: [
+      { href: `${BASE}/about`,    label: 'About' },
+      { href: `${BASE}/approach`, label: 'Approach' },
+      { href: BOOK_PATH,          label: 'Discovery Call' },
+      { href: `mailto:${EMAIL}`,  label: 'Contact' },
+    ],
+  },
+];
+---
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/logo_head.svg" />
+    <link rel="canonical" href={ogUrl} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" />
+
+    <meta property="og:type"        content="website" />
+    <meta property="og:title"       content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url"         content={ogUrl} />
+    <meta property="og:image"       content={ogImage} />
+    <meta property="og:image:width"  content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name"   content={BRAND} />
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:title"       content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image"       content={ogImage} />
+
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+  </head>
+
+  <body class="min-h-screen text-text antialiased">
+    <!-- ── Sticky Nav ─────────────────────────────────────────── -->
+    <nav class="fixed top-0 left-0 right-0 z-50 border-b border-border/60 bg-ink/80 backdrop-blur-md">
+      <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        <a href={BASE} class="flex items-center gap-2 font-semibold tracking-tight">
+          <span class="inline-flex w-7 h-7 rounded-md bg-amber/15 border border-amber/30 items-center justify-center font-mono text-[12px] text-amber">M</span>
+          <span class="text-text text-[15px]">{BRAND}</span>
+        </a>
+
+        <div class="hidden md:flex items-center gap-7">
+          {NAV.map(link => (
+            <a
+              href={link.href}
+              class:list={[
+                'text-[14px] font-medium transition-colors',
+                active === link.href ? 'text-amber' : 'text-text-2 hover:text-text',
+              ]}
+            >
+              {link.label}
+            </a>
+          ))}
+          <a href={BOOK_PATH} class="px-4 py-1.5 rounded-md bg-amber text-ink text-[13px] font-semibold hover:bg-amber-2 transition-colors">
+            Book Call
+          </a>
+        </div>
+
+        <button id="menu-toggle" class="md:hidden p-2 text-text-2 hover:text-text" aria-label="Toggle menu" aria-expanded="false">
+          <svg id="icon-menu"  width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+          <svg id="icon-close" class="hidden" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+
+      <div id="mobile-menu" class="hidden md:hidden border-t border-border/60 bg-ink">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col gap-3">
+          {NAV.map(link => (
+            <a href={link.href} class="text-text-2 hover:text-text text-[15px] py-1">
+              {link.label}
+            </a>
+          ))}
+          <a href={BOOK_PATH} class="mt-2 px-4 py-2 rounded-md bg-amber text-ink text-[14px] font-semibold text-center">
+            Book Call
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <slot />
+    </main>
+
+    <!-- ── Footer ────────────────────────────────────────────── -->
+    <footer class="border-t border-border/60 pt-16 pb-12">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-10 mb-14">
+          <div class="col-span-2 md:col-span-1">
+            <a href={BASE} class="flex items-center gap-2 font-semibold tracking-tight mb-4">
+              <span class="inline-flex w-7 h-7 rounded-md bg-amber/15 border border-amber/30 items-center justify-center font-mono text-[12px] text-amber">M</span>
+              <span class="text-text text-[15px]">{BRAND}</span>
+            </a>
+            <p class="text-[13.5px] text-text-3 leading-[1.6] max-w-[220px]">
+              AI engineering infrastructure for Unreal game studios.
+            </p>
+            <div class="flex items-center gap-4 mt-5">
+              <a href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" class="text-text-3 hover:text-text transition-colors">
+                <ConsultingIcon name="linkedin" size={18} />
+              </a>
+              <a href={`mailto:${EMAIL}`} aria-label="Email" class="text-text-3 hover:text-text transition-colors">
+                <ConsultingIcon name="mail" size={18} />
+              </a>
+            </div>
+          </div>
+
+          {footerCols.map(col => (
+            <div>
+              <p class="font-mono text-[11.5px] uppercase tracking-[0.14em] text-text-3 mb-4">{col.label}</p>
+              <ul class="flex flex-col gap-2.5">
+                {col.links.map(l => (
+                  <li>
+                    <a href={l.href} class="text-[14px] text-text-2 hover:text-amber transition-colors">{l.label}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        <div class="pt-8 border-t border-border/60 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <p class="text-[13px] text-text-3 flex items-center gap-2 flex-wrap">
+            <span class="font-mono">© {CURRENT_YEAR} {BRAND}.</span>
+            <span class="text-border-2">·</span>
+            <span>Made in Portugal.</span>
+            <span class="text-border-2">·</span>
+            <span>{CITY}</span>
+          </p>
+          <p class="text-[12px] text-text-3 font-mono md:text-right">
+            Not affiliated with Anthropic PBC. We build on their platform.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Smooth scroll for in-page anchors (homepage sections)
+      document.querySelectorAll<HTMLAnchorElement>('a[data-scroll]').forEach(a => {
+        a.addEventListener('click', e => {
+          const href = a.getAttribute('href');
+          if (!href || !href.startsWith('#')) return;
+          const target = document.querySelector(href);
+          if (!target) return;
+          e.preventDefault();
+          const top = target.getBoundingClientRect().top + window.pageYOffset - 72;
+          window.scrollTo({ top, behavior: 'smooth' });
+          document.getElementById('mobile-menu')?.classList.add('hidden');
+          document.getElementById('icon-menu')?.classList.remove('hidden');
+          document.getElementById('icon-close')?.classList.add('hidden');
+          document.getElementById('menu-toggle')?.setAttribute('aria-expanded', 'false');
+        });
+      });
+
+      // Mobile menu toggle
+      const toggle = document.getElementById('menu-toggle');
+      const menu   = document.getElementById('mobile-menu');
+      const iconM  = document.getElementById('icon-menu');
+      const iconC  = document.getElementById('icon-close');
+      toggle?.addEventListener('click', () => {
+        const open = menu?.classList.toggle('hidden') === false;
+        iconM?.classList.toggle('hidden', open);
+        iconC?.classList.toggle('hidden', !open);
+        toggle.setAttribute('aria-expanded', String(open));
+      });
+
+      // Fade-in on scroll
+      const fadeEls = document.querySelectorAll<HTMLElement>('[data-fade]');
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          const el = entry.target as HTMLElement;
+          const delay = parseInt(el.dataset.fadeDelay ?? '0', 10);
+          window.setTimeout(() => el.classList.add('is-visible'), delay);
+          io.unobserve(el);
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -32px 0px' });
+      fadeEls.forEach(el => io.observe(el));
+    </script>
+  </body>
+</html>

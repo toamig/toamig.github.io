@@ -1,0 +1,171 @@
+---
+import ConsultingLayout from '../../layouts/ConsultingLayout.astro';
+import ConsultingHero from '../../components/ConsultingHero.astro';
+import ConsultingCta from '../../components/ConsultingCta.astro';
+import ConsultingIcon from '../../components/ConsultingIcon.astro';
+import { BASE, PHASES } from '../../data/consulting';
+
+const title = 'Approach & Methodology · AI Setup Consulting for Game Studios';
+const description = 'How we work: outcome-based fixed-fee engagements, measurement before and after, governance-first infrastructure, and zero vendor lock-in. The methodology behind every engagement.';
+
+const philosophy = [
+  { title: 'Outcomes, not hours', body: 'We do not sell time. We sell fixed-fee engagements aligned with fixed deliverables. You know the price and the outcome before we start.' },
+  { title: 'Measurement, end to end', body: 'We measure before, during, and after. The ROI is defensible when your CFO asks, because it is grounded in your own baselines.' },
+  { title: 'Governance-first', body: 'AI without guardrails creates more problems than it solves. Every system we build is governed, observable, and controlled by default.' },
+  { title: 'A multiplier, not a substitute', body: 'This is not a replacement for engineering judgment. It makes good engineers faster. Your seniors still make the architectural calls.' },
+];
+
+const metrics = [
+  { title: 'Review cycle time', body: 'Senior hours per pull request.' },
+  { title: 'PR throughput', body: 'Pull requests per week per team.' },
+  { title: 'Bug escape rate', body: 'Bugs found after merge.' },
+  { title: 'Onboarding time', body: 'Weeks to a productive first contribution.' },
+  { title: 'Token spend', body: 'Cost per common workflow.' },
+  { title: 'Developer AI utility', body: 'A survey of how useful the team finds the tooling.' },
+];
+
+const howWeBuild = [
+  'Central brain repos with branch protection and CI validation',
+  'MCP servers designed for safety, observability, and consistency',
+  'Server-side automation workers for event-driven review',
+  'A privacy tier appropriate for each studio IP profile',
+  'Documentation and training so your team owns the infrastructure',
+];
+
+const staysWithYou = [
+  'All code and infrastructure we build',
+  'All documentation',
+  'All configurations',
+  'Your Anthropic account remains yours',
+  'Zero vendor lock-in',
+];
+---
+<ConsultingLayout
+  title={title}
+  description={description}
+  path={`${BASE}/approach/`}
+  active={`${BASE}/approach`}
+>
+  <ConsultingHero
+    eyebrow="Approach"
+    title="How we work, and why it"
+    accent="earns a CTO's trust."
+    subtitle="Fixed-fee engagements, measured outcomes, governance-first infrastructure, and nothing you cannot walk away with. This is the method behind every engagement."
+    secondaryLabel="See the services"
+    secondaryHref={`${BASE}/services`}
+  />
+
+  <!-- ── Philosophy ────────────────────────────────────────── -->
+  <section class="py-20 md:py-28 border-b border-border/40">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="max-w-3xl mb-14">
+        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Philosophy</p>
+        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[40px] font-bold tracking-[-0.02em] leading-[1.1]">
+          Four principles that shape everything.
+        </h2>
+      </div>
+      <div class="grid md:grid-cols-2 gap-5">
+        {philosophy.map((p, i) => (
+          <div data-fade data-fade-delay={i * 70} class="p-8 rounded-lg border border-border bg-surface">
+            <h3 class="text-[19px] font-semibold text-text mb-3">{p.title}</h3>
+            <p class="text-[15px] text-text-2 leading-[1.65]">{p.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Engagement lifecycle ──────────────────────────────── -->
+  <section class="py-20 md:py-28 border-b border-border/40">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="max-w-3xl mb-14">
+        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Engagement lifecycle</p>
+        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[40px] font-bold tracking-[-0.02em] leading-[1.1]">
+          Discovery. Audit. Setup. Retainer.
+        </h2>
+      </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+        {PHASES.map((p, i) => (
+          <div data-fade data-fade-delay={i * 70} class="flex flex-col p-7 rounded-lg border border-border bg-surface">
+            <div class="flex items-center justify-between mb-5">
+              <span class="font-mono text-[13px] text-amber tracking-[0.1em]">STEP {p.step}</span>
+              <span class="font-mono text-[11.5px] text-text-3">{p.meta}</span>
+            </div>
+            <h3 class="text-[18px] font-semibold tracking-tight mb-4">{p.title}</h3>
+            <ul class="flex flex-col gap-2.5">
+              {p.points.map(pt => (
+                <li class="flex items-start gap-2.5 text-[13.5px] text-text-2 leading-[1.5]">
+                  <span class="text-amber mt-0.5 flex-shrink-0"><ConsultingIcon name="check" size={13} class="stroke-[2.5]" /></span>
+                  {pt}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── What we measure ───────────────────────────────────── -->
+  <section class="py-20 md:py-28 border-b border-border/40">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="max-w-3xl mb-14">
+        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">What we measure</p>
+        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[40px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+          The baselines we capture, then re-measure.
+        </h2>
+        <p data-fade data-fade-delay="120" class="text-[16px] text-text-2 leading-[1.6]">
+          We baseline these before any change ships, then re-measure after implementation and produce quarterly reports.
+        </p>
+      </div>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border/60 border border-border/60 rounded-lg overflow-hidden">
+        {metrics.map((m, i) => (
+          <div data-fade data-fade-delay={i * 50} class="bg-surface p-7">
+            <div class="text-amber mb-4"><ConsultingIcon name="gauge" size={18} /></div>
+            <h3 class="text-[16.5px] font-semibold text-text mb-1.5">{m.title}</h3>
+            <p class="text-[14px] text-text-2 leading-[1.55]">{m.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── How we build + What stays with you ────────────────── -->
+  <section class="py-20 md:py-28 border-b border-border/40">
+    <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-5">
+      <div data-fade class="p-8 rounded-lg border border-border bg-surface">
+        <div class="w-10 h-10 rounded-md bg-amber/10 border border-amber/25 flex items-center justify-center text-amber mb-6">
+          <ConsultingIcon name="workflow" size={19} />
+        </div>
+        <h3 class="text-[20px] font-semibold tracking-tight mb-5">How we build</h3>
+        <ul class="flex flex-col gap-3.5">
+          {howWeBuild.map(h => (
+            <li class="flex items-start gap-3 text-[14.5px] text-text-2 leading-[1.55]">
+              <span class="text-amber mt-0.5 flex-shrink-0"><ConsultingIcon name="check" size={15} class="stroke-[2.5]" /></span>
+              {h}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div data-fade data-fade-delay="80" class="p-8 rounded-lg border border-border bg-surface">
+        <div class="w-10 h-10 rounded-md bg-amber/10 border border-amber/25 flex items-center justify-center text-amber mb-6">
+          <ConsultingIcon name="shield-check" size={19} />
+        </div>
+        <h3 class="text-[20px] font-semibold tracking-tight mb-5">What stays with you</h3>
+        <ul class="flex flex-col gap-3.5">
+          {staysWithYou.map(s => (
+            <li class="flex items-start gap-3 text-[14.5px] text-text-2 leading-[1.55]">
+              <span class="text-amber mt-0.5 flex-shrink-0"><ConsultingIcon name="check" size={15} class="stroke-[2.5]" /></span>
+              {s}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <ConsultingCta
+    title="Want to walk through the method?"
+    subtitle="A Discovery Call is the fastest way to see how this maps to your studio. 30 minutes, free, no pitch deck."
+  />
+</ConsultingLayout>

@@ -1,0 +1,210 @@
+---
+import ConsultingLayout from '../../layouts/ConsultingLayout.astro';
+import ConsultingHero from '../../components/ConsultingHero.astro';
+import ConsultingCta from '../../components/ConsultingCta.astro';
+import ConsultingIcon from '../../components/ConsultingIcon.astro';
+import { BASE, PRIVACY_TIERS } from '../../data/consulting';
+
+const title = 'Technology & Architecture · AI Setup Consulting for Game Studios';
+const description = 'The technical brief: architecture, the four privacy tiers, MCP server design principles, prompt caching economics, the integration surface, and what we will not do. Written for CTOs.';
+
+const architecture = [
+  { icon: 'terminal', title: 'Developer workstations', body: 'Claude Code running locally, scoped by permission settings. Engine source is off-limits unless explicitly flagged. Protected paths and operation whitelisting are enforced per workstation.' },
+  { icon: 'server', title: 'MCP context server', body: 'Serves the brain and provides safe tool access to Perforce, Plastic, and build systems. Configuration-driven, audited, and consistent across the whole team.' },
+  { icon: 'cpu', title: 'Central brain repo', body: 'The governed knowledge layer: coding standards, architecture, and conventions. Branch protection, CI validation, and updates only through approved automation.' },
+  { icon: 'git-pull-request', title: 'Automation worker', body: 'Server-side review that runs on every submit. Posts structured findings to Swarm, Jira, or Slack before a senior reviewer is involved.' },
+];
+
+const mcpPrinciples = [
+  { title: 'Configuration-driven', body: 'Behavior is defined in config, not hardcoded per studio. New repos and rules are onboarded by editing configuration, not shipping new code.' },
+  { title: 'Safety controls', body: 'Path restrictions, operation whitelisting, and human-in-the-loop confirmation for destructive operations. The server cannot do what it was not explicitly allowed to.' },
+  { title: 'Audit logs', body: 'Every operation is logged. You can answer who did what, when, and against which repository.' },
+  { title: 'Versioning and updates', body: 'Servers are versioned and updated through a controlled process, so a change is reviewable and reversible.' },
+  { title: 'Standardized error handling', body: 'Predictable, structured errors so failures are observable and debuggable rather than silent.' },
+];
+
+const integrations = ['Perforce', 'Plastic SCM', 'Swarm', 'Jira', 'Slack', 'Perforce triggers', 'CI hooks', 'AWS Bedrock', 'Google Vertex AI', 'Anthropic API', 'Anthropic Enterprise'];
+
+const wontDo = [
+  { title: 'Run frontier weights on your premises', body: 'Self-hosting production model weights is not currently viable at frontier quality. We will not pretend otherwise. For containment we use Bedrock, Vertex, ZDR, or sandboxes instead.' },
+  { title: 'Wrap Anthropic pricing', body: 'Seats and tokens are billed directly by the studio to Anthropic. We do not mark up their pricing. Transparency over margin.' },
+  { title: 'Ship without measurement', body: 'Every engagement includes the measurement infrastructure to prove ROI. If we cannot measure it, we do not claim it.' },
+];
+---
+<ConsultingLayout
+  title={title}
+  description={description}
+  path={`${BASE}/technology/`}
+  active={`${BASE}/technology`}
+>
+  <ConsultingHero
+    eyebrow="Technology"
+    title="The technical brief,"
+    accent="for CTOs."
+    subtitle="How the architecture fits together, how your IP stays protected, and where the honest limits are. Dense, specific, and free of marketing."
+    primaryLabel="Discuss your architecture"
+    secondaryLabel="See how we work"
+    secondaryHref={`${BASE}/approach`}
+  />
+
+  <!-- ── Architecture overview ─────────────────────────────── -->
+  <section class="py-20 md:py-28 border-b border-border/40">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="max-w-3xl mb-14">
+        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Architecture overview</p>
+        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[40px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+          Four components. One data flow.
+        </h2>
+        <p data-fade data-fade-delay="120" class="text-[16px] text-text-2 leading-[1.6]">
+          Developers work locally against a governed brain, served through an audited MCP layer, with a server-side worker reviewing every submit.
+        </p>
+      </div>
+
+      <div class="grid lg:grid-cols-2 gap-5">
+        {architecture.map((a, i) => (
+          <div data-fade data-fade-delay={i * 60} class="flex gap-5 p-7 rounded-lg border border-border bg-surface">
+            <div class="flex-shrink-0 flex flex-col items-center">
+              <div class="w-11 h-11 rounded-md bg-amber/10 border border-amber/25 flex items-center justify-center text-amber">
+                <ConsultingIcon name={a.icon} size={20} />
+              </div>
+              <span class="font-mono text-[12px] text-text-3 mt-3">0{i + 1}</span>
+            </div>
+            <div>
+              <h3 class="text-[18px] font-semibold text-text mb-2.5">{a.title}</h3>
+              <p class="text-[14.5px] text-text-2 leading-[1.6]">{a.body}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div data-fade class="mt-8 rounded-lg border border-border bg-ink-2 overflow-x-auto">
+        <div class="px-5 py-3 border-b border-border/60 font-mono text-[12px] text-text-3">brain repo layout</div>
+        <pre class="p-5 font-mono text-[13px] leading-[1.7] text-text-2"><code>brain/
+  conventions/     <span class="text-text-3"># cpp, naming, formatting</span>
+  gameplay/        <span class="text-text-3"># ability system, framework rules</span>
+  networking/      <span class="text-text-3"># replication, authority</span>
+  ui/              <span class="text-text-3"># UMG, slate conventions</span>
+  .github/
+    workflows/     <span class="text-amber">validate.yml</span>  <span class="text-text-3"># CI gate on every update</span></code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── The four privacy tiers ────────────────────────────── -->
+  <section class="py-20 md:py-28 border-b border-border/40">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="max-w-3xl mb-14">
+        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">The four privacy tiers</p>
+        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[40px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+          Your code never trains a model.
+        </h2>
+        <p data-fade data-fade-delay="120" class="text-[16px] text-text-2 leading-[1.6]">
+          Four data-protection tiers, ranked by containment. We recommend and configure the right one for your IP sensitivity during the Audit.
+        </p>
+      </div>
+      <div class="grid md:grid-cols-2 gap-5">
+        {PRIVACY_TIERS.map((t, i) => (
+          <div data-fade data-fade-delay={i * 60} class="p-7 rounded-lg border border-border bg-surface">
+            <div class="flex items-baseline gap-3 mb-3">
+              <span class="font-mono text-[12px] text-amber tracking-[0.1em] uppercase">{t.tier}</span>
+              <span class="font-mono text-[12px] text-text-3">0{i + 1} / 04</span>
+            </div>
+            <h3 class="text-[19px] font-semibold tracking-tight mb-3">{t.title}</h3>
+            <p class="text-[14.5px] text-text-2 leading-[1.6] mb-4">{t.body}</p>
+            <p class="text-[13.5px] text-text-3 leading-[1.55]"><span class="text-text-2 font-medium">When to recommend:</span> {t.when}</p>
+          </div>
+        ))}
+      </div>
+
+      <div data-fade class="mt-8 p-7 md:p-8 rounded-lg border border-amber/40 bg-amber-soft/40">
+        <div class="flex items-start gap-4">
+          <div class="flex-shrink-0 w-9 h-9 rounded-md bg-amber/20 border border-amber/40 flex items-center justify-center text-amber mt-0.5">
+            <ConsultingIcon name="shield-alert" size={18} />
+          </div>
+          <p class="text-[15.5px] text-text leading-[1.65]">
+            <span class="font-semibold text-amber">Critical to know.</span> Claude Free, Pro, and Max are consumer accounts. By default they retain data for up to <span class="font-mono text-amber">5 years</span> and may use it for training unless manually opted out. If your developers use personal accounts on company code, you have a leak. Detecting and shutting that down is part of every Audit.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── MCP server design principles ──────────────────────── -->
+  <section class="py-20 md:py-28 border-b border-border/40">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="max-w-3xl mb-14">
+        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">MCP server design</p>
+        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[40px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+          Safe, observable, consistent. Not a bash wrapper.
+        </h2>
+        <p data-fade data-fade-delay="120" class="text-[16px] text-text-2 leading-[1.6]">
+          Five principles behind every MCP server we build.
+        </p>
+      </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {mcpPrinciples.map((m, i) => (
+          <div data-fade data-fade-delay={i * 60} class="p-7 rounded-lg border border-border bg-surface">
+            <span class="font-mono text-[12px] text-text-3">0{i + 1}</span>
+            <h3 class="text-[17px] font-semibold text-text mt-3 mb-2.5">{m.title}</h3>
+            <p class="text-[14.5px] text-text-2 leading-[1.6]">{m.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Prompt caching + integration surface ──────────────── -->
+  <section class="py-20 md:py-28 border-b border-border/40">
+    <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-5">
+      <div data-fade class="p-8 rounded-lg border border-border bg-surface">
+        <div class="w-10 h-10 rounded-md bg-amber/10 border border-amber/25 flex items-center justify-center text-amber mb-6">
+          <ConsultingIcon name="gauge" size={19} />
+        </div>
+        <h3 class="text-[20px] font-semibold tracking-tight mb-3">Prompt caching and cost optimization</h3>
+        <p class="text-[15px] text-text-2 leading-[1.65]">
+          Team-scale AI review is only viable if the economics work. We structure prompts so the large, stable context (your brain and conventions) is cached and reused across requests, and only the changing part is paid for each time. That keeps per-review token cost predictable as usage scales across teams.
+        </p>
+      </div>
+      <div data-fade data-fade-delay="80" class="p-8 rounded-lg border border-border bg-surface">
+        <div class="w-10 h-10 rounded-md bg-amber/10 border border-amber/25 flex items-center justify-center text-amber mb-6">
+          <ConsultingIcon name="workflow" size={19} />
+        </div>
+        <h3 class="text-[20px] font-semibold tracking-tight mb-4">Integration surface</h3>
+        <p class="text-[15px] text-text-2 leading-[1.6] mb-6">Event-driven automation connects to the tools your studio already runs.</p>
+        <div class="flex flex-wrap gap-2">
+          {integrations.map(i => (
+            <span class="px-3 py-1.5 rounded-md border border-border bg-ink font-mono text-[12.5px] text-text-2">{i}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── What we won't do ──────────────────────────────────── -->
+  <section class="py-20 md:py-28 border-b border-border/40">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="max-w-3xl mb-14">
+        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">What we will not do</p>
+        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[40px] font-bold tracking-[-0.02em] leading-[1.1]">
+          The honest limits.
+        </h2>
+      </div>
+      <div class="grid md:grid-cols-3 gap-5">
+        {wontDo.map((w, i) => (
+          <div data-fade data-fade-delay={i * 70} class="p-7 rounded-lg border border-border bg-surface">
+            <div class="text-text-3 mb-4"><ConsultingIcon name="x-circle" size={20} /></div>
+            <h3 class="text-[17px] font-semibold text-text mb-2.5 leading-snug">{w.title}</h3>
+            <p class="text-[14.5px] text-text-2 leading-[1.6]">{w.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <ConsultingCta
+    title="Discuss your architecture in a Discovery Call."
+    subtitle="Bring your stack, your compliance constraints, and your hardest integration question. 30 minutes, free, engineer to engineer."
+    secondaryLabel="See the services"
+    secondaryHref={`${BASE}/services`}
+  />
+</ConsultingLayout>

@@ -1,0 +1,107 @@
+---
+import ConsultingLayout from '../../layouts/ConsultingLayout.astro';
+import ConsultingHero from '../../components/ConsultingHero.astro';
+import ConsultingCta from '../../components/ConsultingCta.astro';
+import SegmentContent from '../../components/SegmentContent.astro';
+import ConsultingIcon from '../../components/ConsultingIcon.astro';
+import { BASE } from '../../data/consulting';
+
+const title = 'For AAA & Publishers · AI Setup Consulting for Game Studios';
+const description = 'AI engineering infrastructure for AAA Unreal studios and publishers of 80-300+ developers: governance, multi-site rollout, console SDK compliance, Zero Data Retention, AWS Bedrock, and Google Vertex AI.';
+
+const seen = [
+  'Multiple sites and studios carry divergent conventions with no shared source of truth.',
+  'Procurement, security, and legal all have a say before any tool is approved.',
+  'Console SDK terms and licensed IP mean nothing can leak, ever.',
+  'Publisher NDAs constrain which tools and data paths are even permitted.',
+  'Shadow AI is a compliance risk, not just a technical one.',
+];
+
+const deliver = [
+  'Governed brain with a controlled, multi-site rollout.',
+  'MCP servers hardened for audit, observability, and compliance sign-off.',
+  'Zero Data Retention, AWS Bedrock, Google Vertex AI, or self-hosted sandboxes.',
+  'Console SDK protections and hard path guardrails on engine source.',
+  'A governance model your security team can review and approve.',
+  'Training for engineers, leads, and site owners.',
+];
+
+const investment = {
+  caption: 'Typical first-year investment',
+  band: '€300,000 - €500,000',
+  points: [
+    { label: 'Rollout', value: 'Multi-site' },
+    { label: 'Compliance', value: 'ZDR / Bedrock / Vertex' },
+    { label: 'Billing', value: 'Fixed-fee + retainer' },
+  ],
+  note: 'Indicative range for multi-site programs. Scoped against your compliance, data-residency, and rollout requirements. Anthropic seats and tokens are billed directly, with no markup. Exact numbers are scoped after the Discovery Call and Audit.',
+};
+
+const faqs = [
+  {
+    q: 'Our licensed IP and console SDKs cannot touch a third-party service. What are our options?',
+    a: 'Tier 3 and Tier 4 exist for exactly this. Claude can run on AWS Bedrock or Google Vertex AI so your code never touches Anthropic infrastructure, or in self-hosted sandboxes connected through controlled MCP tunnels. We recommend the right tier during the Audit.',
+  },
+  {
+    q: 'We operate across several sites. How does rollout work?',
+    a: 'The brain is centrally governed with a controlled, staged rollout per site. Shared conventions live at the top; site and project specifics live below. Updates flow only through approved automation, so no site drifts on its own.',
+  },
+  {
+    q: 'Security and legal need to review everything. Can they?',
+    a: 'Yes. Every system is designed to be reviewable: audit logs, operation whitelisting, path restrictions, and a written governance model. We work directly with your security and procurement teams through their process.',
+  },
+];
+---
+<ConsultingLayout
+  title={title}
+  description={description}
+  path={`${BASE}/for-aaa/`}
+>
+  <ConsultingHero
+    eyebrow="For AAA & Publishers · 80-300+ developers"
+    title="Built for AAA studios"
+    accent="and publishers."
+    subtitle="Multi-site teams, publisher relationships, and strict compliance. At this scale, governance and data protection are the whole game. We build AI infrastructure your security team can sign off on."
+    primaryLabel="Book a compliance-focused call"
+    secondaryLabel="Read the technical brief"
+    secondaryHref={`${BASE}/technology`}
+  />
+
+  <SegmentContent seen={seen} deliver={deliver} investment={investment} faqs={faqs}>
+    <section slot="extra" class="py-20 md:py-28 border-b border-border/40">
+      <div class="max-w-4xl mx-auto px-6">
+        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Working with your procurement team</p>
+        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[38px] font-bold tracking-[-0.02em] leading-[1.1] mb-6">
+          We work through your process, not around it.
+        </h2>
+        <p data-fade data-fade-delay="120" class="text-[16.5px] text-text-2 leading-[1.7] mb-8">
+          Enterprise engagements live or die on procurement, security review, and legal. We come prepared for all three: a written governance model, audit logs by default, and clear answers on data residency and retention.
+        </p>
+        <div class="grid sm:grid-cols-3 gap-5">
+          <div data-fade class="p-6 rounded-lg border border-border bg-surface">
+            <div class="text-amber mb-4"><ConsultingIcon name="shield-check" size={19} /></div>
+            <h3 class="text-[16px] font-semibold text-text mb-2">Security review</h3>
+            <p class="text-[14px] text-text-2 leading-[1.55]">Architecture docs, data-flow diagrams, and a threat model your team can audit.</p>
+          </div>
+          <div data-fade data-fade-delay="70" class="p-6 rounded-lg border border-border bg-surface">
+            <div class="text-amber mb-4"><ConsultingIcon name="file-text" size={19} /></div>
+            <h3 class="text-[16px] font-semibold text-text mb-2">Legal & NDAs</h3>
+            <p class="text-[14px] text-text-2 leading-[1.55]">Mutual NDAs, ZDR addenda, and alignment with publisher and platform terms.</p>
+          </div>
+          <div data-fade data-fade-delay="140" class="p-6 rounded-lg border border-border bg-surface">
+            <div class="text-amber mb-4"><ConsultingIcon name="route" size={19} /></div>
+            <h3 class="text-[16px] font-semibold text-text mb-2">Procurement</h3>
+            <p class="text-[14px] text-text-2 leading-[1.55]">Fixed-scope statements of work and predictable milestones your buyers can approve.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </SegmentContent>
+
+  <ConsultingCta
+    title="Start a compliance-first conversation."
+    subtitle="A Discovery Call scopes the constraints: data residency, console SDK terms, NDAs, and multi-site rollout. We bring answers your security team will want."
+    secondaryLabel="Read the technical brief"
+    secondaryHref={`${BASE}/technology`}
+  />
+</ConsultingLayout>

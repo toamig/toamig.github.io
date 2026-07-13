@@ -1,0 +1,107 @@
+---
+import ConsultingLayout from '../../../layouts/ConsultingLayout.astro';
+import ConsultingHero from '../../../components/ConsultingHero.astro';
+import ConsultingCta from '../../../components/ConsultingCta.astro';
+import ConsultingIcon from '../../../components/ConsultingIcon.astro';
+import { BASE, BOOK_PATH } from '../../../data/consulting';
+
+const title = 'Optimization Retainer · AI Setup Consulting for Game Studios';
+const description = 'A monthly Optimization Retainer for Unreal studios: brain evolution, new Claude capabilities, cost optimization, developer office hours, AI-related PR review, and quarterly ROI reports.';
+
+const facts = [
+  { label: 'Cadence', value: 'Monthly' },
+  { label: 'Commitment', value: 'Ongoing' },
+  { label: 'Reporting', value: 'Quarterly ROI' },
+];
+
+const included = [
+  { icon: 'cpu', title: 'Brain evolution', body: 'Skills, conventions, and MCP servers evolve as your codebase does. The knowledge layer never goes stale.' },
+  { icon: 'zap', title: 'New capabilities', body: 'New Claude features and models are evaluated and folded in as they ship, so you are always on the useful edge.' },
+  { icon: 'gauge', title: 'Cost optimization', body: 'Ongoing prompt-caching and budget tuning keeps token spend viable as usage grows across teams.' },
+  { icon: 'users', title: 'Developer office hours', body: 'Standing hours each month for your engineers to bring real problems and get unblocked.' },
+  { icon: 'git-pull-request', title: 'AI-related PR review', body: 'We review the pull requests where AI played a role, catching drift before it reaches main.' },
+  { icon: 'bar-chart', title: 'Quarterly ROI report', body: 'We re-measure the baselines from Setup and report the delta, so the value is always defensible.' },
+];
+---
+<ConsultingLayout
+  title={title}
+  description={description}
+  path={`${BASE}/services/retainer/`}
+  active={`${BASE}/services`}
+>
+  <ConsultingHero
+    eyebrow="Optimization Retainer"
+    title="Value compounds as your"
+    accent="codebase changes."
+    subtitle="A one-time setup decays. Your codebase grows, Claude ships new capabilities, and conventions drift. The Retainer keeps the infrastructure sharp and the ROI defensible."
+    primaryLabel="Book a call to discuss a Retainer"
+    secondaryLabel="See how we measure"
+    secondaryHref={`${BASE}/approach`}
+  />
+
+  <!-- ── What it is ────────────────────────────────────────── -->
+  <section class="py-20 md:py-28 border-b border-border/40">
+    <div class="max-w-4xl mx-auto px-6">
+      <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">What it is</p>
+      <p data-fade data-fade-delay="60" class="text-[19px] md:text-[22px] text-text leading-[1.5] mb-10">
+        Ongoing, monthly support that keeps your AI infrastructure current and your team productive. The Retainer starts once Setup ships and turns a project into a capability that keeps paying back.
+      </p>
+      <div data-fade data-fade-delay="120" class="grid grid-cols-1 sm:grid-cols-3 gap-px bg-border/60 border border-border/60 rounded-lg overflow-hidden">
+        {facts.map(f => (
+          <div class="bg-surface p-6">
+            <p class="font-mono text-[11.5px] uppercase tracking-[0.12em] text-text-3 mb-2">{f.label}</p>
+            <p class="text-[16px] text-text font-medium">{f.value}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── What's included ───────────────────────────────────── -->
+  <section class="py-20 md:py-28 border-b border-border/40">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="max-w-3xl mb-14">
+        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">What is included</p>
+        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[38px] font-bold tracking-[-0.02em] leading-[1.1]">
+          Six ways we keep it sharp.
+        </h2>
+      </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {included.map((c, i) => (
+          <div data-fade data-fade-delay={i * 60} class="p-7 rounded-lg border border-border bg-surface">
+            <div class="w-10 h-10 rounded-md bg-amber/10 border border-amber/25 flex items-center justify-center text-amber mb-5">
+              <ConsultingIcon name={c.icon} size={19} />
+            </div>
+            <h3 class="text-[17.5px] font-semibold text-text mb-2.5 leading-snug">{c.title}</h3>
+            <p class="text-[14.5px] text-text-2 leading-[1.6]">{c.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Compounding value ─────────────────────────────────── -->
+  <section class="py-20 md:py-28 border-b border-border/40">
+    <div class="max-w-4xl mx-auto px-6">
+      <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Why it compounds</p>
+      <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[38px] font-bold tracking-[-0.02em] leading-[1.1] mb-6">
+        Two things change constantly. The Retainer tracks both.
+      </h2>
+      <p data-fade data-fade-delay="120" class="text-[16.5px] text-text-2 leading-[1.7] mb-4">
+        Your codebase changes. New systems ship, conventions shift, and teams reorganize. Without maintenance, the brain drifts from reality and developers stop trusting it.
+      </p>
+      <p data-fade data-fade-delay="160" class="text-[16.5px] text-text-2 leading-[1.7]">
+        Claude changes too. New models, larger context, and new capabilities land regularly. The Retainer folds the useful ones into your workflows so you are never running last year's setup.
+      </p>
+    </div>
+  </section>
+
+  <ConsultingCta
+    title="Keep the value compounding."
+    subtitle="Retainers begin after Setup and run monthly. We agree scope and cadence to fit your team. Start with a Discovery Call."
+    primaryLabel="Book Discovery Call"
+    primaryHref={BOOK_PATH}
+    secondaryLabel="Back to all services"
+    secondaryHref={`${BASE}/services`}
+  />
+</ConsultingLayout>
