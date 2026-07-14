@@ -1,43 +1,70 @@
 @import "tailwindcss";
 
-@theme {
-  --color-ink:        #0a0a0b;
-  --color-ink-2:      #111113;
-  --color-surface:    #141417;
-  --color-surface-2: #1a1a1e;
-  --color-border:     #26262c;
-  --color-border-2:   #33333a;
-  --color-text:       #ededee;
-  --color-text-2:     #a3a3a8;
-  --color-text-3:     #6b6b72;
-  --color-amber:      #d4a574;
-  --color-amber-2:    #b8865a;
-  --color-amber-soft: #d4a57422;
+/* ─── Theme: Editorial light ────────────────────────────────────────────── */
+/* Warm cream background, deep charcoal text, terracotta accent.
+   Class names preserved from the previous dark theme (bg-ink, text-text,
+   bg-amber, etc.) with values flipped, so existing pages continue to
+   render correctly without a mass rename. */
 
-  --font-display: 'Geist', ui-sans-serif, system-ui, sans-serif;
-  --font-mono:    'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+@theme {
+  /* Backgrounds (values that used to be "dark ink" now become "warm cream") */
+  --color-ink:        #F5F0E8;   /* primary background — warm cream */
+  --color-ink-2:      #EDE7DA;   /* secondary background — slightly deeper cream */
+  --color-surface:    #FFFFFF;   /* elevated surface — pure white pops on cream */
+  --color-surface-2:  #FBF7EF;   /* subtle surface variant */
+  --color-border:     #DED5C4;   /* soft warm border */
+  --color-border-2:   #C6BCA5;   /* stronger warm border */
+
+  /* Text — was light; now dark on the cream bg */
+  --color-text:       #1a1a1a;   /* primary text — near black */
+  --color-text-2:     #55514a;   /* secondary text — warm slate */
+  --color-text-3:     #85806f;   /* tertiary text — lighter warm slate */
+
+  /* Accent — terracotta */
+  --color-amber:        #B84A2B;             /* accent */
+  --color-amber-2:      #9A3D22;             /* accent hover / darker */
+  --color-amber-soft:   rgba(184, 74, 43, 0.08);  /* subtle accent tint */
+
+  /* Fonts */
+  --font-display: 'Fraunces', 'Newsreader', Georgia, 'Times New Roman', serif;
+  --font-body:    'Geist', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono:    'Geist Mono', ui-monospace, 'JetBrains Mono', Menlo, monospace;
 }
 
+/* Body defaults */
 html, body {
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   background: var(--color-ink);
   color: var(--color-text);
   font-feature-settings: "ss01", "cv11";
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* Headings default to the serif display face for editorial feel */
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-variation-settings: "SOFT" 40, "WONK" 0;
+  letter-spacing: -0.02em;
+}
+/* Font-mono utility (kept for backwards compatibility with existing markup) */
 .font-mono { font-family: var(--font-mono); }
+/* Explicit sans utility */
+.font-sans { font-family: var(--font-body); }
 
-/* ── Subtle grid backdrop on hero ───────────────────────────────────── */
+/* ─── Hero backdrop — subtle warm gradient + faint grid ─────────────────── */
 .hero-grid {
   background-image:
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(212, 165, 116, 0.08), transparent 60%),
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 100% 100%, 64px 64px, 64px 64px;
+    radial-gradient(ellipse 70% 60% at 50% -10%, rgba(184, 74, 43, 0.08), transparent 60%),
+    linear-gradient(to right,  rgba(26, 26, 26, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(26, 26, 26, 0.03) 1px, transparent 1px);
+  background-size: 100% 100%, 72px 72px, 72px 72px;
   background-position: 0 0, 0 0, 0 0;
 }
 
-/* ── Fade-in on scroll ──────────────────────────────────────────────── */
+/* ─── Scroll-fade primitive (used across the site) ─────────────────────── */
 [data-fade] {
   opacity: 0;
   transform: translateY(16px);
@@ -52,12 +79,31 @@ html, body {
   [data-fade] { opacity: 1; transform: none; transition: none; }
 }
 
-/* ── Selection ──────────────────────────────────────────────────────── */
-::selection { background: var(--color-amber); color: var(--color-ink); }
+/* ─── Text selection ──────────────────────────────────────────────────── */
+::selection {
+  background: var(--color-amber);
+  color: #FFFFFF;
+}
 
-/* ── FAQ open animation ─────────────────────────────────────────────── */
+/* ─── FAQ accordion ───────────────────────────────────────────────────── */
 details[data-faq] summary { list-style: none; cursor: pointer; }
 details[data-faq] summary::-webkit-details-marker { display: none; }
 details[data-faq] .chevron { transition: transform 200ms ease-out; }
 details[data-faq][open] .chevron { transform: rotate(180deg); }
 details[data-faq] .answer { overflow: hidden; }
+
+/* ─── Link hover default ──────────────────────────────────────────────── */
+a { color: inherit; }
+
+/* ─── Divider / rule variant used in editorial breaks ─────────────────── */
+.editorial-rule {
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--color-border-2), transparent);
+}
+
+/* ─── GSAP compatibility: hide content that will be revealed via scroll ─ */
+[data-anim="pipeline-layer"],
+[data-anim="arch-line"],
+[data-anim="reveal"] {
+  will-change: transform, opacity;
+}

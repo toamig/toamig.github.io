@@ -20,10 +20,10 @@ interface Props {
 }
 const { layers } = Astro.props;
 ---
-<div class="pipeline" data-fade>
+<div class="pipeline">
   {layers.map((l, i) => (
     <>
-      <article class="pipeline-layer group" data-idx={i}>
+      <article class="pipeline-layer group" data-anim="pipeline-layer" data-idx={i}>
         <header class="layer-head">
           <span class="layer-num">L{l.n}</span>
           <span class="layer-tag">{l.accent}</span>

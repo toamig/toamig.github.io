@@ -1,11 +1,10 @@
 ---
 import ConsultingLayout from '../../layouts/ConsultingLayout.astro';
-import ConsultingHero from '../../components/ConsultingHero.astro';
-import ConsultingCta from '../../components/ConsultingCta.astro';
 import ConsultingIcon from '../../components/ConsultingIcon.astro';
 import PipelineDiagram from '../../components/PipelineDiagram.astro';
 import ArchitectureDiagram from '../../components/ArchitectureDiagram.astro';
 import BrainGovernanceFlow from '../../components/BrainGovernanceFlow.astro';
+import GsapEffects from '../../components/GsapEffects.astro';
 import {
   BASE, BOOK_PATH,
   PIPELINE, PIPELINE_PRINCIPLE,
@@ -15,8 +14,8 @@ import {
   WHAT_WE_DONT_CLAIM,
 } from '../../data/consulting';
 
-const title = 'Technology & Architecture · AI Setup Consulting for Game Studios';
-const description = 'The technical brief. The five-layer pipeline, brain governance, six-component architecture, four privacy tiers with the retention-vs-training distinction. Written for CTOs.';
+const title = 'The Method · AI Setup Consulting for Game Studios';
+const description = 'The technical deep-dive: the five-layer pipeline, the governed knowledge layer with its three update paths, the six-component architecture, and the four privacy tiers with the retention-vs-training distinction. Vendor-agnostic.';
 ---
 <ConsultingLayout
   title={title}
@@ -24,90 +23,94 @@ const description = 'The technical brief. The five-layer pipeline, brain governa
   path={`${BASE}/technology/`}
   active={`${BASE}/technology`}
 >
-  <ConsultingHero
-    eyebrow="Technology"
-    title="The technical brief,"
-    accent="for CTOs."
-    subtitle="How the pipeline fits together, how the brain is governed, how the architecture stays boring, and where the honest limits are. Dense, specific, free of marketing."
-    primaryLabel="Discuss your architecture"
-    secondaryLabel="See how we work"
-    secondaryHref={`${BASE}/approach`}
-  />
+  <GsapEffects />
 
-  <!-- ── The Pipeline (full reference) ─────────────────────── -->
-  <section id="pipeline" class="py-20 md:py-28 border-b border-border/40">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="max-w-3xl mb-14">
-        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">The pipeline</p>
-        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[40px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+  <!-- ══ HERO ══════════════════════════════════════════════════════════ -->
+  <section class="hero-grid pt-32 pb-24 md:pt-40 md:pb-32">
+    <div class="max-w-5xl mx-auto px-6">
+      <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">The Method</p>
+      <h1 data-fade data-fade-delay="80" class="font-display text-[42px] md:text-[60px] leading-[1.05] font-normal tracking-[-0.03em] mb-8 max-w-4xl">
+        A technical brief, <em class="not-italic text-amber font-medium">written for CTOs.</em>
+      </h1>
+      <p data-fade data-fade-delay="160" class="text-[18px] md:text-[20px] text-text-2 leading-[1.6] max-w-2xl">
+        How the pipeline fits together. How the knowledge layer is governed. How the architecture stays boring. How each privacy tier maps to your IP sensitivity. And what we honestly do not claim.
+      </p>
+    </div>
+  </section>
+
+  <!-- ══ THE PIPELINE ══════════════════════════════════════════════════ -->
+  <section id="pipeline" class="py-24 md:py-36 border-t border-border/50">
+    <div class="max-w-6xl mx-auto px-6">
+      <header class="mb-14 md:mb-16 max-w-3xl">
+        <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">01 · The pipeline</p>
+        <h2 data-fade data-fade-delay="60" class="font-display text-[32px] md:text-[44px] leading-[1.08] font-normal tracking-[-0.02em] mb-6">
           Five layers. Each with one job.
         </h2>
-        <p data-fade data-fade-delay="120" class="text-[16px] text-text-2 leading-[1.65]">
+        <p data-fade data-fade-delay="120" class="text-[16px] md:text-[17px] text-text-2 leading-[1.7]">
           Layers reinforce each other rather than repeat each other. Running the same check three times in three places wastes tokens, creates alert fatigue, and erodes trust. Running distinct checks at distinct moments compounds value without compounding cost.
         </p>
-      </div>
+      </header>
 
       <PipelineDiagram layers={PIPELINE} />
 
-      <div data-fade class="max-w-3xl mx-auto mt-14 p-6 md:p-7 rounded-lg border border-amber/40 bg-amber-soft/30">
-        <p class="font-mono text-[11.5px] uppercase tracking-[0.14em] text-amber mb-3">Human in the loop, always</p>
-        <p class="text-[15.5px] text-text leading-[1.65]">{PIPELINE_PRINCIPLE}</p>
+      <div data-fade class="mt-14 max-w-3xl mx-auto">
+        <div class="editorial-rule mb-8"></div>
+        <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-amber mb-3">Human in the loop, always</p>
+        <p class="text-[16px] text-text leading-[1.7]">{PIPELINE_PRINCIPLE}</p>
       </div>
     </div>
   </section>
 
-  <!-- ── The Brain ─────────────────────────────────────────── -->
-  <section id="brain" class="py-20 md:py-28 border-b border-border/40 bg-ink-2/40">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="max-w-3xl mb-14">
-        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">The brain</p>
-        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[40px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+  <!-- ══ THE KNOWLEDGE LAYER ═══════════════════════════════════════════ -->
+  <section id="brain" class="py-24 md:py-36 border-t border-border/50 bg-ink-2/50">
+    <div class="max-w-6xl mx-auto px-6">
+      <header class="mb-14 md:mb-16 max-w-3xl">
+        <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">02 · The knowledge layer</p>
+        <h2 data-fade data-fade-delay="60" class="font-display text-[32px] md:text-[44px] leading-[1.08] font-normal tracking-[-0.02em] mb-6">
           Centralized, governed, inviolable.
         </h2>
-        <p data-fade data-fade-delay="120" class="text-[16px] text-text-2 leading-[1.65]">
-          A structured knowledge layer accessible to all pipeline layers. Version-controlled. Consulted through MCP, not raw file reads. Individual developers can query it. Only tech leads can change it.
+        <p data-fade data-fade-delay="120" class="text-[16px] md:text-[17px] text-text-2 leading-[1.7]">
+          A structured knowledge repository accessible to every pipeline layer. Version-controlled. Consulted through MCP, not raw file reads. Individual developers can query it. Only tech leads can change it.
         </p>
-      </div>
+      </header>
 
-      <!-- What the brain is -->
-      <div class="mb-16">
-        <h3 data-fade class="font-mono text-[11.5px] uppercase tracking-[0.15em] text-text-3 mb-5">What the brain contains</h3>
-        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-border/60 border border-border/60 rounded-lg overflow-hidden">
+      <!-- What the knowledge layer contains -->
+      <div class="mb-16 md:mb-20 max-w-4xl">
+        <p data-fade class="font-mono text-[11px] uppercase tracking-[0.18em] text-text-3 mb-6">What it contains</p>
+        <div class="grid sm:grid-cols-2 gap-x-10 gap-y-6">
           {BRAIN_CONTENT.map((c, i) => (
-            <div data-fade data-fade-delay={i * 40} class="bg-surface p-6">
-              <h4 class="text-[15px] font-semibold text-text mb-2">{c.title}</h4>
-              <p class="text-[13.5px] text-text-2 leading-[1.55]">{c.body}</p>
+            <div data-fade data-fade-delay={i * 30} class="grid grid-cols-[110px_1fr] gap-4">
+              <p class="font-display text-[16px] font-medium text-text">{c.title}</p>
+              <p class="text-[14.5px] text-text-2 leading-[1.6]">{c.body}</p>
             </div>
           ))}
         </div>
       </div>
 
-      <!-- How consulted + How protected -->
-      <div class="grid md:grid-cols-2 gap-5 mb-16">
-        <div data-fade class="p-7 md:p-8 rounded-lg border border-border bg-surface">
-          <div class="w-10 h-10 rounded-md bg-amber/10 border border-amber/25 flex items-center justify-center text-amber mb-5">
-            <ConsultingIcon name="server" size={19} />
-          </div>
-          <h3 class="text-[19px] font-semibold text-text mb-4">How the brain is consulted</h3>
-          <p class="text-[14.5px] text-text-2 leading-[1.6] mb-5">Agents access the brain through an MCP server, not through direct file reads. This gives:</p>
+      <!-- Access + protection as prose -->
+      <div class="grid md:grid-cols-2 gap-12 md:gap-16 mb-16 md:mb-20 max-w-5xl">
+        <div data-fade>
+          <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-text-3 mb-4">How it is consulted</p>
+          <p class="text-[15.5px] text-text-2 leading-[1.7] mb-5">
+            Agents access the knowledge layer through an MCP server, not through direct file reads. This gives:
+          </p>
           <ul class="flex flex-col gap-2.5">
             {BRAIN_ACCESS.map(a => (
-              <li class="flex items-start gap-2.5 text-[14px] text-text-2 leading-[1.55]">
+              <li class="flex items-start gap-2.5 text-[14.5px] text-text-2 leading-[1.55]">
                 <span class="text-amber mt-0.5 flex-shrink-0"><ConsultingIcon name="check" size={14} class="stroke-[2.5]" /></span>
                 {a}
               </li>
             ))}
           </ul>
         </div>
-        <div data-fade data-fade-delay="80" class="p-7 md:p-8 rounded-lg border border-border bg-surface">
-          <div class="w-10 h-10 rounded-md bg-amber/10 border border-amber/25 flex items-center justify-center text-amber mb-5">
-            <ConsultingIcon name="lock" size={19} />
-          </div>
-          <h3 class="text-[19px] font-semibold text-text mb-4">How the brain is protected</h3>
-          <p class="text-[14.5px] text-text-2 leading-[1.6] mb-5">Individual developers cannot modify brain content. Enforcement is technical, not administrative:</p>
+        <div data-fade data-fade-delay="60">
+          <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-text-3 mb-4">How it is protected</p>
+          <p class="text-[15.5px] text-text-2 leading-[1.7] mb-5">
+            Individual developers cannot modify content. Enforcement is technical, not administrative:
+          </p>
           <ul class="flex flex-col gap-2.5">
             {BRAIN_PROTECTION.map(p => (
-              <li class="flex items-start gap-2.5 text-[14px] text-text-2 leading-[1.55]">
+              <li class="flex items-start gap-2.5 text-[14.5px] text-text-2 leading-[1.55]">
                 <span class="text-amber mt-0.5 flex-shrink-0"><ConsultingIcon name="check" size={14} class="stroke-[2.5]" /></span>
                 {p}
               </li>
@@ -116,39 +119,43 @@ const description = 'The technical brief. The five-layer pipeline, brain governa
         </div>
       </div>
 
-      <!-- How updated (BrainGovernanceFlow diagram) -->
-      <div class="mb-16">
-        <div class="max-w-3xl mb-10">
-          <h3 data-fade class="font-mono text-[11.5px] uppercase tracking-[0.15em] text-text-3 mb-3">How the brain is updated</h3>
-          <p data-fade data-fade-delay="60" class="text-[17px] text-text leading-[1.55]">
+      <!-- Update paths — governance flow diagram -->
+      <div class="mb-16 md:mb-20">
+        <div class="mb-10 max-w-3xl">
+          <p data-fade class="font-mono text-[11px] uppercase tracking-[0.18em] text-text-3 mb-4">How it is updated</p>
+          <h3 data-fade data-fade-delay="60" class="font-display text-[24px] md:text-[28px] font-medium leading-[1.2]">
             Three approved paths. All converge on the same gate.
-          </p>
+          </h3>
         </div>
         <div data-fade>
           <BrainGovernanceFlow paths={BRAIN_UPDATE_PATHS} />
         </div>
       </div>
 
-      <!-- Versioning + telemetry -->
-      <div class="grid md:grid-cols-2 gap-5">
-        <div data-fade class="p-7 md:p-8 rounded-lg border border-border bg-surface">
-          <h3 class="text-[19px] font-semibold text-text mb-2">Versioning & rollback</h3>
-          <p class="text-[14px] text-text-2 leading-[1.6] mb-5">Semantic versioning. Every version tagged and immutable. Rollback is a matter of pointing the MCP server at a previous tag.</p>
-          <div class="flex flex-col gap-3">
+      <!-- Versioning + telemetry as compact prose -->
+      <div class="grid md:grid-cols-2 gap-10 md:gap-16 max-w-5xl">
+        <div data-fade>
+          <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-text-3 mb-4">Versioning & rollback</p>
+          <p class="text-[15px] text-text-2 leading-[1.7] mb-5">
+            Semantic versioning. Every version tagged and immutable. Rollback is a matter of pointing the MCP server at a previous tag.
+          </p>
+          <dl class="flex flex-col gap-3">
             {BRAIN_VERSIONING.map(v => (
-              <div class="flex items-start gap-3">
-                <span class="font-mono text-[13px] text-amber mt-0.5 flex-shrink-0 min-w-[110px]">{v.label}</span>
-                <span class="text-[14px] text-text-2 leading-[1.5]">{v.body}</span>
+              <div class="grid grid-cols-[130px_1fr] gap-3">
+                <dt class="font-mono text-[13px] text-amber">{v.label}</dt>
+                <dd class="text-[14.5px] text-text-2 leading-[1.55]">{v.body}</dd>
               </div>
             ))}
-          </div>
+          </dl>
         </div>
-        <div data-fade data-fade-delay="80" class="p-7 md:p-8 rounded-lg border border-border bg-surface">
-          <h3 class="text-[19px] font-semibold text-text mb-2">Telemetry</h3>
-          <p class="text-[14px] text-text-2 leading-[1.6] mb-5">The MCP server logs (respecting configured privacy tier) to inform quarterly brain-health reviews:</p>
+        <div data-fade data-fade-delay="80">
+          <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-text-3 mb-4">Telemetry</p>
+          <p class="text-[15px] text-text-2 leading-[1.7] mb-5">
+            The MCP server logs (respecting the configured privacy tier) to inform quarterly knowledge-layer health reviews:
+          </p>
           <ul class="flex flex-col gap-2.5">
             {BRAIN_TELEMETRY.map(t => (
-              <li class="flex items-start gap-2.5 text-[14px] text-text-2 leading-[1.55]">
+              <li class="flex items-start gap-2.5 text-[14.5px] text-text-2 leading-[1.55]">
                 <span class="text-amber mt-0.5 flex-shrink-0"><ConsultingIcon name="check" size={14} class="stroke-[2.5]" /></span>
                 {t}
               </li>
@@ -159,120 +166,146 @@ const description = 'The technical brief. The five-layer pipeline, brain governa
     </div>
   </section>
 
-  <!-- ── Architecture ─────────────────────────────────────── -->
-  <section id="architecture" class="py-20 md:py-28 border-b border-border/40">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="max-w-3xl mb-14">
-        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Architecture</p>
-        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[40px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+  <!-- ══ ARCHITECTURE ══════════════════════════════════════════════════ -->
+  <section id="architecture" class="py-24 md:py-36 border-t border-border/50">
+    <div class="max-w-6xl mx-auto px-6">
+      <header class="mb-14 md:mb-16 max-w-3xl">
+        <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">03 · Architecture</p>
+        <h2 data-fade data-fade-delay="60" class="font-display text-[32px] md:text-[44px] leading-[1.08] font-normal tracking-[-0.02em] mb-6">
           Two small VMs. Standard components. Nothing exotic.
         </h2>
-        <p data-fade data-fade-delay="120" class="text-[16px] text-text-2 leading-[1.65]">
-          Six components in three tiers. Brain repo is the source of truth. Context server serves it through MCP. Sessions and workers consume it. Anthropic API and studio systems close the loop.
+        <p data-fade data-fade-delay="120" class="text-[16px] md:text-[17px] text-text-2 leading-[1.7]">
+          Six components in three tiers. The knowledge repo is the source of truth. The context server serves it through MCP. Sessions and workers consume it. Your chosen AI model provider and your existing studio systems close the loop.
         </p>
-      </div>
+      </header>
 
-      <div data-fade class="mb-14">
+      <div data-fade class="mb-14 md:mb-16">
         <ArchitectureDiagram components={ARCHITECTURE_COMPONENTS} />
       </div>
 
-      <!-- Footprint metrics -->
-      <div data-fade class="grid grid-cols-1 sm:grid-cols-3 gap-px bg-border/60 border border-border/60 rounded-lg overflow-hidden mb-12">
+      <!-- Footprint -->
+      <div data-fade class="grid grid-cols-1 sm:grid-cols-3 gap-10 md:gap-16 max-w-4xl mb-14 md:mb-16">
         {ARCHITECTURE_FOOTPRINT.map(f => (
-          <div class="bg-surface p-6">
-            <p class="font-mono text-[11.5px] uppercase tracking-[0.12em] text-text-3 mb-2">{f.label}</p>
-            <p class="text-[17px] text-text font-semibold">{f.value}</p>
+          <div>
+            <p class="font-mono text-[10.5px] uppercase tracking-[0.16em] text-text-3 mb-2">{f.label}</p>
+            <p class="font-display text-[19px] md:text-[22px] font-medium text-text leading-[1.25]">{f.value}</p>
           </div>
         ))}
       </div>
 
-      <!-- Component reference -->
-      <div class="grid md:grid-cols-2 gap-5">
+      <!-- Component reference as prose blocks -->
+      <div class="max-w-4xl divide-y divide-border">
         {ARCHITECTURE_COMPONENTS.map((c, i) => (
-          <div data-fade data-fade-delay={i * 40} class="p-6 rounded-lg border border-border bg-surface">
-            <div class="flex items-baseline justify-between mb-2">
-              <h3 class="text-[17px] font-semibold text-text">{c.name}</h3>
-              <span class="font-mono text-[11.5px] text-text-3">{c.sub}</span>
+          <article data-fade data-fade-delay={i * 40} class="grid md:grid-cols-[220px_1fr] gap-4 md:gap-10 py-7">
+            <div>
+              <h3 class="font-display text-[17px] md:text-[18px] font-medium text-text mb-1 leading-[1.3]">{c.name}</h3>
+              <p class="font-mono text-[11.5px] text-text-3">{c.sub}</p>
             </div>
-            <p class="text-[14px] text-text-2 leading-[1.6]">{c.role}</p>
-          </div>
+            <p class="text-[15px] text-text-2 leading-[1.7]">{c.role}</p>
+          </article>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- ── Privacy tiers ─────────────────────────────────────── -->
-  <section id="privacy" class="py-20 md:py-28 border-b border-border/40 bg-ink-2/40">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="max-w-3xl mb-14">
-        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Privacy tiers</p>
-        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[40px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
-          Data protection matched to your IP sensitivity.
+  <!-- ══ PRIVACY TIERS ═════════════════════════════════════════════════ -->
+  <section id="privacy" class="py-24 md:py-36 border-t border-border/50 bg-ink-2/50">
+    <div class="max-w-6xl mx-auto px-6">
+      <header class="mb-14 md:mb-16 max-w-3xl">
+        <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">04 · Privacy tiers</p>
+        <h2 data-fade data-fade-delay="60" class="font-display text-[32px] md:text-[44px] leading-[1.08] font-normal tracking-[-0.02em] mb-6">
+          Vendor-agnostic. Matched to your IP sensitivity.
         </h2>
-        <p data-fade data-fade-delay="120" class="text-[16px] text-text-2 leading-[1.65]">
-          Not every studio has the same requirements. An indie studio with a small proprietary game has different needs than an AAA studio with console SDKs and publisher NDAs. We match the tier to the reality.
+        <p data-fade data-fade-delay="120" class="text-[16px] md:text-[17px] text-text-2 leading-[1.7]">
+          An indie studio with a small proprietary game has different needs than an AAA studio with console SDKs and publisher NDAs. Four tiers spanning SaaS through self-hosted. Each has concrete vendor options; we advise on the trade-offs.
         </p>
-      </div>
+      </header>
 
-      <div class="grid md:grid-cols-2 gap-5 mb-12">
+      <div class="max-w-4xl divide-y divide-border mb-16 md:mb-20">
         {PRIVACY_TIERS.map((t, i) => (
-          <div data-fade data-fade-delay={i * 60} class="p-7 rounded-lg border border-border bg-surface">
-            <div class="flex items-baseline gap-3 mb-3">
-              <span class="font-mono text-[12px] text-amber tracking-[0.1em] uppercase">{t.tier}</span>
-              <span class="font-mono text-[12px] text-text-3">0{i + 1} / 04</span>
+          <article data-fade data-fade-delay={i * 50} class="py-8 md:py-10 grid md:grid-cols-[180px_1fr] gap-4 md:gap-10">
+            <div>
+              <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-amber mb-2">{t.tier}</p>
+              <h3 class="font-display text-[19px] md:text-[21px] font-medium text-text leading-[1.25] mb-1">{t.title}</h3>
+              <p class="font-mono text-[12px] text-text-3">{t.subtitle}</p>
             </div>
-            <h3 class="text-[19px] font-semibold tracking-tight mb-1">{t.title}</h3>
-            <p class="font-mono text-[12.5px] text-text-3 mb-4">{t.subtitle}</p>
-            <p class="text-[14.5px] text-text-2 leading-[1.6] mb-4">{t.body}</p>
-            <p class="text-[13.5px] text-text-3 leading-[1.55]"><span class="text-text-2 font-medium">When we recommend:</span> {t.when}</p>
-          </div>
+            <div>
+              <p class="text-[15.5px] text-text-2 leading-[1.7] mb-4">{t.body}</p>
+              <div class="grid gap-2">
+                <div>
+                  <span class="font-mono text-[10.5px] uppercase tracking-[0.14em] text-text-3">When we recommend</span>
+                  <p class="text-[14px] text-text-2 mt-0.5">{t.when}</p>
+                </div>
+                <div>
+                  <span class="font-mono text-[10.5px] uppercase tracking-[0.14em] text-text-3">Vendor examples</span>
+                  <p class="font-mono text-[13px] text-text mt-0.5">{t.examples}</p>
+                </div>
+              </div>
+            </div>
+          </article>
         ))}
       </div>
 
-      <!-- Retention vs training distinction (critical procurement clarification) -->
-      <div class="max-w-4xl mx-auto">
-        <div data-fade class="mb-4">
-          <p class="font-mono text-[11.5px] uppercase tracking-[0.15em] text-amber">Important distinction</p>
-          <h3 class="text-[22px] font-semibold text-text mt-2">Retention is not the same as training.</h3>
+      <!-- Critical distinction -->
+      <div class="max-w-4xl">
+        <div data-fade class="mb-6">
+          <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-amber mb-3">Important distinction</p>
+          <h3 class="font-display text-[24px] md:text-[28px] font-medium text-text leading-[1.2]">
+            Retention is not the same as training.
+          </h3>
         </div>
-        <div class="grid md:grid-cols-2 gap-4">
-          <div data-fade class="p-6 rounded-lg border border-amber/40 bg-amber-soft/20">
-            <p class="font-mono text-[11.5px] uppercase tracking-[0.14em] text-amber mb-3">Default in every commercial plan</p>
-            <h4 class="text-[16px] font-semibold text-text mb-2">{PRIVACY_DISTINCTION.training.title}</h4>
-            <p class="text-[14px] text-text-2 leading-[1.6]">{PRIVACY_DISTINCTION.training.body}</p>
+        <div class="grid md:grid-cols-2 gap-8 md:gap-12 border-t border-border pt-8">
+          <div data-fade>
+            <p class="font-mono text-[10.5px] uppercase tracking-[0.14em] text-amber mb-3">Default in every commercial plan</p>
+            <h4 class="font-display text-[18px] md:text-[20px] font-medium text-text mb-2 leading-[1.3]">{PRIVACY_DISTINCTION.training.title}</h4>
+            <p class="text-[15px] text-text-2 leading-[1.7]">{PRIVACY_DISTINCTION.training.body}</p>
           </div>
-          <div data-fade data-fade-delay="80" class="p-6 rounded-lg border border-amber/40 bg-amber-soft/20">
-            <p class="font-mono text-[11.5px] uppercase tracking-[0.14em] text-amber mb-3">Requires an addendum</p>
-            <h4 class="text-[16px] font-semibold text-text mb-2">{PRIVACY_DISTINCTION.retention.title}</h4>
-            <p class="text-[14px] text-text-2 leading-[1.6]">{PRIVACY_DISTINCTION.retention.body}</p>
+          <div data-fade data-fade-delay="60">
+            <p class="font-mono text-[10.5px] uppercase tracking-[0.14em] text-amber mb-3">Requires an addendum</p>
+            <h4 class="font-display text-[18px] md:text-[20px] font-medium text-text mb-2 leading-[1.3]">{PRIVACY_DISTINCTION.retention.title}</h4>
+            <p class="text-[15px] text-text-2 leading-[1.7]">{PRIVACY_DISTINCTION.retention.body}</p>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ── What we don't claim ───────────────────────────────── -->
-  <section id="limits" class="py-20 md:py-28 border-b border-border/40">
+  <!-- ══ HONEST LIMITS ═════════════════════════════════════════════════ -->
+  <section id="limits" class="py-24 md:py-36 border-t border-border/50">
     <div class="max-w-4xl mx-auto px-6">
-      <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Honest limits</p>
-      <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[40px] font-bold tracking-[-0.02em] leading-[1.1] mb-8">
+      <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">05 · Honest limits</p>
+      <h2 data-fade data-fade-delay="60" class="font-display text-[32px] md:text-[44px] leading-[1.08] font-normal tracking-[-0.02em] mb-10">
         What we do not claim.
       </h2>
-      <ul class="border-t border-border/60">
+      <ul class="border-t border-border">
         {WHAT_WE_DONT_CLAIM.map((w, i) => (
-          <li data-fade data-fade-delay={i * 40} class="flex items-start gap-4 py-5 border-b border-border/60">
+          <li data-fade data-fade-delay={i * 40} class="flex items-start gap-4 py-5 border-b border-border">
             <span class="text-text-3 mt-0.5 flex-shrink-0"><ConsultingIcon name="x" size={17} class="stroke-[2.5]" /></span>
-            <span class="text-[16px] text-text-2 leading-[1.6]">{w}</span>
+            <span class="text-[15.5px] md:text-[16px] text-text-2 leading-[1.65]">{w}</span>
           </li>
         ))}
       </ul>
     </div>
   </section>
 
-  <ConsultingCta
-    title="Discuss your architecture in a Discovery Call."
-    subtitle="Bring your stack, your compliance constraints, and your hardest integration question. 30 minutes, free, engineer to engineer."
-    secondaryLabel="See the services"
-    secondaryHref={`${BASE}/services`}
-  />
+  <!-- ══ CTA ═══════════════════════════════════════════════════════════ -->
+  <section class="py-28 md:py-40 border-t border-border/50 bg-ink-2/50">
+    <div class="max-w-3xl mx-auto px-6 text-center">
+      <h2 data-fade class="font-display text-[32px] md:text-[46px] leading-[1.08] font-normal tracking-[-0.02em] mb-6">
+        Discuss your architecture in a Discovery Call.
+      </h2>
+      <p data-fade data-fade-delay="80" class="font-display italic text-[18px] md:text-[20px] text-text-2 leading-[1.55] mb-10 max-w-2xl mx-auto">
+        Bring your stack, your compliance constraints, and your hardest integration question. 30 minutes, free, engineer to engineer.
+      </p>
+      <div data-fade data-fade-delay="160" class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href={BOOK_PATH} class="inline-flex items-center gap-2 px-7 py-3.5 rounded-md bg-text text-ink font-semibold text-[15px] hover:bg-text-2 transition-colors">
+          Book Discovery Call
+          <ConsultingIcon name="arrow-right" size={16} class="stroke-[2.5]" />
+        </a>
+        <a href={`${BASE}/#pipeline`} class="inline-flex items-center gap-2 px-7 py-3.5 rounded-md border border-border text-text hover:border-border-2 hover:bg-surface text-[15px] font-medium transition-colors">
+          Back to overview
+        </a>
+      </div>
+    </div>
+  </section>
 </ConsultingLayout>

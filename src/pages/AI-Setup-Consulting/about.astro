@@ -1,11 +1,10 @@
 ---
 import ConsultingLayout from '../../layouts/ConsultingLayout.astro';
-import ConsultingCta from '../../components/ConsultingCta.astro';
 import ConsultingIcon from '../../components/ConsultingIcon.astro';
-import { BASE, BRAND, LINKEDIN_URL } from '../../data/consulting';
+import { BASE, BRAND, LINKEDIN_URL, BOOK_PATH, EMAIL } from '../../data/consulting';
 
 const title = 'About · AI Setup Consulting for Game Studios';
-const description = 'An independent AI engineering consultancy for game studios, run by a working Unreal Engine engineer. Portugal-based, serving EU and international clients. Not an Anthropic reseller.';
+const description = 'An independent AI engineering consultancy for game studios, run by a working Unreal Engine engineer. Vendor-agnostic. Portugal-based, serving EU and international clients.';
 
 const background = [
   'Five years across studios building gameplay, multiplayer, tools, animation, and AI systems on PC, console, and VR.',
@@ -15,17 +14,17 @@ const background = [
 ];
 
 const commercial = [
-  { icon: 'user', title: 'Independent practice', body: 'A consulting practice, not a platform. You work directly with the engineer doing the work.' },
-  { icon: 'shield', title: 'Not VC-funded', body: 'No investors, no pressure to grow at all costs. That means honest advice, including "not yet" or "not us".' },
-  { icon: 'server', title: 'Not an Anthropic reseller', body: 'A technical partner, not a reseller. Seats and tokens are billed directly by the studio to Anthropic, with no markup.' },
-  { icon: 'check-circle', title: 'Transparent about limits', body: 'Clear about what we do not do and when to refer you elsewhere. Credibility over closed deals.' },
+  { title: 'Independent practice',       body: 'A consulting practice, not a platform. You work directly with the engineer doing the work.' },
+  { title: 'Not VC-funded',              body: 'No investors, no pressure to grow at all costs. That means honest advice, including "not yet" or "not us".' },
+  { title: 'Vendor-neutral',             body: 'We work with the AI stack your studio prefers — Claude, GPT, Gemini, or open weights. We advise on the trade-offs; we do not resell any vendor.' },
+  { title: 'Transparent about limits',   body: 'Clear about what we do not do and when to refer you elsewhere. Credibility over closed deals.' },
 ];
 
 const values = [
   { title: 'Honest assessment over closed deals', body: 'If AI will not pay back for your studio yet, we say so. A wrong-fit engagement helps no one.' },
-  { title: 'Deep work over surface delivery', body: 'We build infrastructure that holds up under a real codebase, not demos that impress and then rot.' },
-  { title: 'Measurable outcomes over vibes', body: 'Everything is baselined and re-measured. If we cannot prove it moved, we do not claim it.' },
-  { title: 'Long-term relationships over transactions', body: 'The value compounds over years. We optimize for studios that stay, not one-off sales.' },
+  { title: 'Deep work over surface delivery',     body: 'We build infrastructure that holds up under a real codebase, not demos that impress and then rot.' },
+  { title: 'Measurable outcomes over vibes',      body: 'Everything is baselined and re-measured. If we cannot prove it moved, we do not claim it.' },
+  { title: 'Long-term over transactions',         body: 'The value compounds over years. We optimize for studios that stay, not one-off sales.' },
 ];
 ---
 <ConsultingLayout
@@ -34,12 +33,12 @@ const values = [
   path={`${BASE}/about/`}
   active={`${BASE}/about`}
 >
-  <!-- ── Founder background ─────────────────────────────────── -->
-  <section class="hero-grid pt-32 pb-20 md:pt-40 md:pb-28 border-b border-border/40">
-    <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-[280px_1fr] gap-10 md:gap-14 items-start">
+  <!-- ══ HERO ══════════════════════════════════════════════════════════ -->
+  <section class="hero-grid pt-32 pb-20 md:pt-40 md:pb-28">
+    <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-[300px_1fr] gap-10 md:gap-16 items-start">
       <div data-fade class="mx-auto md:mx-0">
-        <div class="w-52 h-52 md:w-full md:h-auto md:aspect-square rounded-2xl overflow-hidden border border-border bg-surface">
-          <img src="/me/IMG_7.JPEG" alt={`${BRAND}, founder`} width="280" height="280" class="w-full h-full object-cover" loading="eager" />
+        <div class="w-56 h-56 md:w-full md:h-auto md:aspect-square rounded-lg overflow-hidden border border-border bg-surface">
+          <img src="/me/IMG_7.JPEG" alt={`${BRAND}, founder`} width="300" height="300" class="w-full h-full object-cover" loading="eager" />
         </div>
         <a href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer" class="mt-5 inline-flex items-center gap-2 text-[14px] font-medium text-text-2 hover:text-amber transition-colors">
           <ConsultingIcon name="linkedin" size={16} />
@@ -47,16 +46,16 @@ const values = [
         </a>
       </div>
       <div>
-        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-5">About</p>
-        <h1 data-fade data-fade-delay="80" class="text-[34px] md:text-[46px] font-bold tracking-[-0.03em] leading-[1.06] mb-6">
-          A working game engineer,<br class="hidden md:block" /> not a general AI consultant.
+        <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">About</p>
+        <h1 data-fade data-fade-delay="80" class="font-display text-[36px] md:text-[52px] leading-[1.06] font-normal tracking-[-0.03em] mb-8">
+          A working game engineer, <em class="not-italic text-amber font-medium">not a general AI consultant.</em>
         </h1>
-        <p data-fade data-fade-delay="140" class="text-[17px] text-text-2 leading-[1.65] mb-8 max-w-2xl">
+        <p data-fade data-fade-delay="140" class="text-[17px] md:text-[19px] text-text-2 leading-[1.65] mb-10 max-w-2xl">
           This practice is run by {BRAND}, an Unreal Engine engineer who still ships games. Portugal-based, serving EU and international clients. The reason to trust the AI advice is the gamedev experience behind it.
         </p>
         <ul data-fade data-fade-delay="200" class="flex flex-col gap-3.5 max-w-2xl">
           {background.map(b => (
-            <li class="flex items-start gap-3 text-[15px] text-text-2 leading-[1.55]">
+            <li class="flex items-start gap-3 text-[15px] text-text-2 leading-[1.6]">
               <span class="text-amber mt-0.5 flex-shrink-0"><ConsultingIcon name="check" size={16} class="stroke-[2.5]" /></span>
               {b}
             </li>
@@ -66,69 +65,83 @@ const values = [
     </div>
   </section>
 
-  <!-- ── Why this focus ─────────────────────────────────────── -->
-  <section class="py-20 md:py-28 border-b border-border/40">
+  <!-- ══ WHY THIS FOCUS ════════════════════════════════════════════════ -->
+  <section class="py-24 md:py-36 border-t border-border/50">
     <div class="max-w-4xl mx-auto px-6">
-      <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Why this focus</p>
-      <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[40px] font-bold tracking-[-0.02em] leading-[1.1] mb-6">
+      <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">Why this focus</p>
+      <h2 data-fade data-fade-delay="60" class="font-display text-[32px] md:text-[44px] leading-[1.08] font-normal tracking-[-0.02em] mb-8">
         Generic AI consulting fails specialized industries.
       </h2>
-      <p data-fade data-fade-delay="120" class="text-[16.5px] text-text-2 leading-[1.7] mb-4">
+      <p data-fade data-fade-delay="120" class="text-[17px] text-text-2 leading-[1.75] mb-5">
         Game engineering has its own realities: Unreal, C++, Perforce, console SDKs, licensed IP, and the pressure of a ship date. Most AI consultants have never touched any of it. They bring a framework built for web startups and hope it maps.
       </p>
-      <p data-fade data-fade-delay="160" class="text-[16.5px] text-text-2 leading-[1.7]">
+      <p data-fade data-fade-delay="180" class="text-[17px] text-text-2 leading-[1.75]">
         It does not map. AI properly integrated is genuinely transformative for gamedev, but only when the person integrating it understands the engine, the workflow, and what a senior engineer actually protects. That is the gap this practice exists to close.
       </p>
     </div>
   </section>
 
-  <!-- ── How this works commercially ────────────────────────── -->
-  <section class="py-20 md:py-28 border-b border-border/40">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="max-w-3xl mb-14">
-        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">How this works commercially</p>
-        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[40px] font-bold tracking-[-0.02em] leading-[1.1]">
+  <!-- ══ HOW THIS WORKS COMMERCIALLY ═══════════════════════════════════ -->
+  <section class="py-24 md:py-36 border-t border-border/50 bg-ink-2/50">
+    <div class="max-w-5xl mx-auto px-6">
+      <header class="mb-14 max-w-3xl">
+        <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">How this works commercially</p>
+        <h2 data-fade data-fade-delay="60" class="font-display text-[32px] md:text-[44px] leading-[1.08] font-normal tracking-[-0.02em]">
           The incentives are aligned with yours.
         </h2>
-      </div>
-      <div class="grid md:grid-cols-2 gap-5">
+      </header>
+      <div class="grid md:grid-cols-2 gap-x-12 gap-y-10 max-w-4xl">
         {commercial.map((c, i) => (
-          <div data-fade data-fade-delay={i * 70} class="flex gap-5 p-7 rounded-lg border border-border bg-surface">
-            <div class="flex-shrink-0 w-10 h-10 rounded-md bg-amber/10 border border-amber/25 flex items-center justify-center text-amber">
-              <ConsultingIcon name={c.icon} size={19} />
-            </div>
-            <div>
-              <h3 class="text-[18px] font-semibold text-text mb-2">{c.title}</h3>
-              <p class="text-[14.5px] text-text-2 leading-[1.6]">{c.body}</p>
-            </div>
-          </div>
+          <article data-fade data-fade-delay={i * 60}>
+            <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-amber mb-3">0{i + 1}</p>
+            <h3 class="font-display text-[19px] md:text-[21px] font-medium text-text mb-2 leading-[1.3]">{c.title}</h3>
+            <p class="text-[15px] text-text-2 leading-[1.7]">{c.body}</p>
+          </article>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- ── Values ─────────────────────────────────────────────── -->
-  <section class="py-20 md:py-28 border-b border-border/40">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="max-w-3xl mb-14">
-        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Operating principles</p>
-        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[40px] font-bold tracking-[-0.02em] leading-[1.1]">
+  <!-- ══ OPERATING PRINCIPLES ══════════════════════════════════════════ -->
+  <section class="py-24 md:py-36 border-t border-border/50">
+    <div class="max-w-5xl mx-auto px-6">
+      <header class="mb-14 max-w-3xl">
+        <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">Operating principles</p>
+        <h2 data-fade data-fade-delay="60" class="font-display text-[32px] md:text-[44px] leading-[1.08] font-normal tracking-[-0.02em]">
           What we optimize for.
         </h2>
-      </div>
-      <div class="grid md:grid-cols-2 gap-5">
+      </header>
+      <div class="grid md:grid-cols-2 gap-x-12 gap-y-10 max-w-4xl">
         {values.map((v, i) => (
-          <div data-fade data-fade-delay={i * 70} class="p-8 rounded-lg border border-border bg-surface">
-            <h3 class="text-[19px] font-semibold text-text mb-3">{v.title}</h3>
-            <p class="text-[15px] text-text-2 leading-[1.65]">{v.body}</p>
-          </div>
+          <article data-fade data-fade-delay={i * 60}>
+            <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-amber mb-3">0{i + 1}</p>
+            <h3 class="font-display text-[19px] md:text-[21px] font-medium text-text mb-2 leading-[1.3]">{v.title}</h3>
+            <p class="text-[15px] text-text-2 leading-[1.7]">{v.body}</p>
+          </article>
         ))}
       </div>
     </div>
   </section>
 
-  <ConsultingCta
-    title="Work directly with the engineer."
-    subtitle="No account managers, no handoffs. A Discovery Call is a conversation with the person who would do the work. 30 minutes, free."
-  />
+  <!-- ══ CTA ═══════════════════════════════════════════════════════════ -->
+  <section class="py-28 md:py-40 border-t border-border/50 bg-ink-2/50">
+    <div class="max-w-3xl mx-auto px-6 text-center">
+      <h2 data-fade class="font-display text-[32px] md:text-[46px] leading-[1.06] font-normal tracking-[-0.02em] mb-6">
+        Work directly with the engineer.
+      </h2>
+      <p data-fade data-fade-delay="80" class="font-display italic text-[18px] md:text-[20px] text-text-2 leading-[1.55] mb-10 max-w-2xl mx-auto">
+        No account managers, no handoffs. A Discovery Call is a conversation with the person who would do the work. 30 minutes, free.
+      </p>
+      <div data-fade data-fade-delay="160" class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href={BOOK_PATH} class="inline-flex items-center gap-2 px-7 py-3.5 rounded-md bg-text text-ink font-semibold text-[15px] hover:bg-text-2 transition-colors">
+          Book Discovery Call
+          <ConsultingIcon name="arrow-right" size={16} class="stroke-[2.5]" />
+        </a>
+        <a href={`mailto:${EMAIL}`} class="inline-flex items-center gap-2 px-7 py-3.5 rounded-md border border-border text-text hover:border-border-2 hover:bg-surface text-[15px] font-medium transition-colors">
+          <ConsultingIcon name="mail" size={16} />
+          {EMAIL}
+        </a>
+      </div>
+    </div>
+  </section>
 </ConsultingLayout>

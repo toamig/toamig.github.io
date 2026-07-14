@@ -29,29 +29,19 @@ const CURRENT_YEAR = new Date().getFullYear();
 
 const footerCols = [
   {
-    label: 'Services',
+    label: 'Read',
     links: [
-      { href: `${BASE}/services/audit`,    label: 'Audit' },
-      { href: `${BASE}/services/setup`,    label: 'Setup' },
-      { href: `${BASE}/services/retainer`, label: 'Retainer' },
-      { href: `${BASE}/technology`,        label: 'Technology' },
-    ],
-  },
-  {
-    label: 'Segments',
-    links: [
-      { href: `${BASE}/for-indies`,   label: 'For Indies' },
-      { href: `${BASE}/for-mid-size`, label: 'For Mid-Size' },
-      { href: `${BASE}/for-aaa`,      label: 'For AAA' },
+      { href: `${BASE}/#pipeline`,   label: 'The pipeline' },
+      { href: `${BASE}/#engagement`, label: 'How we engage' },
+      { href: `${BASE}/technology`,  label: 'Method (deep-dive)' },
     ],
   },
   {
     label: 'Company',
     links: [
-      { href: `${BASE}/about`,    label: 'About' },
-      { href: `${BASE}/approach`, label: 'Approach' },
-      { href: BOOK_PATH,          label: 'Discovery Call' },
-      { href: `mailto:${EMAIL}`,  label: 'Contact' },
+      { href: `${BASE}/about`,   label: 'About' },
+      { href: BOOK_PATH,         label: 'Discovery Call' },
+      { href: `mailto:${EMAIL}`, label: 'Contact' },
     ],
   },
 ];
@@ -68,7 +58,7 @@ const footerCols = [
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" />
 
     <meta property="og:type"        content="website" />
     <meta property="og:title"       content={title} />
@@ -88,7 +78,7 @@ const footerCols = [
 
   <body class="min-h-screen text-text antialiased">
     <!-- ── Sticky Nav ─────────────────────────────────────────── -->
-    <nav class="fixed top-0 left-0 right-0 z-50 border-b border-border/60 bg-ink/80 backdrop-blur-md">
+    <nav class="fixed top-0 left-0 right-0 z-50 border-b border-border/60 bg-surface/85 backdrop-blur-md">
       <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         <a href={BASE} class="flex items-center gap-2 font-semibold tracking-tight">
           <span class="inline-flex w-7 h-7 rounded-md bg-amber/15 border border-amber/30 items-center justify-center font-mono text-[12px] text-amber">M</span>
@@ -118,7 +108,7 @@ const footerCols = [
         </button>
       </div>
 
-      <div id="mobile-menu" class="hidden md:hidden border-t border-border/60 bg-ink">
+      <div id="mobile-menu" class="hidden md:hidden border-t border-border/60 bg-surface">
         <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col gap-3">
           {NAV.map(link => (
             <a href={link.href} class="text-text-2 hover:text-text text-[15px] py-1">
@@ -139,7 +129,7 @@ const footerCols = [
     <!-- ── Footer ────────────────────────────────────────────── -->
     <footer class="border-t border-border/60 pt-16 pb-12">
       <div class="max-w-7xl mx-auto px-6">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-10 mb-14">
+        <div class="grid grid-cols-2 md:grid-cols-[1.4fr_1fr_1fr] gap-8 md:gap-10 mb-14">
           <div class="col-span-2 md:col-span-1">
             <a href={BASE} class="flex items-center gap-2 font-semibold tracking-tight mb-4">
               <span class="inline-flex w-7 h-7 rounded-md bg-amber/15 border border-amber/30 items-center justify-center font-mono text-[12px] text-amber">M</span>
@@ -181,7 +171,7 @@ const footerCols = [
             <span>{CITY}</span>
           </p>
           <p class="text-[12px] text-text-3 font-mono md:text-right">
-            Not affiliated with Anthropic PBC. We build on their platform.
+            Vendor-neutral. We work with your choice of AI provider.
           </p>
         </div>
       </div>

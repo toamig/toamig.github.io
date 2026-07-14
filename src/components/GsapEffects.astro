@@ -1,0 +1,132 @@
+---
+// Wires GSAP + ScrollTrigger to elements the pages have marked with
+// data-anim="…" attributes. Self-detecting: skips silently if elements
+// are not present. Respects prefers-reduced-motion.
+---
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!prefersReduced) {
+    gsap.registerPlugin(ScrollTrigger);
+
+    // ── Pipeline layers: stagger reveal on scroll into view ──────────────
+    const layers = gsap.utils.toArray<HTMLElement>('[data-anim="pipeline-layer"]');
+    if (layers.length > 0) {
+      // Also animate the connector arrows between them
+      const connectors = gsap.utils.toArray<HTMLElement>('.pipeline-connector');
+
+      layers.forEach((layer, i) => {
+        gsap.fromTo(layer,
+          { y: 32, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.7,
+            delay: i * 0.08,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: layer,
+              start: 'top 88%',
+              toggleActions: 'play none none reverse',
+            },
+          }
+        );
+      });
+
+      connectors.forEach((c, i) => {
+        gsap.fromTo(c,
+          { scaleY: 0, opacity: 0, transformOrigin: 'top center' },
+          {
+            scaleY: 1,
+            opacity: 1,
+            duration: 0.5,
+            delay: (i + 1) * 0.08 - 0.02,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: layers[i + 1] ?? c,
+              start: 'top 92%',
+              toggleActions: 'play none none reverse',
+            },
+          }
+        );
+      });
+    }
+
+    // ── Architecture: stagger boxes + let CSS draw the lines ─────────────
+    const archBoxes = gsap.utils.toArray<HTMLElement>('[data-anim="arch-box"]');
+    if (archBoxes.length > 0) {
+      archBoxes.forEach((box, i) => {
+        gsap.fromTo(box,
+          { y: 16, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.5,
+            delay: i * 0.08,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: box,
+              start: 'top 85%',
+              toggleActions: 'play none none reverse',
+            },
+          }
+        );
+      });
+    }
+
+    // ── Typical day: highlight the active timeline entry as it scrolls ──
+    const dayEntries = gsap.utils.toArray<HTMLElement>('[data-anim="day-entry"]');
+    if (dayEntries.length > 0) {
+      dayEntries.forEach((entry) => {
+        ScrollTrigger.create({
+          trigger: entry,
+          start: 'top 65%',
+          end: 'bottom 35%',
+          toggleClass: { targets: entry, className: 'is-active' },
+        });
+      });
+    }
+
+    // ── Engagement flow: subtle progressive reveal of connected steps ──
+    const flowSteps = gsap.utils.toArray<HTMLElement>('[data-anim="flow-step"]');
+    if (flowSteps.length > 0) {
+      flowSteps.forEach((step, i) => {
+        gsap.fromTo(step,
+          { x: -16, opacity: 0 },
+          {
+            x: 0,
+            opacity: 1,
+            duration: 0.6,
+            delay: i * 0.1,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: step,
+              start: 'top 85%',
+              toggleActions: 'play none none reverse',
+            },
+          }
+        );
+      });
+    }
+
+    // ── Hero parallax: gentle vertical drift on the backdrop ─────────────
+    const heroBg = document.querySelector<HTMLElement>('[data-anim="hero-parallax"]');
+    if (heroBg) {
+      gsap.to(heroBg, {
+        yPercent: 15,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: heroBg,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 0.5,
+        },
+      });
+    }
+
+    // ── Refresh ScrollTrigger after images load, in case they shift layout
+    window.addEventListener('load', () => ScrollTrigger.refresh());
+  }
+</script>
