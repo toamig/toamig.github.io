@@ -6,7 +6,7 @@ import ConsultingIcon from '../../../components/ConsultingIcon.astro';
 import { BASE, BOOK_PATH } from '../../../data/consulting';
 
 const title = 'Setup & Integration · AI Setup Consulting for Game Studios';
-const description = 'Setup & Integration for Unreal studios: a governed central brain, custom MCP servers for Perforce and Plastic, automated review pipelines, permissions, cost monitoring, and team training. Built module by module.';
+const description = 'Setup & Integration for Unreal studios: eight concrete artifacts ship to your infrastructure, a week-by-week milestone plan, and a documented handover. Fixed-fee, module by module.';
 
 const facts = [
   { label: 'Duration', value: '3-16 weeks' },
@@ -14,19 +14,63 @@ const facts = [
   { label: 'Rollout', value: 'Module by module' },
 ];
 
-const build = [
+const systems = [
   { icon: 'cpu', title: 'Central brain', body: 'A governed, hierarchical knowledge layer tuned to your gameplay framework, networking, UI, and shaders. Read-only for developers, updated only through approved automation.' },
-  { icon: 'server', title: 'Custom MCP servers', body: 'Perforce and Plastic SCM integrations with safety controls and audit logs, plus connectors for your build and review tooling. Configuration-driven, not hardcoded.' },
-  { icon: 'git-pull-request', title: 'Automated review pipelines', body: 'Server-side AI review that runs on every submit and posts to Swarm, Jira, or your review tool. Catches convention violations before a senior sees them.' },
+  { icon: 'server', title: 'Custom MCP servers', body: 'Perforce and Plastic SCM integrations with safety controls and audit logs, plus connectors for your build and review tooling.' },
+  { icon: 'git-pull-request', title: 'Automated review pipelines', body: 'Server-side AI review that runs on every submit and posts to Swarm, Jira, or your review tool.' },
   { icon: 'lock', title: 'Permissions & guardrails', body: 'Engine source off-limits unless explicitly flagged. Protected paths, operation whitelisting, and human-in-the-loop for destructive operations.' },
-  { icon: 'gauge', title: 'Cost monitoring', body: 'Per-team token budgets, prompt caching, and a dashboard so spend never surprises you. Viable economics at team scale.' },
+  { icon: 'gauge', title: 'Cost monitoring', body: 'Per-team token budgets, prompt caching, and a dashboard so spend never surprises you.' },
   { icon: 'graduation-cap', title: 'Team training', body: 'Hands-on sessions on your real codebase: prompting patterns for performance-critical C++, and how to review AI output for red flags.' },
+];
+
+const artifacts = [
+  { icon: 'cpu', title: 'Brain repo', format: 'Git · your provider', body: 'A Git repo you own from day one, hosted where you choose. Contains conventions, per-module rules, and prompts.' },
+  { icon: 'server', title: 'MCP server bundle', format: 'Docker + systemd', body: 'Packaged services with configs. Deployed on infra you control. Includes upgrade path.' },
+  { icon: 'workflow', title: 'Automation worker', format: 'CI job or lightweight VM', body: 'Runs the submit-time review pipeline. Deployed alongside your build agents or as a standalone service.' },
+  { icon: 'lock', title: 'Permission profiles', format: 'JSON · per role', body: 'Versioned in the brain. Auditable, reviewable, revertible. Different profiles for junior devs, seniors, and CI.' },
+  { icon: 'gauge', title: 'Cost dashboard', format: 'Grafana JSON + queries', body: 'A dashboard you import into your Grafana. Per-team spend, prompt-cache hit rate, and token trend lines.' },
+  { icon: 'book-open', title: 'Onboarding guide', format: 'Markdown · in the brain', body: 'A single doc a new hire reads on day one. Explains the workflow, the guardrails, and how to ask the brain.' },
+  { icon: 'clipboard-check', title: 'Operator runbook', format: 'Markdown · in the brain', body: 'For your operating lead: how to add rules, roll back, review alerts, and update the brain safely.' },
+  { icon: 'graduation-cap', title: 'Training materials', format: 'Slides + recorded sessions', body: 'The training decks and video recordings from the live sessions, so future hires can catch up on their own.' },
+];
+
+const resources = [
+  { role: 'Engineering sponsor', time: '~1h/week (SPOC)', access: 'Decision-maker for scope questions' },
+  { role: 'Tech lead(s)', time: '2-4h/week during rollout', access: 'Full repo, Perforce super-user' },
+  { role: 'IT contact', time: '4-8h total', access: 'Infra provisioning, CI admin' },
+  { role: 'Pilot team (3-5 devs)', time: '2-3 days for training', access: 'Active project code' },
+];
+
+const milestones = [
+  { week: 'Week 1', title: 'Kickoff & infra', body: 'Provisioning, privacy tier deployment, access setup. Brain repo bootstrapped and handed to your Git provider.' },
+  { week: 'Week 2', title: 'First brain module', body: 'One module ships live (chosen with your lead, usually the one with the noisiest reviews). Developers can query it.' },
+  { week: 'Week 3', title: 'MCP Perforce live', body: 'MCP Perforce running in read-only mode. Audit logs on. Your team sees the safety surface before write access is enabled.' },
+  { week: 'Week 4', title: 'Review pipeline on submit', body: 'Automation worker running review on every submit for the pilot team. Posts to Swarm or Jira. Baseline metrics captured.' },
+  { week: 'Week 5', title: 'Team training', body: '2-3 days of hands-on training on your real codebase. Recorded for future hires.' },
+  { week: 'Week 6', title: 'Full rollout & handover', body: 'Remaining modules and teams onboarded. Handover session with the operating lead, recorded. Post-baseline metrics.' },
+];
+
+const handover = [
+  'Live handover session with your operating lead (2h, recorded).',
+  'All repos transferred to your Git provider.',
+  'Runbooks and onboarding guide live in the brain.',
+  'Baseline and post-rollout metrics documented against your ROI targets.',
+  '30 days of email support included after handover.',
+  'Retainer optional; no obligation to continue.',
 ];
 
 const measure = [
   'Baseline metrics captured before any change ships',
   'Review cycle time, PR throughput, and onboarding time tracked',
   'Before and after comparison so the ROI is defensible when your CFO asks',
+];
+
+const notInScope = [
+  'New MCP servers not identified during the Audit (new SoW)',
+  'Compliance certification support (we assist, we do not certify)',
+  'Ongoing model migration and capability upkeep (that is the Retainer)',
+  'Feature development beyond the Audit roadmap',
+  'Second-team onboarding beyond the pilot rollout (Setup follow-on)',
 ];
 ---
 <ConsultingLayout
@@ -37,9 +81,9 @@ const measure = [
 >
   <ConsultingHero
     eyebrow="Setup & Integration"
-    title="Built module by module,"
-    accent="not big bang."
-    subtitle="The Audit roadmap becomes working infrastructure: a governed brain, safe MCP servers, automated review, and a team trained to use them. Deployed incrementally, measured throughout."
+    title="Eight artifacts, six milestones,"
+    accent="one handover."
+    subtitle="The Audit roadmap becomes working infrastructure your team owns. Each week has a visible deliverable. Every artifact ships to your own systems on day one."
     primaryLabel="Book a call to plan your Setup"
     secondaryLabel="Read the technical brief"
     secondaryHref={`${BASE}/technology`}
@@ -63,17 +107,17 @@ const measure = [
     </div>
   </section>
 
-  <!-- ── What we build ─────────────────────────────────────── -->
+  <!-- ── The systems we build ──────────────────────────────── -->
   <section class="py-20 md:py-28 border-b border-border/40">
     <div class="max-w-7xl mx-auto px-6">
       <div class="max-w-3xl mb-14">
-        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">What we build</p>
+        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">The systems we build</p>
         <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[38px] font-bold tracking-[-0.02em] leading-[1.1]">
           Six systems, integrated with your stack.
         </h2>
       </div>
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {build.map((b, i) => (
+        {systems.map((b, i) => (
           <div data-fade data-fade-delay={i * 60} class="p-7 rounded-lg border border-border bg-surface">
             <div class="w-10 h-10 rounded-md bg-amber/10 border border-amber/25 flex items-center justify-center text-amber mb-5">
               <ConsultingIcon name={b.icon} size={19} />
@@ -82,6 +126,116 @@ const measure = [
             <p class="text-[14.5px] text-text-2 leading-[1.6]">{b.body}</p>
           </div>
         ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── What ships to your infrastructure ─────────────────── -->
+  <section class="py-20 md:py-28 border-b border-border/40">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="max-w-3xl mb-14">
+        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">What ships to your infrastructure</p>
+        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[38px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+          Eight concrete artifacts. Yours from day one.
+        </h2>
+        <p data-fade data-fade-delay="120" class="text-[16px] text-text-2 leading-[1.6]">
+          Everything ships in a format your team can host, version, and evolve. Nothing lives on our servers by default.
+        </p>
+      </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+        {artifacts.map((a, i) => (
+          <div data-fade data-fade-delay={i * 50} class="flex flex-col p-6 rounded-lg border border-border bg-surface">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-9 h-9 rounded-md bg-amber/10 border border-amber/25 flex items-center justify-center text-amber">
+                <ConsultingIcon name={a.icon} size={17} />
+              </div>
+              <span class="font-mono text-[11.5px] text-text-3">{`0${i + 1}`.slice(-2)}</span>
+            </div>
+            <h3 class="text-[16px] font-semibold text-text mb-1.5 leading-snug">{a.title}</h3>
+            <p class="font-mono text-[11.5px] text-amber mb-3">{a.format}</p>
+            <p class="text-[13.5px] text-text-2 leading-[1.55]">{a.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── What we need from your team ──────────────────────── -->
+  <section class="py-20 md:py-28 border-b border-border/40">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="max-w-3xl mb-12">
+        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">What we need from your team</p>
+        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[38px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+          Predictable time commitment, four roles.
+        </h2>
+        <p data-fade data-fade-delay="120" class="text-[16px] text-text-2 leading-[1.6]">
+          Scoped per week so your leads can plan around it. We do the engineering; you provide direction and access.
+        </p>
+      </div>
+      <div data-fade data-fade-delay="180" class="rounded-lg border border-border overflow-hidden">
+        <div class="grid grid-cols-[1.1fr_1fr_1.4fr] gap-px bg-border/60">
+          <div class="px-5 md:px-6 py-4 bg-surface/60 font-mono text-[11.5px] uppercase tracking-[0.12em] text-text-3">Role</div>
+          <div class="px-5 md:px-6 py-4 bg-surface/60 font-mono text-[11.5px] uppercase tracking-[0.12em] text-text-3">Time</div>
+          <div class="px-5 md:px-6 py-4 bg-surface/60 font-mono text-[11.5px] uppercase tracking-[0.12em] text-text-3">Access / responsibility</div>
+          {resources.map(r => (
+            <>
+              <div class="px-5 md:px-6 py-5 bg-ink text-[15px] font-medium text-text">{r.role}</div>
+              <div class="px-5 md:px-6 py-5 bg-ink text-[14.5px] font-mono text-amber">{r.time}</div>
+              <div class="px-5 md:px-6 py-5 bg-ink text-[14px] text-text-2">{r.access}</div>
+            </>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Milestones ───────────────────────────────────────── -->
+  <section class="py-20 md:py-28 border-b border-border/40">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="max-w-3xl mb-14">
+        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Milestones</p>
+        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[38px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+          Every week has a visible deliverable.
+        </h2>
+        <p data-fade data-fade-delay="120" class="text-[16px] text-text-2 leading-[1.6]">
+          Standard cadence for a 6-week Setup. Longer engagements add more modules, deeper MCPs, and multi-team rollout at the same weekly pace.
+        </p>
+      </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {milestones.map((m, i) => (
+          <div data-fade data-fade-delay={i * 60} class="p-7 rounded-lg border border-border bg-surface">
+            <span class="font-mono text-[12px] text-amber tracking-[0.1em] block mb-4">{m.week}</span>
+            <h3 class="text-[17px] font-semibold text-text mb-3">{m.title}</h3>
+            <p class="text-[14.5px] text-text-2 leading-[1.6]">{m.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Handover checklist ───────────────────────────────── -->
+  <section class="py-20 md:py-28 border-b border-border/40">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid lg:grid-cols-[1fr_1.1fr] gap-12 lg:gap-16 items-start">
+        <div>
+          <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Handover</p>
+          <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[38px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+            Everything transfers, cleanly.
+          </h2>
+          <p data-fade data-fade-delay="120" class="text-[16px] text-text-2 leading-[1.65]">
+            Your operating lead ends Setup owning every artifact, every credential, and every runbook. If you walk away that day, you walk away with the working system.
+          </p>
+        </div>
+        <div data-fade data-fade-delay="120" class="rounded-lg border border-border bg-surface p-7 md:p-9">
+          <ul class="flex flex-col gap-4">
+            {handover.map(h => (
+              <li class="flex items-start gap-3 text-[15px] text-text-2 leading-[1.55]">
+                <span class="text-amber mt-0.5 flex-shrink-0"><ConsultingIcon name="check" size={16} class="stroke-[2.5]" /></span>
+                {h}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   </section>
@@ -113,16 +267,21 @@ const measure = [
     </div>
   </section>
 
-  <!-- ── What stays with you ───────────────────────────────── -->
+  <!-- ── Not in scope ─────────────────────────────────────── -->
   <section class="py-20 md:py-28 border-b border-border/40">
     <div class="max-w-4xl mx-auto px-6">
-      <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">What stays with you</p>
-      <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[38px] font-bold tracking-[-0.02em] leading-[1.1] mb-6">
-        Everything we build is yours.
+      <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Not in scope</p>
+      <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[38px] font-bold tracking-[-0.02em] leading-[1.1] mb-8">
+        What Setup is not.
       </h2>
-      <p data-fade data-fade-delay="120" class="text-[16.5px] text-text-2 leading-[1.7]">
-        All code, configuration, documentation, and infrastructure remain your IP. Your Anthropic account stays yours. There is no lock-in: if you walk away, you walk away with everything, and an onboarding guide so a lead can own it after handover.
-      </p>
+      <ul class="border-t border-border/60">
+        {notInScope.map((n, i) => (
+          <li data-fade data-fade-delay={i * 40} class="flex items-start gap-4 py-5 border-b border-border/60">
+            <span class="text-text-3 mt-0.5 flex-shrink-0"><ConsultingIcon name="x" size={17} class="stroke-[2.5]" /></span>
+            <span class="text-[16px] text-text-2 leading-[1.6]">{n}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   </section>
 

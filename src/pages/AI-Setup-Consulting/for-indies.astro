@@ -31,7 +31,13 @@ const investment = {
     { label: 'Training', value: '2-3 days' },
     { label: 'Billing', value: 'Fixed-fee + retainer' },
   ],
-  note: 'Indicative range. Lighter on governance than larger tiers, weighted toward fast onboarding and eliminating shadow AI. Anthropic seats and tokens are billed directly by the studio, with no markup. Exact numbers are scoped in the Discovery Call.',
+  breakdown: [
+    { line: 'AI Readiness Audit',        price: '€3,000 - €5,000',   note: 'Fixed-fee, 1-2 weeks. Nine named deliverables, scaled to a single-project team.' },
+    { line: 'Setup & Integration',       price: '€22,000 - €30,000', note: 'Fixed-fee, 3-4 weeks. Training included, lighter governance surface.' },
+    { line: 'Retainer (12 months)',      price: '€17,000 - €25,000', note: '€1.5-2k/month. Office hours, PR review, quarterly ROI report.' },
+    { line: 'Anthropic seats + tokens',  price: 'billed separately', note: 'Paid directly to Anthropic. ~€250-400/dev/year at typical usage.' },
+  ],
+  note: 'Indicative range. Lighter on governance than larger tiers, weighted toward fast onboarding and eliminating shadow AI. Exact numbers are scoped in the Discovery Call.',
 };
 
 const faqs = [

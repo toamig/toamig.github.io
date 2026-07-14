@@ -6,7 +6,7 @@ import ConsultingIcon from '../../../components/ConsultingIcon.astro';
 import { BASE, BOOK_PATH } from '../../../data/consulting';
 
 const title = 'Optimization Retainer · AI Setup Consulting for Game Studios';
-const description = 'A monthly Optimization Retainer for Unreal studios: brain evolution, new Claude capabilities, cost optimization, developer office hours, AI-related PR review, and quarterly ROI reports.';
+const description = 'A monthly Optimization Retainer for Unreal studios. Bi-weekly office hours, continuous PR review on AI changes, monthly brain sync, quarterly ROI report, and defined response times.';
 
 const facts = [
   { label: 'Cadence', value: 'Monthly' },
@@ -22,6 +22,30 @@ const included = [
   { icon: 'git-pull-request', title: 'AI-related PR review', body: 'We review the pull requests where AI played a role, catching drift before it reaches main.' },
   { icon: 'bar-chart', title: 'Quarterly ROI report', body: 'We re-measure the baselines from Setup and report the delta, so the value is always defensible.' },
 ];
+
+const monthlyCadence = [
+  { icon: 'users', title: 'Bi-weekly office hours', meta: '2 sessions/month · 1h each', body: 'Standing hours all your engineers can join with real problems. Recorded so anyone who misses it can catch up.' },
+  { icon: 'git-pull-request', title: 'Continuous PR review', meta: 'AI-related changes · inline', body: 'We review the pull requests where AI played a role. Inline comments, posted to Swarm or your review tool as changes land.' },
+  { icon: 'cpu', title: 'Monthly brain sync', meta: '1 pass/month', body: 'New conventions, deprecations, and standards updates get folded into the brain. Change log posted to your operating lead.' },
+  { icon: 'gauge', title: 'Monthly cost report', meta: '1 report/month', body: 'Token spend, per-team breakdown, and optimization suggestions. Sent to the sponsor with a short narrative.' },
+  { icon: 'bar-chart', title: 'Quarterly ROI report', meta: '4 reports/year', body: 'Re-measures the Setup baselines (review time, PR throughput, onboarding) and reports the delta against your targets.' },
+  { icon: 'zap', title: 'New capability review', meta: 'as Claude ships', body: 'When Anthropic ships something material, we evaluate it against your workflow and integrate the useful parts.' },
+];
+
+const sla = [
+  { severity: 'Critical', description: 'Production-breaking, AI pipeline down', response: '4 business hours' },
+  { severity: 'High', description: 'Blocks a team or a release', response: '1 business day' },
+  { severity: 'Standard', description: 'Features, questions, tuning', response: '2 business days' },
+  { severity: 'Advisory', description: 'Async, non-urgent', response: 'in next office hours' },
+];
+
+const notInScope = [
+  'Major new MCP servers or integrations (scoped as a new SoW)',
+  'Migration to a new privacy tier (scoped as a new SoW)',
+  'Feature development beyond maintenance and evolution (billed separately)',
+  'Second-team or second-studio onboarding (Setup follow-on)',
+  'Emergency out-of-hours coverage beyond critical-severity response',
+];
 ---
 <ConsultingLayout
   title={title}
@@ -31,9 +55,9 @@ const included = [
 >
   <ConsultingHero
     eyebrow="Optimization Retainer"
-    title="Value compounds as your"
-    accent="codebase changes."
-    subtitle="A one-time setup decays. Your codebase grows, Claude ships new capabilities, and conventions drift. The Retainer keeps the infrastructure sharp and the ROI defensible."
+    title="Bi-weekly office hours,"
+    accent="quarterly ROI reports."
+    subtitle="A one-time setup decays. The Retainer runs on a predictable monthly rhythm that keeps the infrastructure sharp, the team unblocked, and the ROI defensible."
     primaryLabel="Book a call to discuss a Retainer"
     secondaryLabel="See how we measure"
     secondaryHref={`${BASE}/approach`}
@@ -80,6 +104,64 @@ const included = [
     </div>
   </section>
 
+  <!-- ── What a typical month looks like ──────────────────── -->
+  <section class="py-20 md:py-28 border-b border-border/40">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="max-w-3xl mb-14">
+        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">What a typical month looks like</p>
+        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[38px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+          Predictable cadence. No surprise invoices.
+        </h2>
+        <p data-fade data-fade-delay="120" class="text-[16px] text-text-2 leading-[1.6]">
+          Six recurring activities on a monthly and quarterly rhythm. Your operating lead knows what is coming and what to expect.
+        </p>
+      </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {monthlyCadence.map((m, i) => (
+          <div data-fade data-fade-delay={i * 60} class="p-7 rounded-lg border border-border bg-surface">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-10 h-10 rounded-md bg-amber/10 border border-amber/25 flex items-center justify-center text-amber">
+                <ConsultingIcon name={m.icon} size={19} />
+              </div>
+            </div>
+            <h3 class="text-[17px] font-semibold text-text mb-1.5 leading-snug">{m.title}</h3>
+            <p class="font-mono text-[12px] text-amber mb-3">{m.meta}</p>
+            <p class="text-[14.5px] text-text-2 leading-[1.6]">{m.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Response times ────────────────────────────────────── -->
+  <section class="py-20 md:py-28 border-b border-border/40">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="max-w-3xl mb-12">
+        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Response times</p>
+        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[38px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+          A written SLA, so leadership can plan around it.
+        </h2>
+        <p data-fade data-fade-delay="120" class="text-[16px] text-text-2 leading-[1.6]">
+          Four severity tiers. Response times measured in business hours, in your timezone.
+        </p>
+      </div>
+      <div data-fade data-fade-delay="180" class="rounded-lg border border-border overflow-hidden">
+        <div class="grid grid-cols-[1fr_1.6fr_1fr] gap-px bg-border/60">
+          <div class="px-5 md:px-6 py-4 bg-surface/60 font-mono text-[11.5px] uppercase tracking-[0.12em] text-text-3">Severity</div>
+          <div class="px-5 md:px-6 py-4 bg-surface/60 font-mono text-[11.5px] uppercase tracking-[0.12em] text-text-3">What it means</div>
+          <div class="px-5 md:px-6 py-4 bg-surface/60 font-mono text-[11.5px] uppercase tracking-[0.12em] text-text-3">Response</div>
+          {sla.map(s => (
+            <>
+              <div class="px-5 md:px-6 py-5 bg-ink text-[15px] font-medium text-text">{s.severity}</div>
+              <div class="px-5 md:px-6 py-5 bg-ink text-[14px] text-text-2">{s.description}</div>
+              <div class="px-5 md:px-6 py-5 bg-ink text-[14.5px] font-mono text-amber">{s.response}</div>
+            </>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ── Compounding value ─────────────────────────────────── -->
   <section class="py-20 md:py-28 border-b border-border/40">
     <div class="max-w-4xl mx-auto px-6">
@@ -93,6 +175,24 @@ const included = [
       <p data-fade data-fade-delay="160" class="text-[16.5px] text-text-2 leading-[1.7]">
         Claude changes too. New models, larger context, and new capabilities land regularly. The Retainer folds the useful ones into your workflows so you are never running last year's setup.
       </p>
+    </div>
+  </section>
+
+  <!-- ── Not in scope ─────────────────────────────────────── -->
+  <section class="py-20 md:py-28 border-b border-border/40">
+    <div class="max-w-4xl mx-auto px-6">
+      <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Not in scope</p>
+      <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[38px] font-bold tracking-[-0.02em] leading-[1.1] mb-8">
+        What the Retainer is not.
+      </h2>
+      <ul class="border-t border-border/60">
+        {notInScope.map((n, i) => (
+          <li data-fade data-fade-delay={i * 40} class="flex items-start gap-4 py-5 border-b border-border/60">
+            <span class="text-text-3 mt-0.5 flex-shrink-0"><ConsultingIcon name="x" size={17} class="stroke-[2.5]" /></span>
+            <span class="text-[16px] text-text-2 leading-[1.6]">{n}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   </section>
 

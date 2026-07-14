@@ -34,7 +34,13 @@ const investment = {
     { label: 'Compliance', value: 'ZDR / Bedrock / Vertex' },
     { label: 'Billing', value: 'Fixed-fee + retainer' },
   ],
-  note: 'Indicative range for multi-site programs. Scoped against your compliance, data-residency, and rollout requirements. Anthropic seats and tokens are billed directly, with no markup. Exact numbers are scoped after the Discovery Call and Audit.',
+  breakdown: [
+    { line: 'AI Readiness Audit',        price: '€20,000 - €40,000',   note: 'Fixed-fee, 3-4 weeks. Deeper multi-site scan and compliance review.' },
+    { line: 'Setup & Integration',       price: '€150,000 - €260,000', note: 'Fixed-fee, 12-16 weeks. Multi-site rollout, ZDR / Bedrock / Vertex deployment.' },
+    { line: 'Retainer (12 months)',      price: '€130,000 - €200,000', note: '€11-17k/month. Multi-team support, faster SLAs, compliance change management.' },
+    { line: 'Anthropic (Bedrock/Vertex)', price: 'billed separately',   note: 'Enterprise agreement negotiated with Anthropic or your cloud provider.' },
+  ],
+  note: 'Indicative range for multi-site programs. Scoped against your compliance, data-residency, and rollout requirements. Exact numbers are scoped after the Discovery Call and confirmed in the Audit.',
 };
 
 const faqs = [

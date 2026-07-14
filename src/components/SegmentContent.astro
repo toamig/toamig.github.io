@@ -2,6 +2,7 @@
 import ConsultingIcon from './ConsultingIcon.astro';
 
 interface InvestPoint { label: string; value: string; }
+interface BreakdownRow { line: string; price: string; note?: string; }
 interface Faq { q: string; a: string; }
 interface Props {
   seen: string[];
@@ -11,6 +12,7 @@ interface Props {
     band: string;
     points: InvestPoint[];
     note: string;
+    breakdown?: BreakdownRow[];
   };
   faqs: Faq[];
 }
@@ -72,6 +74,22 @@ const { seen, deliver, investment, faqs } = Astro.props;
         ))}
       </div>
     </div>
+    {investment.breakdown && investment.breakdown.length > 0 && (
+      <div data-fade class="rounded-lg border border-border overflow-hidden mb-6">
+        <div class="px-5 md:px-6 py-4 bg-surface/60 border-b border-border/60">
+          <p class="font-mono text-[11.5px] uppercase tracking-[0.12em] text-text-3">Investment breakdown</p>
+        </div>
+        <div class="grid grid-cols-[1.4fr_1fr] md:grid-cols-[1.4fr_1fr_1.4fr] gap-px bg-border/60">
+          {investment.breakdown.map(row => (
+            <>
+              <div class="px-5 md:px-6 py-4 bg-ink text-[15px] font-medium text-text">{row.line}</div>
+              <div class="px-5 md:px-6 py-4 bg-ink text-[14.5px] font-mono text-amber">{row.price}</div>
+              <div class="hidden md:block px-5 md:px-6 py-4 bg-ink text-[13.5px] text-text-3 leading-[1.55]">{row.note ?? ''}</div>
+            </>
+          ))}
+        </div>
+      </div>
+    )}
     <p data-fade class="text-[14px] text-text-3 leading-[1.6]">{investment.note}</p>
   </div>
 </section>
