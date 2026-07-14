@@ -19,18 +19,21 @@ export const BASE = '/AI-Setup-Consulting';
 export const BOOK_PATH = `${BASE}/discovery-call`;
 export const OG_IMAGE = `${SITE}/og/ai-setup-consulting.png`;
 
-// Simplified nav — sitemap consolidated to 4 pages
+// Simplified nav, sitemap consolidated to 4 pages
 export const NAV = [
-  { href: `${BASE}/technology`, label: 'Method' },
-  { href: `${BASE}/about`,      label: 'About' },
+  { href: `${BASE}/architecture`, label: 'How it works' },
+  { href: `${BASE}/about`,        label: 'About' },
 ];
+
+// Route to the deep-dive page (kept as a constant so links stay in sync)
+export const DEEP_PATH = `${BASE}/architecture`;
 
 export const STACK = ['Unreal Engine', 'C++', 'Perforce', 'Plastic SCM', 'MCP'];
 
 // ─── Hero + positioning ─────────────────────────────────────────────────────
 export const HERO = {
   headline: 'AI infrastructure engineered for game studios.',
-  lede: 'A governed knowledge layer and a layered pipeline that make AI adoption safe, consistent, and measurable — with the AI stack your studio chooses.',
+  lede: 'A governed knowledge layer and a layered pipeline that make AI adoption safe, consistent, and measurable, with the AI stack your studio chooses.',
   clarifier: 'Not a chatbot. Not a plugin. Model-agnostic infrastructure your team owns.',
 };
 
@@ -56,15 +59,34 @@ export const PROBLEMS = [
 export const PROBLEM_PATTERN = 'Studios that adopt AI without structured infrastructure hit the same three walls: security exposure, code quality drift, and wasted senior capacity. The tools are not the problem. The absence of engineering discipline around the tools is the problem.';
 
 // ─── The solution (introductory framing) ────────────────────────────────────
-export const SOLUTION_INTRO = 'We build the layer between your codebase and whichever AI models you use — a governed knowledge layer that captures your studio’s conventions, and a layered pipeline that applies the right check at the right moment.';
+export const SOLUTION_INTRO = 'We build the layer between your codebase and whichever AI models you use, a governed knowledge layer that captures your studio’s conventions, and a layered pipeline that applies the right check at the right moment.';
+
+// ─── What you get (plain-language outcomes for the landing page) ───────────
+export const WHAT_YOU_GET = [
+  { title: 'A shared studio brain', body: 'Your conventions, architecture, and patterns in one governed place, so AI writes code your way, not its own.' },
+  { title: 'Automatic code review', body: 'Every submit gets a structured first-pass review before it ever reaches a senior engineer.' },
+  { title: 'The busywork, handled', body: 'Changelist descriptions, ticket links, and reviewer assignments prepared for you at submit time.' },
+  { title: 'Faster onboarding', body: 'New hires ask the system how things work instead of interrupting your seniors.' },
+  { title: 'IP protection you choose', body: 'Four privacy levels, from vendor-hosted to fully self-hosted. We recommend; you decide.' },
+  { title: 'No lock-in, ever', body: 'Everything runs on your infrastructure and is yours to keep. Works with any AI vendor you prefer.' },
+];
+
+// ─── The pipeline in plain language (landing "How it works") ───────────────
+export const PIPELINE_SIMPLE = [
+  { n: '1', when: 'While you write', line: 'Your AI assistant already knows your studio’s conventions and canonical examples.' },
+  { n: '2', when: 'On save',         line: 'Instant local checks catch formatting and naming. No AI, no cost.' },
+  { n: '3', when: 'On submit',       line: 'Descriptions, ticket links, and reviewers are prepared automatically.' },
+  { n: '4', when: 'After submit',    line: 'A deeper review is ready for your tech lead, so their time goes to the decisions that matter.' },
+  { n: '5', when: 'Over time',       line: 'The system learns your recurring patterns and keeps your shared knowledge current.' },
+];
 
 // ─── The layered pipeline ──────────────────────────────────────────────────
 // Each layer now carries full deployment metadata:
-//   where     — physical location the code runs (workstation / server / etc.)
-//   paidVia   — how the AI usage is billed (seat / API key / free)
-//   trigger   — event that fires the layer
-//   time      — time-to-result
-//   audience  — who consumes the output
+//   where, physical location the code runs (workstation / server / etc.)
+//   paidVia, how the AI usage is billed (seat / API key / free)
+//   trigger, event that fires the layer
+//   time, time-to-result
+//   audience, who consumes the output
 export const PIPELINE = [
   {
     n: '01',
@@ -95,8 +117,8 @@ export const PIPELINE = [
   {
     n: '03',
     name: 'Submit-Time Preparation',
-    oneLine: 'Pre-submit hook validates and drafts the metadata around the submit — description, ticket linkage, reviewers.',
-    prose: 'Not the code itself — the metadata around it. Correct CL description (often generated from the diff and ticket), correct ticket linkage, correct reviewers assigned automatically based on file ownership. Path safety and scope coherence checked. Developer stays in control.',
+    oneLine: 'Pre-submit hook validates and drafts the metadata around the submit, description, ticket linkage, reviewers.',
+    prose: 'Not the code itself, the metadata around it. Correct CL description (often generated from the diff and ticket), correct ticket linkage, correct reviewers assigned automatically based on file ownership. Path safety and scope coherence checked. Developer stays in control.',
     where: 'Developer workstation, triggered by the VCS (p4 submit / git push)',
     audience: 'Developer',
     trigger: 'p4 submit / git push',
@@ -108,7 +130,7 @@ export const PIPELINE = [
   {
     n: '04',
     name: 'Post-Submit Deep Review',
-    oneLine: 'Cross-file impact, architectural drift, similar patterns — structured for the tech lead.',
+    oneLine: 'Cross-file impact, architectural drift, similar patterns, structured for the tech lead.',
     prose: 'Runs asynchronously on a server-side worker after a changelist lands. Tech leads do not need AI to tell them the code compiles. They need structured analysis of impact, drift, and pattern consistency so their review time focuses on architectural judgment. Posted to Swarm, GitHub, or your review tool.',
     where: 'Server-side automation worker (small VM in your network)',
     audience: 'Tech Lead',
@@ -122,7 +144,7 @@ export const PIPELINE = [
     n: '05',
     name: 'Continuous Evolution',
     oneLine: 'Pattern recognition surfaces knowledge-layer updates. Documentation drift detected and repaired.',
-    prose: 'The layer where the system improves itself. Weekly cron jobs plus build-failure events. Patterns that appear repeatedly become knowledge updates. Documentation drift gets flagged. Build failures generate hypothesis-driven fix proposals — never applied automatically.',
+    prose: 'The layer where the system improves itself. Weekly cron jobs plus build-failure events. Patterns that appear repeatedly become knowledge updates. Documentation drift gets flagged. Build failures generate hypothesis-driven fix proposals, never applied automatically.',
     where: 'Server-side automation worker (same or separate VM as Layer 4)',
     audience: 'Tech Lead',
     trigger: 'Cron (weekly / monthly) + build-failure events',
@@ -140,7 +162,7 @@ export const TYPICAL_DAY = [
   {
     time: '09:00',
     actor: 'Gameplay engineer',
-    body: 'Opens their IDE. Their AI coding assistant already knows the studio’s ability framework, naming conventions for this module, and the canonical buff-system implementation — loaded via MCP from the knowledge layer (Layer 1).',
+    body: 'Opens their IDE. Their AI coding assistant already knows the studio’s ability framework, naming conventions for this module, and the canonical buff-system implementation, loaded via MCP from the knowledge layer (Layer 1).',
   },
   {
     time: '11:20',
@@ -184,11 +206,11 @@ export const BRAIN_CONTENT = [
 ];
 
 export const BRAIN_ACCESS = [
-  'Selective context delivery — only requested sections load, not the full knowledge layer',
-  'Structured responses — typed data, not raw markdown',
-  'Access logging — which agent queried what, when',
-  'Version awareness — agents can pin to specific versions',
-  'Access control — role-based restrictions where applicable',
+  'Selective context delivery, only requested sections load, not the full knowledge layer',
+  'Structured responses, typed data, not raw markdown',
+  'Access logging, which agent queried what, when',
+  'Version awareness, agents can pin to specific versions',
+  'Access control, role-based restrictions where applicable',
 ];
 
 export const BRAIN_PROTECTION = [
@@ -282,7 +304,7 @@ export const ARCHITECTURE_COMPONENTS = [
     id: 'seats',
     name: 'Interactive AI Seats',
     sub: 'Vendor-hosted',
-    role: 'Commercial AI seats used by developers for interactive coding assistance. Claude for Work, ChatGPT Enterprise, Gemini for Google Workspace — your choice. Fixed monthly cost per developer, paid directly to the vendor.',
+    role: 'Commercial AI seats used by developers for interactive coding assistance. Claude for Work, ChatGPT Enterprise, Gemini for Google Workspace, your choice. Fixed monthly cost per developer, paid directly to the vendor.',
     side: 'vendor',
     tier: 2,
   },
@@ -290,7 +312,7 @@ export const ARCHITECTURE_COMPONENTS = [
     id: 'api',
     name: 'Programmatic AI API',
     sub: 'Vendor-hosted · key-based',
-    role: 'Vendor API used by the automation worker for server-side operations. Anthropic, OpenAI, or Google AI — matched to your vendor. Zero Data Retention addendum standard. Can route through AWS Bedrock, Google Vertex AI, or Azure OpenAI for stricter privacy tiers.',
+    role: 'Vendor API used by the automation worker for server-side operations. Anthropic, OpenAI, or Google AI, matched to your vendor. Zero Data Retention addendum standard. Can route through AWS Bedrock, Google Vertex AI, or Azure OpenAI for stricter privacy tiers.',
     side: 'vendor',
     tier: 3,
   },
@@ -334,7 +356,7 @@ export const PRIVACY_TIERS = [
     subtitle: 'Nothing leaves the perimeter',
     body: 'Open-weight models running entirely on your infrastructure, coordinated by MCP tunnels. Tool execution and data access stay inside your perimeter.',
     when: 'AAA studios with console SDKs, strict NDAs, or classified project requirements.',
-    examples: 'Llama 3 / 4 · Mistral · DeepSeek · Qwen — behind your firewall',
+    examples: 'Llama 3 / 4 · Mistral · DeepSeek · Qwen, behind your firewall',
   },
 ];
 
@@ -437,12 +459,12 @@ export const SKILLS_LIBRARY = [
 ];
 
 // ─── Examples of what typically ends up in a deliverables package ──────────
-// Framed as "examples" not "packages" — everything scoped per engagement.
+// Framed as "examples" not "packages", everything scoped per engagement.
 export const DELIVERABLE_EXAMPLES = [
   {
     icon: 'cpu',
     title: 'The knowledge layer',
-    body: 'A structured, version-controlled knowledge repository holding your studio’s conventions, architecture, ADRs, canonical examples, anti-patterns, and skills. Governance is technical — CODEOWNERS, CI validation, tagged releases.',
+    body: 'A structured, version-controlled knowledge repository holding your studio’s conventions, architecture, ADRs, canonical examples, anti-patterns, and skills. Governance is technical, CODEOWNERS, CI validation, tagged releases.',
   },
   {
     icon: 'server',
@@ -457,7 +479,7 @@ export const DELIVERABLE_EXAMPLES = [
   {
     icon: 'workflow',
     title: 'Studio-adapted skill library',
-    body: 'Task-specific patterns the AI uses to accomplish structured workflows — from `new-ability` to `investigate-crash` — adapted to your framework and conventions.',
+    body: 'Task-specific patterns the AI uses to accomplish structured workflows, from `new-ability` to `investigate-crash`, adapted to your framework and conventions.',
   },
   {
     icon: 'gauge',
@@ -471,7 +493,7 @@ export const DELIVERABLE_EXAMPLES = [
   },
 ];
 
-export const DELIVERABLES_INTRO = 'Every engagement produces defined deliverables scoped in the proposal. What you actually receive depends on your studio size, existing tooling, and privacy requirements — we do not sell fixed packages. What appears below is representative of what typically ends up in a delivered engagement.';
+export const DELIVERABLES_INTRO = 'Every engagement produces defined deliverables scoped in the proposal. What you actually receive depends on your studio size, existing tooling, and privacy requirements, we do not sell fixed packages. What appears below is representative of what typically ends up in a delivered engagement.';
 
 // ─── Engagement flow (single stream, not 3 packages) ───────────────────────
 export const ENGAGEMENT_FLOW = [
@@ -479,25 +501,25 @@ export const ENGAGEMENT_FLOW = [
     n: '01',
     label: 'Discovery Call',
     meta: '30 min · free',
-    body: 'We confirm fit, discuss your stack and constraints, and either identify a clear path forward or honestly tell you we are not the right partner.',
+    body: 'We confirm fit, your stack, and your constraints. Either we find a clear path forward, or we tell you honestly that we are not the right partner.',
   },
   {
     n: '02',
     label: 'Scoped Proposal',
-    meta: 'after Audit',
-    body: 'A short Audit — one to three weeks depending on studio size — surfaces your codebase realities, IP sensitivity, and integration surface. Deliverable is a written proposal with fixed price, timeline, and named deliverables. You keep the Audit report regardless of next steps.',
+    meta: 'after a short audit',
+    body: 'A one-to-three-week audit surfaces your codebase realities and IP needs. You get a written proposal with fixed price, timeline, and named deliverables, and you keep the audit report either way.',
   },
   {
     n: '03',
     label: 'Build',
     meta: '3-16 weeks · fixed-fee',
-    body: 'We implement what the proposal describes — knowledge layer, pipeline hooks, MCP integrations, skill library, dashboards, training. Delivered module by module with baseline metrics captured before rollout and re-measured after.',
+    body: 'We implement the proposal module by module: knowledge layer, pipeline hooks, integrations, skills, dashboards, training. Metrics captured before and after.',
   },
   {
     n: '04',
     label: 'Support',
     meta: 'monthly · optional',
-    body: 'Layer 5 in practice. Ongoing knowledge evolution, PR review on AI-related changes, new model capabilities folded in, cost tuning, and quarterly ROI reports. Optional after Build ships; no obligation to continue.',
+    body: 'Optional after the build ships. Ongoing knowledge evolution, review of AI-related changes, new capabilities folded in, and quarterly ROI reports.',
   },
 ];
 
@@ -568,7 +590,7 @@ export const WHAT_WE_DONT_CLAIM = [
   'Autonomous code generation',
   'Proprietary AI models',
   'That the components we build are unique (many are open source; we use them where appropriate)',
-  'Instant transformation — real value takes months to compound',
+  'Instant transformation, real value takes months to compound',
 ];
 
 // ─── Two kinds of AI access ────────────────────────────────────────────────
@@ -588,7 +610,7 @@ export const TWO_MODES = [
     mode: 'Programmatic',
     forWhom: 'Automation',
     label: 'API',
-    body: 'A server-side worker calls the vendor’s API directly when events happen — a submit lands, a build fails, a scheduled analysis runs. Uses an API key, not a seat. Per-token pricing, predictable, designed for 24/7 machine access and structured output.',
+    body: 'A server-side worker calls the vendor’s API directly when events happen, a submit lands, a build fails, a scheduled analysis runs. Uses an API key, not a seat. Per-token pricing, predictable, designed for 24/7 machine access and structured output.',
     examples: 'Anthropic API · OpenAI API · Google AI API (or via Bedrock / Vertex / Azure OpenAI)',
     billing: 'Per-token, typically with a Zero Data Retention addendum for IP protection',
     usedIn: 'Layer 3 (if API-based) · Layer 4 (post-submit review) · Layer 5 (continuous evolution)',
@@ -686,12 +708,12 @@ export const OPS_WE_MAINTAIN_RETAINER = [
   'Vendor-platform update integration',
   'Quarterly ROI reports',
 ];
-export const OPS_STUDIO_OPERATES = 'The studio owns and operates the two VMs after handover (standard sysadmin work). We maintain the knowledge content, skill library, and configuration through the retainer. If the retainer ends, everything continues to work — studio owns all infrastructure, all code, all configuration. Zero vendor lock-in on us.';
+export const OPS_STUDIO_OPERATES = 'The studio owns and operates the two VMs after handover (standard sysadmin work). We maintain the knowledge content, skill library, and configuration through the retainer. If the retainer ends, everything continues to work, studio owns all infrastructure, all code, all configuration. Zero vendor lock-in on us.';
 export const OPS_WE_DONT_OPERATE = 'We do not host anything on our infrastructure. Everything lives in the studio’s environment. This is deliberate: better for IP protection, better for compliance (your security team can audit exactly what runs where), better for your long-term autonomy.';
 
 // ─── Layer 3 detailed content ──────────────────────────────────────────────
 export const LAYER3_HEADLINE = 'Not another code review. The metadata, context, and coherence that make submits worth reviewing.';
-export const LAYER3_INTRO = 'Layer 3 runs when a developer initiates the operation that sends their code to the shared repository. In Perforce, that is `p4 submit`. In Git, that is `git push` or opening a pull request. It is not pre-commit — Git commits are local and frequent, and running AI checks on every commit would be excessive. Layer 3 focuses on what surrounds the code, not the code itself.';
+export const LAYER3_INTRO = 'Layer 3 runs when a developer initiates the operation that sends their code to the shared repository. In Perforce, that is `p4 submit`. In Git, that is `git push` or opening a pull request. It is not pre-commit, Git commits are local and frequent, and running AI checks on every commit would be excessive. Layer 3 focuses on what surrounds the code, not the code itself.';
 
 export const LAYER3_VERIFICATION = [
   {
@@ -812,7 +834,7 @@ export const LAYER3_NOT = [
 export const PLAIN_TERMS_LINES = [
   'Developers work as they always do, with a smarter AI assistant that knows your studio’s rules.',
   'A small server sits inside your network holding your studio’s collective knowledge and serving it up when needed.',
-  'Another small server watches for events — submits, build failures, weekly schedules — and does the deeper analysis that would otherwise consume senior engineering time.',
+  'Another small server watches for events, submits, build failures, weekly schedules, and does the deeper analysis that would otherwise consume senior engineering time.',
   'The AI vendor hosts the model. You keep the code, the knowledge, and the infrastructure.',
 ];
 export const PLAIN_TERMS_TAGLINE = 'Two subscriptions. Two small servers. Five layers that know when to run and when to stay quiet.';

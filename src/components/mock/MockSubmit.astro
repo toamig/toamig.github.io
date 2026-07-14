@@ -1,0 +1,124 @@
+---
+// Wireframe: what a developer sees at submit-time (Layer 3).
+// AI proposes a changelist description + shows the readiness checklist.
+const descLines = [
+  'Implements JIRA-1234: damage-over-time ability for wizard class.',
+  '',
+  '- Adds DoTAbility with configurable tick interval and duration',
+  '- Integrates with existing buff system for effect stacking',
+  '- Includes network replication following studio conventions',
+  '- Tests cover single-target, area effect, and dispel scenarios',
+];
+const checks = [
+  { label: 'Description drafted from diff + ticket', ok: true },
+  { label: 'JIRA-1234 linked · In Progress → In Review', ok: true },
+  { label: 'Reviewers assigned by ownership', ok: true, meta: '@lead-gameplay · @lead-networking' },
+  { label: 'Scope coherent · no unrelated changes', ok: true },
+];
+---
+<figure class="mock mock-submit" aria-label="Submit-time panel proposing a changelist description">
+  <div class="mock-bar">
+    <span class="prompt">$</span>
+    <span class="cmd">p4 submit</span>
+    <span class="mock-badge">Submit-time preparation · Layer 3</span>
+  </div>
+  <div class="mock-body">
+    <p class="panel-label">Proposed changelist description</p>
+    <div class="desc">
+      {descLines.map(l => (
+        <div class="desc-line">{l === '' ? ' ' : l}</div>
+      ))}
+    </div>
+
+    <ul class="checks">
+      {checks.map(c => (
+        <li class="check">
+          <span class="check-ico"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+          <span class="check-label">{c.label}</span>
+          {c.meta && <span class="check-meta">{c.meta}</span>}
+        </li>
+      ))}
+    </ul>
+
+    <div class="actions">
+      <span class="btn btn-primary">Confirm &amp; submit</span>
+      <span class="btn">Edit description</span>
+      <span class="action-note">AI never submits without your confirmation</span>
+    </div>
+  </div>
+</figure>
+
+<style>
+  .mock {
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--color-surface);
+    box-shadow: 0 1px 0 rgba(26,26,26,0.02), 0 12px 32px -18px rgba(26,26,26,0.18);
+    margin: 0;
+  }
+  .mock-bar {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 11px 16px;
+    background: #1a1a1a;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .prompt { font-family: var(--font-mono); font-size: 13px; color: #d98b6a; }
+  .cmd { font-family: var(--font-mono); font-size: 13px; color: #f0ece3; }
+  .mock-badge {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.04em;
+    color: #e8a984;
+    white-space: nowrap;
+  }
+  @media (max-width: 520px) { .mock-badge { display: none; } }
+
+  .mock-body { padding: 20px; }
+  .panel-label {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--color-text-3);
+    margin: 0 0 10px;
+  }
+  .desc {
+    padding: 16px 18px;
+    background: var(--color-ink-2);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: var(--color-text);
+    overflow-x: auto;
+  }
+  .desc-line { white-space: pre-wrap; }
+
+  .checks { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+  .check { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .check-ico {
+    flex-shrink: 0;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: color-mix(in oklab, var(--color-amber) 14%, transparent);
+    color: var(--color-amber);
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .check-label { font-size: 13.5px; color: var(--color-text); }
+  .check-meta { font-family: var(--font-mono); font-size: 11.5px; color: var(--color-text-3); }
+
+  .actions { display: flex; align-items: center; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
+  .btn {
+    font-size: 13px; font-weight: 600;
+    padding: 8px 16px; border-radius: 6px;
+    border: 1px solid var(--color-border-2);
+    color: var(--color-text);
+  }
+  .btn-primary { background: var(--color-text); color: var(--color-ink); border-color: var(--color-text); }
+  .action-note { font-family: var(--font-mono); font-size: 11px; color: var(--color-text-3); }
+</style>

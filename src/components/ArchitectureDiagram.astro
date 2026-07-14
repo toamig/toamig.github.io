@@ -1,8 +1,8 @@
 ---
 // Seven-component deployment topology split into two zones:
-//   STUDIO INFRASTRUCTURE (left) — knowledge repo, MCP context server,
+//   STUDIO INFRASTRUCTURE (left), knowledge repo, MCP context server,
 //     developer workstation, automation worker, existing studio systems
-//   VENDOR INFRASTRUCTURE (right) — interactive AI seats, programmatic API
+//   VENDOR INFRASTRUCTURE (right), interactive AI seats, programmatic API
 //
 // Cross-boundary arrows show what flows between zones. Scroll-triggered
 // stroke-draw animations preserved from the previous version.
@@ -45,7 +45,7 @@ const vendorSide = components.filter(c => c.side === 'vendor').sort((a, b) => a.
       <text x="640" y="34" text-anchor="start">VENDOR INFRASTRUCTURE</text>
     </g>
 
-    <!-- Internal connectors (studio side) — drawn behind boxes -->
+    <!-- Internal connectors (studio side), drawn behind boxes -->
     <g class="arch-lines" stroke="currentColor" stroke-width="1.5" fill="none">
       <!-- Knowledge Repo → MCP Server -->
       <line class="arch-line" pathLength="1" x1="320" y1="150" x2="320" y2="210" marker-end="url(#arrow)" />

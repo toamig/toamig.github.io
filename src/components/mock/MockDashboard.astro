@@ -1,0 +1,111 @@
+---
+// Wireframe: the cost + telemetry dashboard (what an eng manager sees).
+const stats = [
+  { label: 'API spend · this month', value: '€612', sub: 'of €800 budget', pct: 76 },
+  { label: 'Reviews run', value: '1,847', sub: 'auto post-submit', pct: null },
+  { label: 'Cache hit rate', value: '91%', sub: 'prompt caching', pct: 91 },
+];
+// Weekly bars (relative heights, illustrative)
+const bars = [40, 55, 48, 70, 62, 80, 58];
+const teams = [
+  { name: 'Gameplay',   spend: '€248', w: 100 },
+  { name: 'Networking', spend: '€171', w: 69 },
+  { name: 'Tools',      spend: '€114', w: 46 },
+  { name: 'UI',         spend: '€79',  w: 32 },
+];
+---
+<figure class="mock mock-dash" aria-label="Cost and telemetry dashboard">
+  <div class="mock-bar">
+    <span class="dash-title">Cost &amp; telemetry</span>
+    <span class="mock-badge">per-team spend · budget alerts</span>
+  </div>
+  <div class="mock-body">
+    <div class="stats">
+      {stats.map(s => (
+        <div class="stat">
+          <p class="stat-label">{s.label}</p>
+          <p class="stat-value">{s.value}</p>
+          <p class="stat-sub">{s.sub}</p>
+          {s.pct !== null && (
+            <div class="meter"><span class="meter-fill" style={`width:${s.pct}%`}></span></div>
+          )}
+        </div>
+      ))}
+    </div>
+
+    <div class="panels">
+      <div class="panel">
+        <p class="panel-title">Weekly API spend</p>
+        <div class="bars">
+          {bars.map(h => <span class="bar" style={`height:${h}%`}></span>)}
+        </div>
+        <div class="bars-axis"><span>Mon</span><span>Sun</span></div>
+      </div>
+      <div class="panel">
+        <p class="panel-title">Spend by team</p>
+        <ul class="teams">
+          {teams.map(t => (
+            <li class="team">
+              <span class="team-name">{t.name}</span>
+              <span class="team-track"><span class="team-fill" style={`width:${t.w}%`}></span></span>
+              <span class="team-spend">{t.spend}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </div>
+</figure>
+
+<style>
+  .mock {
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--color-surface);
+    box-shadow: 0 1px 0 rgba(26,26,26,0.02), 0 12px 32px -18px rgba(26,26,26,0.18);
+    margin: 0;
+  }
+  .mock-bar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 11px 16px;
+    background: var(--color-ink-2);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .dash-title { font-family: var(--font-mono); font-size: 12.5px; color: var(--color-text-2); }
+  .mock-badge {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 10.5px; letter-spacing: 0.04em;
+    color: var(--color-amber);
+    white-space: nowrap;
+  }
+  @media (max-width: 520px) { .mock-badge { display: none; } }
+
+  .mock-body { padding: 20px; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
+  @media (max-width: 560px) { .stats { grid-template-columns: 1fr; } }
+  .stat { padding: 14px 16px; border: 1px solid var(--color-border); border-radius: 8px; background: var(--color-ink-2); }
+  .stat-label { margin: 0 0 8px; font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-text-3); }
+  .stat-value { margin: 0; font-family: var(--font-display); font-size: 30px; font-weight: 600; color: var(--color-text); line-height: 1; letter-spacing: -0.02em; }
+  .stat-sub { margin: 4px 0 0; font-size: 12px; color: var(--color-text-3); }
+  .meter { margin-top: 10px; height: 5px; border-radius: 3px; background: var(--color-border); overflow: hidden; }
+  .meter-fill { display: block; height: 100%; background: var(--color-amber); border-radius: 3px; }
+
+  .panels { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 560px) { .panels { grid-template-columns: 1fr; } }
+  .panel { padding: 16px; border: 1px solid var(--color-border); border-radius: 8px; }
+  .panel-title { margin: 0 0 14px; font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-text-3); }
+
+  .bars { display: flex; align-items: flex-end; gap: 8px; height: 90px; }
+  .bar { flex: 1; background: color-mix(in oklab, var(--color-amber) 55%, var(--color-ink-2)); border-radius: 3px 3px 0 0; min-height: 6px; }
+  .bar:last-child { background: var(--color-amber); }
+  .bars-axis { display: flex; justify-content: space-between; margin-top: 8px; font-family: var(--font-mono); font-size: 10px; color: var(--color-text-3); }
+
+  .teams { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+  .team { display: grid; grid-template-columns: 74px 1fr auto; align-items: center; gap: 10px; }
+  .team-name { font-size: 12.5px; color: var(--color-text-2); }
+  .team-track { height: 7px; border-radius: 4px; background: var(--color-border); overflow: hidden; }
+  .team-fill { display: block; height: 100%; background: var(--color-amber); border-radius: 4px; }
+  .team-spend { font-family: var(--font-mono); font-size: 12px; color: var(--color-text); }
+</style>

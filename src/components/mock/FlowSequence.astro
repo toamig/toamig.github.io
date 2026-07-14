@@ -1,0 +1,87 @@
+---
+// Flow diagram: what happens the moment a developer submits.
+// Horizontal actor lane on desktop; vertical stack on mobile.
+const steps = [
+  { actor: 'Developer', label: 'Runs submit', detail: 'p4 submit / git push', tone: 'studio' },
+  { actor: 'Pre-submit hook', label: 'Prepares metadata', detail: 'description, ticket, reviewers', tone: 'studio' },
+  { actor: 'AI', label: 'Drafts & checks', detail: 'via seat or API', tone: 'vendor' },
+  { actor: 'Developer', label: 'Confirms', detail: 'edits if needed', tone: 'studio' },
+  { actor: 'Repository', label: 'Change lands', detail: 'submit accepted', tone: 'studio' },
+  { actor: 'Worker', label: 'Deep review', detail: 'posted in ~60s', tone: 'studio' },
+  { actor: 'Review tool', label: 'Ready for lead', detail: 'Swarm / GitHub', tone: 'studio' },
+];
+---
+<div class="flow" aria-label="Submit-time sequence: developer to review tool">
+  {steps.map((s, i) => (
+    <>
+      <div class:list={['flow-node', `t-${s.tone}`]} data-anim="flow-step">
+        <span class="flow-actor">{s.actor}</span>
+        <span class="flow-label">{s.label}</span>
+        <span class="flow-detail">{s.detail}</span>
+      </div>
+      {i < steps.length - 1 && (
+        <div class="flow-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </div>
+      )}
+    </>
+  ))}
+</div>
+
+<style>
+  .flow {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    overflow-x: auto;
+    padding: 4px 2px 16px;
+    scrollbar-width: thin;
+  }
+  .flow-node {
+    flex: 0 0 auto;
+    min-width: 140px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 14px 16px;
+    border: 1px solid var(--color-border);
+    border-radius: 9px;
+    background: var(--color-surface);
+  }
+  .flow-node.t-vendor {
+    border-style: dashed;
+    border-color: color-mix(in oklab, var(--color-amber) 40%, var(--color-border));
+    background: var(--color-amber-soft);
+  }
+  .flow-actor {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-text-3);
+  }
+  .t-vendor .flow-actor { color: var(--color-amber); }
+  .flow-label { font-family: var(--font-display); font-size: 16px; font-weight: 500; color: var(--color-text); line-height: 1.2; }
+  .flow-detail { font-family: var(--font-mono); font-size: 11px; color: var(--color-text-3); }
+
+  .flow-arrow {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    color: var(--color-border-2);
+    padding: 0 6px;
+    width: 30px;
+  }
+  .flow-arrow svg { width: 18px; height: 18px; }
+
+  @media (max-width: 767px) {
+    .flow { flex-direction: column; align-items: stretch; overflow-x: visible; }
+    .flow-node { min-width: 0; }
+    .flow-arrow {
+      width: 100%;
+      justify-content: center;
+      padding: 3px 0;
+      transform: rotate(90deg);
+    }
+  }
+</style>

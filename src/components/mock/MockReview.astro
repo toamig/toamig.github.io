@@ -1,0 +1,96 @@
+---
+// Wireframe: what a tech lead sees after submit (Layer 4).
+// A structured AI review posted to the studio's review tool.
+const findings = [
+  { kind: 'ok',   text: 'No architectural drift. Follows the ability framework correctly.' },
+  { kind: 'note', text: 'Similar pattern shipped in the buff system last month (CL 48213). Worth cross-referencing for consistency.' },
+  { kind: 'note', text: 'Suggest test coverage for the interaction with existing damage sources (stacking order).' },
+];
+---
+<figure class="mock mock-review" aria-label="AI-prepared review posted to the review tool">
+  <div class="mock-bar">
+    <span class="tool">Swarm · Review #48291</span>
+    <span class="mock-badge">Post-submit deep review · Layer 4</span>
+  </div>
+  <div class="mock-body">
+    <div class="comment">
+      <div class="avatar">AI</div>
+      <div class="comment-main">
+        <div class="comment-head">
+          <span class="author">Automated review</span>
+          <span class="time">· prepared in 52s</span>
+        </div>
+        <p class="comment-lead">Analysis ready for review. Convention and formatting already handled upstream, here is what needs a human eye:</p>
+        <ul class="findings">
+          {findings.map(f => (
+            <li class:list={['finding', `f-${f.kind}`]}>
+              <span class="f-ico">
+                {f.kind === 'ok'
+                  ? <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                  : <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>}
+              </span>
+              <span class="f-text">{f.text}</span>
+            </li>
+          ))}
+        </ul>
+        <p class="comment-foot">The tech lead spends five minutes on the architecture, not forty on the basics.</p>
+      </div>
+    </div>
+  </div>
+</figure>
+
+<style>
+  .mock {
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--color-surface);
+    box-shadow: 0 1px 0 rgba(26,26,26,0.02), 0 12px 32px -18px rgba(26,26,26,0.18);
+    margin: 0;
+  }
+  .mock-bar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 11px 16px;
+    background: var(--color-ink-2);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .tool { font-family: var(--font-mono); font-size: 12.5px; color: var(--color-text-2); }
+  .mock-badge {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 10.5px; letter-spacing: 0.04em;
+    color: var(--color-amber);
+    white-space: nowrap;
+  }
+  @media (max-width: 520px) { .mock-badge { display: none; } }
+
+  .mock-body { padding: 20px; }
+  .comment { display: flex; gap: 14px; }
+  .avatar {
+    flex-shrink: 0;
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: var(--color-text);
+    color: var(--color-ink);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 12px; font-weight: 600;
+  }
+  .comment-main { flex: 1; min-width: 0; }
+  .comment-head { display: flex; align-items: baseline; gap: 6px; margin-bottom: 8px; }
+  .author { font-size: 14px; font-weight: 600; color: var(--color-text); }
+  .time { font-family: var(--font-mono); font-size: 11.5px; color: var(--color-text-3); }
+  .comment-lead { margin: 0 0 14px; font-size: 14px; line-height: 1.6; color: var(--color-text-2); }
+
+  .findings { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 11px; }
+  .finding { display: flex; gap: 11px; align-items: flex-start; }
+  .f-ico {
+    flex-shrink: 0; margin-top: 1px;
+    width: 20px; height: 20px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .f-ok .f-ico { background: color-mix(in oklab, #6a7f4a 16%, transparent); color: #5f7341; }
+  .f-note .f-ico { background: var(--color-amber-soft); color: var(--color-amber); }
+  .f-text { font-size: 13.5px; line-height: 1.6; color: var(--color-text); }
+  .comment-foot { margin: 16px 0 0; padding-top: 14px; border-top: 1px solid var(--color-border); font-family: var(--font-display); font-style: italic; font-size: 14px; color: var(--color-text-2); }
+</style>

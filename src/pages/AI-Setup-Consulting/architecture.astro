@@ -5,6 +5,11 @@ import PipelineDiagram from '../../components/PipelineDiagram.astro';
 import ArchitectureDiagram from '../../components/ArchitectureDiagram.astro';
 import BrainGovernanceFlow from '../../components/BrainGovernanceFlow.astro';
 import GsapEffects from '../../components/GsapEffects.astro';
+import MockIDE from '../../components/mock/MockIDE.astro';
+import MockSubmit from '../../components/mock/MockSubmit.astro';
+import MockReview from '../../components/mock/MockReview.astro';
+import MockDashboard from '../../components/mock/MockDashboard.astro';
+import FlowSequence from '../../components/mock/FlowSequence.astro';
 import {
   BASE, BOOK_PATH,
   PIPELINE, PIPELINE_PRINCIPLE,
@@ -13,48 +18,128 @@ import {
   ARCHITECTURE_COMPONENTS, DEPLOYMENT_INSIDE_STUDIO, DEPLOYMENT_INSIDE_VENDOR, DEPLOYMENT_ADDED,
   COST_FIXED, COST_VARIABLE, COST_VARIABLE_TOTAL, COST_ONE_TIME, COST_DONT_CHARGE,
   OPS_WE_DEPLOY_SETUP, OPS_WE_MAINTAIN_RETAINER, OPS_STUDIO_OPERATES, OPS_WE_DONT_OPERATE,
-  LAYER3_HEADLINE, LAYER3_INTRO, LAYER3_VERIFICATION,
-  LAYER3_DESC_GEN_INTRO, LAYER3_DESC_GEN_EXAMPLE, LAYER3_DESC_GEN_APPROACHES,
-  LAYER3_ADVISORY, LAYER3_IMPL_OPTIONS, LAYER3_IMPL_NOTE, LAYER3_NOT,
+  LAYER3_VERIFICATION, LAYER3_DESC_GEN_APPROACHES, LAYER3_IMPL_OPTIONS, LAYER3_IMPL_NOTE, LAYER3_NOT,
   PRIVACY_TIERS, PRIVACY_DISTINCTION,
   WHAT_WE_DONT_CLAIM,
   PLAIN_TERMS_LINES, PLAIN_TERMS_TAGLINE,
 } from '../../data/consulting';
 
-const title = 'The Method · AI Setup Consulting for Game Studios';
-const description = 'The technical deep-dive. Two subscriptions, two small servers, five layers. How each layer is deployed, what triggers it, how it is paid for. Vendor-agnostic architecture and honest costs.';
+const title = 'How It Works, In Depth · AI Setup Consulting for Game Studios';
+const description = 'The in-depth breakdown, in plain language with wireframes and flows. What your developers see, how the pipeline is deployed, the two kinds of AI access, transparent costs, and the architecture, for CEOs, sales, and tech leads alike.';
+
+// The four "what you actually see" wireframes, each tied to a moment.
+const seeing = [
+  { when: 'While you write',   layer: 'Layer 1', title: 'Your assistant already knows the rules', body: 'Conventions and canonical examples surface as you type, pulled from your studio’s shared knowledge, not guessed.', comp: 'ide' },
+  { when: 'When you submit',    layer: 'Layer 3', title: 'The paperwork writes itself', body: 'A clear description, the right ticket link, the right reviewers, drafted for you. You confirm; nothing submits without you.', comp: 'submit' },
+  { when: 'After you submit',   layer: 'Layer 4', title: 'A first-pass review is waiting', body: 'The basics are already handled, so the review your tech lead opens is about the decisions that actually need judgment.', comp: 'review' },
+  { when: 'For your managers',  layer: 'Telemetry', title: 'Costs and usage, in the open', body: 'Per-team spend, budgets, and cache efficiency in one place, so the AI budget is never a surprise.', comp: 'dashboard' },
+];
 ---
 <ConsultingLayout
   title={title}
   description={description}
-  path={`${BASE}/technology/`}
-  active={`${BASE}/technology`}
+  path={`${BASE}/architecture/`}
+  active={`${BASE}/architecture`}
 >
   <GsapEffects />
 
   <!-- ══ HERO ══════════════════════════════════════════════════════════ -->
-  <section class="hero-grid pt-32 pb-24 md:pt-40 md:pb-32">
+  <section class="hero-grid pt-32 pb-20 md:pt-40 md:pb-28">
     <div class="max-w-5xl mx-auto px-6">
-      <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">The Method</p>
-      <h1 data-fade data-fade-delay="80" class="font-display text-[38px] md:text-[56px] leading-[1.05] font-normal tracking-[-0.03em] mb-8 max-w-4xl">
-        Two subscriptions. Two small servers. <em class="not-italic text-amber font-medium">Five layers that know when to run and when to stay quiet.</em>
+      <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">How it works, in depth</p>
+      <h1 data-fade data-fade-delay="80" class="font-display text-[38px] md:text-[58px] leading-[1.05] font-normal tracking-[-0.03em] mb-8 max-w-4xl">
+        Two subscriptions. Two small servers. <em class="not-italic text-amber font-medium">Five layers that know when to run.</em>
       </h1>
-      <p data-fade data-fade-delay="160" class="text-[18px] md:text-[20px] text-text-2 leading-[1.65] max-w-3xl">
-        Every AI integration eventually confronts the same three questions: what runs where, what pays for what, and why. Most vendors avoid the answers because the answers involve trade-offs. We prefer to show them.
+      <p data-fade data-fade-delay="160" class="text-[18px] md:text-[20px] text-text-2 leading-[1.6] max-w-3xl">
+        The same story as the homepage, with the detail a tech lead wants: what your developers actually see, how it all connects, and exactly what it costs. Plain enough for a CEO, precise enough for engineering.
       </p>
     </div>
   </section>
 
-  <!-- ══ TWO KINDS OF AI ACCESS ════════════════════════════════════════ -->
-  <section id="modes" class="py-24 md:py-36 border-t border-border/50">
-    <div class="max-w-6xl mx-auto px-6">
-      <header class="mb-14 md:mb-16 max-w-3xl">
-        <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">01 · Two kinds of AI access</p>
-        <h2 data-fade data-fade-delay="60" class="font-display text-[32px] md:text-[44px] leading-[1.08] font-normal tracking-[-0.02em] mb-6">
-          Your studio uses AI in two fundamentally different ways.
+  <!-- ══ WHAT YOU ACTUALLY SEE (wireframes) ════════════════════════════ -->
+  <section id="see" class="py-20 md:py-32 border-t border-border/50">
+    <div class="max-w-5xl mx-auto px-6">
+      <header class="mb-16 md:mb-20 max-w-2xl">
+        <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">What you actually see</p>
+        <h2 data-fade data-fade-delay="60" class="font-display text-[32px] md:text-[46px] leading-[1.08] font-normal tracking-[-0.02em]">
+          Not slides. The real moments.
         </h2>
-        <p data-fade data-fade-delay="120" class="text-[16px] md:text-[17px] text-text-2 leading-[1.7]">
-          Before describing the layers, one distinction that clarifies everything else. Developers don’t share seats with automation. Automation doesn’t consume developer rate limits. Each mode is used where it fits.
+      </header>
+
+      <div class="flex flex-col gap-20 md:gap-28">
+        {seeing.map((s, i) => (
+          <div class="grid lg:grid-cols-[1fr_1.25fr] gap-8 md:gap-12 items-center">
+            <div data-fade class:list={[i % 2 === 1 && 'lg:order-2']}>
+              <div class="flex items-baseline gap-3 mb-3">
+                <span class="font-mono text-[11px] uppercase tracking-[0.16em] text-amber">{s.layer}</span>
+                <span class="font-mono text-[11px] uppercase tracking-[0.14em] text-text-3">{s.when}</span>
+              </div>
+              <h3 class="font-display text-[24px] md:text-[30px] font-medium text-text mb-4 leading-[1.2]">{s.title}</h3>
+              <p class="text-[16px] md:text-[17px] text-text-2 leading-[1.7] max-w-md">{s.body}</p>
+            </div>
+            <div data-fade data-fade-delay="80" class:list={[i % 2 === 1 && 'lg:order-1']}>
+              {s.comp === 'ide' && <MockIDE />}
+              {s.comp === 'submit' && <MockSubmit />}
+              {s.comp === 'review' && <MockReview />}
+              {s.comp === 'dashboard' && <MockDashboard />}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ THE SUBMIT-TIME FLOW ══════════════════════════════════════════ -->
+  <section id="flow" class="py-20 md:py-32 border-t border-border/50 bg-ink-2/50">
+    <div class="max-w-6xl mx-auto px-6">
+      <header class="mb-12 md:mb-14 max-w-2xl">
+        <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">The flow</p>
+        <h2 data-fade data-fade-delay="60" class="font-display text-[32px] md:text-[46px] leading-[1.08] font-normal tracking-[-0.02em] mb-5">
+          What happens the moment you hit submit.
+        </h2>
+        <p data-fade data-fade-delay="120" class="text-[16px] md:text-[17px] text-text-2 leading-[1.65]">
+          Two seconds of preparation on your machine, then a deeper review runs on a server without holding you up. The dashed step is the only moment AI is involved.
+        </p>
+      </header>
+      <div data-fade>
+        <FlowSequence />
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ THE PIPELINE (interactive metadata) ═══════════════════════════ -->
+  <section id="pipeline" class="py-20 md:py-32 border-t border-border/50">
+    <div class="max-w-6xl mx-auto px-6">
+      <header class="mb-14 md:mb-16 max-w-2xl">
+        <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">The five layers</p>
+        <h2 data-fade data-fade-delay="60" class="font-display text-[32px] md:text-[46px] leading-[1.08] font-normal tracking-[-0.02em] mb-5">
+          Each layer: where it runs, what triggers it, what it costs.
+        </h2>
+        <p data-fade data-fade-delay="120" class="text-[16px] md:text-[17px] text-text-2 leading-[1.65]">
+          Layers reinforce each other rather than repeat each other. Hover any layer for the full deployment detail.
+        </p>
+      </header>
+
+      <PipelineDiagram layers={PIPELINE} />
+
+      <div data-fade class="mt-14 max-w-3xl mx-auto">
+        <div class="editorial-rule mb-8"></div>
+        <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-amber mb-3">Human in the loop, always</p>
+        <p class="text-[16px] text-text leading-[1.7]">{PIPELINE_PRINCIPLE}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ TWO KINDS OF AI ACCESS ════════════════════════════════════════ -->
+  <section id="modes" class="py-20 md:py-32 border-t border-border/50 bg-ink-2/50">
+    <div class="max-w-6xl mx-auto px-6">
+      <header class="mb-14 md:mb-16 max-w-2xl">
+        <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">Two kinds of AI access</p>
+        <h2 data-fade data-fade-delay="60" class="font-display text-[32px] md:text-[46px] leading-[1.08] font-normal tracking-[-0.02em] mb-5">
+          Seats for people. API for machines.
+        </h2>
+        <p data-fade data-fade-delay="120" class="text-[16px] md:text-[17px] text-text-2 leading-[1.65]">
+          Your studio uses AI two ways, and they are billed differently. This holds at every major vendor.
         </p>
       </header>
 
@@ -63,7 +148,7 @@ const description = 'The technical deep-dive. Two subscriptions, two small serve
           <article data-fade data-fade-delay={i * 100} class="border-t border-border pt-8">
             <div class="flex items-baseline gap-3 mb-4">
               <p class="font-mono text-[10.5px] uppercase tracking-[0.16em] text-amber">{m.label}</p>
-              <span class="font-mono text-[10.5px] uppercase tracking-[0.14em] text-text-3">for {m.forWhom}</span>
+              <span class="font-mono text-[10.5px] uppercase tracking-[0.14em] text-text-3">for {m.forWhom.toLowerCase()}</span>
             </div>
             <h3 class="font-display text-[24px] md:text-[28px] font-medium text-text mb-3 leading-[1.2]">{m.mode} use</h3>
             <p class="text-[15.5px] text-text-2 leading-[1.7] mb-6">{m.body}</p>
@@ -85,7 +170,6 @@ const description = 'The technical deep-dive. Two subscriptions, two small serve
         ))}
       </div>
 
-      <!-- Why this split -->
       <div data-fade class="max-w-3xl mt-12 pt-8 border-t border-border">
         <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-amber mb-3">Why the split exists</p>
         <p class="text-[15.5px] text-text leading-[1.7]">{WHY_SPLIT}</p>
@@ -93,45 +177,22 @@ const description = 'The technical deep-dive. Two subscriptions, two small serve
     </div>
   </section>
 
-  <!-- ══ THE PIPELINE ══════════════════════════════════════════════════ -->
-  <section id="pipeline" class="py-24 md:py-36 border-t border-border/50 bg-ink-2/50">
-    <div class="max-w-6xl mx-auto px-6">
-      <header class="mb-14 md:mb-16 max-w-3xl">
-        <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">02 · The pipeline, deployed</p>
-        <h2 data-fade data-fade-delay="60" class="font-display text-[32px] md:text-[44px] leading-[1.08] font-normal tracking-[-0.02em] mb-6">
-          Five layers. Each with one job.
-        </h2>
-        <p data-fade data-fade-delay="120" class="text-[16px] md:text-[17px] text-text-2 leading-[1.7] mb-4">
-          Each layer’s full deployment: where it runs, what triggers it, how it is paid for, and how long it takes to produce a result. Hover a layer to reveal the metadata.
-        </p>
-      </header>
-
-      <PipelineDiagram layers={PIPELINE} />
-
-      <div data-fade class="mt-14 max-w-3xl mx-auto">
-        <div class="editorial-rule mb-8"></div>
-        <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-amber mb-3">Human in the loop, always</p>
-        <p class="text-[16px] text-text leading-[1.7]">{PIPELINE_PRINCIPLE}</p>
-      </div>
-    </div>
-  </section>
-
   <!-- ══ LAYER 3 IN DEPTH ══════════════════════════════════════════════ -->
-  <section id="layer3" class="py-24 md:py-36 border-t border-border/50">
+  <section id="layer3" class="py-20 md:py-32 border-t border-border/50">
     <div class="max-w-5xl mx-auto px-6">
-      <header class="mb-14 md:mb-16 max-w-3xl">
-        <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">03 · Layer 3 in depth</p>
-        <h2 data-fade data-fade-delay="60" class="font-display text-[32px] md:text-[44px] leading-[1.08] font-normal tracking-[-0.02em] mb-6">
-          {LAYER3_HEADLINE}
+      <header class="mb-14 md:mb-16 max-w-2xl">
+        <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">Submit-time, in depth</p>
+        <h2 data-fade data-fade-delay="60" class="font-display text-[32px] md:text-[46px] leading-[1.08] font-normal tracking-[-0.02em] mb-5">
+          The metadata that makes a submit worth reviewing.
         </h2>
-        <p data-fade data-fade-delay="120" class="text-[16px] md:text-[17px] text-text-2 leading-[1.7]">
-          {LAYER3_INTRO}
+        <p data-fade data-fade-delay="120" class="text-[16px] md:text-[17px] text-text-2 leading-[1.65]">
+          Layer 3 is not another code review, Layer 1 handles quality as you write, Layer 4 handles depth after. This layer handles everything <em class="not-italic font-medium text-text">around</em> the code.
         </p>
       </header>
 
       <!-- Verification checklist -->
       <div class="mb-16 md:mb-20">
-        <p data-fade class="font-mono text-[11px] uppercase tracking-[0.18em] text-text-3 mb-6">What Layer 3 verifies</p>
+        <p data-fade class="font-mono text-[11px] uppercase tracking-[0.18em] text-text-3 mb-6">What it verifies</p>
         <div class="grid md:grid-cols-2 gap-x-10 gap-y-10">
           {LAYER3_VERIFICATION.map((v, i) => (
             <article data-fade data-fade-delay={i * 50} class="flex gap-5">
@@ -154,67 +215,35 @@ const description = 'The technical deep-dive. Two subscriptions, two small serve
         </div>
       </div>
 
-      <!-- Description generation feature + example -->
+      <!-- Description generation approaches -->
       <div class="mb-16 md:mb-20">
-        <div class="mb-10 max-w-3xl">
-          <p data-fade class="font-mono text-[11px] uppercase tracking-[0.18em] text-amber mb-3">Signature capability</p>
-          <h3 data-fade data-fade-delay="60" class="font-display text-[26px] md:text-[32px] font-medium leading-[1.2] mb-5">
-            Description generation, not just validation.
+        <div class="mb-8 max-w-2xl">
+          <p data-fade class="font-mono text-[11px] uppercase tracking-[0.18em] text-text-3 mb-3">Description generation</p>
+          <h3 data-fade data-fade-delay="60" class="font-display text-[24px] md:text-[28px] font-medium leading-[1.2]">
+            Three ways to run it. You pick at Setup.
           </h3>
-          <p data-fade data-fade-delay="120" class="text-[16px] text-text-2 leading-[1.7]">{LAYER3_DESC_GEN_INTRO}</p>
         </div>
-
-        <!-- Example mockup -->
-        <div data-fade class="mb-12 max-w-4xl">
-          <p class="font-mono text-[11px] uppercase tracking-[0.15em] text-text-3 mb-3">Example flow · developer submits, AI proposes</p>
-          <div class="rounded-lg border border-border bg-surface overflow-hidden">
-            <div class="px-5 py-3 border-b border-border font-mono text-[11.5px] uppercase tracking-[0.14em] text-text-3 bg-ink-2/60">
-              proposed description
-            </div>
-            <pre class="p-6 font-mono text-[13px] leading-[1.75] text-text-2 whitespace-pre-wrap m-0">{LAYER3_DESC_GEN_EXAMPLE}</pre>
-            <div class="px-5 py-3 border-t border-border font-mono text-[12px] text-text-3 bg-ink-2/40">
-              → developer reviews, edits if needed, confirms, submit proceeds
-            </div>
-          </div>
-        </div>
-
-        <!-- Three approaches -->
-        <div>
-          <p data-fade class="font-mono text-[11px] uppercase tracking-[0.15em] text-text-3 mb-6">Three approaches, chosen at Setup</p>
-          <div class="grid md:grid-cols-3 gap-5">
-            {LAYER3_DESC_GEN_APPROACHES.map((a, i) => (
-              <article data-fade data-fade-delay={i * 60}
-                       class:list={['p-6 rounded-lg border bg-surface',
-                                    a.recommended ? 'border-amber/50' : 'border-border']}>
-                <div class="flex items-baseline gap-3 mb-3">
-                  <span class="font-mono text-[11px] uppercase tracking-[0.14em] text-amber">{a.label}</span>
-                  {a.recommended && (
-                    <span class="font-mono text-[9.5px] uppercase tracking-[0.14em] text-amber px-2 py-0.5 border border-amber/40 rounded">Most chosen</span>
-                  )}
-                </div>
-                <h4 class="font-display text-[17px] font-medium text-text mb-2 leading-[1.3]">{a.name}</h4>
-                <p class="text-[14px] text-text-2 leading-[1.6] mb-3">{a.body}</p>
-                <p class="text-[13px] text-text-3 leading-[1.55]"><span class="text-text-2 font-medium">When:</span> {a.when}</p>
-              </article>
-            ))}
-          </div>
+        <div class="grid md:grid-cols-3 gap-5">
+          {LAYER3_DESC_GEN_APPROACHES.map((a, i) => (
+            <article data-fade data-fade-delay={i * 60}
+                     class:list={['p-6 rounded-lg border bg-surface', a.recommended ? 'border-amber/50' : 'border-border']}>
+              <div class="flex items-baseline gap-2 mb-3 flex-wrap">
+                <span class="font-mono text-[11px] uppercase tracking-[0.14em] text-amber">{a.label}</span>
+                {a.recommended && <span class="font-mono text-[9.5px] uppercase tracking-[0.14em] text-amber px-2 py-0.5 border border-amber/40 rounded">Most chosen</span>}
+              </div>
+              <h4 class="font-display text-[17px] font-medium text-text mb-2 leading-[1.3]">{a.name}</h4>
+              <p class="text-[14px] text-text-2 leading-[1.6] mb-3">{a.body}</p>
+              <p class="text-[13px] text-text-3 leading-[1.55]"><span class="text-text-2 font-medium">When:</span> {a.when}</p>
+            </article>
+          ))}
         </div>
       </div>
 
-      <!-- Advisory vs blocking -->
-      <div data-fade class="mb-16 md:mb-20 p-6 md:p-8 border-l-2 border-amber bg-surface/70 max-w-4xl">
-        <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-amber mb-3">Advisory by default. Blocking only where it matters.</p>
-        <p class="text-[15.5px] text-text leading-[1.7]">{LAYER3_ADVISORY}</p>
-      </div>
-
-      <!-- Implementation options (seat vs API) -->
+      <!-- Implementation options -->
       <div class="mb-16 md:mb-20">
-        <div class="mb-8 max-w-3xl">
-          <p data-fade class="font-mono text-[11px] uppercase tracking-[0.18em] text-text-3 mb-3">Implementation options</p>
-          <h3 data-fade data-fade-delay="60" class="font-display text-[22px] md:text-[26px] font-medium leading-[1.2] mb-3">
-            Seat-based or API-based — a Setup choice, not a capability difference.
-          </h3>
-          <p data-fade data-fade-delay="120" class="text-[15px] text-text-2 leading-[1.7]">{LAYER3_IMPL_NOTE}</p>
+        <div class="mb-6 max-w-2xl">
+          <p data-fade class="font-mono text-[11px] uppercase tracking-[0.18em] text-text-3 mb-3">Seat-based or API-based</p>
+          <p data-fade data-fade-delay="60" class="text-[15px] text-text-2 leading-[1.7]">{LAYER3_IMPL_NOTE}</p>
         </div>
         <div class="grid md:grid-cols-2 gap-5 max-w-4xl">
           {LAYER3_IMPL_OPTIONS.map((o, i) => (
@@ -233,7 +262,7 @@ const description = 'The technical deep-dive. Two subscriptions, two small serve
 
       <!-- What Layer 3 is not -->
       <div class="max-w-3xl">
-        <p data-fade class="font-mono text-[11px] uppercase tracking-[0.18em] text-text-3 mb-6">What Layer 3 is not</p>
+        <p data-fade class="font-mono text-[11px] uppercase tracking-[0.18em] text-text-3 mb-6">What it is not</p>
         <ul class="flex flex-col gap-4">
           {LAYER3_NOT.map((n, i) => (
             <li data-fade data-fade-delay={i * 40} class="grid grid-cols-[20px_1fr] gap-4">
@@ -250,15 +279,15 @@ const description = 'The technical deep-dive. Two subscriptions, two small serve
   </section>
 
   <!-- ══ THE KNOWLEDGE LAYER ═══════════════════════════════════════════ -->
-  <section id="brain" class="py-24 md:py-36 border-t border-border/50 bg-ink-2/50">
+  <section id="brain" class="py-20 md:py-32 border-t border-border/50 bg-ink-2/50">
     <div class="max-w-6xl mx-auto px-6">
-      <header class="mb-14 md:mb-16 max-w-3xl">
-        <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">04 · The knowledge layer</p>
-        <h2 data-fade data-fade-delay="60" class="font-display text-[32px] md:text-[44px] leading-[1.08] font-normal tracking-[-0.02em] mb-6">
-          Centralized, governed, inviolable.
+      <header class="mb-14 md:mb-16 max-w-2xl">
+        <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">The shared brain</p>
+        <h2 data-fade data-fade-delay="60" class="font-display text-[32px] md:text-[46px] leading-[1.08] font-normal tracking-[-0.02em] mb-5">
+          Your studio’s knowledge, structured and protected.
         </h2>
-        <p data-fade data-fade-delay="120" class="text-[16px] md:text-[17px] text-text-2 leading-[1.7]">
-          A structured knowledge repository accessible to every pipeline layer. Version-controlled. Consulted through MCP. Individual developers can query it; only tech leads can change it.
+        <p data-fade data-fade-delay="120" class="text-[16px] md:text-[17px] text-text-2 leading-[1.65]">
+          Everyone can read it; only tech leads can change it, and only through review. That is what keeps AI consistent instead of inventing its own conventions.
         </p>
       </header>
 
@@ -300,10 +329,10 @@ const description = 'The technical deep-dive. Two subscriptions, two small serve
       </div>
 
       <div class="mb-16 md:mb-20">
-        <div class="mb-10 max-w-3xl">
+        <div class="mb-10 max-w-2xl">
           <p data-fade class="font-mono text-[11px] uppercase tracking-[0.18em] text-text-3 mb-4">How it is updated</p>
           <h3 data-fade data-fade-delay="60" class="font-display text-[24px] md:text-[28px] font-medium leading-[1.2]">
-            Three approved paths. All converge on the same gate.
+            Three paths in. One gate they all pass through.
           </h3>
         </div>
         <div data-fade>
@@ -338,16 +367,16 @@ const description = 'The technical deep-dive. Two subscriptions, two small serve
     </div>
   </section>
 
-  <!-- ══ ARCHITECTURE / DEPLOYMENT TOPOLOGY ════════════════════════════ -->
-  <section id="architecture" class="py-24 md:py-36 border-t border-border/50">
+  <!-- ══ ARCHITECTURE / TOPOLOGY ═══════════════════════════════════════ -->
+  <section id="topology" class="py-20 md:py-32 border-t border-border/50">
     <div class="max-w-6xl mx-auto px-6">
-      <header class="mb-14 md:mb-16 max-w-3xl">
-        <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">05 · Architecture</p>
-        <h2 data-fade data-fade-delay="60" class="font-display text-[32px] md:text-[44px] leading-[1.08] font-normal tracking-[-0.02em] mb-6">
-          What lives where.
+      <header class="mb-14 md:mb-16 max-w-2xl">
+        <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">What lives where</p>
+        <h2 data-fade data-fade-delay="60" class="font-display text-[32px] md:text-[46px] leading-[1.08] font-normal tracking-[-0.02em] mb-5">
+          Two small servers in your network. The AI in the vendor’s.
         </h2>
-        <p data-fade data-fade-delay="120" class="text-[16px] md:text-[17px] text-text-2 leading-[1.7]">
-          Two zones — your infrastructure on the left, the vendor’s on the right. Cross-boundary arrows show exactly what leaves your network and why.
+        <p data-fade data-fade-delay="120" class="text-[16px] md:text-[17px] text-text-2 leading-[1.65]">
+          The cross-boundary arrows show exactly what leaves your network, and it is only what the AI needs to answer a request.
         </p>
       </header>
 
@@ -355,7 +384,6 @@ const description = 'The technical deep-dive. Two subscriptions, two small serve
         <ArchitectureDiagram components={ARCHITECTURE_COMPONENTS} />
       </div>
 
-      <!-- What lives where -->
       <div class="grid md:grid-cols-2 gap-10 md:gap-16 max-w-5xl mb-14">
         <div data-fade>
           <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-amber mb-4">Inside your infrastructure</p>
@@ -385,44 +413,24 @@ const description = 'The technical deep-dive. Two subscriptions, two small serve
         <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-amber mb-3">What we add</p>
         <p class="text-[15.5px] text-text leading-[1.65]">{DEPLOYMENT_ADDED}</p>
       </div>
-
-      <!-- Component reference -->
-      <div class="mt-16 md:mt-20 max-w-4xl divide-y divide-border">
-        <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-text-3 mb-6">Component reference</p>
-        {ARCHITECTURE_COMPONENTS.map((c, i) => (
-          <article data-fade data-fade-delay={i * 30} class="grid md:grid-cols-[220px_1fr] gap-4 md:gap-10 py-6">
-            <div>
-              <div class="flex items-baseline gap-2 mb-1">
-                <h3 class="font-display text-[17px] font-medium text-text leading-[1.3]">{c.name}</h3>
-              </div>
-              <p class="font-mono text-[11.5px] text-text-3 mb-1">{c.sub}</p>
-              <p class="font-mono text-[10.5px] uppercase tracking-[0.14em]" style={`color: ${c.side === 'vendor' ? 'var(--color-amber)' : 'var(--color-text-3)'}`}>
-                {c.side}
-              </p>
-            </div>
-            <p class="text-[15px] text-text-2 leading-[1.7]">{c.role}</p>
-          </article>
-        ))}
-      </div>
     </div>
   </section>
 
   <!-- ══ WHO PAYS WHAT ═════════════════════════════════════════════════ -->
-  <section id="pricing" class="py-24 md:py-36 border-t border-border/50 bg-ink-2/50">
+  <section id="pricing" class="py-20 md:py-32 border-t border-border/50 bg-ink-2/50">
     <div class="max-w-5xl mx-auto px-6">
-      <header class="mb-14 md:mb-16 max-w-3xl">
-        <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">06 · Who pays what</p>
-        <h2 data-fade data-fade-delay="60" class="font-display text-[32px] md:text-[44px] leading-[1.08] font-normal tracking-[-0.02em] mb-6">
-          Transparent. Predictable. Nothing hidden.
+      <header class="mb-14 md:mb-16 max-w-2xl">
+        <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">Who pays what</p>
+        <h2 data-fade data-fade-delay="60" class="font-display text-[32px] md:text-[46px] leading-[1.08] font-normal tracking-[-0.02em] mb-5">
+          Transparent. Predictable. Nothing marked up.
         </h2>
-        <p data-fade data-fade-delay="120" class="text-[16px] md:text-[17px] text-text-2 leading-[1.7]">
-          Studios need to plan budgets. Most vendors skip this section. Here is exactly what money flows where.
+        <p data-fade data-fade-delay="120" class="text-[16px] md:text-[17px] text-text-2 leading-[1.65]">
+          Most vendors skip this. Here is exactly what money flows where, with real ranges for a 50-developer studio.
         </p>
       </header>
 
-      <!-- Fixed costs -->
       <div class="mb-14">
-        <p data-fade class="font-mono text-[11px] uppercase tracking-[0.18em] text-text-3 mb-6">Fixed monthly costs (predictable)</p>
+        <p data-fade class="font-mono text-[11px] uppercase tracking-[0.18em] text-text-3 mb-6">Fixed monthly (predictable)</p>
         <div class="border-t border-border">
           {COST_FIXED.map((c, i) => (
             <article data-fade data-fade-delay={i * 40} class="grid md:grid-cols-[1.4fr_1fr_1.2fr] gap-4 md:gap-8 py-5 border-b border-border">
@@ -437,9 +445,8 @@ const description = 'The technical deep-dive. Two subscriptions, two small serve
         </div>
       </div>
 
-      <!-- Variable costs -->
       <div class="mb-14">
-        <p data-fade class="font-mono text-[11px] uppercase tracking-[0.18em] text-text-3 mb-6">Variable monthly costs (usage-based, paid directly to your AI vendor)</p>
+        <p data-fade class="font-mono text-[11px] uppercase tracking-[0.18em] text-text-3 mb-6">Variable monthly (paid directly to your AI vendor)</p>
         <div class="border-t border-border">
           {COST_VARIABLE.map((c, i) => (
             <article data-fade data-fade-delay={i * 40} class="grid md:grid-cols-[1.4fr_1fr_1.6fr] gap-4 md:gap-8 py-5 border-b border-border">
@@ -449,12 +456,11 @@ const description = 'The technical deep-dive. Two subscriptions, two small serve
             </article>
           ))}
         </div>
-        <p data-fade class="mt-4 text-[14px] text-text-2 leading-[1.65] italic font-display">{COST_VARIABLE_TOTAL}</p>
+        <p data-fade class="mt-4 text-[14px] text-text-2 leading-[1.65] font-display italic">{COST_VARIABLE_TOTAL}</p>
       </div>
 
-      <!-- One-time costs -->
       <div class="mb-14">
-        <p data-fade class="font-mono text-[11px] uppercase tracking-[0.18em] text-text-3 mb-6">One-time costs (per engagement, paid to us)</p>
+        <p data-fade class="font-mono text-[11px] uppercase tracking-[0.18em] text-text-3 mb-6">One-time (paid to us)</p>
         <div class="border-t border-border">
           {COST_ONE_TIME.map((c, i) => (
             <article data-fade data-fade-delay={i * 40} class="grid md:grid-cols-[1.4fr_1fr_1.6fr] gap-4 md:gap-8 py-5 border-b border-border">
@@ -466,7 +472,6 @@ const description = 'The technical deep-dive. Two subscriptions, two small serve
         </div>
       </div>
 
-      <!-- What we don't charge for -->
       <div data-fade class="p-6 md:p-7 border-l-2 border-amber bg-surface/70 max-w-4xl">
         <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-amber mb-4">What we do not charge for</p>
         <ul class="flex flex-col gap-3">
@@ -482,18 +487,18 @@ const description = 'The technical deep-dive. Two subscriptions, two small serve
   </section>
 
   <!-- ══ DEPLOYMENT & OPERATIONS ═══════════════════════════════════════ -->
-  <section id="operations" class="py-24 md:py-36 border-t border-border/50">
+  <section id="operations" class="py-20 md:py-32 border-t border-border/50">
     <div class="max-w-5xl mx-auto px-6">
-      <header class="mb-14 md:mb-16 max-w-3xl">
-        <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">07 · Deployment & operations</p>
-        <h2 data-fade data-fade-delay="60" class="font-display text-[32px] md:text-[44px] leading-[1.08] font-normal tracking-[-0.02em] mb-6">
+      <header class="mb-14 md:mb-16 max-w-2xl">
+        <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">Deployment & operations</p>
+        <h2 data-fade data-fade-delay="60" class="font-display text-[32px] md:text-[46px] leading-[1.08] font-normal tracking-[-0.02em]">
           What we deploy. What you operate.
         </h2>
       </header>
 
       <div class="grid md:grid-cols-2 gap-10 md:gap-16 mb-16 max-w-5xl">
         <div data-fade>
-          <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-amber mb-4">During Setup — we deploy</p>
+          <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-amber mb-4">During Setup, we deploy</p>
           <ul class="flex flex-col gap-2.5">
             {OPS_WE_DEPLOY_SETUP.map(o => (
               <li class="flex items-start gap-2.5 text-[14.5px] text-text-2 leading-[1.55]">
@@ -504,7 +509,7 @@ const description = 'The technical deep-dive. Two subscriptions, two small serve
           </ul>
         </div>
         <div data-fade data-fade-delay="80">
-          <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-amber mb-4">During Retainer — we maintain</p>
+          <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-amber mb-4">During Support, we maintain</p>
           <ul class="flex flex-col gap-2.5">
             {OPS_WE_MAINTAIN_RETAINER.map(o => (
               <li class="flex items-start gap-2.5 text-[14.5px] text-text-2 leading-[1.55]">
@@ -517,7 +522,7 @@ const description = 'The technical deep-dive. Two subscriptions, two small serve
       </div>
 
       <div data-fade class="max-w-3xl mb-8">
-        <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-text-3 mb-3">Studio operates</p>
+        <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-text-3 mb-3">You operate</p>
         <p class="text-[15.5px] text-text-2 leading-[1.7]">{OPS_STUDIO_OPERATES}</p>
       </div>
       <div data-fade class="max-w-3xl">
@@ -528,15 +533,15 @@ const description = 'The technical deep-dive. Two subscriptions, two small serve
   </section>
 
   <!-- ══ PRIVACY TIERS ═════════════════════════════════════════════════ -->
-  <section id="privacy" class="py-24 md:py-36 border-t border-border/50 bg-ink-2/50">
+  <section id="privacy" class="py-20 md:py-32 border-t border-border/50 bg-ink-2/50">
     <div class="max-w-6xl mx-auto px-6">
-      <header class="mb-14 md:mb-16 max-w-3xl">
-        <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">08 · Privacy tiers</p>
-        <h2 data-fade data-fade-delay="60" class="font-display text-[32px] md:text-[44px] leading-[1.08] font-normal tracking-[-0.02em] mb-6">
-          Vendor-agnostic. Matched to your IP sensitivity.
+      <header class="mb-14 md:mb-16 max-w-2xl">
+        <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">Privacy tiers</p>
+        <h2 data-fade data-fade-delay="60" class="font-display text-[32px] md:text-[46px] leading-[1.08] font-normal tracking-[-0.02em] mb-5">
+          Four levels of protection. You choose.
         </h2>
-        <p data-fade data-fade-delay="120" class="text-[16px] md:text-[17px] text-text-2 leading-[1.7]">
-          Four tiers spanning SaaS through self-hosted. Each has concrete vendor options; we advise on the trade-offs.
+        <p data-fade data-fade-delay="120" class="text-[16px] md:text-[17px] text-text-2 leading-[1.65]">
+          From vendor-hosted to fully self-hosted behind your firewall. Each with concrete vendor options.
         </p>
       </header>
 
@@ -565,7 +570,6 @@ const description = 'The technical deep-dive. Two subscriptions, two small serve
         ))}
       </div>
 
-      <!-- Critical distinction -->
       <div class="max-w-4xl">
         <div data-fade class="mb-6">
           <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-amber mb-3">Important distinction</p>
@@ -575,7 +579,7 @@ const description = 'The technical deep-dive. Two subscriptions, two small serve
         </div>
         <div class="grid md:grid-cols-2 gap-8 md:gap-12 border-t border-border pt-8">
           <div data-fade>
-            <p class="font-mono text-[10.5px] uppercase tracking-[0.14em] text-amber mb-3">Default in every commercial plan</p>
+            <p class="font-mono text-[10.5px] uppercase tracking-[0.14em] text-amber mb-3">Default everywhere</p>
             <h4 class="font-display text-[18px] md:text-[20px] font-medium text-text mb-2 leading-[1.3]">{PRIVACY_DISTINCTION.training.title}</h4>
             <p class="text-[15px] text-text-2 leading-[1.7]">{PRIVACY_DISTINCTION.training.body}</p>
           </div>
@@ -589,62 +593,56 @@ const description = 'The technical deep-dive. Two subscriptions, two small serve
     </div>
   </section>
 
-  <!-- ══ HONEST LIMITS ═════════════════════════════════════════════════ -->
-  <section id="limits" class="py-24 md:py-36 border-t border-border/50">
+  <!-- ══ HONEST LIMITS + PLAIN TERMS ═══════════════════════════════════ -->
+  <section id="plain" class="py-20 md:py-32 border-t border-border/50">
     <div class="max-w-4xl mx-auto px-6">
-      <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">09 · Honest limits</p>
-      <h2 data-fade data-fade-delay="60" class="font-display text-[32px] md:text-[44px] leading-[1.08] font-normal tracking-[-0.02em] mb-10">
-        What we do not claim.
-      </h2>
-      <ul class="border-t border-border">
-        {WHAT_WE_DONT_CLAIM.map((w, i) => (
-          <li data-fade data-fade-delay={i * 40} class="flex items-start gap-4 py-5 border-b border-border">
-            <span class="text-text-3 mt-0.5 flex-shrink-0"><ConsultingIcon name="x" size={17} class="stroke-[2.5]" /></span>
-            <span class="text-[15.5px] md:text-[16px] text-text-2 leading-[1.65]">{w}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
-  </section>
+      <div class="mb-20 md:mb-24">
+        <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">Honest limits</p>
+        <h2 data-fade data-fade-delay="60" class="font-display text-[30px] md:text-[42px] leading-[1.1] font-normal tracking-[-0.02em] mb-8">
+          What we do not claim.
+        </h2>
+        <ul class="border-t border-border">
+          {WHAT_WE_DONT_CLAIM.map((w, i) => (
+            <li data-fade data-fade-delay={i * 40} class="flex items-start gap-4 py-5 border-b border-border">
+              <span class="text-text-3 mt-0.5 flex-shrink-0"><ConsultingIcon name="x" size={17} class="stroke-[2.5]" /></span>
+              <span class="text-[15.5px] md:text-[16px] text-text-2 leading-[1.65]">{w}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
 
-  <!-- ══ IN PLAIN TERMS ════════════════════════════════════════════════ -->
-  <section id="plain" class="py-24 md:py-36 border-t border-border/50 bg-ink-2/50">
-    <div class="max-w-3xl mx-auto px-6">
-      <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">In plain terms</p>
-      <h2 data-fade data-fade-delay="60" class="font-display text-[30px] md:text-[40px] leading-[1.08] font-normal tracking-[-0.02em] mb-10">
-        Strip away the detail. Here is the whole system.
-      </h2>
-      <ol class="flex flex-col gap-6 mb-10">
-        {PLAIN_TERMS_LINES.map((line, i) => (
-          <li data-fade data-fade-delay={i * 60} class="grid grid-cols-[36px_1fr] gap-5 items-start">
-            <span class="font-mono text-[13px] text-amber pt-1">0{i + 1}</span>
-            <p class="text-[17px] md:text-[18px] text-text leading-[1.65]">{line}</p>
-          </li>
-        ))}
-      </ol>
-      <div data-fade class="pt-8 border-t border-border">
-        <p class="font-display italic text-[19px] md:text-[22px] text-text-2 leading-[1.55]">
-          {PLAIN_TERMS_TAGLINE}
-        </p>
+      <div>
+        <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">In plain terms</p>
+        <ol class="flex flex-col gap-6 mb-10">
+          {PLAIN_TERMS_LINES.map((line, i) => (
+            <li data-fade data-fade-delay={i * 60} class="grid grid-cols-[36px_1fr] gap-5 items-start">
+              <span class="font-mono text-[13px] text-amber pt-1">0{i + 1}</span>
+              <p class="text-[17px] md:text-[19px] text-text leading-[1.6]">{line}</p>
+            </li>
+          ))}
+        </ol>
+        <div data-fade class="pt-8 border-t border-border">
+          <p class="font-display italic text-[20px] md:text-[26px] text-text leading-[1.4]">{PLAIN_TERMS_TAGLINE}</p>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- ══ CTA ═══════════════════════════════════════════════════════════ -->
-  <section class="py-28 md:py-40 border-t border-border/50">
-    <div class="max-w-3xl mx-auto px-6 text-center">
-      <h2 data-fade class="font-display text-[32px] md:text-[46px] leading-[1.08] font-normal tracking-[-0.02em] mb-6">
-        Discuss your architecture in a Discovery Call.
+  <section class="py-28 md:py-40 border-t border-border/50 bg-ink-2/50">
+    <div class="max-w-2xl mx-auto px-6 text-center">
+      <h2 data-fade class="font-display text-[32px] md:text-[48px] leading-[1.08] font-normal tracking-[-0.02em] mb-6">
+        Bring us your hardest question.
       </h2>
-      <p data-fade data-fade-delay="80" class="font-display italic text-[18px] md:text-[20px] text-text-2 leading-[1.55] mb-10 max-w-2xl mx-auto">
-        Bring your stack, your compliance constraints, and your hardest integration question. 30 minutes, free, engineer to engineer.
+      <p data-fade data-fade-delay="80" class="font-display italic text-[18px] md:text-[21px] text-text-2 leading-[1.5] mb-10 max-w-xl mx-auto">
+        Your stack, your compliance constraints, your integration edge case. 30 minutes, free, engineer to engineer.
       </p>
       <div data-fade data-fade-delay="160" class="flex flex-col sm:flex-row items-center justify-center gap-4">
         <a href={BOOK_PATH} class="inline-flex items-center gap-2 px-7 py-3.5 rounded-md bg-text text-ink font-semibold text-[15px] hover:bg-text-2 transition-colors">
-          Book Discovery Call
+          Book a call
           <ConsultingIcon name="arrow-right" size={16} class="stroke-[2.5]" />
         </a>
-        <a href={`${BASE}/#pipeline`} class="inline-flex items-center gap-2 px-7 py-3.5 rounded-md border border-border text-text hover:border-border-2 hover:bg-surface text-[15px] font-medium transition-colors">
+        <a href={BASE} class="inline-flex items-center gap-2 px-7 py-3.5 rounded-md border border-border text-text hover:border-border-2 hover:bg-surface text-[15px] font-medium transition-colors">
           Back to overview
         </a>
       </div>
