@@ -92,9 +92,6 @@ details[data-faq] .chevron { transition: transform 200ms ease-out; }
 details[data-faq][open] .chevron { transform: rotate(180deg); }
 details[data-faq] .answer { overflow: hidden; }
 
-/* ─── Link hover default ──────────────────────────────────────────────── */
-a { color: inherit; }
-
 /* ─── Divider / rule variant used in editorial breaks ─────────────────── */
 .editorial-rule {
   height: 1px;
