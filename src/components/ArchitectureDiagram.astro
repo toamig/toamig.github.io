@@ -1,0 +1,262 @@
+---
+// Six-component system diagram, three tiers.
+// SVG for desktop with scroll-triggered stroke-draw animation.
+// On mobile: hidden SVG replaced by a stacked list of the same components.
+import ConsultingIcon from './ConsultingIcon.astro';
+
+interface Component {
+  id: string;
+  name: string;
+  sub: string;
+  role: string;
+  tier: number;
+}
+interface Props {
+  components: Component[];
+}
+const { components } = Astro.props;
+
+// Tier ordering for the mobile fallback
+const byTier = [0, 1, 2, 3].map(t => components.filter(c => c.tier === t));
+---
+<div class="arch-wrap">
+  <!-- Desktop SVG -->
+  <svg
+    class="arch"
+    data-fade
+    viewBox="0 0 900 660"
+    xmlns="http://www.w3.org/2000/svg"
+    role="img"
+    aria-label="Six-component architecture: brain repository feeds context server, which serves developer sessions and automation workers, which call Anthropic API and post to studio systems."
+  >
+    <defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="currentColor" />
+      </marker>
+    </defs>
+
+    <!-- Connector lines (drawn behind boxes so boxes overlap the ends) -->
+    <g class="arch-lines" stroke="currentColor" stroke-width="1.5" fill="none">
+      <!-- Brain → Context -->
+      <line class="arch-line" pathLength="1" x1="450" y1="120" x2="450" y2="180" marker-end="url(#arrow)" />
+      <!-- Context → Dev Session -->
+      <line class="arch-line" pathLength="1" x1="410" y1="280" x2="270" y2="340" marker-end="url(#arrow)" />
+      <!-- Context → Automation Worker -->
+      <line class="arch-line" pathLength="1" x1="490" y1="280" x2="630" y2="340" marker-end="url(#arrow)" />
+      <!-- Dev Session → Anthropic API -->
+      <line class="arch-line" pathLength="1" x1="210" y1="440" x2="210" y2="500" marker-end="url(#arrow)" />
+      <!-- Automation Worker → Studio Systems -->
+      <line class="arch-line" pathLength="1" x1="690" y1="440" x2="690" y2="500" marker-end="url(#arrow)" />
+    </g>
+
+    <!-- Line annotations -->
+    <g class="arch-anno" fill="currentColor" font-family="var(--font-mono)" font-size="12" letter-spacing="0.05em">
+      <text x="462" y="156" text-anchor="start">pull on tag</text>
+      <text x="330" y="304" text-anchor="end">MCP query</text>
+      <text x="570" y="304" text-anchor="start">MCP query</text>
+      <text x="222" y="476" text-anchor="start">API call</text>
+      <text x="702" y="476" text-anchor="start">events / posts</text>
+    </g>
+
+    <!-- Component boxes -->
+    <g class="arch-boxes">
+      <!-- Brain (tier 0, center top) -->
+      <g class="arch-box">
+        <rect x="330" y="30" width="240" height="90" rx="8" />
+        <text class="box-name"    x="450" y="70"  text-anchor="middle">Brain Repository</text>
+        <text class="box-sub"     x="450" y="94"  text-anchor="middle">Git · private</text>
+      </g>
+      <!-- Context Server (tier 1, center) -->
+      <g class="arch-box arch-box-primary">
+        <rect x="330" y="190" width="240" height="90" rx="8" />
+        <text class="box-name"    x="450" y="230" text-anchor="middle">Context Server</text>
+        <text class="box-sub"     x="450" y="254" text-anchor="middle">Internal VM · MCP</text>
+      </g>
+      <!-- Dev Session (tier 2, left) -->
+      <g class="arch-box">
+        <rect x="90"  y="350" width="240" height="90" rx="8" />
+        <text class="box-name"    x="210" y="390" text-anchor="middle">Developer Session</text>
+        <text class="box-sub"     x="210" y="414" text-anchor="middle">Claude Code + MCP client</text>
+      </g>
+      <!-- Automation Worker (tier 2, right) -->
+      <g class="arch-box">
+        <rect x="570" y="350" width="240" height="90" rx="8" />
+        <text class="box-name"    x="690" y="390" text-anchor="middle">Automation Worker</text>
+        <text class="box-sub"     x="690" y="414" text-anchor="middle">Small VM or serverless</text>
+      </g>
+      <!-- Anthropic API (tier 3, left) -->
+      <g class="arch-box arch-box-external">
+        <rect x="90"  y="510" width="240" height="90" rx="8" stroke-dasharray="4 4" />
+        <text class="box-name"    x="210" y="550" text-anchor="middle">Anthropic API</text>
+        <text class="box-sub"     x="210" y="574" text-anchor="middle">or Bedrock / Vertex AI</text>
+      </g>
+      <!-- Studio Systems (tier 3, right) -->
+      <g class="arch-box arch-box-external">
+        <rect x="570" y="510" width="240" height="90" rx="8" stroke-dasharray="4 4" />
+        <text class="box-name"    x="690" y="550" text-anchor="middle">Studio Systems</text>
+        <text class="box-sub"     x="690" y="574" text-anchor="middle">Perforce, Swarm, Jira, Slack</text>
+      </g>
+    </g>
+
+    <!-- Tier labels -->
+    <g class="arch-tier-labels" fill="currentColor" font-family="var(--font-mono)" font-size="10.5" letter-spacing="0.15em">
+      <text x="46" y="80"  text-anchor="start">SOURCE OF TRUTH</text>
+      <text x="46" y="240" text-anchor="start">GOVERNED ACCESS</text>
+      <text x="46" y="400" text-anchor="start">CONSUMERS</text>
+      <text x="46" y="560" text-anchor="start">EXTERNAL</text>
+    </g>
+  </svg>
+
+  <!-- Mobile fallback: stacked component list -->
+  <ol class="arch-mobile">
+    {byTier.map((tier, tIdx) => (
+      tier.length > 0 && (
+        <li class="arch-tier">
+          <span class="arch-tier-label">{['Source of truth', 'Governed access', 'Consumers', 'External'][tIdx]}</span>
+          <div class="arch-tier-items">
+            {tier.map(c => (
+              <div class="arch-tier-item">
+                <p class="tier-item-name">{c.name}</p>
+                <p class="tier-item-sub">{c.sub}</p>
+              </div>
+            ))}
+          </div>
+        </li>
+      )
+    ))}
+  </ol>
+</div>
+
+<style>
+  .arch-wrap { width: 100%; }
+
+  .arch {
+    display: block;
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+    color: var(--color-text-3);
+  }
+
+  /* Box styling */
+  .arch-box rect {
+    fill: var(--color-surface);
+    stroke: var(--color-border-2);
+    stroke-width: 1.25;
+    transition: stroke 0.4s, fill 0.4s;
+  }
+  .arch-box-primary rect {
+    stroke: var(--color-amber);
+    fill: color-mix(in oklab, var(--color-amber) 4%, var(--color-surface));
+  }
+  .arch-box-external rect {
+    fill: var(--color-ink-2);
+  }
+
+  .box-name {
+    fill: var(--color-text);
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .arch-box-primary .box-name {
+    fill: var(--color-amber);
+  }
+  .box-sub {
+    fill: var(--color-text-3);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.02em;
+  }
+
+  /* Lines start invisible, animate to visible when SVG scrolls into view */
+  .arch-line {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    color: var(--color-border-2);
+  }
+  .arch.is-visible .arch-line {
+    animation: arch-draw 0.9s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+  }
+  .arch.is-visible .arch-line:nth-child(1) { animation-delay: 0.15s; }
+  .arch.is-visible .arch-line:nth-child(2) { animation-delay: 0.35s; }
+  .arch.is-visible .arch-line:nth-child(3) { animation-delay: 0.35s; }
+  .arch.is-visible .arch-line:nth-child(4) { animation-delay: 0.60s; }
+  .arch.is-visible .arch-line:nth-child(5) { animation-delay: 0.60s; }
+
+  @keyframes arch-draw {
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* Line annotations fade in with the lines */
+  .arch-anno text {
+    fill: var(--color-text-3);
+    opacity: 0;
+    transition: opacity 0.5s ease 0.9s;
+  }
+  .arch.is-visible .arch-anno text { opacity: 1; }
+
+  /* Tier labels on the left side */
+  .arch-tier-labels text {
+    fill: var(--color-text-3);
+    text-transform: uppercase;
+  }
+
+  /* Hide desktop SVG on small viewports, show mobile list */
+  .arch-mobile {
+    display: none;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  @media (max-width: 767px) {
+    .arch { display: none; }
+    .arch-mobile { display: flex; flex-direction: column; gap: 20px; }
+  }
+
+  .arch-tier {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .arch-tier-label {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-text-3);
+  }
+  .arch-tier-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+  }
+  .arch-tier-item {
+    padding: 14px 16px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+  }
+  .tier-item-name {
+    margin: 0 0 4px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+  .tier-item-sub {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--color-text-3);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .arch.is-visible .arch-line {
+      animation: none;
+      stroke-dashoffset: 0;
+    }
+    .arch-anno text { opacity: 1; transition: none; }
+  }
+</style>

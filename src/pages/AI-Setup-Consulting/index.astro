@@ -1,78 +1,50 @@
 ---
 import ConsultingLayout from '../../layouts/ConsultingLayout.astro';
 import ConsultingIcon from '../../components/ConsultingIcon.astro';
+import PipelineDiagram from '../../components/PipelineDiagram.astro';
 import {
   SITE, BRAND, EMAIL, LINKEDIN_URL, BASE, BOOK_PATH,
-  STACK, BUILD_CARDS, AUTOMATIONS, SEGMENTS, PHASES,
+  STACK, HERO, PROBLEMS, PROBLEM_PATTERN,
+  PIPELINE, PIPELINE_PRINCIPLE,
+  TYPICAL_DAY, TYPICAL_DAY_TAKEAWAY,
+  SEGMENTS, DIFFERENTIATORS,
 } from '../../data/consulting';
 
-const title = 'AI engineering infrastructure for Unreal game studios · Miguel Vieira';
-const description = 'Centrally governed, measurably faster AI workflows for Unreal Engine teams. Built by engineers who ship games, with guardrails for C++, Perforce, and proprietary IP.';
-
-const pains = [
-  {
-    icon: 'eye-off',
-    title: 'Shadow AI is already in your studio',
-    body: 'Developers are using consumer AI accounts on proprietary code right now. Consumer accounts retain data for up to 5 years and may use it for training. Most studios have no visibility into this. Most legal teams would object if they knew.',
-  },
-  {
-    icon: 'git-branch',
-    title: 'AI without guardrails creates technical debt',
-    body: 'Ad-hoc AI adoption produces code that does not respect your conventions, your gameplay framework, or your architectural decisions. The cleanup cost often exceeds the productivity gains.',
-  },
-  {
-    icon: 'users',
-    title: 'Senior time is being wasted',
-    body: 'Tech leads spend 15-25% of their week on code review, and most of that time catches convention violations that could be caught at write-time. AI properly integrated recovers that time.',
-  },
-];
-
-const credibility = [
-  'Custom MCP servers for Perforce, Plastic SCM, and internal tooling',
-  'Governance-first brain repos with branch protection, CI validation, and controlled updates',
-  'Prompt caching optimization to keep API costs viable at scale',
-  'Four-tier privacy framework aligned with Anthropic commercial terms and enterprise agreements',
-  'Integration with Perforce triggers, CI hooks, Swarm, Jira, and Slack for event-driven automation',
-  'Compliance architecture including Zero Data Retention, AWS Bedrock, and Google Vertex AI deployment paths',
-];
-
-const notThis = [
-  'Not a chatbot subscription. Not a plugin. Not something you install and forget.',
-  'Not a replacement for engineering judgment. Your seniors still make architectural calls.',
-  'Not a promise of code generation. AI accelerates good engineers; it does not replace them.',
-  'Not vendor lock-in. Deliverables remain your IP. You can walk away with everything we built.',
-  'Not a one-time setup. Real value comes from continuous evolution as your codebase and Claude both change.',
-  'Not generic AI consulting. We only work with game studios.',
-];
+const title = 'AI infrastructure engineered for game studios · Miguel Vieira';
+const description = HERO.subhead;
 
 const faqs = [
   {
     q: 'How is this different from just using Claude Code with our team?',
-    a: 'Claude Code out of the box is a great tool for individual developers. It does not come with your studio conventions, does not enforce architectural rules, does not integrate with Perforce safely, and does not provide governance. We build the infrastructure that makes AI reliable at team scale.',
+    a: 'Claude Code out of the box is a great tool for individual developers. It does not come with your studio conventions, does not enforce architectural rules, does not integrate with Perforce safely at team scale, does not provide governance for shared knowledge, and does not compose multiple tools into pipelines. We build the infrastructure that makes AI reliable at team scale — the part that is not in the tool itself.',
   },
   {
-    q: 'What is the smallest studio you work with?',
-    a: 'We start at around 10 developers. Below that, the investment does not pay back within a reasonable window. Indie teams can often achieve enough value with off-the-shelf tools and public documentation.',
-  },
-  {
-    q: 'Do you replace our seniors or reduce our hiring needs?',
-    a: 'No. AI properly integrated makes your existing team more effective. It does not replace senior judgment on architecture or design. Studios that treat this as "we can hire less" usually get worse outcomes than studios that treat it as "our seniors focus on higher-value work".',
-  },
-  {
-    q: 'How do you handle our proprietary code and IP?',
-    a: 'Four privacy tiers are available. We recommend the appropriate one during the Audit based on your IP sensitivity, compliance requirements, and infrastructure preferences. Zero Data Retention agreements and AWS Bedrock or Google Vertex AI deployments are common for studios with strict IP concerns.',
-  },
-  {
-    q: 'How is pricing structured?',
-    a: 'Fixed-fee for Audit and Setup phases, scoped in advance, no hourly billing. Monthly retainer for ongoing optimization. Anthropic seats and API tokens are paid directly by the studio to Anthropic; we do not mark up their pricing. Full details are discussed during the Discovery Call.',
+    q: 'Can our internal team build this after seeing your setup?',
+    a: 'Parts of it, yes. Setting up a Git repo with markdown files is not hard. Configuring the official Perforce MCP server is documented. Writing linters is standard engineering work. What is harder: designing the right layer separation without redundancy, calibrating each layer to avoid alert fatigue, integrating systems without brittle glue, establishing governance that survives team changes, measuring outcomes honestly, and evolving as Anthropic ships new capabilities. Studios that try to build this internally typically spend 6-12 months and multiple iterations. We deliver in 6-8 weeks with patterns already tested.',
   },
   {
     q: 'What if we already use ChatGPT or GitHub Copilot?',
-    a: 'We can work alongside existing tools or replace them where appropriate. Most studios end up with a stack: Claude for engineering work, other tools for specific niches. The Audit identifies what is working and what should change.',
+    a: 'We can work alongside existing tools or replace them where appropriate. Most studios end up with a stack: Claude for engineering work through structured pipelines, other tools for specific niches (ChatGPT for brainstorming, Copilot for individual autocomplete). The Audit identifies what should stay, what should change, and how the tools should compose.',
   },
   {
-    q: 'Do you offer training only, without full setup?',
-    a: 'Team training is available as a standalone service, 2 to 5 days depending on team size. It is less impactful than a full engagement but useful for studios that already have infrastructure in place and just need their team to use it effectively.',
+    q: 'How do you handle proprietary code and IP?',
+    a: 'Through the four privacy tiers detailed on the technology page. Recommendation is made during the Audit based on your IP sensitivity, compliance requirements, and infrastructure preferences. For studios with the strictest IP requirements: self-hosted sandboxes with MCP tunnels keep sensitive operations inside your perimeter while still using Anthropic frontier models.',
+  },
+  {
+    q: 'What is the pricing structure?',
+    a: 'Fixed-fee for Audit and Setup phases, scoped in advance, no hourly billing. Monthly retainer for ongoing optimization. Anthropic seats and API tokens are paid directly by your studio to Anthropic; we do not mark up their pricing. Full details discussed during Discovery Call and detailed in written proposals after the Audit.',
+  },
+  {
+    q: 'Do you replace our senior engineers?',
+    a: 'No. AI properly integrated makes your existing team more effective. It does not replace senior judgment on architecture or design. Studios that treat this as "we can hire less" typically get worse outcomes than studios that treat it as "our seniors focus on higher-value work."',
+  },
+  {
+    q: 'What about the AI making mistakes?',
+    a: 'It will. Every layer is designed with this expectation. Human review is mandatory for all code changes. AI proposes, engineers decide. The measurement framework tracks whether AI-assisted work quality is improving or degrading, and we adjust when issues appear. Autonomous code modification is not a feature we ship, regardless of client requests.',
+  },
+  {
+    q: 'Can you show us the code you would build?',
+    a: 'After NDA, yes. Architecture diagrams, sample MCP server configurations, brain repo templates, skill libraries — all shareable in detail once mutual protection is in place. Before NDA, we describe the destination clearly; the specific implementation is the deliverable that requires the engagement.',
   },
 ];
 
@@ -95,7 +67,7 @@ const jsonLd = {
       '@type': 'Service',
       name: 'AI engineering infrastructure for game studios',
       provider: { '@id': `${SITE}/#organization` },
-      serviceType: 'AI adoption, tooling, and governance for game engineering',
+      serviceType: 'AI adoption, tooling, governance, and pipeline engineering for game studios',
       areaServed: 'EU, UK, Nordic countries',
       audience: {
         '@type': 'Audience',
@@ -112,24 +84,26 @@ const jsonLd = {
   path={`${BASE}/`}
   jsonLd={jsonLd}
 >
-  <!-- ── Hero ─────────────────────────────────────────── -->
+  <!-- ── Hero ─────────────────────────────────────────────── -->
   <section class="hero-grid pt-32 pb-24 md:pt-44 md:pb-32 border-b border-border/40">
-    <div class="max-w-5xl mx-auto px-6 text-center">
+    <div class="max-w-5xl mx-auto px-6">
       <div data-fade class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-surface text-text-2 text-[12px] font-mono mb-8">
         <span class="w-1.5 h-1.5 rounded-full bg-amber"></span>
         For studios using Unreal 4/5, C++, Perforce
       </div>
 
-      <h1 data-fade data-fade-delay="80" class="text-[40px] md:text-[62px] lg:text-[72px] font-bold tracking-[-0.03em] leading-[1.03] mb-6">
-        AI engineering infrastructure<br class="hidden md:block" />
-        <span class="text-amber">for Unreal game studios.</span>
+      <h1 data-fade data-fade-delay="80" class="text-[40px] md:text-[60px] lg:text-[70px] font-bold tracking-[-0.03em] leading-[1.03] mb-6 max-w-4xl">
+        AI infrastructure <span class="text-amber">engineered for game studios.</span>
       </h1>
 
-      <p data-fade data-fade-delay="160" class="text-[18px] md:text-[21px] text-text-2 leading-[1.5] max-w-2xl mx-auto mb-10">
-        Centrally governed, measurably faster, built by engineers who ship games.
+      <p data-fade data-fade-delay="160" class="text-[18px] md:text-[21px] text-text-2 leading-[1.5] max-w-3xl mb-6">
+        Centrally governed, layered by design, built on open standards.
+      </p>
+      <p data-fade data-fade-delay="200" class="text-[16px] md:text-[17px] text-text-3 leading-[1.6] max-w-3xl mb-10">
+        Not a chatbot. Not a plugin. The infrastructure your team actually needs to make AI reliable at production scale.
       </p>
 
-      <div data-fade data-fade-delay="240" class="flex flex-col sm:flex-row items-center justify-center gap-3">
+      <div data-fade data-fade-delay="280" class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
         <a href={BOOK_PATH} class="inline-flex items-center gap-2 px-6 py-3 rounded-md bg-amber text-ink font-semibold text-[15px] hover:bg-amber-2 transition-colors">
           Book Discovery Call
           <ConsultingIcon name="arrow-right" size={16} class="stroke-[2.5]" />
@@ -139,9 +113,9 @@ const jsonLd = {
         </a>
       </div>
 
-      <div data-fade data-fade-delay="320" class="mt-14">
+      <div data-fade data-fade-delay="360" class="mt-14">
         <p class="text-[11.5px] font-mono uppercase tracking-[0.16em] text-text-3 mb-4">Built on and integrated with</p>
-        <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+        <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
           {STACK.map(s => (
             <span class="font-mono text-[14px] text-text-2">{s}</span>
           ))}
@@ -150,21 +124,18 @@ const jsonLd = {
     </div>
   </section>
 
-  <!-- ── The Problem ─────────────────────────────────────────── -->
+  <!-- ── The Problem ─────────────────────────────────────── -->
   <section id="problem" class="py-24 md:py-32 border-b border-border/40">
     <div class="max-w-7xl mx-auto px-6">
       <div class="max-w-3xl mb-16">
         <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">The problem</p>
         <h2 data-fade data-fade-delay="60" class="text-[34px] md:text-[44px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
-          Your team is already using AI. Nobody owns how.
+          Adding AI without infrastructure creates more problems than it solves.
         </h2>
-        <p data-fade data-fade-delay="120" class="text-[17px] text-text-2 leading-[1.6]">
-          The friction is rarely technical genius. It is governance, integration, and measurement that nobody has time to own.
-        </p>
       </div>
 
-      <div class="grid md:grid-cols-3 gap-px bg-border/60 border border-border/60 rounded-lg overflow-hidden">
-        {pains.map((p, i) => (
+      <div class="grid md:grid-cols-3 gap-px bg-border/60 border border-border/60 rounded-lg overflow-hidden mb-10">
+        {PROBLEMS.map((p, i) => (
           <div data-fade data-fade-delay={i * 80} class="bg-ink p-7 lg:p-9 hover:bg-surface/80 transition-colors">
             <div class="w-9 h-9 rounded-md bg-amber/10 border border-amber/20 flex items-center justify-center mb-5 text-amber">
               <ConsultingIcon name={p.icon} size={18} />
@@ -174,77 +145,115 @@ const jsonLd = {
           </div>
         ))}
       </div>
+
+      <p data-fade class="max-w-3xl text-[16px] text-text-2 leading-[1.7] border-l-2 border-amber/60 pl-5">
+        {PROBLEM_PATTERN}
+      </p>
     </div>
   </section>
 
-  <!-- ── What We Build ─────────────────────────────────────────── -->
-  <section id="build" class="py-24 md:py-32 border-b border-border/40">
+  <!-- ── The Layered Pipeline ─────────────────────────────── -->
+  <section id="pipeline" class="py-24 md:py-32 border-b border-border/40 bg-ink-2/40">
     <div class="max-w-7xl mx-auto px-6">
-      <div class="max-w-3xl mb-16">
-        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">What we build</p>
+      <div class="max-w-3xl mb-14">
+        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">The pipeline</p>
         <h2 data-fade data-fade-delay="60" class="text-[34px] md:text-[44px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
-          Infrastructure, not chatbots.
+          Five layers. Each with one job.
         </h2>
         <p data-fade data-fade-delay="120" class="text-[17px] text-text-2 leading-[1.6]">
-          Four systems that make AI reliable at team scale. Each one is governed, observable, and yours to keep.
+          Most AI adoption failures come from throwing tools at problems without thinking about where each tool belongs in the development lifecycle. We design integration as a layered pipeline where each layer has a specific responsibility, serves a specific audience, and runs at a specific moment. Layers reinforce each other rather than repeat each other.
+        </p>
+        <p data-fade data-fade-delay="180" class="hidden md:block mt-4 text-[13px] text-text-3 font-mono">
+          <span class="text-amber">→</span> Hover a layer to reveal its metadata.
         </p>
       </div>
 
-      <div class="grid sm:grid-cols-2 gap-5">
-        {BUILD_CARDS.map((c, i) => (
-          <div data-fade data-fade-delay={i * 80} class="group p-8 rounded-lg border border-border bg-surface hover:border-border-2 hover:bg-surface-2 transition-all duration-200">
-            <div class="w-11 h-11 rounded-md bg-amber/10 border border-amber/25 flex items-center justify-center text-amber mb-6">
-              <ConsultingIcon name={c.icon} size={20} />
-            </div>
-            <h3 class="text-[20px] font-semibold tracking-tight mb-3">{c.title}</h3>
-            <p class="text-[15px] text-text-2 leading-[1.65] mb-5">{c.body}</p>
-            <a href={`${BASE}/technology`} class="inline-flex items-center gap-1.5 text-[14px] font-medium text-text hover:text-amber transition-colors">
-              Learn more
-              <ConsultingIcon name="arrow-right" size={14} class="stroke-[2.5] group-hover:translate-x-0.5 transition-transform" />
-            </a>
-          </div>
-        ))}
+      <PipelineDiagram layers={PIPELINE} />
+
+      <div data-fade class="max-w-3xl mx-auto mt-14 p-6 md:p-7 rounded-lg border border-amber/40 bg-amber-soft/30">
+        <p class="font-mono text-[11.5px] uppercase tracking-[0.14em] text-amber mb-3">Human in the loop, always</p>
+        <p class="text-[15.5px] text-text leading-[1.65]">{PIPELINE_PRINCIPLE}</p>
       </div>
     </div>
   </section>
 
-  <!-- ── What It Automates ─────────────────────────────────────── -->
-  <section id="automate" class="py-24 md:py-32 border-b border-border/40">
+  <!-- ── A Typical Day ────────────────────────────────────── -->
+  <section id="day" class="py-24 md:py-32 border-b border-border/40">
     <div class="max-w-7xl mx-auto px-6">
       <div class="max-w-3xl mb-16">
-        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">What it automates</p>
+        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">A typical day</p>
         <h2 data-fade data-fade-delay="60" class="text-[34px] md:text-[44px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
-          Work you can take off your engineers.
+          What the pipeline looks like in practice.
         </h2>
         <p data-fade data-fade-delay="120" class="text-[17px] text-text-2 leading-[1.6]">
-          The infrastructure above unlocks the repetitive work your team does by hand today. Everything runs human-in-the-loop: AI drafts and proposes, your engineers approve.
+          One gameplay engineer, one damage-over-time ability, one day. Every layer earns its place without the developer noticing.
         </p>
       </div>
 
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {AUTOMATIONS.map((g, i) => (
-          <div data-fade data-fade-delay={i * 60} class="flex flex-col p-7 rounded-lg border border-border bg-surface">
-            <div class="flex items-center gap-3 mb-5">
-              <div class="w-10 h-10 rounded-md bg-amber/10 border border-amber/25 flex items-center justify-center text-amber flex-shrink-0">
-                <ConsultingIcon name={g.icon} size={19} />
-              </div>
-              <h3 class="text-[18px] font-semibold tracking-tight">{g.title}</h3>
+      <ol class="max-w-4xl mx-auto relative">
+        <div class="absolute left-[62px] md:left-[110px] top-0 bottom-0 w-px bg-border-2/60" aria-hidden="true"></div>
+        {TYPICAL_DAY.map((e, i) => (
+          <li data-fade data-fade-delay={i * 50} class="relative grid grid-cols-[80px_1fr] md:grid-cols-[140px_1fr] gap-6 md:gap-10 pb-10 last:pb-0">
+            <div class="flex flex-col items-end pt-1">
+              <span class="font-mono text-[13px] text-amber">{e.time}</span>
+              <span class="font-mono text-[10.5px] uppercase tracking-[0.12em] text-text-3 mt-1">{e.actor}</span>
             </div>
-            <ul class="flex flex-col gap-3">
-              {g.items.map(it => (
-                <li class="flex items-start gap-2.5 text-[14.5px] text-text-2 leading-[1.55]">
-                  <span class="text-amber mt-0.5 flex-shrink-0"><ConsultingIcon name="check" size={14} class="stroke-[2.5]" /></span>
-                  {it}
-                </li>
-              ))}
-            </ul>
-          </div>
+            <div class="relative pl-6 md:pl-8 pt-0.5">
+              <span class="absolute left-0 top-2.5 w-3 h-3 rounded-full border-2 border-amber bg-ink"></span>
+              <p class="text-[15.5px] text-text-2 leading-[1.65]">{e.body}</p>
+            </div>
+          </li>
         ))}
+      </ol>
+
+      <p data-fade class="max-w-3xl mx-auto mt-10 text-[16px] text-text-2 leading-[1.7]">
+        {TYPICAL_DAY_TAKEAWAY}
+      </p>
+    </div>
+  </section>
+
+  <!-- ── The Brain (summary) ──────────────────────────────── -->
+  <section id="brain" class="py-24 md:py-32 border-b border-border/40 bg-ink-2/40">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid lg:grid-cols-[1fr_1.15fr] gap-12 lg:gap-16 items-start">
+        <div>
+          <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">The brain</p>
+          <h2 data-fade data-fade-delay="60" class="text-[32px] md:text-[42px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+            Your studio’s knowledge, structured for AI, protected from drift.
+          </h2>
+          <p data-fade data-fade-delay="120" class="text-[16.5px] text-text-2 leading-[1.65] mb-6">
+            A structured, version-controlled knowledge layer served through MCP. Individual developers can consult it; only tech leads can change it. Every update flows through PR review and CI validation.
+          </p>
+          <a data-fade data-fade-delay="180" href={`${BASE}/technology#brain`} class="inline-flex items-center gap-2 text-[15px] font-medium text-text hover:text-amber transition-colors">
+            See the brain in depth
+            <ConsultingIcon name="arrow-right" size={15} class="stroke-[2.5]" />
+          </a>
+        </div>
+
+        <div data-fade data-fade-delay="120" class="rounded-lg border border-border bg-surface overflow-hidden">
+          <div class="px-6 py-4 border-b border-border font-mono text-[11.5px] uppercase tracking-[0.14em] text-text-3">
+            brain/
+          </div>
+          <div class="p-6 md:p-7 font-mono text-[13px] leading-[1.8] text-text-2">
+            <div><span class="text-amber">├─</span> conventions/     <span class="text-text-3"># naming, formatting, patterns</span></div>
+            <div><span class="text-amber">├─</span> architecture/    <span class="text-text-3"># module boundaries, ownership</span></div>
+            <div><span class="text-amber">├─</span> decisions/       <span class="text-text-3"># ADRs with rationale</span></div>
+            <div><span class="text-amber">├─</span> examples/        <span class="text-text-3"># canonical implementations</span></div>
+            <div><span class="text-amber">├─</span> anti-patterns/   <span class="text-text-3"># explicit "never do this"</span></div>
+            <div><span class="text-amber">├─</span> workflows/       <span class="text-text-3"># feature, bug fix, refactor</span></div>
+            <div><span class="text-amber">├─</span> platform/        <span class="text-text-3"># console SDK notes</span></div>
+            <div><span class="text-amber">└─</span> skills/          <span class="text-text-3"># studio-adapted skill library</span></div>
+            <div class="mt-4 pt-4 border-t border-border">
+              <div><span class="text-text-3">.github/workflows/</span></div>
+              <div>&nbsp;&nbsp;<span class="text-amber">validate.yml</span>  <span class="text-text-3"># CI gate on every PR</span></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- ── Auto-Segmentation ─────────────────────────────────────── -->
+  <!-- ── Segments ─────────────────────────────────────────── -->
   <section id="segments" class="py-24 md:py-32 border-b border-border/40">
     <div class="max-w-7xl mx-auto px-6">
       <div class="max-w-3xl mb-16">
@@ -297,108 +306,38 @@ const jsonLd = {
     </div>
   </section>
 
-  <!-- ── How This Works ─────────────────────────────────────────── -->
-  <section id="process" class="py-24 md:py-32 border-b border-border/40">
+  <!-- ── Why This Approach Works ──────────────────────────── -->
+  <section id="why" class="py-24 md:py-32 border-b border-border/40 bg-ink-2/40">
     <div class="max-w-7xl mx-auto px-6">
       <div class="max-w-3xl mb-16">
-        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">How this works</p>
+        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Why this approach works</p>
         <h2 data-fade data-fade-delay="60" class="text-[34px] md:text-[44px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
-          Four phases. Time-boxed. Deliverable-based.
+          Boring infrastructure. Predictable outcomes. Compounding value.
         </h2>
         <p data-fade data-fade-delay="120" class="text-[17px] text-text-2 leading-[1.6]">
-          A predictable process. No open-ended retainers to start. No "we will figure it out".
+          We do not sell hype. We sell engineering discipline applied to AI adoption in a specific industry that most consultants do not understand.
         </p>
       </div>
 
-      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
-        {PHASES.map((p, i) => (
-          <div data-fade data-fade-delay={i * 70} class="flex flex-col p-7 rounded-lg border border-border bg-surface">
-            <div class="flex items-center justify-between mb-5">
-              <span class="font-mono text-[13px] text-amber tracking-[0.1em]">STEP {p.step}</span>
-              <span class="font-mono text-[11.5px] text-text-3">{p.meta}</span>
-            </div>
-            <h3 class="text-[19px] font-semibold tracking-tight mb-4">{p.title}</h3>
-            <ul class="flex flex-col gap-2.5">
-              {p.points.map(pt => (
-                <li class="flex items-start gap-2.5 text-[14px] text-text-2 leading-[1.55]">
-                  <span class="text-amber mt-0.5 flex-shrink-0"><ConsultingIcon name="check" size={14} class="stroke-[2.5]" /></span>
-                  {pt}
-                </li>
-              ))}
-            </ul>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {DIFFERENTIATORS.map((d, i) => (
+          <div data-fade data-fade-delay={i * 50} class="p-7 rounded-lg border border-border bg-surface">
+            <span class="font-mono text-[11.5px] text-text-3 tracking-[0.14em]">0{i + 1}</span>
+            <h3 class="text-[17px] font-semibold text-text mt-3 mb-2.5 leading-snug">{d.title}</h3>
+            <p class="text-[14.5px] text-text-2 leading-[1.6]">{d.body}</p>
           </div>
         ))}
       </div>
-
-      <div data-fade class="mt-12 text-center">
-        <a href={BOOK_PATH} class="inline-flex items-center gap-2 text-[15px] font-medium text-text hover:text-amber transition-colors">
-          Start with a Discovery Call
-          <ConsultingIcon name="arrow-right" size={15} class="stroke-[2.5]" />
-        </a>
-      </div>
     </div>
   </section>
 
-  <!-- ── Technical Credibility ─────────────────────────────────── -->
-  <section id="credibility" class="py-24 md:py-32 border-b border-border/40">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="grid lg:grid-cols-[1fr_1.1fr] gap-12 lg:gap-16 items-start">
-        <div>
-          <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Technical credibility</p>
-          <h2 data-fade data-fade-delay="60" class="text-[34px] md:text-[42px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
-            Built by engineers who ship games.
-          </h2>
-          <p data-fade data-fade-delay="120" class="text-[17px] text-text-2 leading-[1.65] mb-6">
-            Not general AI consultants. Our practice is built on hands-on experience with Unreal Engine 5, C++ gameplay engineering, Perforce workflows at scale, and the specific realities of shipping games. Not adapting generic AI consulting frameworks to a market we do not know.
-          </p>
-          <a data-fade data-fade-delay="180" href={`${BASE}/technology`} class="inline-flex items-center gap-2 text-[15px] font-medium text-text hover:text-amber transition-colors">
-            Read the technical brief
-            <ConsultingIcon name="arrow-right" size={15} class="stroke-[2.5]" />
-          </a>
-        </div>
-
-        <div data-fade data-fade-delay="120" class="rounded-lg border border-border bg-surface p-7 md:p-9">
-          <p class="font-mono text-[12px] uppercase tracking-[0.12em] text-text-3 mb-6">Technical capabilities</p>
-          <ul class="flex flex-col gap-4">
-            {credibility.map(c => (
-              <li class="flex items-start gap-3 text-[15px] text-text-2 leading-[1.55]">
-                <span class="text-amber mt-0.5 flex-shrink-0"><ConsultingIcon name="check" size={16} class="stroke-[2.5]" /></span>
-                {c}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── What This Is Not ─────────────────────────────────────── -->
-  <section id="not" class="py-24 md:py-32 border-b border-border/40">
-    <div class="max-w-4xl mx-auto px-6">
-      <div class="mb-14">
-        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">What this is not</p>
-        <h2 data-fade data-fade-delay="60" class="text-[34px] md:text-[44px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
-          Setting realistic expectations upfront.
-        </h2>
-      </div>
-      <ul class="border-t border-border/60">
-        {notThis.map((n, i) => (
-          <li data-fade data-fade-delay={i * 40} class="flex items-start gap-4 py-5 border-b border-border/60">
-            <span class="text-text-3 mt-0.5 flex-shrink-0"><ConsultingIcon name="x" size={17} class="stroke-[2.5]" /></span>
-            <span class="text-[16px] text-text-2 leading-[1.6]">{n}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
-  </section>
-
-  <!-- ── FAQ ─────────────────────────────────────────────── -->
+  <!-- ── FAQ ──────────────────────────────────────────────── -->
   <section id="faq" class="py-24 md:py-32 border-b border-border/40">
     <div class="max-w-4xl mx-auto px-6">
       <div class="mb-12 md:mb-16">
         <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">FAQ</p>
         <h2 data-fade data-fade-delay="60" class="text-[34px] md:text-[44px] font-bold tracking-[-0.02em] leading-[1.1]">
-          Common questions.
+          Questions engineering leaders ask.
         </h2>
       </div>
 
@@ -420,27 +359,26 @@ const jsonLd = {
     </div>
   </section>
 
-  <!-- ── Final CTA ─────────────────────────────────────────── -->
+  <!-- ── Final CTA ────────────────────────────────────────── -->
   <section id="contact" class="py-28 md:py-40">
     <div class="max-w-3xl mx-auto px-6 text-center">
       <h2 data-fade class="text-[32px] md:text-[46px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
-        Ready to see if this fits your studio?
+        Start with a Discovery Call. Then decide.
       </h2>
       <p data-fade data-fade-delay="100" class="text-[17px] md:text-[18px] text-text-2 leading-[1.6] mb-10 max-w-2xl mx-auto">
-        Discovery calls are 30 minutes, free, and end with a clear answer: either we are a fit or we are not. No pitch decks.
+        30 minutes. Free. No pitch deck. We confirm fit, discuss your stack and constraints, and either identify a clear path forward or honestly tell you we are not the right partner.
       </p>
       <div data-fade data-fade-delay="200" class="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
         <a href={BOOK_PATH} class="inline-flex items-center gap-2 px-7 py-3.5 rounded-md bg-amber text-ink font-semibold text-[15px] hover:bg-amber-2 transition-colors">
           Book Discovery Call
           <ConsultingIcon name="arrow-right" size={16} class="stroke-[2.5]" />
         </a>
-        <a href={`mailto:${EMAIL}`} class="inline-flex items-center gap-2 px-7 py-3.5 rounded-md border border-border text-text hover:border-border-2 hover:bg-surface text-[15px] font-medium transition-colors">
-          <ConsultingIcon name="mail" size={16} />
-          {EMAIL}
+        <a href={`${BASE}/technology`} class="inline-flex items-center gap-2 px-7 py-3.5 rounded-md border border-border text-text hover:border-border-2 hover:bg-surface text-[15px] font-medium transition-colors">
+          Read the technical brief
         </a>
       </div>
       <p data-fade data-fade-delay="280" class="text-[13px] text-text-3 font-mono">
-        Or read the technical brief first.
+        Or <a href={`mailto:${EMAIL}`} class="text-amber hover:underline">{EMAIL}</a>.
       </p>
     </div>
   </section>

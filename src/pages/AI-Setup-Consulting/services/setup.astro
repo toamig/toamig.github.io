@@ -3,35 +3,21 @@ import ConsultingLayout from '../../../layouts/ConsultingLayout.astro';
 import ConsultingHero from '../../../components/ConsultingHero.astro';
 import ConsultingCta from '../../../components/ConsultingCta.astro';
 import ConsultingIcon from '../../../components/ConsultingIcon.astro';
-import { BASE, BOOK_PATH } from '../../../data/consulting';
+import PipelineDiagram from '../../../components/PipelineDiagram.astro';
+import {
+  BASE, BOOK_PATH,
+  PIPELINE,
+  DELIVERABLE_GROUPS, SKILLS_LIBRARY,
+  ENGAGEMENT_EXCLUDES,
+} from '../../../data/consulting';
 
 const title = 'Setup & Integration · AI Setup Consulting for Game Studios';
-const description = 'Setup & Integration for Unreal studios: eight concrete artifacts ship to your infrastructure, a week-by-week milestone plan, and a documented handover. Fixed-fee, module by module.';
+const description = 'Setup & Integration for Unreal studios. Implementation of all five pipeline layers, brain repository, MCP servers, studio-adapted skills library, and system integrations. Fixed-fee, delivered module by module with measurement.';
 
 const facts = [
   { label: 'Duration', value: '3-16 weeks' },
   { label: 'Billing', value: 'Fixed-fee' },
   { label: 'Rollout', value: 'Module by module' },
-];
-
-const systems = [
-  { icon: 'cpu', title: 'Central brain', body: 'A governed, hierarchical knowledge layer tuned to your gameplay framework, networking, UI, and shaders. Read-only for developers, updated only through approved automation.' },
-  { icon: 'server', title: 'Custom MCP servers', body: 'Perforce and Plastic SCM integrations with safety controls and audit logs, plus connectors for your build and review tooling.' },
-  { icon: 'git-pull-request', title: 'Automated review pipelines', body: 'Server-side AI review that runs on every submit and posts to Swarm, Jira, or your review tool.' },
-  { icon: 'lock', title: 'Permissions & guardrails', body: 'Engine source off-limits unless explicitly flagged. Protected paths, operation whitelisting, and human-in-the-loop for destructive operations.' },
-  { icon: 'gauge', title: 'Cost monitoring', body: 'Per-team token budgets, prompt caching, and a dashboard so spend never surprises you.' },
-  { icon: 'graduation-cap', title: 'Team training', body: 'Hands-on sessions on your real codebase: prompting patterns for performance-critical C++, and how to review AI output for red flags.' },
-];
-
-const artifacts = [
-  { icon: 'cpu', title: 'Brain repo', format: 'Git · your provider', body: 'A Git repo you own from day one, hosted where you choose. Contains conventions, per-module rules, and prompts.' },
-  { icon: 'server', title: 'MCP server bundle', format: 'Docker + systemd', body: 'Packaged services with configs. Deployed on infra you control. Includes upgrade path.' },
-  { icon: 'workflow', title: 'Automation worker', format: 'CI job or lightweight VM', body: 'Runs the submit-time review pipeline. Deployed alongside your build agents or as a standalone service.' },
-  { icon: 'lock', title: 'Permission profiles', format: 'JSON · per role', body: 'Versioned in the brain. Auditable, reviewable, revertible. Different profiles for junior devs, seniors, and CI.' },
-  { icon: 'gauge', title: 'Cost dashboard', format: 'Grafana JSON + queries', body: 'A dashboard you import into your Grafana. Per-team spend, prompt-cache hit rate, and token trend lines.' },
-  { icon: 'book-open', title: 'Onboarding guide', format: 'Markdown · in the brain', body: 'A single doc a new hire reads on day one. Explains the workflow, the guardrails, and how to ask the brain.' },
-  { icon: 'clipboard-check', title: 'Operator runbook', format: 'Markdown · in the brain', body: 'For your operating lead: how to add rules, roll back, review alerts, and update the brain safely.' },
-  { icon: 'graduation-cap', title: 'Training materials', format: 'Slides + recorded sessions', body: 'The training decks and video recordings from the live sessions, so future hires can catch up on their own.' },
 ];
 
 const resources = [
@@ -42,10 +28,10 @@ const resources = [
 ];
 
 const milestones = [
-  { week: 'Week 1', title: 'Kickoff & infra', body: 'Provisioning, privacy tier deployment, access setup. Brain repo bootstrapped and handed to your Git provider.' },
-  { week: 'Week 2', title: 'First brain module', body: 'One module ships live (chosen with your lead, usually the one with the noisiest reviews). Developers can query it.' },
-  { week: 'Week 3', title: 'MCP Perforce live', body: 'MCP Perforce running in read-only mode. Audit logs on. Your team sees the safety surface before write access is enabled.' },
-  { week: 'Week 4', title: 'Review pipeline on submit', body: 'Automation worker running review on every submit for the pilot team. Posts to Swarm or Jira. Baseline metrics captured.' },
+  { week: 'Week 1', title: 'Kickoff & infra', body: 'Provisioning, privacy tier deployment, access setup. Brain repository bootstrapped in your Git provider.' },
+  { week: 'Week 2', title: 'First brain module', body: 'One module ships live (chosen with your lead — usually the one with noisiest reviews). Developers can query it.' },
+  { week: 'Week 3', title: 'MCP Perforce live', body: 'Official Perforce MCP configured with studio-specific safety rules. Audit logs on. Read-only mode first.' },
+  { week: 'Week 4', title: 'Pipeline layers 3 & 4', body: 'Pre-submit hook and automation worker running for the pilot team. Post-submit review posts to Swarm or Jira. Baseline metrics captured.' },
   { week: 'Week 5', title: 'Team training', body: '2-3 days of hands-on training on your real codebase. Recorded for future hires.' },
   { week: 'Week 6', title: 'Full rollout & handover', body: 'Remaining modules and teams onboarded. Handover session with the operating lead, recorded. Post-baseline metrics.' },
 ];
@@ -53,24 +39,10 @@ const milestones = [
 const handover = [
   'Live handover session with your operating lead (2h, recorded).',
   'All repos transferred to your Git provider.',
-  'Runbooks and onboarding guide live in the brain.',
+  'Operating runbook and onboarding guide live in the brain.',
   'Baseline and post-rollout metrics documented against your ROI targets.',
   '30 days of email support included after handover.',
   'Retainer optional; no obligation to continue.',
-];
-
-const measure = [
-  'Baseline metrics captured before any change ships',
-  'Review cycle time, PR throughput, and onboarding time tracked',
-  'Before and after comparison so the ROI is defensible when your CFO asks',
-];
-
-const notInScope = [
-  'New MCP servers not identified during the Audit (new SoW)',
-  'Compliance certification support (we assist, we do not certify)',
-  'Ongoing model migration and capability upkeep (that is the Retainer)',
-  'Feature development beyond the Audit roadmap',
-  'Second-team onboarding beyond the pilot rollout (Setup follow-on)',
 ];
 ---
 <ConsultingLayout
@@ -81,9 +53,9 @@ const notInScope = [
 >
   <ConsultingHero
     eyebrow="Setup & Integration"
-    title="Eight artifacts, six milestones,"
-    accent="one handover."
-    subtitle="The Audit roadmap becomes working infrastructure your team owns. Each week has a visible deliverable. Every artifact ships to your own systems on day one."
+    title="The pipeline, the brain,"
+    accent="and the skills — deployed."
+    subtitle="The Audit roadmap becomes working infrastructure your team owns. All five pipeline layers, a governed brain, a studio-adapted skill library, and every integration your existing tooling needs."
     primaryLabel="Book a call to plan your Setup"
     secondaryLabel="Read the technical brief"
     secondaryHref={`${BASE}/technology`}
@@ -94,7 +66,7 @@ const notInScope = [
     <div class="max-w-4xl mx-auto px-6">
       <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">What it is</p>
       <p data-fade data-fade-delay="60" class="text-[19px] md:text-[22px] text-text leading-[1.5] mb-10">
-        We build the infrastructure from your Audit roadmap and integrate it with the tools your team already uses. Three to sixteen weeks depending on studio size, delivered one module at a time so nothing breaks all at once.
+        We build the infrastructure from your Audit roadmap and integrate it with the tools your team already uses. Three to sixteen weeks depending on studio size. Delivered one module at a time so nothing breaks all at once.
       </p>
       <div data-fade data-fade-delay="120" class="grid grid-cols-1 sm:grid-cols-3 gap-px bg-border/60 border border-border/60 rounded-lg overflow-hidden">
         {facts.map(f => (
@@ -107,53 +79,93 @@ const notInScope = [
     </div>
   </section>
 
-  <!-- ── The systems we build ──────────────────────────────── -->
+  <!-- ── The five layers we deliver ───────────────────────── -->
+  <section class="py-20 md:py-28 border-b border-border/40 bg-ink-2/40">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="max-w-3xl mb-14">
+        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">What Setup delivers</p>
+        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[40px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+          All five pipeline layers, working end to end.
+        </h2>
+        <p data-fade data-fade-delay="120" class="text-[16px] text-text-2 leading-[1.65]">
+          Not a prototype. Not a proof-of-concept. Every layer configured, integrated, and measured — from write-time assistance in the IDE to Layer 5 continuous evolution feeding back into the brain.
+        </p>
+      </div>
+
+      <PipelineDiagram layers={PIPELINE} />
+    </div>
+  </section>
+
+  <!-- ── Deliverable groups ───────────────────────────────── -->
   <section class="py-20 md:py-28 border-b border-border/40">
     <div class="max-w-7xl mx-auto px-6">
       <div class="max-w-3xl mb-14">
-        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">The systems we build</p>
-        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[38px] font-bold tracking-[-0.02em] leading-[1.1]">
-          Six systems, integrated with your stack.
+        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Deliverables</p>
+        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[40px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+          Concrete artifacts, delivered on schedule, owned by you.
         </h2>
+        <p data-fade data-fade-delay="120" class="text-[16px] text-text-2 leading-[1.65]">
+          Every artifact is version-controlled, documented, and belongs to the studio at engagement completion. No vendor lock-in, no proprietary formats.
+        </p>
       </div>
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {systems.map((b, i) => (
-          <div data-fade data-fade-delay={i * 60} class="p-7 rounded-lg border border-border bg-surface">
-            <div class="w-10 h-10 rounded-md bg-amber/10 border border-amber/25 flex items-center justify-center text-amber mb-5">
-              <ConsultingIcon name={b.icon} size={19} />
+
+      <div class="flex flex-col gap-12">
+        {DELIVERABLE_GROUPS.map((group, gi) => (
+          <div data-fade data-fade-delay={gi * 80}>
+            <div class="flex items-center gap-4 mb-6">
+              <div class="w-10 h-10 rounded-md bg-amber/10 border border-amber/25 flex items-center justify-center text-amber flex-shrink-0">
+                <ConsultingIcon name={group.icon} size={19} />
+              </div>
+              <div>
+                <p class="font-mono text-[11.5px] uppercase tracking-[0.14em] text-text-3">{`0${gi + 1}`.slice(-2)} · {group.items.length} artifacts</p>
+                <h3 class="text-[22px] font-semibold text-text tracking-tight">{group.label}</h3>
+              </div>
             </div>
-            <h3 class="text-[17.5px] font-semibold text-text mb-2.5 leading-snug">{b.title}</h3>
-            <p class="text-[14.5px] text-text-2 leading-[1.6]">{b.body}</p>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {group.items.map(item => (
+                <div class="p-6 rounded-lg border border-border bg-surface">
+                  <h4 class="text-[15.5px] font-semibold text-text mb-2 leading-snug">{item.name}</h4>
+                  <p class="text-[13.5px] text-text-2 leading-[1.6]">{item.body}</p>
+                </div>
+              ))}
+            </div>
           </div>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- ── What ships to your infrastructure ─────────────────── -->
-  <section class="py-20 md:py-28 border-b border-border/40">
+  <!-- ── Studio-adapted skills library ────────────────────── -->
+  <section id="skills" class="py-20 md:py-28 border-b border-border/40 bg-ink-2/40">
     <div class="max-w-7xl mx-auto px-6">
       <div class="max-w-3xl mb-14">
-        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">What ships to your infrastructure</p>
-        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[38px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
-          Eight concrete artifacts. Yours from day one.
+        <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Studio-adapted skills library</p>
+        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[40px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+          Task-specific patterns. Adapted to your codebase.
         </h2>
-        <p data-fade data-fade-delay="120" class="text-[16px] text-text-2 leading-[1.6]">
-          Everything ships in a format your team can host, version, and evolve. Nothing lives on our servers by default.
+        <p data-fade data-fade-delay="120" class="text-[16px] text-text-2 leading-[1.65]">
+          Skills are the structured workflows Claude Code uses inside your studio. Delivered as versioned, documented artifacts. Each one adapted to your conventions, framework, and tooling.
         </p>
       </div>
-      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
-        {artifacts.map((a, i) => (
-          <div data-fade data-fade-delay={i * 50} class="flex flex-col p-6 rounded-lg border border-border bg-surface">
-            <div class="flex items-center justify-between mb-4">
-              <div class="w-9 h-9 rounded-md bg-amber/10 border border-amber/25 flex items-center justify-center text-amber">
-                <ConsultingIcon name={a.icon} size={17} />
+
+      <div class="flex flex-col gap-8">
+        {SKILLS_LIBRARY.map((domain, di) => (
+          <div data-fade data-fade-delay={di * 40} class="rounded-lg border border-border bg-surface overflow-hidden">
+            <div class="px-6 py-4 border-b border-border flex items-center gap-3">
+              <div class="w-8 h-8 rounded-md bg-amber/10 border border-amber/25 flex items-center justify-center text-amber flex-shrink-0">
+                <ConsultingIcon name={domain.icon} size={16} />
               </div>
-              <span class="font-mono text-[11.5px] text-text-3">{`0${i + 1}`.slice(-2)}</span>
+              <h3 class="text-[15px] font-semibold text-text tracking-tight">{domain.domain}</h3>
+              <span class="ml-auto font-mono text-[11.5px] text-text-3">{domain.skills.length} skills</span>
             </div>
-            <h3 class="text-[16px] font-semibold text-text mb-1.5 leading-snug">{a.title}</h3>
-            <p class="font-mono text-[11.5px] text-amber mb-3">{a.format}</p>
-            <p class="text-[13.5px] text-text-2 leading-[1.55]">{a.body}</p>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-px bg-border/60">
+              {domain.skills.map(s => (
+                <div class="bg-surface p-5">
+                  <p class="font-mono text-[13.5px] text-amber mb-1.5">{s.name}</p>
+                  <p class="text-[13px] text-text-2 leading-[1.55]">{s.body}</p>
+                </div>
+              ))}
+            </div>
           </div>
         ))}
       </div>
@@ -165,7 +177,7 @@ const notInScope = [
     <div class="max-w-5xl mx-auto px-6">
       <div class="max-w-3xl mb-12">
         <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">What we need from your team</p>
-        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[38px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[40px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
           Predictable time commitment, four roles.
         </h2>
         <p data-fade data-fade-delay="120" class="text-[16px] text-text-2 leading-[1.6]">
@@ -190,15 +202,15 @@ const notInScope = [
   </section>
 
   <!-- ── Milestones ───────────────────────────────────────── -->
-  <section class="py-20 md:py-28 border-b border-border/40">
+  <section class="py-20 md:py-28 border-b border-border/40 bg-ink-2/40">
     <div class="max-w-7xl mx-auto px-6">
       <div class="max-w-3xl mb-14">
         <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Milestones</p>
-        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[38px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+        <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[40px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
           Every week has a visible deliverable.
         </h2>
         <p data-fade data-fade-delay="120" class="text-[16px] text-text-2 leading-[1.6]">
-          Standard cadence for a 6-week Setup. Longer engagements add more modules, deeper MCPs, and multi-team rollout at the same weekly pace.
+          Standard cadence for a 6-week Setup. Longer engagements (up to 16 weeks) add more modules, deeper MCPs, and multi-team rollout at the same weekly pace.
         </p>
       </div>
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -213,13 +225,13 @@ const notInScope = [
     </div>
   </section>
 
-  <!-- ── Handover checklist ───────────────────────────────── -->
+  <!-- ── Handover ─────────────────────────────────────────── -->
   <section class="py-20 md:py-28 border-b border-border/40">
     <div class="max-w-7xl mx-auto px-6">
       <div class="grid lg:grid-cols-[1fr_1.1fr] gap-12 lg:gap-16 items-start">
         <div>
           <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Handover</p>
-          <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[38px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
+          <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[40px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
             Everything transfers, cleanly.
           </h2>
           <p data-fade data-fade-delay="120" class="text-[16px] text-text-2 leading-[1.65]">
@@ -240,45 +252,21 @@ const notInScope = [
     </div>
   </section>
 
-  <!-- ── Measurement ───────────────────────────────────────── -->
-  <section class="py-20 md:py-28 border-b border-border/40">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="grid lg:grid-cols-[1fr_1.1fr] gap-12 lg:gap-16 items-start">
-        <div>
-          <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Measurement</p>
-          <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[38px] font-bold tracking-[-0.02em] leading-[1.1] mb-5">
-            We measure before we change anything.
-          </h2>
-          <p data-fade data-fade-delay="120" class="text-[16px] text-text-2 leading-[1.65]">
-            Setup includes baselining the metrics that matter to your studio, then re-measuring after rollout. "It feels faster" does not renew a budget. Numbers do.
-          </p>
-        </div>
-        <div data-fade data-fade-delay="120" class="rounded-lg border border-border bg-surface p-7 md:p-9">
-          <ul class="flex flex-col gap-4">
-            {measure.map(m => (
-              <li class="flex items-start gap-3 text-[15px] text-text-2 leading-[1.55]">
-                <span class="text-amber mt-0.5 flex-shrink-0"><ConsultingIcon name="check" size={16} class="stroke-[2.5]" /></span>
-                {m}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- ── Not in scope ─────────────────────────────────────── -->
   <section class="py-20 md:py-28 border-b border-border/40">
     <div class="max-w-4xl mx-auto px-6">
       <p data-fade class="text-amber font-mono text-[13px] uppercase tracking-[0.15em] mb-4">Not in scope</p>
-      <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[38px] font-bold tracking-[-0.02em] leading-[1.1] mb-8">
+      <h2 data-fade data-fade-delay="60" class="text-[30px] md:text-[40px] font-bold tracking-[-0.02em] leading-[1.1] mb-8">
         What Setup is not.
       </h2>
       <ul class="border-t border-border/60">
-        {notInScope.map((n, i) => (
-          <li data-fade data-fade-delay={i * 40} class="flex items-start gap-4 py-5 border-b border-border/60">
-            <span class="text-text-3 mt-0.5 flex-shrink-0"><ConsultingIcon name="x" size={17} class="stroke-[2.5]" /></span>
-            <span class="text-[16px] text-text-2 leading-[1.6]">{n}</span>
+        {ENGAGEMENT_EXCLUDES.map((n, i) => (
+          <li data-fade data-fade-delay={i * 40} class="grid grid-cols-[24px_1fr] gap-4 py-5 border-b border-border/60">
+            <span class="text-text-3 mt-0.5"><ConsultingIcon name="x" size={17} class="stroke-[2.5]" /></span>
+            <div>
+              <p class="text-[16px] text-text mb-1 font-medium">{n.title}</p>
+              <p class="text-[14.5px] text-text-2 leading-[1.55]">{n.body}</p>
+            </div>
           </li>
         ))}
       </ul>
