@@ -19,6 +19,7 @@ import {
   COST_FIXED, COST_VARIABLE, COST_VARIABLE_TOTAL, COST_ONE_TIME, COST_DONT_CHARGE,
   OPS_WE_DEPLOY_SETUP, OPS_WE_MAINTAIN_RETAINER, OPS_STUDIO_OPERATES, OPS_WE_DONT_OPERATE,
   LAYER3_VERIFICATION, LAYER3_DESC_GEN_APPROACHES, LAYER3_IMPL_OPTIONS, LAYER3_IMPL_NOTE, LAYER3_NOT,
+  SKILLS_LIBRARY, INTEGRATIONS,
   PRIVACY_TIERS, PRIVACY_DISTINCTION,
   WHAT_WE_DONT_CLAIM,
   PLAIN_TERMS_LINES, PLAIN_TERMS_TAGLINE,
@@ -363,6 +364,65 @@ const seeing = [
             ))}
           </ul>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SKILLS & INTEGRATIONS ═════════════════════════════════════════ -->
+  <section id="skills" class="py-20 md:py-32 border-t border-border/50">
+    <div class="max-w-6xl mx-auto px-6">
+      <header class="mb-14 md:mb-16 max-w-2xl">
+        <p data-fade class="font-mono text-[11.5px] uppercase tracking-[0.2em] text-amber mb-6">Skills &amp; integrations</p>
+        <h2 data-fade data-fade-delay="60" class="font-display text-[32px] md:text-[46px] leading-[1.08] font-normal tracking-[-0.02em] mb-5">
+          Adapted to your tools and your framework.
+        </h2>
+        <p data-fade data-fade-delay="120" class="text-[16px] md:text-[17px] text-text-2 leading-[1.65]">
+          Two things make the AI feel like it belongs to your studio rather than a generic assistant: the tools it can safely reach, and the skills it knows how to run.
+        </p>
+      </header>
+
+      <!-- Integrations -->
+      <div class="mb-16 md:mb-20 max-w-4xl">
+        <p data-fade class="font-mono text-[11px] uppercase tracking-[0.18em] text-text-3 mb-3">Connected via MCP</p>
+        <p data-fade data-fade-delay="60" class="text-[15.5px] text-text-2 leading-[1.7] mb-6 max-w-2xl">
+          We integrate with the tools you already run, with audit logs and path controls on every operation. No rip-and-replace.
+        </p>
+        <div data-fade data-fade-delay="120" class="flex flex-wrap gap-2.5">
+          {INTEGRATIONS.map(t => (
+            <span class="px-3.5 py-1.5 rounded-md border border-border bg-surface font-mono text-[12.5px] text-text-2">{t}</span>
+          ))}
+        </div>
+        <p data-fade class="mt-4 text-[13px] text-text-3 leading-[1.6]">
+          Illustrative, not exhaustive. If a tool has an API or an MCP server, it can be connected.
+        </p>
+      </div>
+
+      <!-- Skills library -->
+      <div>
+        <p data-fade class="font-mono text-[11px] uppercase tracking-[0.18em] text-text-3 mb-3">Studio-adapted skills</p>
+        <p data-fade data-fade-delay="60" class="text-[15.5px] text-text-2 leading-[1.7] mb-10 max-w-2xl">
+          Skills are named workflows the AI knows how to run, each following your conventions. We ship a ready-made library and build custom ones for your project. A representative set:
+        </p>
+        <div class="flex flex-col gap-8">
+          {SKILLS_LIBRARY.map((domain, di) => (
+            <div data-fade data-fade-delay={di * 30} class="grid md:grid-cols-[210px_1fr] gap-3 md:gap-10 md:items-start">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-md border border-border bg-surface flex items-center justify-center text-amber flex-shrink-0">
+                  <ConsultingIcon name={domain.icon} size={16} />
+                </div>
+                <h3 class="font-display text-[17px] font-medium text-text leading-[1.2]">{domain.domain}</h3>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                {domain.skills.map(s => (
+                  <span class="px-3 py-1 rounded-md border border-border bg-surface font-mono text-[12.5px] text-text">{s.name}</span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+        <p data-fade class="mt-10 text-[13px] text-text-3 leading-[1.6]">
+          Plus any custom skill your workflows call for. New skills are versioned in the knowledge layer and reviewed like any other change.
+        </p>
       </div>
     </div>
   </section>

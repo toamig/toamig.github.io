@@ -66,9 +66,17 @@ export const WHAT_YOU_GET = [
   { title: 'A shared studio brain', body: 'Your conventions, architecture, and patterns in one governed place, so AI writes code your way, not its own.' },
   { title: 'Automatic code review', body: 'Every submit gets a structured first-pass review before it ever reaches a senior engineer.' },
   { title: 'The busywork, handled', body: 'Changelist descriptions, ticket links, and reviewer assignments prepared for you at submit time.' },
+  { title: 'Your tools, connected', body: 'Safe, audited MCP integrations with the tools you already run, from Perforce and Jira to Slack, Notion, Confluence, and Miro. AI works inside your stack, not around it.' },
+  { title: 'Skills tuned to your project', body: 'Ready-made development skills, plus custom ones adapted to your framework and conventions, so common tasks follow your patterns from the first line.' },
   { title: 'Faster onboarding', body: 'New hires ask the system how things work instead of interrupting your seniors.' },
   { title: 'IP protection you choose', body: 'Four privacy levels, from vendor-hosted to fully self-hosted. We recommend; you decide.' },
   { title: 'No lock-in, ever', body: 'Everything runs on your infrastructure and is yours to keep. Works with any AI vendor you prefer.' },
+];
+
+// ─── Integrations we connect via MCP (illustrative, not exhaustive) ────────
+export const INTEGRATIONS = [
+  'Perforce', 'Plastic SCM', 'Git', 'Swarm', 'GitHub', 'GitLab',
+  'Jira', 'Linear', 'Slack', 'Teams', 'Notion', 'Confluence', 'Miro', 'CI / CD',
 ];
 
 // ─── The pipeline in plain language (landing "How it works") ───────────────
