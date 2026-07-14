@@ -27,6 +27,7 @@ const vendorSide = components.filter(c => c.side === 'vendor').sort((a, b) => a.
   <!-- Desktop SVG -->
   <svg
     class="arch"
+    data-fade
     viewBox="0 0 1200 760"
     xmlns="http://www.w3.org/2000/svg"
     role="img"
@@ -226,17 +227,18 @@ const vendorSide = components.filter(c => c.side === 'vendor').sort((a, b) => a.
     letter-spacing: 0.04em;
   }
 
-  /* Lines start invisible; drawn on scroll-in */
+  /* Lines are visible by default; the draw is a pure enhancement, so the
+     arrows can never disappear if the scroll trigger fails to fire. */
   .arch-line {
     stroke-dasharray: 1;
-    stroke-dashoffset: 1;
+    stroke-dashoffset: 0;
     color: var(--color-border-2);
   }
   .arch-line-cross {
     color: var(--color-amber);
   }
   .arch.is-visible .arch-line {
-    animation: arch-draw 0.9s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+    animation: arch-draw 0.9s cubic-bezier(0.22, 0.61, 0.36, 1) both;
   }
   .arch.is-visible .arch-line:nth-child(1) { animation-delay: 0.15s; }
   .arch.is-visible .arch-line:nth-child(2) { animation-delay: 0.30s; }
@@ -247,15 +249,15 @@ const vendorSide = components.filter(c => c.side === 'vendor').sort((a, b) => a.
   .arch-cross .arch-line:nth-child(2) { animation-delay: 0.95s !important; }
 
   @keyframes arch-draw {
-    to { stroke-dashoffset: 0; }
+    from { stroke-dashoffset: 1; }
+    to   { stroke-dashoffset: 0; }
   }
 
+  /* Labels are visible by default; the whole SVG fades in together via its
+     own data-fade, so no separate (fragile) label fade is needed. */
   .arch-anno text {
     fill: var(--color-text-3);
-    opacity: 0;
-    transition: opacity 0.5s ease 1.1s;
   }
-  .arch.is-visible .arch-anno text { opacity: 1; }
 
   /* Mobile fallback */
   .arch-mobile {
