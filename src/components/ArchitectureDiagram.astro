@@ -1,14 +1,18 @@
 ---
-// Six-component system diagram, three tiers.
-// SVG for desktop with scroll-triggered stroke-draw animation.
-// On mobile: hidden SVG replaced by a stacked list of the same components.
-import ConsultingIcon from './ConsultingIcon.astro';
-
+// Seven-component deployment topology split into two zones:
+//   STUDIO INFRASTRUCTURE (left) — knowledge repo, MCP context server,
+//     developer workstation, automation worker, existing studio systems
+//   VENDOR INFRASTRUCTURE (right) — interactive AI seats, programmatic API
+//
+// Cross-boundary arrows show what flows between zones. Scroll-triggered
+// stroke-draw animations preserved from the previous version.
+// On mobile: hidden SVG replaced by two labeled stacks.
 interface Component {
   id: string;
   name: string;
   sub: string;
   role: string;
+  side: 'studio' | 'vendor';
   tier: number;
 }
 interface Props {
@@ -16,18 +20,17 @@ interface Props {
 }
 const { components } = Astro.props;
 
-// Tier ordering for the mobile fallback
-const byTier = [0, 1, 2, 3].map(t => components.filter(c => c.tier === t));
+const studioSide = components.filter(c => c.side === 'studio').sort((a, b) => a.tier - b.tier);
+const vendorSide = components.filter(c => c.side === 'vendor').sort((a, b) => a.tier - b.tier);
 ---
 <div class="arch-wrap">
   <!-- Desktop SVG -->
   <svg
     class="arch"
-    data-fade
-    viewBox="0 0 900 660"
+    viewBox="0 0 1200 760"
     xmlns="http://www.w3.org/2000/svg"
     role="img"
-    aria-label="Six-component architecture: knowledge repository feeds context server, which serves developer sessions and automation workers, which call your chosen AI model provider and post to studio systems."
+    aria-label="Deployment topology in two zones. Studio infrastructure on the left contains the knowledge repository, MCP context server, developer workstation, automation worker, and existing studio systems. Vendor infrastructure on the right contains the interactive AI seats and programmatic AI API. Cross-boundary arrows show developers connecting to seats and the automation worker calling the API."
   >
     <defs>
       <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -35,96 +38,134 @@ const byTier = [0, 1, 2, 3].map(t => components.filter(c => c.tier === t));
       </marker>
     </defs>
 
-    <!-- Connector lines (drawn behind boxes so boxes overlap the ends) -->
+    <!-- Zone dividers + labels -->
+    <line class="arch-divider" x1="600" y1="60" x2="600" y2="720" stroke-dasharray="3 5" />
+    <g class="arch-zone-labels" font-family="var(--font-mono)" font-size="11" letter-spacing="0.18em">
+      <text x="46" y="34" text-anchor="start">STUDIO INFRASTRUCTURE</text>
+      <text x="640" y="34" text-anchor="start">VENDOR INFRASTRUCTURE</text>
+    </g>
+
+    <!-- Internal connectors (studio side) — drawn behind boxes -->
     <g class="arch-lines" stroke="currentColor" stroke-width="1.5" fill="none">
-      <!-- Brain → Context -->
-      <line class="arch-line" pathLength="1" x1="450" y1="120" x2="450" y2="180" marker-end="url(#arrow)" />
-      <!-- Context → Dev Session -->
-      <line class="arch-line" pathLength="1" x1="410" y1="280" x2="270" y2="340" marker-end="url(#arrow)" />
-      <!-- Context → Automation Worker -->
-      <line class="arch-line" pathLength="1" x1="490" y1="280" x2="630" y2="340" marker-end="url(#arrow)" />
-      <!-- Dev Session → AI Model Provider -->
-      <line class="arch-line" pathLength="1" x1="210" y1="440" x2="210" y2="500" marker-end="url(#arrow)" />
+      <!-- Knowledge Repo → MCP Server -->
+      <line class="arch-line" pathLength="1" x1="320" y1="150" x2="320" y2="210" marker-end="url(#arrow)" />
+      <!-- MCP Server → Developer Workstation -->
+      <line class="arch-line" pathLength="1" x1="270" y1="320" x2="180" y2="380" marker-end="url(#arrow)" />
+      <!-- MCP Server → Automation Worker -->
+      <line class="arch-line" pathLength="1" x1="370" y1="320" x2="460" y2="380" marker-end="url(#arrow)" />
+      <!-- Developer Workstation → Studio Systems -->
+      <line class="arch-line" pathLength="1" x1="180" y1="480" x2="270" y2="560" marker-end="url(#arrow)" />
       <!-- Automation Worker → Studio Systems -->
-      <line class="arch-line" pathLength="1" x1="690" y1="440" x2="690" y2="500" marker-end="url(#arrow)" />
+      <line class="arch-line" pathLength="1" x1="460" y1="480" x2="370" y2="560" marker-end="url(#arrow)" />
     </g>
 
-    <!-- Line annotations -->
-    <g class="arch-anno" fill="currentColor" font-family="var(--font-mono)" font-size="12" letter-spacing="0.05em">
-      <text x="462" y="156" text-anchor="start">pull on tag</text>
-      <text x="330" y="304" text-anchor="end">MCP query</text>
-      <text x="570" y="304" text-anchor="start">MCP query</text>
-      <text x="222" y="476" text-anchor="start">API call</text>
-      <text x="702" y="476" text-anchor="start">events / posts</text>
+    <!-- Cross-boundary arrows (studio → vendor) -->
+    <g class="arch-cross" stroke="currentColor" stroke-width="1.5" fill="none" stroke-dasharray="6 4">
+      <!-- Developer Workstation → Interactive AI Seats -->
+      <line class="arch-line arch-line-cross" pathLength="1" x1="290" y1="410" x2="700" y2="410" marker-end="url(#arrow)" />
+      <!-- Automation Worker → Programmatic AI API -->
+      <line class="arch-line arch-line-cross" pathLength="1" x1="570" y1="440" x2="700" y2="560" marker-end="url(#arrow)" />
     </g>
 
-    <!-- Component boxes -->
+    <!-- Cross-boundary labels -->
+    <g class="arch-anno" fill="currentColor" font-family="var(--font-mono)" font-size="11" letter-spacing="0.05em">
+      <!-- Internal -->
+      <text x="332" y="188" text-anchor="start">pull on tag</text>
+      <text x="248" y="360" text-anchor="end">MCP</text>
+      <text x="392" y="360" text-anchor="start">MCP</text>
+      <text x="176" y="530" text-anchor="end">VCS</text>
+      <text x="464" y="530" text-anchor="start">webhooks / posts</text>
+      <!-- Cross-boundary -->
+      <text x="495" y="400" text-anchor="middle">seat auth</text>
+      <text x="655" y="510" text-anchor="end">API key</text>
+    </g>
+
+    <!-- Studio-side boxes -->
     <g class="arch-boxes">
-      <!-- Brain (tier 0, center top) -->
+      <!-- Knowledge Repository -->
       <g class="arch-box" data-anim="arch-box">
-        <rect x="330" y="30" width="240" height="90" rx="8" />
-        <text class="box-name"    x="450" y="70"  text-anchor="middle">Brain Repository</text>
-        <text class="box-sub"     x="450" y="94"  text-anchor="middle">Git · private</text>
+        <rect x="140" y="60" width="360" height="90" rx="8" />
+        <text class="box-name" x="320" y="98"  text-anchor="middle">Knowledge Repository</text>
+        <text class="box-sub"  x="320" y="122" text-anchor="middle">Git · private · versioned</text>
       </g>
-      <!-- Context Server (tier 1, center) -->
+      <!-- MCP Context Server -->
       <g class="arch-box arch-box-primary" data-anim="arch-box">
-        <rect x="330" y="190" width="240" height="90" rx="8" />
-        <text class="box-name"    x="450" y="230" text-anchor="middle">Context Server</text>
-        <text class="box-sub"     x="450" y="254" text-anchor="middle">Internal VM · MCP</text>
+        <rect x="140" y="210" width="360" height="110" rx="8" />
+        <text class="box-name" x="320" y="252" text-anchor="middle">MCP Context Server</text>
+        <text class="box-sub"  x="320" y="276" text-anchor="middle">Small VM · 2 vCPU / 4GB</text>
+        <text class="box-sub"  x="320" y="296" text-anchor="middle">serves knowledge · logs queries</text>
       </g>
-      <!-- Dev Session (tier 2, left) -->
+      <!-- Developer Workstation -->
       <g class="arch-box" data-anim="arch-box">
-        <rect x="90"  y="350" width="240" height="90" rx="8" />
-        <text class="box-name"    x="210" y="390" text-anchor="middle">Developer Session</text>
-        <text class="box-sub"     x="210" y="414" text-anchor="middle">Any MCP-compatible client</text>
+        <rect x="30" y="380" width="260" height="100" rx="8" />
+        <text class="box-name" x="160" y="418" text-anchor="middle">Developer Workstation</text>
+        <text class="box-sub"  x="160" y="442" text-anchor="middle">AI assistant + MCP client</text>
+        <text class="box-sub"  x="160" y="462" text-anchor="middle">linter · pre-submit hook</text>
       </g>
-      <!-- Automation Worker (tier 2, right) -->
+      <!-- Automation Worker -->
       <g class="arch-box" data-anim="arch-box">
-        <rect x="570" y="350" width="240" height="90" rx="8" />
-        <text class="box-name"    x="690" y="390" text-anchor="middle">Automation Worker</text>
-        <text class="box-sub"     x="690" y="414" text-anchor="middle">Small VM or serverless</text>
+        <rect x="340" y="380" width="260" height="100" rx="8" />
+        <text class="box-name" x="470" y="418" text-anchor="middle">Automation Worker</text>
+        <text class="box-sub"  x="470" y="442" text-anchor="middle">Small VM · webhook + cron</text>
+        <text class="box-sub"  x="470" y="462" text-anchor="middle">API caller · result poster</text>
       </g>
-      <!-- AI Model Provider (tier 3, left) -->
-      <g class="arch-box arch-box-external" data-anim="arch-box">
-        <rect x="90"  y="510" width="240" height="90" rx="8" stroke-dasharray="4 4" />
-        <text class="box-name"    x="210" y="550" text-anchor="middle">AI Model Provider</text>
-        <text class="box-sub"     x="210" y="574" text-anchor="middle">your choice of vendor</text>
-      </g>
-      <!-- Studio Systems (tier 3, right) -->
-      <g class="arch-box arch-box-external" data-anim="arch-box">
-        <rect x="570" y="510" width="240" height="90" rx="8" stroke-dasharray="4 4" />
-        <text class="box-name"    x="690" y="550" text-anchor="middle">Studio Systems</text>
-        <text class="box-sub"     x="690" y="574" text-anchor="middle">Perforce, Swarm, Jira, Slack</text>
+      <!-- Studio Systems -->
+      <g class="arch-box" data-anim="arch-box">
+        <rect x="140" y="560" width="360" height="130" rx="8" />
+        <text class="box-name" x="320" y="600" text-anchor="middle">Studio Systems</text>
+        <text class="box-sub"  x="320" y="624" text-anchor="middle">Perforce · Swarm · Jira</text>
+        <text class="box-sub"  x="320" y="644" text-anchor="middle">Slack · CI / CD</text>
+        <text class="box-sub"  x="320" y="672" text-anchor="middle" style="font-style: italic;">your existing tools</text>
       </g>
     </g>
 
-    <!-- Tier labels -->
-    <g class="arch-tier-labels" fill="currentColor" font-family="var(--font-mono)" font-size="10.5" letter-spacing="0.15em">
-      <text x="46" y="80"  text-anchor="start">SOURCE OF TRUTH</text>
-      <text x="46" y="240" text-anchor="start">GOVERNED ACCESS</text>
-      <text x="46" y="400" text-anchor="start">CONSUMERS</text>
-      <text x="46" y="560" text-anchor="start">EXTERNAL</text>
+    <!-- Vendor-side boxes -->
+    <g class="arch-boxes">
+      <!-- Interactive AI Seats -->
+      <g class="arch-box arch-box-external" data-anim="arch-box">
+        <rect x="700" y="360" width="460" height="140" rx="8" stroke-dasharray="4 4" />
+        <text class="box-name"    x="930" y="398" text-anchor="middle">Interactive AI Seats</text>
+        <text class="box-sub"     x="930" y="422" text-anchor="middle">Claude for Work · ChatGPT Enterprise</text>
+        <text class="box-sub"     x="930" y="442" text-anchor="middle">Gemini for Google Workspace</text>
+        <text class="box-sub-em"  x="930" y="472" text-anchor="middle">for developers · fixed monthly / seat</text>
+      </g>
+      <!-- Programmatic AI API -->
+      <g class="arch-box arch-box-external" data-anim="arch-box">
+        <rect x="700" y="520" width="460" height="170" rx="8" stroke-dasharray="4 4" />
+        <text class="box-name"    x="930" y="558" text-anchor="middle">Programmatic AI API</text>
+        <text class="box-sub"     x="930" y="582" text-anchor="middle">Anthropic · OpenAI · Google AI</text>
+        <text class="box-sub"     x="930" y="602" text-anchor="middle">or via Bedrock / Vertex / Azure OpenAI</text>
+        <text class="box-sub-em"  x="930" y="632" text-anchor="middle">for automation · per-token</text>
+        <text class="box-sub-em"  x="930" y="656" text-anchor="middle">Zero Data Retention addendum standard</text>
+      </g>
     </g>
   </svg>
 
-  <!-- Mobile fallback: stacked component list -->
-  <ol class="arch-mobile">
-    {byTier.map((tier, tIdx) => (
-      tier.length > 0 && (
-        <li class="arch-tier">
-          <span class="arch-tier-label">{['Source of truth', 'Governed access', 'Consumers', 'External'][tIdx]}</span>
-          <div class="arch-tier-items">
-            {tier.map(c => (
-              <div class="arch-tier-item">
-                <p class="tier-item-name">{c.name}</p>
-                <p class="tier-item-sub">{c.sub}</p>
-              </div>
-            ))}
+  <!-- Mobile fallback: two stacked zones -->
+  <div class="arch-mobile">
+    <section class="arch-zone">
+      <p class="arch-zone-label">Studio infrastructure</p>
+      <div class="arch-zone-items">
+        {studioSide.map(c => (
+          <div class="arch-zone-item">
+            <p class="zone-item-name">{c.name}</p>
+            <p class="zone-item-sub">{c.sub}</p>
           </div>
-        </li>
-      )
-    ))}
-  </ol>
+        ))}
+      </div>
+    </section>
+    <section class="arch-zone">
+      <p class="arch-zone-label">Vendor infrastructure</p>
+      <div class="arch-zone-items">
+        {vendorSide.map(c => (
+          <div class="arch-zone-item arch-zone-item-vendor">
+            <p class="zone-item-name">{c.name}</p>
+            <p class="zone-item-sub">{c.sub}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  </div>
 </div>
 
 <style>
@@ -133,9 +174,19 @@ const byTier = [0, 1, 2, 3].map(t => components.filter(c => c.tier === t));
   .arch {
     display: block;
     width: 100%;
-    max-width: 960px;
+    max-width: 1160px;
     margin: 0 auto;
     color: var(--color-text-3);
+  }
+
+  /* Zone divider */
+  .arch-divider {
+    stroke: var(--color-border-2);
+    stroke-width: 1;
+  }
+  .arch-zone-labels text {
+    fill: var(--color-text-3);
+    text-transform: uppercase;
   }
 
   /* Box styling */
@@ -156,96 +207,102 @@ const byTier = [0, 1, 2, 3].map(t => components.filter(c => c.tier === t));
   .box-name {
     fill: var(--color-text);
     font-family: var(--font-display);
-    font-size: 16px;
-    font-weight: 600;
+    font-size: 18px;
+    font-weight: 500;
     letter-spacing: -0.01em;
   }
-  .arch-box-primary .box-name {
-    fill: var(--color-amber);
-  }
+  .arch-box-primary .box-name { fill: var(--color-amber); }
+
   .box-sub {
-    fill: var(--color-text-3);
+    fill: var(--color-text-2);
     font-family: var(--font-mono);
     font-size: 12px;
     letter-spacing: 0.02em;
   }
+  .box-sub-em {
+    fill: var(--color-text-3);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
 
-  /* Lines start invisible, animate to visible when SVG scrolls into view */
+  /* Lines start invisible; drawn on scroll-in */
   .arch-line {
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
     color: var(--color-border-2);
   }
+  .arch-line-cross {
+    color: var(--color-amber);
+  }
   .arch.is-visible .arch-line {
     animation: arch-draw 0.9s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
   }
   .arch.is-visible .arch-line:nth-child(1) { animation-delay: 0.15s; }
-  .arch.is-visible .arch-line:nth-child(2) { animation-delay: 0.35s; }
-  .arch.is-visible .arch-line:nth-child(3) { animation-delay: 0.35s; }
-  .arch.is-visible .arch-line:nth-child(4) { animation-delay: 0.60s; }
-  .arch.is-visible .arch-line:nth-child(5) { animation-delay: 0.60s; }
+  .arch.is-visible .arch-line:nth-child(2) { animation-delay: 0.30s; }
+  .arch.is-visible .arch-line:nth-child(3) { animation-delay: 0.30s; }
+  .arch.is-visible .arch-line:nth-child(4) { animation-delay: 0.55s; }
+  .arch.is-visible .arch-line:nth-child(5) { animation-delay: 0.55s; }
+  .arch-cross .arch-line:nth-child(1) { animation-delay: 0.80s !important; }
+  .arch-cross .arch-line:nth-child(2) { animation-delay: 0.95s !important; }
 
   @keyframes arch-draw {
     to { stroke-dashoffset: 0; }
   }
 
-  /* Line annotations fade in with the lines */
   .arch-anno text {
     fill: var(--color-text-3);
     opacity: 0;
-    transition: opacity 0.5s ease 0.9s;
+    transition: opacity 0.5s ease 1.1s;
   }
   .arch.is-visible .arch-anno text { opacity: 1; }
 
-  /* Tier labels on the left side */
-  .arch-tier-labels text {
-    fill: var(--color-text-3);
-    text-transform: uppercase;
-  }
-
-  /* Hide desktop SVG on small viewports, show mobile list */
+  /* Mobile fallback */
   .arch-mobile {
     display: none;
-    list-style: none;
-    padding: 0;
-    margin: 0;
+    flex-direction: column;
+    gap: 24px;
   }
-
   @media (max-width: 767px) {
     .arch { display: none; }
-    .arch-mobile { display: flex; flex-direction: column; gap: 20px; }
+    .arch-mobile { display: flex; }
   }
 
-  .arch-tier {
+  .arch-zone {
     display: flex;
     flex-direction: column;
     gap: 12px;
   }
-  .arch-tier-label {
+  .arch-zone-label {
     font-family: var(--font-mono);
-    font-size: 10.5px;
-    letter-spacing: 0.15em;
+    font-size: 11px;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--color-text-3);
+    margin: 0;
   }
-  .arch-tier-items {
+  .arch-zone-items {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 10px;
   }
-  .arch-tier-item {
+  .arch-zone-item {
     padding: 14px 16px;
     background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: 8px;
   }
-  .tier-item-name {
+  .arch-zone-item-vendor {
+    border-style: dashed;
+    background: var(--color-ink-2);
+  }
+  .zone-item-name {
     margin: 0 0 4px;
     font-size: 15px;
     font-weight: 600;
     color: var(--color-text);
   }
-  .tier-item-sub {
+  .zone-item-sub {
     margin: 0;
     font-family: var(--font-mono);
     font-size: 12px;

@@ -7,10 +7,11 @@ import {
   SITE, BRAND, EMAIL, LINKEDIN_URL, BASE, BOOK_PATH,
   STACK, HERO, PROBLEMS, PROBLEM_PATTERN,
   SOLUTION_INTRO,
-  PIPELINE, PIPELINE_PRINCIPLE,
+  PIPELINE, PIPELINE_PRINCIPLE, TWO_MODES,
   TYPICAL_DAY, TYPICAL_DAY_TAKEAWAY,
   DELIVERABLE_EXAMPLES, DELIVERABLES_INTRO,
   ENGAGEMENT_FLOW,
+  PLAIN_TERMS_TAGLINE,
   SEGMENTS, DIFFERENTIATORS,
 } from '../../data/consulting';
 
@@ -182,6 +183,42 @@ const jsonLd = {
         <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-amber mb-3">Human in the loop, always</p>
         <p class="text-[16px] md:text-[17px] text-text leading-[1.7]">{PIPELINE_PRINCIPLE}</p>
       </div>
+
+      <!-- Two kinds of AI access — compact context, linking to /technology -->
+      <div class="mt-16 md:mt-20 max-w-4xl mx-auto">
+        <div data-fade class="mb-8">
+          <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-amber mb-3">Two kinds of AI access power the pipeline</p>
+          <p class="text-[16px] md:text-[17px] text-text-2 leading-[1.7]">
+            Developers get AI through <em class="not-italic text-text font-medium">interactive seats</em> (fixed monthly cost). Server-side automation calls AI through a <em class="not-italic text-text font-medium">programmatic API key</em> (per-token). Two distinct products, used where each fits. Same at every major vendor.
+          </p>
+        </div>
+        <div class="grid md:grid-cols-2 gap-8 md:gap-10 border-t border-border pt-8">
+          {TWO_MODES.map((m, i) => (
+            <div data-fade data-fade-delay={i * 80}>
+              <div class="flex items-baseline gap-3 mb-2">
+                <p class="font-mono text-[10.5px] uppercase tracking-[0.16em] text-amber">{m.label}</p>
+                <span class="font-mono text-[10.5px] uppercase tracking-[0.14em] text-text-3">for {m.forWhom.toLowerCase()}</span>
+              </div>
+              <p class="font-display text-[18px] md:text-[19px] font-medium text-text mb-2 leading-[1.3]">{m.mode} use</p>
+              <p class="font-mono text-[12.5px] text-text-3 mb-1.5">{m.examples}</p>
+              <p class="text-[13.5px] text-text-2 leading-[1.6]">{m.billing}</p>
+            </div>
+          ))}
+        </div>
+        <div data-fade class="mt-6">
+          <a href={`${BASE}/technology#modes`} class="inline-flex items-center gap-1.5 font-mono text-[12px] uppercase tracking-[0.14em] text-text-3 hover:text-amber transition-colors">
+            Why this split
+            <ConsultingIcon name="arrow-right" size={13} class="stroke-[2.5]" />
+          </a>
+        </div>
+      </div>
+
+      <!-- Memorable tagline cap -->
+      <div data-fade class="mt-16 md:mt-24 max-w-3xl mx-auto text-center">
+        <p class="font-display italic text-[22px] md:text-[28px] text-text leading-[1.35]">
+          {PLAIN_TERMS_TAGLINE}
+        </p>
+      </div>
     </div>
   </section>
 
@@ -250,10 +287,27 @@ const jsonLd = {
         ))}
       </div>
 
-      <div data-fade class="mt-16 max-w-3xl p-6 md:p-7 border-l-2 border-amber bg-surface/70">
-        <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-amber mb-3">A note on price</p>
-        <p class="text-[15.5px] text-text leading-[1.65]">
-          Every engagement is scoped and priced in the proposal after a short Audit — never in a menu. Fixed-fee for Audit and Build. Optional monthly Support afterwards. AI vendor seats and tokens are billed directly by your studio to your chosen vendor; no markup, no lock-in.
+      <div data-fade class="mt-16 max-w-4xl">
+        <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-amber mb-6">What you pay, transparently</p>
+        <div class="grid md:grid-cols-3 gap-6 md:gap-8 border-t border-border pt-8">
+          <div>
+            <p class="font-mono text-[10.5px] uppercase tracking-[0.14em] text-text-3 mb-2">One-time (to us)</p>
+            <p class="font-display text-[17px] font-medium text-text mb-1.5 leading-[1.3]">Audit + Build</p>
+            <p class="text-[13.5px] text-text-2 leading-[1.6]">Fixed-fee, scoped in the proposal after a short Audit. Never a menu.</p>
+          </div>
+          <div>
+            <p class="font-mono text-[10.5px] uppercase tracking-[0.14em] text-text-3 mb-2">Fixed monthly</p>
+            <p class="font-display text-[17px] font-medium text-text mb-1.5 leading-[1.3]">Seats + retainer</p>
+            <p class="text-[13.5px] text-text-2 leading-[1.6]">AI vendor seats paid directly (no markup). Optional monthly Support retainer paid to us.</p>
+          </div>
+          <div>
+            <p class="font-mono text-[10.5px] uppercase tracking-[0.14em] text-text-3 mb-2">Variable</p>
+            <p class="font-display text-[17px] font-medium text-text mb-1.5 leading-[1.3]">API tokens</p>
+            <p class="text-[13.5px] text-text-2 leading-[1.6]">Server-side automation. Paid directly to your vendor, per-token. Predictable, monitored, optimizable.</p>
+          </div>
+        </div>
+        <p data-fade class="mt-6 text-[14px] text-text-3 leading-[1.6]">
+          Full cost breakdown on <a href={`${BASE}/technology#pricing`} class="text-amber hover:underline">the method page</a> — including typical ranges for a 50-developer studio.
         </p>
       </div>
     </div>

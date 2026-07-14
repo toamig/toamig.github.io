@@ -9,9 +9,11 @@ interface Layer {
   name: string;
   oneLine: string;
   prose: string;
+  where: string;
   audience: string;
   trigger: string;
   time: string;
+  paidVia: string;
   cost: string;
   accent: string;
 }
@@ -35,12 +37,20 @@ const { layers } = Astro.props;
           <p class="layer-prose">{l.prose}</p>
           <dl class="layer-meta">
             <div class="meta-item">
+              <dt>Where it runs</dt>
+              <dd>{l.where}</dd>
+            </div>
+            <div class="meta-item">
               <dt>Audience</dt>
               <dd>{l.audience}</dd>
             </div>
             <div class="meta-item">
               <dt>Trigger</dt>
               <dd>{l.trigger}</dd>
+            </div>
+            <div class="meta-item">
+              <dt>Paid via</dt>
+              <dd>{l.paidVia}</dd>
             </div>
             <div class="meta-item">
               <dt>Time to result</dt>
@@ -145,7 +155,7 @@ const { layers } = Astro.props;
       opacity 0.35s ease;
   }
   .pipeline-layer:hover .layer-detail {
-    max-height: 480px;
+    max-height: 600px;
     opacity: 1;
   }
 
@@ -166,7 +176,7 @@ const { layers } = Astro.props;
   }
   @media (min-width: 640px) {
     .layer-meta {
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(3, 1fr);
     }
   }
   .meta-item dt {
@@ -197,7 +207,7 @@ const { layers } = Astro.props;
   /* On touch / no-hover devices: expand all detail, disable dimming */
   @media (hover: none) {
     .layer-detail {
-      max-height: 480px;
+      max-height: 600px;
       opacity: 1;
     }
     .pipeline:hover .pipeline-layer:not(:hover) {

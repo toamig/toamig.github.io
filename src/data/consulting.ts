@@ -59,15 +59,23 @@ export const PROBLEM_PATTERN = 'Studios that adopt AI without structured infrast
 export const SOLUTION_INTRO = 'We build the layer between your codebase and whichever AI models you use — a governed knowledge layer that captures your studio’s conventions, and a layered pipeline that applies the right check at the right moment.';
 
 // ─── The layered pipeline ──────────────────────────────────────────────────
+// Each layer now carries full deployment metadata:
+//   where     — physical location the code runs (workstation / server / etc.)
+//   paidVia   — how the AI usage is billed (seat / API key / free)
+//   trigger   — event that fires the layer
+//   time      — time-to-result
+//   audience  — who consumes the output
 export const PIPELINE = [
   {
     n: '01',
     name: 'Write-Time Assistance',
     oneLine: 'Convention adherence and canonical examples surfaced while code is being written.',
     prose: 'Prevention. The developer’s AI assistant knows your studio’s conventions, canonical examples, and architectural constraints while code is being written. Convention violations are avoided at write-time, not caught at review-time.',
+    where: 'Developer workstation, in the AI coding assistant',
     audience: 'Developer',
     trigger: 'IDE session',
     time: 'Real-time',
+    paidVia: 'Developer seat',
     cost: 'Covered by seats',
     accent: 'Prevention',
   },
@@ -76,31 +84,37 @@ export const PIPELINE = [
     name: 'Save-Time Validation',
     oneLine: 'Deterministic linter runs on save. Fast, focused, zero AI.',
     prose: 'Linters excel at formatting, naming, and pattern rules that do not require judgment. We do not ask AI to do what a linter does better and cheaper. Millisecond feedback, zero tokens, always local.',
+    where: 'Developer workstation, in the linter (not the AI assistant)',
     audience: 'Developer',
     trigger: 'File save',
     time: 'Milliseconds',
+    paidVia: 'Free (open-source linters)',
     cost: 'Zero (local)',
     accent: 'Deterministic',
   },
   {
     n: '03',
     name: 'Submit-Time Preparation',
-    oneLine: 'Pre-submit hook validates description, ticket linkage, reviewer assignment.',
-    prose: 'Not the code itself — the metadata around it. Correct CL description, correct ticket linkage, correct reviewers assigned automatically based on file ownership. Lightweight AI check for anything that should not be submitted. Developer stays in control.',
+    oneLine: 'Pre-submit hook validates and drafts the metadata around the submit — description, ticket linkage, reviewers.',
+    prose: 'Not the code itself — the metadata around it. Correct CL description (often generated from the diff and ticket), correct ticket linkage, correct reviewers assigned automatically based on file ownership. Path safety and scope coherence checked. Developer stays in control.',
+    where: 'Developer workstation, triggered by the VCS (p4 submit / git push)',
     audience: 'Developer',
-    trigger: 'p4 submit (or equivalent)',
+    trigger: 'p4 submit / git push',
     time: '2-5 seconds',
-    cost: '~€0.02-0.05 / submit',
+    paidVia: 'Developer seat OR studio API key (Setup choice)',
+    cost: '€0 (via seat) or ~€0.02-0.05 / submit (via API)',
     accent: 'Submit-readiness',
   },
   {
     n: '04',
     name: 'Post-Submit Deep Review',
     oneLine: 'Cross-file impact, architectural drift, similar patterns — structured for the tech lead.',
-    prose: 'Tech leads do not need AI to tell them the code compiles. They need structured analysis of impact, drift, and pattern consistency so their review time focuses on architectural judgment, not convention enforcement. Posted to Swarm, GitHub, or your review tool.',
+    prose: 'Runs asynchronously on a server-side worker after a changelist lands. Tech leads do not need AI to tell them the code compiles. They need structured analysis of impact, drift, and pattern consistency so their review time focuses on architectural judgment. Posted to Swarm, GitHub, or your review tool.',
+    where: 'Server-side automation worker (small VM in your network)',
     audience: 'Tech Lead',
-    trigger: 'Post-submit event',
+    trigger: 'Post-submit trigger (webhook)',
     time: '30-90 seconds',
+    paidVia: 'Studio API key',
     cost: '~€0.10-0.40 / CL',
     accent: 'Decision support',
   },
@@ -108,11 +122,13 @@ export const PIPELINE = [
     n: '05',
     name: 'Continuous Evolution',
     oneLine: 'Pattern recognition surfaces knowledge-layer updates. Documentation drift detected and repaired.',
-    prose: 'The layer where the system improves itself. Patterns that appear repeatedly become knowledge updates. Documentation drift gets flagged. Build failures generate hypothesis-driven fix proposals for tech lead approval. Nothing merges without human review.',
+    prose: 'The layer where the system improves itself. Weekly cron jobs plus build-failure events. Patterns that appear repeatedly become knowledge updates. Documentation drift gets flagged. Build failures generate hypothesis-driven fix proposals — never applied automatically.',
+    where: 'Server-side automation worker (same or separate VM as Layer 4)',
     audience: 'Tech Lead',
-    trigger: 'Schedule + build failures',
-    time: 'Minutes to hours',
-    cost: 'Predictable weekly total',
+    trigger: 'Cron (weekly / monthly) + build-failure events',
+    time: 'Minutes to hours (batch)',
+    paidVia: 'Studio API key',
+    cost: '~€5-30 / week',
     accent: 'Self-improvement',
   },
 ];
@@ -219,47 +235,63 @@ export const BRAIN_TELEMETRY = [
 ];
 
 // ─── Technical architecture ────────────────────────────────────────────────
+// `side` distinguishes studio-hosted vs vendor-hosted components. `tier`
+// remains for vertical ordering in the mobile stack fallback.
 export const ARCHITECTURE_COMPONENTS = [
   {
     id: 'brain',
     name: 'Knowledge Repository',
     sub: 'Git, private',
     role: 'Source of truth. Standard Git repository, hosted on your existing infrastructure. All knowledge as version-controlled files. Branch protection and CI validation enforce governance.',
+    side: 'studio',
     tier: 0,
   },
   {
     id: 'context',
-    name: 'Context Server',
-    sub: 'Internal VM · 2 vCPU / 4GB',
-    role: 'Runs inside your network. Hosts an MCP server that serves knowledge to AI agents. Pulls from repository on tagged releases or webhook triggers. Caches content in memory. Logs all queries.',
+    name: 'MCP Context Server',
+    sub: 'Small VM · 2 vCPU / 4GB',
+    role: 'Runs inside your network. Serves knowledge to AI agents through MCP. Pulls from the repository on tagged releases. Caches content in memory. Logs all queries.',
+    side: 'studio',
     tier: 1,
   },
   {
     id: 'session',
-    name: 'Developer Session',
+    name: 'Developer Workstation',
     sub: 'Any MCP-compatible client',
-    role: 'Existing developer workstation running an AI coding assistant (Claude Code, Cursor, Continue, or your preferred client). Configured to connect to the Context Server via MCP. Loads studio-adapted skills at session start.',
+    role: 'Existing developer workstation running an AI coding assistant configured to connect to the Context Server via MCP. Loads studio-adapted skills at session start. Interactive AI usage happens here.',
+    side: 'studio',
     tier: 2,
   },
   {
     id: 'worker',
     name: 'Automation Worker',
     sub: 'Small VM or serverless',
-    role: 'Listens for events from studio systems (Perforce triggers, CI hooks, scheduled jobs). Constructs prompts with relevant context, calls whichever model your studio uses, posts results to studio systems.',
+    role: 'Listens for events from studio systems (VCS triggers, CI hooks, scheduled jobs). Constructs prompts with relevant context, calls the vendor API, and posts results back to studio systems.',
+    side: 'studio',
     tier: 2,
-  },
-  {
-    id: 'api',
-    name: 'AI Model Provider',
-    sub: 'your choice of vendor',
-    role: 'Where inference happens. Claude, GPT, Gemini, or open-weight models via Bedrock / Vertex / Azure OpenAI, or self-hosted deployment. Selected during the Audit based on your privacy tier, cost model, and existing infrastructure.',
-    tier: 3,
   },
   {
     id: 'studio',
     name: 'Studio Systems',
-    sub: 'Perforce, Swarm, Jira, Slack',
+    sub: 'Perforce, Swarm, Jira, Slack, CI',
     role: 'Your existing infrastructure. We integrate; we do not replace. Perforce or Plastic SCM or Git. Swarm or GitHub or GitLab. Jira or Linear. Slack or Teams. Your CI/CD system.',
+    side: 'studio',
+    tier: 3,
+  },
+  {
+    id: 'seats',
+    name: 'Interactive AI Seats',
+    sub: 'Vendor-hosted',
+    role: 'Commercial AI seats used by developers for interactive coding assistance. Claude for Work, ChatGPT Enterprise, Gemini for Google Workspace — your choice. Fixed monthly cost per developer, paid directly to the vendor.',
+    side: 'vendor',
+    tier: 2,
+  },
+  {
+    id: 'api',
+    name: 'Programmatic AI API',
+    sub: 'Vendor-hosted · key-based',
+    role: 'Vendor API used by the automation worker for server-side operations. Anthropic, OpenAI, or Google AI — matched to your vendor. Zero Data Retention addendum standard. Can route through AWS Bedrock, Google Vertex AI, or Azure OpenAI for stricter privacy tiers.',
+    side: 'vendor',
     tier: 3,
   },
 ];
@@ -538,6 +570,252 @@ export const WHAT_WE_DONT_CLAIM = [
   'That the components we build are unique (many are open source; we use them where appropriate)',
   'Instant transformation — real value takes months to compound',
 ];
+
+// ─── Two kinds of AI access ────────────────────────────────────────────────
+// The seat/API distinction is the same at every major vendor. Both modes are
+// used side-by-side in the deployed system; each is used where it fits.
+export const TWO_MODES = [
+  {
+    mode: 'Interactive',
+    forWhom: 'Developers',
+    label: 'Seats',
+    body: 'Each developer has a commercial AI seat and runs a coding assistant on their workstation. When they want help writing code, they get it through this seat. Fixed monthly cost per developer, unlimited use within reasonable rate limits, human always in the loop.',
+    examples: 'Claude for Work · ChatGPT Enterprise · Gemini for Google Workspace',
+    billing: '~€30-40 per developer per month, paid directly to the vendor',
+    usedIn: 'Layer 1 (write-time) · Layer 3 (submit-time, if seat-based)',
+  },
+  {
+    mode: 'Programmatic',
+    forWhom: 'Automation',
+    label: 'API',
+    body: 'A server-side worker calls the vendor’s API directly when events happen — a submit lands, a build fails, a scheduled analysis runs. Uses an API key, not a seat. Per-token pricing, predictable, designed for 24/7 machine access and structured output.',
+    examples: 'Anthropic API · OpenAI API · Google AI API (or via Bedrock / Vertex / Azure OpenAI)',
+    billing: 'Per-token, typically with a Zero Data Retention addendum for IP protection',
+    usedIn: 'Layer 3 (if API-based) · Layer 4 (post-submit review) · Layer 5 (continuous evolution)',
+  },
+];
+
+export const WHY_SPLIT = 'Seats and API keys are different products designed for different uses. Seats assume a human at a keyboard: session-based auth, rate limits sized for interactive use, conversational streaming output. API keys assume server-side automation: long-lived credentials, volume rate limits, structured output guaranteed by schema, terms of service that explicitly permit programmatic access. Using seats for server-side automation would work briefly, then fail at scale and potentially violate terms of service. Using API for interactive developer work would work but cost significantly more than seats for the same volume. Each mode is used where it fits.';
+
+// ─── Deployment topology (what lives where) ────────────────────────────────
+export const DEPLOYMENT_INSIDE_STUDIO = [
+  { name: 'Knowledge repository',        detail: 'Git, on the studio’s existing Git infrastructure' },
+  { name: 'MCP Context Server',          detail: 'One small VM · 2 vCPU / 4GB RAM' },
+  { name: 'Automation Worker',           detail: 'One small VM · 2 vCPU / 4GB RAM' },
+  { name: 'Existing studio systems',     detail: 'Perforce · Swarm · Jira · Slack · CI (unchanged)' },
+];
+export const DEPLOYMENT_INSIDE_VENDOR = [
+  { name: 'Interactive AI seats',        detail: 'Vendor-hosted (Claude for Work · ChatGPT Enterprise · Gemini)' },
+  { name: 'Programmatic AI API',         detail: 'Vendor-hosted or routed via AWS Bedrock / Google Vertex / Azure OpenAI' },
+];
+export const DEPLOYMENT_ADDED = 'Two small VMs. That is the entire additional infrastructure footprint. Everything else uses infrastructure the studio already runs.';
+
+// ─── Who pays what (cost breakdown) ────────────────────────────────────────
+export const COST_FIXED = [
+  {
+    line: 'AI seats (interactive use)',
+    who: 'Studio → vendor',
+    price: '~€30-40 / developer / month',
+    note: 'Paid directly, no markup. Number of seats matches the developers who need interactive AI assistance.',
+  },
+  {
+    line: 'Infrastructure hosting',
+    who: 'Studio → cloud or self',
+    price: '~€30-100 / month total',
+    note: 'Two small VMs. Depends on your chosen hosting.',
+  },
+  {
+    line: 'Optimization retainer (optional)',
+    who: 'Studio → us',
+    price: '~€2,000-15,000 / month',
+    note: 'Scales with studio size. Ongoing knowledge evolution, integration maintenance, system optimization.',
+  },
+];
+export const COST_VARIABLE = [
+  {
+    line: 'Layer 3 API (if API-based)',
+    price: '€50-150 / month',
+    note: 'For a 50-developer studio at ~2,000 submits / month. Zero if seat-based.',
+  },
+  {
+    line: 'Layer 4 (post-submit review)',
+    price: '€300-800 / month',
+    note: 'For a 50-developer studio. Scales roughly linearly with submit volume.',
+  },
+  {
+    line: 'Layer 5 (continuous evolution)',
+    price: '€30-100 / month',
+    note: 'Weekly / monthly batch jobs.',
+  },
+];
+export const COST_VARIABLE_TOTAL = 'Total API charges typically €400-1,000 / month for a 50-developer studio; €1,500-4,000 for a 200-developer studio.';
+
+export const COST_ONE_TIME = [
+  {
+    line: 'AI Readiness Audit',
+    price: '~€4,000-35,000',
+    note: 'Fixed-fee, one-time. Written report you keep regardless of next steps.',
+  },
+  {
+    line: 'Setup & Integration',
+    price: '~€10,000-130,000',
+    note: 'Fixed-fee, one-time. Infrastructure deployment, integration, knowledge construction, skill library, training.',
+  },
+];
+
+export const COST_DONT_CHARGE = [
+  'We do not mark up vendor pricing. Studio pays the AI vendor directly for seats and API charges.',
+  'We do not charge for open-source components (official Perforce MCP, community MCPs, standard linters). We configure and integrate; you do not pay for the software.',
+];
+
+// ─── Deployment & operations ───────────────────────────────────────────────
+export const OPS_WE_DEPLOY_SETUP = [
+  'Knowledge repository created and populated',
+  'MCP context server deployed and configured',
+  'Automation worker deployed and configured',
+  'Perforce (or Plastic / Git) triggers installed',
+  'Review tool integrations configured',
+  'Developer workstations configured',
+  'Skill library installed and tested',
+  'Team training completed',
+];
+export const OPS_WE_MAINTAIN_RETAINER = [
+  'Knowledge evolution based on telemetry',
+  'New capabilities added as needed',
+  'Cost monitoring and optimization',
+  'Vendor-platform update integration',
+  'Quarterly ROI reports',
+];
+export const OPS_STUDIO_OPERATES = 'The studio owns and operates the two VMs after handover (standard sysadmin work). We maintain the knowledge content, skill library, and configuration through the retainer. If the retainer ends, everything continues to work — studio owns all infrastructure, all code, all configuration. Zero vendor lock-in on us.';
+export const OPS_WE_DONT_OPERATE = 'We do not host anything on our infrastructure. Everything lives in the studio’s environment. This is deliberate: better for IP protection, better for compliance (your security team can audit exactly what runs where), better for your long-term autonomy.';
+
+// ─── Layer 3 detailed content ──────────────────────────────────────────────
+export const LAYER3_HEADLINE = 'Not another code review. The metadata, context, and coherence that make submits worth reviewing.';
+export const LAYER3_INTRO = 'Layer 3 runs when a developer initiates the operation that sends their code to the shared repository. In Perforce, that is `p4 submit`. In Git, that is `git push` or opening a pull request. It is not pre-commit — Git commits are local and frequent, and running AI checks on every commit would be excessive. Layer 3 focuses on what surrounds the code, not the code itself.';
+
+export const LAYER3_VERIFICATION = [
+  {
+    icon: 'file-text',
+    title: 'Changelist description quality',
+    items: [
+      'Description follows the studio’s template',
+      'Description accurately reflects what changed in the diff',
+      'No placeholder descriptions ("wip", "fix", "misc changes") without follow-up',
+      'Intent is captured, not just mechanics',
+    ],
+  },
+  {
+    icon: 'clipboard-check',
+    title: 'Ticket linkage integrity',
+    items: [
+      'Referenced ticket exists in Jira, Linear, or your tracker',
+      'Ticket is in an appropriate state (not closed, assigned to submitter)',
+      'Ticket description aligns with what the code actually does',
+      'Missing ticket linkage flagged when required by studio policy',
+    ],
+  },
+  {
+    icon: 'users',
+    title: 'Reviewer assignment',
+    items: [
+      'Reviewers assigned automatically based on file ownership from the knowledge layer',
+      'Required approvers for touched modules present',
+      'Cross-team reviews requested when appropriate',
+      'No self-approval situations that violate studio policy',
+    ],
+  },
+  {
+    icon: 'lock',
+    title: 'Path safety',
+    items: [
+      'Engine code modifications flagged if unauthorized',
+      'Third-party code changes require legal or licensing review flags',
+      'Protected paths (console SDK, restricted modules) require explicit justification',
+      'Cross-cutting changes that touch multiple owned modules trigger acknowledgment',
+    ],
+  },
+  {
+    icon: 'route',
+    title: 'Scope coherence',
+    items: [
+      'Changes align with the stated intent',
+      'Unrelated changes not mixed into a single changelist (a "fix bug X" that also refactors module Y triggers a split suggestion)',
+      'CL size within reasonable bounds for meaningful review',
+    ],
+  },
+];
+
+export const LAYER3_DESC_GEN_INTRO = 'One of Layer 3’s most useful capabilities is generating changelist descriptions rather than merely validating them. Developers routinely write minimal descriptions because synthesizing changes into prose is work they would rather skip. Tech leads then spend disproportionate time reading diffs to understand intent. Description quality is one of the highest-leverage improvements possible in a development pipeline.';
+
+export const LAYER3_DESC_GEN_EXAMPLE = `Proposed description:
+
+Implements JIRA-1234: damage-over-time ability for wizard class.
+
+- Adds DoTAbility with configurable tick interval and duration
+- Integrates with existing buff system for effect stacking
+- Includes network replication following studio conventions
+- Tests cover single-target, area effect, and dispel scenarios
+
+Reviewers assigned: @tech-lead-gameplay, @tech-lead-networking
+Ticket status: In Progress → will move to In Review on submit`;
+
+export const LAYER3_DESC_GEN_APPROACHES = [
+  {
+    label: 'Approach A',
+    name: 'AI generates, developer confirms',
+    body: 'AI writes the description from the diff and the ticket. Developer confirms or edits before submit proceeds. Minimum friction, highest consistency.',
+    when: 'Teams with less senior developers, or where description quality is a persistent problem.',
+  },
+  {
+    label: 'Approach B',
+    name: 'Developer writes, AI validates',
+    body: 'Developer writes description as usual. AI checks alignment with diff, template adherence, and completeness. AI warns only; developer authorship preserved.',
+    when: 'Teams where every submit deserves author-written prose.',
+  },
+  {
+    label: 'Approach C',
+    name: 'Hybrid, based on developer effort',
+    body: 'If developer wrote substantial description, AI validates. If developer wrote minimal placeholder, AI proposes a full description. Respects developer autonomy while catching lazy submissions.',
+    when: 'Most studios pick this one after seeing the trade-offs.',
+    recommended: true,
+  },
+];
+
+export const LAYER3_ADVISORY = 'Layer 3 primarily provides advisory feedback. Developers see warnings, can address them or proceed with justification. Blocking behavior is reserved for critical issues: attempted modifications to protected paths without required flags, missing required approvers for regulated code, ticket references that fail integrity checks, submits that violate explicit path restrictions defined in the knowledge layer. Everything else is advisory. Tech leads configure which categories block during Setup, based on studio risk tolerance.';
+
+export const LAYER3_IMPL_OPTIONS = [
+  {
+    label: 'Option A',
+    name: 'Via developer’s AI seat',
+    body: 'The pre-submit hook invokes the developer’s AI coding assistant locally. The developer’s seat handles the AI call. No additional cost per submit. Simpler to configure. Uses whatever seat quota the developer has.',
+    bestFor: 'Studios with generous seat allocations, teams preferring simplicity, straightforward workflows.',
+    cost: '€0 incremental / submit',
+  },
+  {
+    label: 'Option B',
+    name: 'Via studio’s AI API key',
+    body: 'The pre-submit hook makes a direct API call using the studio’s API key. Structured output guaranteed by schema. Independent of seat state. Better observability for compliance auditing.',
+    bestFor: 'Studios with strict compliance requirements, high submit volumes, or preference for centralized cost tracking.',
+    cost: '~€0.02-0.05 / submit',
+  },
+];
+export const LAYER3_IMPL_NOTE = 'Both options produce equivalent quality of analysis. The choice is about operational preference, not capability. Most studios choose Option A initially and migrate to Option B if compliance or observability needs grow.';
+
+export const LAYER3_NOT = [
+  { title: 'Not another code quality review',    body: 'Layer 1 handles quality at write time; Layer 4 handles deep analysis post-submit. Layer 3 is about submit-readiness, not code correctness.' },
+  { title: 'Not a gate that developers battle',  body: 'Well-configured, Layer 3 saves developers time by handling metadata construction automatically. If developers experience it as bureaucratic friction, configuration is wrong.' },
+  { title: 'Not autonomous',                      body: 'Even auto-generated descriptions require developer confirmation before the submit proceeds. AI never submits code without human decision.' },
+  { title: 'Not required for every changelist',  body: 'Trivial changes (typo fixes, comment updates) can be exempted from full Layer 3 processing. Configurable during Setup.' },
+];
+
+// ─── Plain-terms summary ───────────────────────────────────────────────────
+export const PLAIN_TERMS_LINES = [
+  'Developers work as they always do, with a smarter AI assistant that knows your studio’s rules.',
+  'A small server sits inside your network holding your studio’s collective knowledge and serving it up when needed.',
+  'Another small server watches for events — submits, build failures, weekly schedules — and does the deeper analysis that would otherwise consume senior engineering time.',
+  'The AI vendor hosts the model. You keep the code, the knowledge, and the infrastructure.',
+];
+export const PLAIN_TERMS_TAGLINE = 'Two subscriptions. Two small servers. Five layers that know when to run and when to stay quiet.';
 
 // ─── Segment callouts (anchor sections on the homepage) ────────────────────
 // Kept minimal; not their own pages anymore.
