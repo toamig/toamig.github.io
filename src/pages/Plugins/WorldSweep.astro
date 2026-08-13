@@ -154,12 +154,22 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">Running your first sweep takes five steps. No configuration files, no project settings, just a data asset and your script.</p>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b97d3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </span>
+      <span><strong>Requires Unreal Engine 5.4 to 5.8</strong>, Windows (Win64). WorldSweep is an <strong>editor-only</strong> plugin: it is excluded from packaged builds, adds no runtime cost, and ships no content. Each engine version has its own build, so install the one matching your project.</span>
+    </div>
+
     <div class="steps">
       <div class="step">
         <span class="step-num">1</span>
         <div class="step-body">
-          <p class="step-title">Enable the plugin</p>
-          <p class="step-desc">In the editor go to <strong>Edit → Plugins</strong>, search for <strong>WorldSweep</strong>, enable it, and restart the editor. The WorldSweep panel will appear under the Tools menu.</p>
+          <p class="step-title">Install and enable the plugin</p>
+          <p class="step-desc">Copy the <strong>WorldSweep</strong> folder into your project's <code style="font-family:var(--pl-mono);font-size:12px;color:var(--pl-blue-l)">Plugins/</code> directory, then regenerate project files and build. In the editor go to <strong>Edit → Plugins</strong>, search for <strong>WorldSweep</strong>, enable it, and restart. The WorldSweep panel appears under the <strong>Tools</strong> menu.</p>
         </div>
       </div>
       <div class="step">
@@ -187,7 +197,7 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
         <span class="step-num">5</span>
         <div class="step-body">
           <p class="step-title">Run and review</p>
-          <p class="step-desc">Click <strong>Run</strong>. A progress dialog shows cells processed and actors visited in real-time. You can cancel at any point. Results and any warnings are written to the <strong>WorldSweep</strong> message log.</p>
+          <p class="step-desc">Click <strong>Run Batch</strong>. A progress dialog shows cells processed and actors visited in real-time. You can cancel at any point, and the whole run is wrapped in a single transaction so <strong>Ctrl+Z</strong> undoes it. Results and any warnings are written to the <strong>WorldSweep</strong> message log.</p>
         </div>
       </div>
     </div>
@@ -220,14 +230,14 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
         <tr>
           <td class="prop-name">Scripts</td>
           <td class="prop-type">Array</td>
-          <td class="prop-desc">The scripts to execute. Scripts run in array order within the same priority group for each cell.</td>
-          <td class="prop-default">, </td>
+          <td class="prop-desc">The scripts to execute. Instances are created inline on the batch asset. Scripts run in array order within the same priority group for each cell.</td>
+          <td class="prop-default">Empty</td>
         </tr>
         <tr>
           <td class="prop-name">CellSize</td>
           <td class="prop-type">float (cm)</td>
-          <td class="prop-desc">Size of each sweep cell in world units. Smaller values give finer iteration at the cost of more load/unload cycles. Match your World Partition streaming cell size for best results.</td>
-          <td class="prop-default">WP default</td>
+          <td class="prop-desc">Size of each sweep cell in world units. Smaller values give finer iteration at the cost of more load/unload cycles. Match your World Partition streaming cell size for best results. Only used in World Partition mode, the other modes derive cells from levels or the whole world.</td>
+          <td class="prop-default">25600</td>
         </tr>
         <tr>
           <td class="prop-name">ActorClassFilter</td>
@@ -263,8 +273,17 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
     </h2>
     <div class="section-divider"></div>
     <p class="doc-p">
-      A <strong>WorldSweepScript</strong> is the unit of work in WorldSweep. Subclass it in C++ or Blueprint to implement any batch operation. Each script declares which lifecycle events it participates in via its <strong>Scope</strong>, allowing the runner to skip unnecessary cell loads when no actor iteration is needed.
+      A <strong>WorldSweepScript</strong> is the unit of work in WorldSweep. Subclass it in C++ or Blueprint to implement any batch operation. Each script declares which lifecycle events it participates in via its <strong>EventFlags</strong>, allowing the runner to skip unnecessary cell loads when no actor iteration is needed.
     </p>
+
+    <div class="callout callout-warn">
+      <span class="callout-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e0a030" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+      </span>
+      <span><strong>Blueprint scripts and cooking.</strong> WorldSweep is editor-only, so a Blueprint subclass of <strong>WorldSweepScript</strong> is a content asset whose parent class does not exist in a packaged build. Keep your batch and script assets in a directory excluded from cooking, for example <code style="font-family:var(--pl-mono);font-size:12px;color:var(--pl-blue-l)">/Game/Editor/WorldSweep/</code> added to <strong>Project Settings → Packaging → Directories to never cook</strong>, and make sure nothing that ships references them.</span>
+    </div>
 
     <div class="doc-subsection" id="script-scopes" data-section="script-scopes">
       <h3 class="doc-subsection-title">Event Flags</h3>
@@ -339,7 +358,12 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
           <tr>
             <td class="prop-name">OnBatchCompleted</td>
             <td><span class="badge badge-green">Always</span></td>
-            <td class="prop-desc">Called once after the entire batch finishes or is cancelled. Receives the total cells processed.</td>
+            <td class="prop-desc">Called once after the entire batch finishes or is cancelled. Receives the total cells processed and whether the run was cancelled.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">HasFailed</td>
+            <td><span class="badge badge-green">Always</span></td>
+            <td class="prop-desc">Called after <code style="font-family:var(--pl-mono);font-size:12px;color:var(--pl-blue-l)">OnBatchCompleted</code>. Return true to report that this script considers the batch failed, which makes the commandlet exit with code 3. Returns false unless overridden. Override it to fail a CI job when an audit finds violations.</td>
           </tr>
         </tbody>
       </table>
@@ -360,7 +384,7 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
           <tr>
             <td class="prop-name">ActorTagFilter</td>
             <td class="prop-type">Array&lt;Tag&gt;</td>
-            <td class="prop-desc">If non-empty, <code style="font-family:var(--pl-mono);font-size:12px;color:var(--pl-blue-l)">OnActorFound</code> is only called for actors that have at least one of these tags.</td>
+            <td class="prop-desc">If non-empty, <code style="font-family:var(--pl-mono);font-size:12px;color:var(--pl-blue-l)">OnActorFound</code> and <code style="font-family:var(--pl-mono);font-size:12px;color:var(--pl-blue-l)">OnComponentFound</code> are only called for actors that have at least one of these tags. Component events inherit their owner actor's tags.</td>
           </tr>
           <tr>
             <td class="prop-name">Priority</td>
@@ -370,7 +394,7 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
           <tr>
             <td class="prop-name">World</td>
             <td class="prop-type">UWorld*</td>
-            <td class="prop-desc">The world being swept. Set by the runner before <code style="font-family:var(--pl-mono);font-size:12px;color:var(--pl-blue-l)">OnBatchStarted</code>. Use to query or spawn actors during the batch.</td>
+            <td class="prop-desc">The world being swept. Set by the runner before <code style="font-family:var(--pl-mono);font-size:12px;color:var(--pl-blue-l)">OnBatchStarted</code> and cleared after <code style="font-family:var(--pl-mono);font-size:12px;color:var(--pl-blue-l)">OnBatchCompleted</code>. Use to query or spawn actors during the batch.</td>
           </tr>
         </tbody>
       </table>
@@ -575,12 +599,16 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
       <h3 class="doc-subsection-title">Usage</h3>
       <div class="code-block">
         <div class="code-block-header"><span class="code-lang">shell</span></div>
-        <pre><span class="code-cmd">UnrealEditor.exe</span> <span class="code-val">&lt;Project&gt;.uproject</span> <span class="code-val">&lt;MapPath&gt;</span> \
+        <pre><span class="code-cmd">UnrealEditor.exe</span> <span class="code-val">&lt;Project&gt;.uproject</span> \
   <span class="code-flag">-run=WorldSweep</span> \
+  <span class="code-flag">-Map=</span><span class="code-val">/Game/Maps/MyOpenWorld</span> \
   <span class="code-flag">-Batch=</span><span class="code-val">/Game/WorldSweep/Batches/MyBatch</span> \
   <span class="code-flag">-SweepMinX=</span><span class="code-val">-100000</span> <span class="code-flag">-SweepMinY=</span><span class="code-val">-100000</span> \
   <span class="code-flag">-SweepMaxX=</span><span class="code-val">100000</span>  <span class="code-flag">-SweepMaxY=</span><span class="code-val">100000</span></pre>
       </div>
+      <p class="doc-p" style="margin-top:10px">
+        The map must be passed with <code style="font-family:var(--pl-mono);font-size:12px;color:var(--pl-blue-l)">-Map=</code>. Unreal ignores a positional map argument when <code style="font-family:var(--pl-mono);font-size:12px;color:var(--pl-blue-l)">-run=</code> is present, so a map given that way is silently never loaded and the sweep finds nothing.
+      </p>
     </div>
 
     <div class="doc-subsection">
@@ -591,6 +619,11 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
         </thead>
         <tbody>
           <tr>
+            <td class="prop-name">-Map=&lt;path&gt;</td>
+            <td><span class="badge badge-amber">Required</span></td>
+            <td class="prop-desc">Package path of the map to load before the sweep runs. Example: <code style="font-family:var(--pl-mono);font-size:12px;color:var(--pl-blue-l)">/Game/Maps/MyOpenWorld</code></td>
+          </tr>
+          <tr>
             <td class="prop-name">-Batch=&lt;path&gt;</td>
             <td><span class="badge badge-amber">Required</span></td>
             <td class="prop-desc">Soft object path to the WorldSweepBatch asset. Example: <code style="font-family:var(--pl-mono);font-size:12px;color:var(--pl-blue-l)">/Game/WorldSweep/Batches/MyBatch</code></td>
@@ -598,12 +631,17 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
           <tr>
             <td class="prop-name">-SweepMinX / -SweepMinY</td>
             <td><span class="badge badge-blue">Optional</span></td>
-            <td class="prop-desc">Minimum X/Y bounds of the sweep area in world units (cm). Required for World Partition mode; acts as a spatial filter in other modes.</td>
+            <td class="prop-desc">Minimum X/Y bounds of the sweep area in world units (cm). When omitted, the full world bounds are derived automatically.</td>
           </tr>
           <tr>
             <td class="prop-name">-SweepMaxX / -SweepMaxY</td>
             <td><span class="badge badge-blue">Optional</span></td>
-            <td class="prop-desc">Maximum X/Y bounds of the sweep area in world units (cm).</td>
+            <td class="prop-desc">Maximum X/Y bounds of the sweep area in world units (cm). All four bounds must be supplied together, or none at all.</td>
+          </tr>
+          <tr>
+            <td class="prop-name">-help</td>
+            <td><span class="badge badge-blue">Optional</span></td>
+            <td class="prop-desc">Prints usage, arguments, and exit codes, then exits with code 0.</td>
           </tr>
         </tbody>
       </table>
@@ -611,10 +649,10 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
 
     <div class="doc-subsection">
       <h3 class="doc-subsection-title">Exit Codes</h3>
-      <div class="mode-grid" style="grid-template-columns: repeat(3, 1fr)">
+      <div class="mode-grid" style="grid-template-columns: repeat(4, 1fr)">
         <div class="mode-card">
           <p class="mode-card-name"><span class="badge badge-green">0</span></p>
-          <p class="mode-card-desc">Batch completed successfully.</p>
+          <p class="mode-card-desc">Batch completed successfully and no script reported failure.</p>
         </div>
         <div class="mode-card">
           <p class="mode-card-name"><span class="badge badge-amber">1</span></p>
@@ -623,6 +661,10 @@ const p = pluginsData.find(x => x.name === 'WorldSweep')!;
         <div class="mode-card">
           <p class="mode-card-name" style="color:rgba(255,80,80,.8)"><span class="badge" style="background:rgba(220,50,50,.15);color:#f08080;border:1px solid rgba(220,50,50,.25)">2</span></p>
           <p class="mode-card-desc">Batch was cancelled before completion.</p>
+        </div>
+        <div class="mode-card">
+          <p class="mode-card-name" style="color:rgba(255,80,80,.8)"><span class="badge" style="background:rgba(220,50,50,.15);color:#f08080;border:1px solid rgba(220,50,50,.25)">3</span></p>
+          <p class="mode-card-desc">Batch finished but one or more scripts returned true from <code style="font-family:var(--pl-mono);font-size:12px;color:var(--pl-blue-l)">HasFailed</code>. Use this to fail a CI job on an audit violation.</p>
         </div>
       </div>
     </div>
