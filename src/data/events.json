@@ -1,5 +1,28 @@
 [
   {
+    "id": "evt-2026-WorldSweep",
+    "date": "2026-08-16",
+    "title": "Published My First Plugin",
+    "tags": [
+      "professional"
+    ],
+    "description": "WorldSweep is now available on Fab, marking the first release in my Unreal Engine plugin collection.",
+    "extendedDescription": [
+      "I've been building tools for Unreal Engine for years, usually because I ran into a problem I didn't want to solve the same way twice. WorldSweep is the first one I decided to package and release.",
+      "It is an editor plugin for running batch operations across World Partition maps, Streaming Levels, and flat worlds. It handles the cell loading and iteration, so I can focus on the operation itself instead of writing the same world traversal code over and over again.",
+      "Seeing the first plugin go live feels like a small milestone, but also the beginning of something I want to keep growing. There are more systems in the pipeline, and I'm excited to finally start sharing them."
+    ],
+    "images": [],
+    "documents": [],
+    "links": [
+      {
+        "text": "WorldSweep on Fab",
+        "url": "https://www.fab.com/listings/e261db00-7d71-40c8-b668-b8a5a59c2f54"
+      }
+    ],
+    "expandable": true
+  },
+  {
     "id": "evt-2026-CCP",
     "date": "2026-04-24",
     "title": "Certified as a Trainer (CCP)",
