@@ -12,15 +12,21 @@
       "It is an editor plugin for running batch operations across World Partition maps, Streaming Levels, and flat worlds. It handles the cell loading and iteration, so I can focus on the operation itself instead of writing the same world traversal code over and over again.",
       "Seeing the first plugin go live feels like a small milestone, but also the beginning of something I want to keep growing. There are more systems in the pipeline, and I'm excited to finally start sharing them."
     ],
-    "images": [],
-    "documents": [],
+    "expandable": true,
+    "images": [
+      "events/Published My First Plugin/WorldSweepCover.png"
+    ],
     "links": [
       {
         "text": "WorldSweep on Fab",
         "url": "https://www.fab.com/listings/e261db00-7d71-40c8-b668-b8a5a59c2f54"
+      },
+      {
+        "text": "Documentation",
+        "url": "https://toamig.com/Plugins/WorldSweep/"
       }
     ],
-    "expandable": true
+    "documents": []
   },
   {
     "id": "evt-2026-CCP",
