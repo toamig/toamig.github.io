@@ -4,6 +4,7 @@ import { html } from 'satori-html';
 import { Resvg } from '@resvg/resvg-js';
 import fs from 'node:fs';
 import path from 'node:path';
+import { ogCached, fileFingerprint } from '../../lib/og-cache';
 
 const W = 1200;
 const H = 630;
@@ -117,17 +118,19 @@ const markupString = `
 `;
 
 export const GET: APIRoute = async () => {
-  const markup = html(markupString);
-  const svg = await satori(markup, {
-    width: W,
-    height: H,
-    fonts: [
-      { name: 'Inter', data: fontRegular, weight: 400, style: 'normal' },
-      { name: 'Inter', data: fontBold, weight: 700, style: 'normal' },
-      { name: 'Inter', data: fontExtraBold, weight: 800, style: 'normal' },
-    ],
+  const png = await ogCached('home', [fileFingerprint('logo_head.svg')], async () => {
+    const markup = html(markupString);
+    const svg = await satori(markup, {
+      width: W,
+      height: H,
+      fonts: [
+        { name: 'Inter', data: fontRegular, weight: 400, style: 'normal' },
+        { name: 'Inter', data: fontBold, weight: 700, style: 'normal' },
+        { name: 'Inter', data: fontExtraBold, weight: 800, style: 'normal' },
+      ],
+    });
+    return new Resvg(svg).render().asPng();
   });
-  const png = new Resvg(svg).render().asPng();
 
   return new Response(png, {
     headers: {

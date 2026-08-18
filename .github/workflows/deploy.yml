@@ -1,8 +1,23 @@
 name: Deploy to GitHub Pages
 
+# Content edited from /admin does NOT auto-deploy. The dashboard commits each
+# save and image upload straight to master, so auto-deploying on push meant one
+# full build per keystroke-sized change. Those paths are ignored here and the
+# "Publish site" button in /admin fires this workflow once, when editing is done.
+#
+# Everything else (page code, layouts, styles, workflows) still deploys on push.
 on:
   push:
     branches: [master]
+    paths-ignore:
+      - 'src/data/**'
+      - 'public/plugins/**'
+      - 'public/events/**'
+      - 'public/experience/**'
+      - 'public/education/**'
+      - 'public/projects/**'
+      - 'public/technologies/**'
+      - '*.md'
   workflow_dispatch:
 
 permissions:
@@ -10,13 +25,14 @@ permissions:
   pages: write
   id-token: write
 
-concurrency:
-  group: pages
-  cancel-in-progress: false
-
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Supersede a build that is already running: if Publish is pressed twice,
+    # or a push lands mid-build, only the newest source state is worth building.
+    concurrency:
+      group: pages-build
+      cancel-in-progress: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -24,6 +40,17 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+
+      # Rendered OG / social images, keyed on the data and assets they are drawn
+      # from (see src/lib/og-cache.ts). These dominate build time, and almost no
+      # deploy changes all of them.
+      - name: Restore OG image cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/og
+          key: og-v1-${{ github.sha }}
+          restore-keys: og-v1-
+
       - uses: actions/configure-pages@v4
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
@@ -33,6 +60,11 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    # A deployment that has started should always finish, so this group never
+    # cancels in progress. Queued duplicates behind it are dropped by GitHub.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

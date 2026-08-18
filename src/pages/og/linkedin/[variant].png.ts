@@ -6,6 +6,7 @@ import sharp from 'sharp';
 import fs from 'node:fs';
 import path from 'node:path';
 import pluginsData from '../../../data/plugins.json';
+import { ogCached, fileFingerprint } from '../../../lib/og-cache';
 
 // LinkedIn banner spec: 1584x396 (4:1). Desktop profile photo overlays the
 // bottom-left around x:60–290, y:240–396 — every layout below keeps the
@@ -397,54 +398,59 @@ function inspireQuietBackground(): { background: string; decorations: string } {
 
 export const GET: APIRoute = async ({ props }) => {
   const variant = props.variant as Variant;
+  const png = await ogCached(
+    `linkedin:${variant}`,
+    [plugins, plugins.map(p => fileFingerprint(p.logo))],
+    async () => {
+      let markupString: string;
+      if (variant === 'hero') {
+        markupString = heroMarkup();
+      } else if (variant.startsWith('inspire')) {
+        // Personal logo: flat white with a soft accent on the inner triangle —
+        // mirrors the homepage rendering (no outlines, fillable shapes).
+        const [pluginLogos, personalLogo] = await Promise.all([
+          loadAllPluginLogos(96),
+          rasterizePersonalLogo('#ffffff', '#5cb1e8', 272),
+        ]);
 
-  let markupString: string;
-  if (variant === 'hero') {
-    markupString = heroMarkup();
-  } else if (variant.startsWith('inspire')) {
-    // Personal logo: flat white with a soft accent on the inner triangle —
-    // mirrors the homepage rendering (no outlines, fillable shapes).
-    const [pluginLogos, personalLogo] = await Promise.all([
-      loadAllPluginLogos(96),
-      rasterizePersonalLogo('#ffffff', '#5cb1e8', 272),
-    ]);
+        const bg =
+          variant === 'inspire-bold'  ? inspireBoldBackground()  :
+          variant === 'inspire-quiet' ? inspireQuietBackground() :
+                                        inspireAuroraBackground();
 
-    const bg =
-      variant === 'inspire-bold'  ? inspireBoldBackground()  :
-      variant === 'inspire-quiet' ? inspireQuietBackground() :
-                                    inspireAuroraBackground();
+        // Framing colors vary per variant so the arcs feel native to each mood.
+        const framing =
+          variant === 'inspire-bold'
+            ? avatarFraming('rgba(146,200,236,0.32)', 'rgba(92,177,232,0.34)', 'rgba(127,182,223,0.40)')
+          : variant === 'inspire-quiet'
+            ? avatarFraming('rgba(127,182,223,0.20)', 'rgba(92,177,232,0.18)', 'rgba(127,182,223,0.28)')
+            : avatarFraming('rgba(127,182,223,0.28)', 'rgba(92,177,232,0.24)', 'rgba(127,182,223,0.34)');
 
-    // Framing colors vary per variant so the arcs feel native to each mood.
-    const framing =
-      variant === 'inspire-bold'
-        ? avatarFraming('rgba(146,200,236,0.32)', 'rgba(92,177,232,0.34)', 'rgba(127,182,223,0.40)')
-      : variant === 'inspire-quiet'
-        ? avatarFraming('rgba(127,182,223,0.20)', 'rgba(92,177,232,0.18)', 'rgba(127,182,223,0.28)')
-        : avatarFraming('rgba(127,182,223,0.28)', 'rgba(92,177,232,0.24)', 'rgba(127,182,223,0.34)');
+        markupString = inspireMarkup({
+          background: bg.background,
+          decorations: bg.decorations,
+          personalLogo,
+          plugins: pluginLogos,
+          framing,
+        });
+      } else {
+        const logos = await loadAllPluginLogos(variant === 'split' ? 192 : 144);
+        markupString = variant === 'split' ? splitMarkup(logos) : showcaseMarkup(logos);
+      }
 
-    markupString = inspireMarkup({
-      background: bg.background,
-      decorations: bg.decorations,
-      personalLogo,
-      plugins: pluginLogos,
-      framing,
-    });
-  } else {
-    const logos = await loadAllPluginLogos(variant === 'split' ? 192 : 144);
-    markupString = variant === 'split' ? splitMarkup(logos) : showcaseMarkup(logos);
-  }
-
-  const markup = html(markupString);
-  const svg = await satori(markup, {
-    width: W,
-    height: H,
-    fonts: [
-      { name: 'Inter', data: fontRegular,   weight: 400, style: 'normal' },
-      { name: 'Inter', data: fontBold,      weight: 700, style: 'normal' },
-      { name: 'Inter', data: fontExtraBold, weight: 800, style: 'normal' },
-    ],
-  });
-  const png = new Resvg(svg).render().asPng();
+      const markup = html(markupString);
+      const svg = await satori(markup, {
+        width: W,
+        height: H,
+        fonts: [
+          { name: 'Inter', data: fontRegular,   weight: 400, style: 'normal' },
+          { name: 'Inter', data: fontBold,      weight: 700, style: 'normal' },
+          { name: 'Inter', data: fontExtraBold, weight: 800, style: 'normal' },
+        ],
+      });
+      return new Resvg(svg).render().asPng();
+    },
+  );
 
   return new Response(png, {
     headers: {

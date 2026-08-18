@@ -144,6 +144,9 @@
     .sidebar-footer { padding: 14px 14px 18px; border-top: 1px solid rgba(255,255,255,.06); }
     .sidebar-user { font-size: 12px; color: rgba(255,255,255,.3); margin-bottom: 10px; line-height: 1.5; }
     .sidebar-user strong { display: block; font-size: 12.5px; color: rgba(255,255,255,.6); font-weight: 600; margin-bottom: 1px; }
+    .publish-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 5px; margin-left: 7px; border-radius: 9px; background: rgba(255,255,255,.25); font-size: 11px; font-weight: 700; line-height: 1; }
+    .publish-note { font-size: 11px; line-height: 1.45; color: rgba(255,255,255,.4); margin-top: 7px; min-height: 0; }
+    .publish-note a { color: rgba(255,255,255,.6); text-decoration: underline; }
 
     /* ── Main ──────────────────────────────────────────────────── */
     .main { flex: 1; margin-left: 248px; display: flex; flex-direction: column; min-height: 100vh; }
@@ -326,6 +329,11 @@
   const BRANCH = 'master';
   const GH_API = 'https://api.github.com';
 
+  // Saving and uploading commit straight to master, but master no longer
+  // auto-deploys for the paths this dashboard writes (see deploy.yml). The
+  // site is rebuilt once, when "Publish site" fires this workflow by hand.
+  const DEPLOY_WORKFLOW = 'deploy.yml';
+
   const FILE_MAP: Record<string, string> = {
     profile:        'src/data/profile.json',
     plugins:        'src/data/plugins.json',
@@ -384,6 +392,16 @@
     dirty: Record<string, boolean>;
     editing: { item: any; index: number } | null;
     pendingUploads: Record<string, { file: File; folder: string }>;
+    /** Commits made since the last publish. Drives the badge on the button. */
+    unpublished: number;
+    publish: PublishState;
+  }
+
+  type PublishStatus = 'idle' | 'starting' | 'queued' | 'building' | 'done' | 'error';
+  interface PublishState {
+    status: PublishStatus;
+    message: string;
+    runUrl: string | null;
   }
 
   const state: AppState = {
@@ -395,7 +413,14 @@
     dirty: { profile: false, plugins: false, events: false, timelineTags: false, experience: false, education: false, projects: false, technologies: false, techCategories: false },
     editing: null,
     pendingUploads: {},
+    unpublished: parseInt(sessionStorage.getItem('admin_unpublished') || '0', 10) || 0,
+    publish: { status: 'idle', message: '', runUrl: null },
   };
+
+  function setUnpublished(n: number) {
+    state.unpublished = Math.max(0, n);
+    sessionStorage.setItem('admin_unpublished', String(state.unpublished));
+  }
 
   // ═══════════════════════════════════════════════════════
   // GITHUB API
@@ -416,6 +441,8 @@
       error.status = res.status;
       throw error;
     }
+    // Workflow dispatch answers 204 with no body.
+    if (res.status === 204) return null;
     return res.json();
   }
 
@@ -427,7 +454,13 @@
   async function ghPutFile(path: string, base64: string, sha: string | null, message: string) {
     const body: any = { message, content: base64, branch: BRANCH };
     if (sha) body.sha = sha;
-    return ghReq('PUT', `/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(path)}`, body);
+    const res = await ghReq('PUT', `/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(path)}`, body);
+    // Committed but not on the live site yet: every write bumps the counter
+    // shown next to "Publish site", and publishing clears it.
+    setUnpublished(state.unpublished + 1);
+    if (state.publish.status === 'done') setPublish('idle', '');
+    updatePublishUI();
+    return res;
   }
 
   // safe base64 encode/decode (handles UTF-8)
@@ -438,13 +471,19 @@
     const { content, sha } = await ghGetFile(FILE_MAP[sec]);
     state.data[sec] = JSON.parse(b64dec(content));
     state.sha[sec] = sha;
+    if (sec === 'timelineTags') refreshSavedTagIds();
   }
 
   async function saveSection(sec: string) {
+    if (sec === 'timelineTags') {
+      const problem = validateTags();
+      if (problem) throw new Error(problem);
+    }
     const json = JSON.stringify(state.data[sec], null, 2);
     const res  = await ghPutFile(FILE_MAP[sec], b64enc(json), state.sha[sec], `admin: update ${sec}`);
     state.sha[sec] = res.content.sha;
     state.dirty[sec] = false;
+    if (sec === 'timelineTags') refreshSavedTagIds();
   }
 
   async function uploadImage(repoPath: string, file: File, existingSha: string | null = null): Promise<string> {
@@ -461,6 +500,148 @@
       reader.onerror = reject;
     });
   }
+
+  // ═══════════════════════════════════════════════════════
+  // PUBLISH (manual deploy)
+  // ═══════════════════════════════════════════════════════
+  function setPublish(status: PublishStatus, message: string, runUrl: string | null = null) {
+    state.publish = { status, message, runUrl };
+  }
+
+  /** Patch the footer in place so polling never blows away an open form. */
+  function updatePublishUI() {
+    const btn = document.getElementById('publish-btn') as HTMLButtonElement | null;
+    if (!btn) return;
+    const { status, message, runUrl } = state.publish;
+    const busy = status === 'starting' || status === 'queued' || status === 'building';
+
+    const LABEL: Record<PublishStatus, string> = {
+      idle:     '🚀 Publish site',
+      starting: '⏳ Starting…',
+      queued:   '⏳ Queued…',
+      building: '🔨 Building…',
+      done:     '✅ Published',
+      error:    '⚠️ Publish failed',
+    };
+    const badge = !busy && state.unpublished > 0
+      ? `<span class="publish-badge">${state.unpublished}</span>`
+      : '';
+
+    btn.disabled  = busy;
+    btn.innerHTML = `${LABEL[status]}${badge}`;
+    btn.classList.toggle('btn-primary', status !== 'error');
+    btn.classList.toggle('btn-danger',  status === 'error');
+
+    const note = document.getElementById('publish-note');
+    if (note) {
+      note.innerHTML = message
+        ? (runUrl ? `<a href="${esc(runUrl)}" target="_blank" rel="noreferrer">${esc(message)}</a>` : esc(message))
+        : '';
+    }
+  }
+
+  /**
+   * Fire deploy.yml and follow the run to completion. The dispatch endpoint
+   * answers 204 with no run id, so the run is matched by picking the newest
+   * workflow_dispatch run created at or after the moment we asked.
+   */
+  async function publishSite() {
+    setPublish('starting', 'Requesting a build…');
+    updatePublishUI();
+
+    // A few seconds of slack absorbs clock skew between here and GitHub.
+    const since = Date.now() - 15000;
+
+    try {
+      await ghReq(
+        'POST',
+        `/repos/${OWNER}/${REPO}/actions/workflows/${DEPLOY_WORKFLOW}/dispatches`,
+        { ref: BRANCH },
+      );
+    } catch (e: any) {
+      const hint = e.status === 403 || e.status === 404
+        ? 'Token needs the "repo" scope (and access to Actions) to start a deploy.'
+        : e.message;
+      setPublish('error', hint);
+      updatePublishUI();
+      showToast('Could not start the deploy: ' + hint, 'error');
+      return;
+    }
+
+    setUnpublished(0);
+
+    const runId = await waitForRun(since);
+    if (!runId) {
+      setPublish('done', 'Build requested. Check the Actions tab.',
+        `https://github.com/${OWNER}/${REPO}/actions`);
+      updatePublishUI();
+      showToast('Deploy started.', 'success');
+      return;
+    }
+    await followRun(runId);
+  }
+
+  /** Poll for the run our dispatch created. Gives up after ~60s. */
+  async function waitForRun(since: number): Promise<number | null> {
+    for (let attempt = 0; attempt < 20; attempt++) {
+      await sleep(3000);
+      try {
+        const data = await ghReq(
+          'GET',
+          `/repos/${OWNER}/${REPO}/actions/workflows/${DEPLOY_WORKFLOW}/runs?event=workflow_dispatch&per_page=5`,
+        );
+        const run = (data.workflow_runs || [])
+          .filter((r: any) => new Date(r.created_at).getTime() >= since)
+          .sort((a: any, b: any) => b.id - a.id)[0];
+        if (run) return run.id as number;
+      } catch {
+        /* transient: keep polling */
+      }
+    }
+    return null;
+  }
+
+  /** Track a run until it finishes. Build plus deploy is normally 1-3 min. */
+  async function followRun(runId: number) {
+    const runUrl = `https://github.com/${OWNER}/${REPO}/actions/runs/${runId}`;
+    const deadline = Date.now() + 15 * 60 * 1000;
+
+    while (Date.now() < deadline) {
+      let run: any;
+      try {
+        run = await ghReq('GET', `/repos/${OWNER}/${REPO}/actions/runs/${runId}`);
+      } catch {
+        await sleep(5000);
+        continue;
+      }
+
+      if (run.status === 'completed') {
+        if (run.conclusion === 'success') {
+          setPublish('done', 'Live at toamig.com. View run', runUrl);
+          updatePublishUI();
+          showToast('Published. The site is live.', 'success');
+        } else {
+          setPublish('error', `Run ${run.conclusion}. View run`, runUrl);
+          updatePublishUI();
+          showToast(`Deploy ${run.conclusion}. Check the Actions log.`, 'error');
+        }
+        return;
+      }
+
+      setPublish(
+        run.status === 'queued' ? 'queued' : 'building',
+        run.status === 'queued' ? 'Waiting for a runner. View run' : 'Building and deploying. View run',
+        runUrl,
+      );
+      updatePublishUI();
+      await sleep(5000);
+    }
+
+    setPublish('done', 'Still running. View run', runUrl);
+    updatePublishUI();
+  }
+
+  const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
   // ═══════════════════════════════════════════════════════
   // RENDER ENTRY
@@ -589,7 +770,9 @@
             <strong>@${username}</strong>
             ${OWNER}/${REPO}
           </div>
-          <button class="btn btn-secondary btn-sm" id="logout-btn" style="width:100%">Sign Out</button>
+          <button class="btn btn-primary btn-sm" id="publish-btn" style="width:100%">🚀 Publish site</button>
+          <div class="publish-note" id="publish-note"></div>
+          <button class="btn btn-secondary btn-sm" id="logout-btn" style="width:100%;margin-top:8px">Sign Out</button>
         </div>
       </aside>
 
@@ -635,7 +818,22 @@
       render();
     });
 
+    updatePublishUI();
+
+    document.getElementById('publish-btn')?.addEventListener('click', async () => {
+      const unsaved = Object.keys(state.dirty).filter(k => state.dirty[k]);
+      if (unsaved.length) {
+        const names = unsaved.map(k => SECTION_META[k].label).join(', ');
+        alert(`Save your changes first.\n\nStill unsaved: ${names}`);
+        return;
+      }
+      if (state.unpublished === 0 && !confirm('Nothing new was saved since the last publish. Rebuild anyway?')) return;
+      await publishSite();
+    });
+
     document.getElementById('logout-btn')?.addEventListener('click', () => {
+      if (state.unpublished > 0 &&
+          !confirm(`${state.unpublished} change(s) are saved but not published yet.\n\nSign out without publishing?`)) return;
       if (!confirm('Sign out?')) return;
       sessionStorage.removeItem('admin_token');
       state.token = null; state.user = null; state.editing = null;
@@ -666,7 +864,10 @@
       btn.disabled = true; btn.textContent = '⏳ Saving…';
       try {
         await saveSection(state.section);
-        showToast('Saved! Site will rebuild in ~1 minute.', 'success');
+        // Deleting a tag rewrites the events that carried it, so both files
+        // have to land together or the Timeline renders an unknown tag id.
+        if (state.section === 'timelineTags' && state.dirty.events) await saveSection('events');
+        showToast('Saved. Hit "Publish site" when you are done editing.', 'success');
         render();
       } catch (e: any) {
         showToast('Save failed: ' + e.message, 'error');
@@ -822,17 +1023,53 @@
   }
 
   // ── Timeline tags editor (inline list) ──────────────────
+
+  /** Ids that already exist in the committed file. Anything else is new here
+   *  and still has an editable id, because no event can reference it yet. */
+  let savedTagIds = new Set<string>();
+  function refreshSavedTagIds() {
+    savedTagIds = new Set((state.data.timelineTags || []).map((t: any) => t.id).filter(Boolean));
+  }
+
+  /** Events currently carrying this tag, in either the array or legacy shape. */
+  function eventsUsingTag(id: string): any[] {
+    return (state.data.events || []).filter((ev: any) => getTags(ev).includes(id));
+  }
+
+  const slugifyTagId = (s: string) =>
+    s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
+  /** Blocks a save that would produce ids the Timeline cannot resolve. */
+  function validateTags(): string | null {
+    const tags = state.data.timelineTags || [];
+    const seen = new Set<string>();
+    for (const t of tags) {
+      const id = (t.id || '').trim();
+      if (!id) return `Tag "${t.name || 'unnamed'}" needs an id.`;
+      if (!/^[a-z0-9-]+$/.test(id)) return `Tag id "${id}" may only use lowercase letters, numbers, and hyphens.`;
+      if (seen.has(id)) return `Duplicate tag id "${id}".`;
+      seen.add(id);
+      if (!(t.name || '').trim()) return `Tag "${id}" needs a display name.`;
+    }
+    return null;
+  }
+
   function renderTagsList(): string {
     const tags = state.data.timelineTags || [];
     return `<div class="edit-card">
       <div class="edit-header">
-        <h2>🎨 Timeline Tag Colors</h2>
+        <h2>🎨 Timeline Tags</h2>
+        <button class="btn btn-primary btn-sm" id="add-tag-btn">+ Add Tag</button>
       </div>
       <p style="font-size:13px;color:var(--text-sub);line-height:1.6;margin-bottom:18px">
         Edit the display name and color for each timeline tag. Tags flagged as <em>filter</em> show up as buttons on the Timeline page.
+        Deleting a tag also strips it from every event that used it.
       </p>
+      ${tags.length ? '' : `<div class="empty"><div class="empty-icon">🎨</div><p>No tags yet. Add one to start categorising events.</p></div>`}
       <div class="item-list">${tags.map((t: any, i: number) => {
         const sample = `style="background:${esc(t.color)}1a;color:${esc(t.color)};border:1px solid ${esc(t.color)}66"`;
+        const isNew = !savedTagIds.has(t.id);
+        const uses  = t.id ? eventsUsingTag(t.id).length : 0;
         return `<div class="item-row" data-tag-row="${i}" style="gap:18px;flex-wrap:wrap">
           <div data-tag-swatch="${i}" style="width:42px;height:42px;border-radius:8px;background:${esc(t.color)};border:1.5px solid var(--border);flex-shrink:0"></div>
           <div class="item-info" style="min-width:180px">
@@ -840,7 +1077,12 @@
               <label style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Name</label>
               <input data-tag-field="name" data-tag-i="${i}" value="${esc(t.name||'')}" style="font-size:13.5px;padding:8px 11px;border:1.5px solid var(--border);border-radius:8px;background:#f7fafc" />
             </div>
-            <p style="font-family:monospace;font-size:11px;margin-top:6px;color:var(--muted)">id: ${esc(t.id)}</p>
+            ${isNew
+              ? `<div style="display:flex;flex-direction:column;gap:4px;margin-top:8px">
+                   <label style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Id</label>
+                   <input data-tag-field="id" data-tag-i="${i}" value="${esc(t.id||'')}" placeholder="lowercase-with-hyphens" style="font-family:monospace;font-size:12px;padding:8px 11px;border:1.5px solid var(--border);border-radius:8px;background:#f7fafc" />
+                 </div>`
+              : `<p style="font-family:monospace;font-size:11px;margin-top:6px;color:var(--muted)">id: ${esc(t.id)} · used by ${uses} event${uses === 1 ? '' : 's'}</p>`}
           </div>
           <div style="display:flex;flex-direction:column;gap:4px;min-width:160px">
             <label style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Color</label>
@@ -854,6 +1096,9 @@
             Filter button
           </label>
           <span class="tag-pill" data-tag-preview="${i}" ${sample}>${esc(t.name||t.id)}</span>
+          <div class="item-actions" style="margin-left:auto">
+            <button class="btn btn-danger btn-sm" data-tag-del="${i}" title="Delete tag">🗑</button>
+          </div>
         </div>`;
       }).join('')}</div>
     </div>`;
@@ -1340,6 +1585,49 @@
   }
 
   function attachTimelineTagsInlineListeners() {
+    document.getElementById('add-tag-btn')?.addEventListener('click', () => {
+      if (!Array.isArray(state.data.timelineTags)) state.data.timelineTags = [];
+      state.data.timelineTags.push({ id: '', name: '', color: '#2980b9', filter: false });
+      markDirty('timelineTags');
+      render();
+      // Drop the caret straight into the new row's name field.
+      const rows = document.querySelectorAll<HTMLInputElement>('[data-tag-field="name"]');
+      rows[rows.length - 1]?.focus();
+    });
+
+    document.querySelectorAll<HTMLButtonElement>('[data-tag-del]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const i = parseInt(btn.dataset.tagDel!);
+        const tags = state.data.timelineTags || [];
+        const tag = tags[i];
+        if (!tag) return;
+
+        const used = tag.id ? eventsUsingTag(tag.id) : [];
+        const label = tag.name || tag.id || 'this tag';
+        const warning = used.length
+          ? `Delete "${label}"?\n\nIt will also be removed from ${used.length} event(s):\n` +
+            used.slice(0, 8).map((e: any) => `  · ${e.title || e.id}`).join('\n') +
+            (used.length > 8 ? `\n  · …and ${used.length - 8} more` : '') +
+            `\n\nThose events are saved together with the tags.`
+          : `Delete "${label}"?`;
+        if (!confirm(warning)) return;
+
+        // Normalise every touched event onto the `tags` array. The Timeline
+        // reads tags -> categories -> category in that order, so collapsing the
+        // legacy singular field into the array keeps its meaning intact.
+        for (const ev of used) {
+          ev.tags = getTags(ev).filter((id: string) => id !== tag.id);
+          delete ev.categories;
+          delete ev.category;
+        }
+        if (used.length) markDirty('events');
+
+        tags.splice(i, 1);
+        markDirty('timelineTags');
+        render();
+      });
+    });
+
     document.querySelectorAll<HTMLInputElement>('[data-tag-field]').forEach(el => {
       const update = () => {
         const i = parseInt(el.dataset.tagI!);
@@ -1370,11 +1658,35 @@
         if (field === 'name') {
           const preview = document.querySelector(`[data-tag-preview="${i}"]`) as HTMLElement | null;
           if (preview) preview.textContent = el.value || tags[i].id;
+
+          // A brand new tag gets its id derived from the name until the id
+          // field is typed into directly.
+          const idInput = document.querySelector(
+            `[data-tag-field="id"][data-tag-i="${i}"]`,
+          ) as HTMLInputElement | null;
+          if (idInput && !idInput.dataset.touched) {
+            idInput.value = slugifyTagId(el.value);
+            tags[i].id = idInput.value;
+          }
         }
         markDirty('timelineTags');
       };
       el.addEventListener('input', update);
       if (el.type === 'checkbox') el.addEventListener('change', update);
+
+      // New tags only: force the typed id into the slug shape the data uses.
+      if (el.dataset.tagField === 'id') {
+        el.addEventListener('input', () => { el.dataset.touched = '1'; });
+        el.addEventListener('blur', () => {
+          const i = parseInt(el.dataset.tagI!);
+          const tags = state.data.timelineTags || [];
+          if (!tags[i]) return;
+          const slug = slugifyTagId(el.value || tags[i].name || '');
+          el.value = slug;
+          tags[i].id = slug;
+          markDirty('timelineTags');
+        });
+      }
     });
   }
 
@@ -1739,7 +2051,7 @@
       showLoading('Saving to GitHub…');
       await saveSection(sec);
       hideLoading();
-      showToast('Saved! Site will rebuild shortly.', 'success');
+      showToast('Saved. Hit "Publish site" when you are done editing.', 'success');
       render();
     } catch (e: any) {
       hideLoading();
