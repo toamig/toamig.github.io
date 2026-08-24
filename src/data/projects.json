@@ -1,38 +1,44 @@
 [
   {
+    "href": "https://store.steampowered.com/app/1839940/Dakar_Desert_Rally",
+    "image": "/projects/dakar.jpg",
+    "name": "Dakar Desert Rally",
+    "role": "Multiplayer Programmer · Saber Interactive",
+    "desc": "Open-world rally simulator. Shipped on PC, PS4/5, and Xbox One/Series X."
+  },
+  {
+    "href": "https://store.steampowered.com/app/3328840/Timefront/",
+    "image": "/projects/timefront.jpg",
+    "name": "Timefront",
+    "role": "Engineering Director · Flama Craftworks",
+    "desc": "RTS game blending battle royale mechanics."
+  },
+  {
+    "href": "https://store.steampowered.com/app/2141130/Road_Kings/",
+    "image": "/projects/RoadKings.avif",
+    "name": "Road Kings",
+    "role": "Tools Lead Programmer · Saber Interactive",
+    "desc": "Adventure truck simulator."
+  },
+  {
     "href": "https://toamig.itch.io/autorocket",
     "image": "/projects/autorocket.png",
     "name": "AutoRocket",
-    "desc": "Educational rocket simulator with visual programming."
+    "role": "Team Lead · Dive Studios",
+    "desc": "Educational rocket simulator with visual programming, built by a team of eight."
   },
   {
     "href": "https://www.meta.com/experiences/totally-basketball/6781908485204434/",
     "image": "/projects/totally-basketball.jpg",
     "name": "Totally Basketball",
+    "role": "",
     "desc": "VR basketball game."
   },
   {
     "href": "https://sites.google.com/view/gcednz/teaching-learning/aotearoa-explorers",
     "image": "/projects/cape.jpg",
     "name": "Aotearoa Explorers",
+    "role": "",
     "desc": "Educational exploration game."
-  },
-  {
-    "href": "https://store.steampowered.com/app/1839940/Dakar_Desert_Rally",
-    "image": "/projects/dakar.jpg",
-    "name": "Dakar Desert Rally",
-    "desc": "Open-world Dakar rally simulator."
-  },
-  {
-    "href": "https://store.steampowered.com/app/2141130/Road_Kings/",
-    "image": "/projects/RoadKings.avif",
-    "name": "Road Kings",
-    "desc": "Adventure truck simulator."
-  },
-  {
-    "href": "https://store.steampowered.com/app/3328840/Timefront/",
-    "image": "/projects/timefront.jpg",
-    "name": "Timefront",
-    "desc": "RTS game blending battle royale mechanics."
   }
 ]

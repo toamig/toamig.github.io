@@ -44,7 +44,13 @@ const jsonLd = {
         'Game engineer turned tech lead, working across gameplay, multiplayer, tools, animation, and AI systems on PC, console, and VR.',
       url: 'https://toamig.com/',
       image: 'https://toamig.com/me/IMG_7.JPEG',
-      worksFor: { '@type': 'Organization', name: 'Flama Craftworks', url: 'https://www.flamacraftworks.com/' },
+      // Both roles are concurrent (see src/data/experience.json), so the entity
+      // graph lists both rather than contradicting the hero badge, which names
+      // Side as the current role.
+      worksFor: [
+        { '@type': 'Organization', name: 'Side', url: 'https://side.inc/' },
+        { '@type': 'Organization', name: 'Flama Craftworks', url: 'https://www.flamacraftworks.com/' },
+      ],
       address: { '@type': 'PostalAddress', addressLocality: 'Vila Nova de Gaia', addressCountry: 'PT' },
       knowsAbout: [
         'Unreal Engine 5',
@@ -147,6 +153,8 @@ const jsonLd = {
           '.section-header', '.extended-card', '.tech-category',
           '.project-card', '.play-card', '.about-content',
           '.event-card', '.timeline-year-mark', '.cv-card',
+          '.role-card', '.venture-hero', '.venture-card',
+          '.study-card', '.contact-panel',
         ].join(',');
 
         if (!reduced) {
@@ -241,7 +249,7 @@ const jsonLd = {
           };
 
           document.addEventListener('pointermove', (e) => {
-            const card = (e.target as Element | null)?.closest?.('.extended-card, .project-card') as HTMLElement | null;
+            const card = (e.target as Element | null)?.closest?.('.extended-card, .project-card, .role-card, .venture-card, .study-card') as HTMLElement | null;
             // Left the current card (onto another card or into a gap): spring it back.
             if (card !== active) { rest(active); active = card; }
             if (!card) return;

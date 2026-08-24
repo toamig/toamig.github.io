@@ -1881,3 +1881,705 @@ footer p { font-size: 13px; opacity: 0.4; letter-spacing: .02em; }
   .project-card::after { display: none; }
 }
 
+
+/* ════════════════════════════════════════════════════════════════════════════
+   LANDING PAGE v2
+   Section order is recruiter-first: Profile, Career, Showcase, Building,
+   Toolbox, Studies, Contact. Everything below supports that pass.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Hero actions ───────────────────────────────────────────────────────────
+   The hero previously offered only a scroll cue. These give a first-time
+   visitor the two things they actually came for. */
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  animation: fadeInUp 1s ease 0.5s both;
+}
+.hero-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 13px 26px;
+  border-radius: 100px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: transform .25s cubic-bezier(.2,.7,.2,1), box-shadow .25s ease,
+              background .25s ease, border-color .25s ease, color .25s ease;
+}
+.hero-btn::after {
+  content: '→';
+  font-family: var(--font-display);
+  font-size: 15px;
+  letter-spacing: 0;
+  transition: transform .25s ease;
+}
+.hero-btn:hover::after { transform: translateX(4px); }
+.hero-btn-primary {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-d) 100%);
+  color: #fff;
+  border: 1px solid transparent;
+  box-shadow: 0 6px 20px rgba(255,138,76,.28);
+}
+.hero-btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(255,138,76,.42);
+}
+.hero-btn-ghost {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.18);
+  color: rgba(255,255,255,.88);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.hero-btn-ghost:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255,255,255,.4);
+  background: rgba(255,255,255,.1);
+  color: #fff;
+}
+
+/* ─── 02 Career: role cards ──────────────────────────────────────────────────
+   Two columns and left-aligned, because these now carry the bullets from
+   experience.json. The old centred card could not hold body copy. */
+.role-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
+  width: 100%;
+  max-width: 1200px;
+}
+.role-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 30px 30px 26px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+.role-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 50% at 50% 100%, var(--accent-glow) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity .3s ease;
+  pointer-events: none;
+}
+.role-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px rgba(0,0,0,.08), 0 24px 56px rgba(255,138,76,.08);
+  border-color: #fed7aa;
+}
+.role-card:hover::before { opacity: 1; }
+.role-card > * { position: relative; z-index: 1; }
+
+.role-card-head { display: flex; align-items: center; gap: 16px; }
+.role-logo {
+  flex: 0 0 auto;
+  width: 54px; height: 54px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 7px;
+}
+/* Fallback monogram for entries with no logo asset. */
+.role-logo-empty {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--accent-d);
+  background: linear-gradient(135deg, rgba(255,138,76,.14), rgba(41,128,185,.1));
+}
+.role-ident { min-width: 0; }
+.role-ident h3 {
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: -.02em;
+  color: var(--text);
+  font-variation-settings: 'opsz' 32, 'wght' 600;
+  line-height: 1.15;
+  margin: 0 0 4px;
+}
+.role-title {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--accent-d);
+  margin: 0 0 5px;
+  line-height: 1.3;
+}
+.role-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .06em;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.4;
+}
+.role-meta-sep { opacity: .4; }
+
+.role-bullets {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.role-bullets li {
+  position: relative;
+  padding-left: 20px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-sub);
+}
+.role-bullets li::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: .62em;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: .5;
+}
+.role-link {
+  align-self: flex-start;
+  margin-top: auto;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color .2s ease, gap .2s ease;
+}
+.role-link::after { content: '↗'; font-size: 12px; letter-spacing: 0; }
+.role-link:hover { color: var(--accent-d); gap: 10px; }
+
+/* ─── 03 Showcase: contribution line ─────────────────────────────────────────
+   Recruiters need to know what you did on a title, not just that it exists. */
+.project-role {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--accent-l);
+  margin: 0 0 8px;
+  line-height: 1.4;
+}
+
+/* ─── 04 Building ────────────────────────────────────────────────────────────
+   One section carrying the products, the SaaS, and the consulting practice,
+   so three destinations surface without three sections of chrome. */
+#building {
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse 55% 45% at 100% 0%, rgba(37,99,235,.07) 0%, transparent 60%),
+    radial-gradient(ellipse 55% 45% at 0% 100%, rgba(255,138,76,.05) 0%, transparent 60%);
+}
+
+/* Featured venture: two-panel feature card. */
+.venture-hero {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto 24px;
+  background: linear-gradient(135deg, #f7f9fc 0%, #ffffff 60%);
+  border: 1px solid rgba(37,99,235,.16);
+  border-radius: 20px;
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--text);
+  box-shadow:
+    0 1px 2px rgba(10,22,40,.04),
+    0 12px 28px rgba(10,22,40,.05),
+    0 24px 56px rgba(37,99,235,.10);
+  transition: transform .35s cubic-bezier(.2,.7,.2,1), box-shadow .35s ease, border-color .35s ease;
+}
+.venture-hero:hover {
+  transform: translateY(-6px);
+  border-color: rgba(37,99,235,.4);
+  box-shadow:
+    0 1px 2px rgba(10,22,40,.04),
+    0 16px 40px rgba(10,22,40,.08),
+    0 32px 72px rgba(37,99,235,.18);
+}
+.venture-hero-art {
+  flex: 0 0 44%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 36px;
+  background: radial-gradient(ellipse 85% 70% at 50% 15%, #1e2b52 0%, #141c36 55%, #0d1122 100%);
+}
+
+/* Localisation panel: a miniature of the product surface. */
+.loc-panel {
+  width: min(100%, 300px);
+  padding: 18px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.09);
+  box-shadow: 0 14px 30px rgba(0,0,0,.4);
+  transition: transform .35s cubic-bezier(.2,.7,.2,1);
+}
+.venture-hero:hover .loc-panel { transform: scale(1.04) rotate(-1deg); }
+.loc-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 12px;
+  margin-bottom: 13px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.loc-key {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  color: #7ea6f5;
+}
+.loc-count {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.35);
+}
+.loc-rows { display: flex; flex-direction: column; gap: 10px; }
+.loc-row { display: flex; align-items: center; gap: 10px; }
+.loc-code {
+  flex: 0 0 24px;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  color: rgba(255,255,255,.55);
+}
+.loc-bar {
+  flex: 1;
+  height: 6px;
+  border-radius: 100px;
+  background: rgba(255,255,255,.07);
+  overflow: hidden;
+}
+.loc-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 100px;
+  background: linear-gradient(90deg, #2563eb, #5b8def);
+}
+.loc-dot {
+  flex: 0 0 auto;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.16);
+}
+.loc-source .loc-bar i { background: linear-gradient(90deg, rgba(255,255,255,.42), rgba(255,255,255,.24)); }
+.loc-source .loc-dot  { background: rgba(255,255,255,.42); }
+.loc-done   .loc-dot  { background: #34d399; }
+.loc-review .loc-bar i { background: linear-gradient(90deg, #f0a922, #f5c563); }
+.loc-review .loc-dot  {
+  background: #f0a922;
+  box-shadow: 0 0 0 0 rgba(240,169,34,.5);
+  animation: status-pulse 2.4s ease-out infinite;
+}
+.loc-queued .loc-bar i { background: rgba(255,255,255,.16); }
+
+.venture-hero-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 13px;
+  padding: clamp(28px, 4vw, 44px);
+}
+.venture-hero-body h3 {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 3.4vw, 38px);
+  font-weight: 600;
+  letter-spacing: -.02em;
+  line-height: 1.05;
+  font-variation-settings: 'opsz' 48, 'wght' 600;
+  color: var(--text);
+  margin: 0;
+}
+.venture-role {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #2563eb;
+  margin: -6px 0 0;
+}
+
+/* Shared venture bits (hero + grid). */
+.venture-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0;
+}
+.venture-kicker .dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #2563eb;
+  box-shadow: 0 0 0 0 rgba(37,99,235,.4);
+  animation: status-pulse 2.4s ease-out infinite;
+}
+.venture-sep { opacity: .4; }
+.venture-desc {
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--text-sub);
+  max-width: 48ch;
+  margin: 0;
+}
+.venture-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
+.venture-tags span {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-sub);
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  background: rgba(255,255,255,.6);
+}
+.venture-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--accent-d);
+  transition: gap .25s ease, color .25s ease;
+}
+.venture-cta::after {
+  content: '→';
+  font-family: var(--font-display);
+  font-size: 15px;
+  letter-spacing: 0;
+}
+.venture-hero .venture-cta { color: #2563eb; }
+.venture-hero:hover .venture-cta { gap: 14px; color: #1d4ed8; }
+.venture-card:hover .venture-cta { gap: 14px; color: var(--accent); }
+
+/* Secondary ventures. */
+.venture-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+.venture-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 30px 28px 26px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  text-decoration: none;
+  color: var(--text);
+  overflow: hidden;
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+.venture-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 50% at 50% 100%, var(--accent-glow) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity .3s ease;
+  pointer-events: none;
+}
+.venture-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px rgba(0,0,0,.08), 0 24px 56px rgba(255,138,76,.08);
+  border-color: #fed7aa;
+}
+.venture-card:hover::before { opacity: 1; }
+.venture-card > * { position: relative; z-index: 1; }
+.venture-card h3 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -.02em;
+  color: var(--text);
+  font-variation-settings: 'opsz' 32, 'wght' 600;
+  line-height: 1.15;
+  margin: 0;
+}
+.venture-card .venture-cta { margin-top: auto; padding-top: 8px; }
+
+/* ─── 06 Studies: compact row ────────────────────────────────────────────────
+   Demoted from a full card grid. With five years shipped, the degree is
+   confirmation rather than headline. */
+.study-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 16px;
+  width: 100%;
+  max-width: 900px;
+}
+.study-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 22px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  text-decoration: none;
+  color: var(--text);
+  overflow: hidden;
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+.study-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 26px rgba(0,0,0,.07), 0 18px 40px rgba(255,138,76,.07);
+  border-color: #fed7aa;
+}
+.study-logo {
+  flex: 0 0 auto;
+  width: 42px; height: 42px;
+  object-fit: contain;
+}
+.study-details { flex: 1; min-width: 0; }
+.study-details h3 {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -.015em;
+  color: var(--text);
+  margin: 0 0 3px;
+  line-height: 1.2;
+}
+.study-role { font-size: 13.5px; color: var(--text-sub); margin: 0; line-height: 1.35; }
+.study-period {
+  flex: 0 0 auto;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: .08em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* ─── 07 Contact ─────────────────────────────────────────────────────────────
+   The page previously had no contact path at all. Dark panel bookends the
+   hero and makes the closing action unmissable. */
+#contact {
+  background-color: var(--dark);
+  background-image:
+    radial-gradient(ellipse 60% 50% at 15% 0%, rgba(255,138,76,.10) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 85% 100%, rgba(41,128,185,.14) 0%, transparent 60%);
+}
+#contact .section-header { margin-bottom: 22px; }
+#contact .section-eyebrow { color: rgba(255,255,255,.4); }
+#contact .section-eyebrow .num { color: var(--accent-l); }
+#contact .section-eyebrow .tag { color: rgba(255,255,255,.85); }
+#contact .section-eyebrow .sep { color: rgba(255,255,255,.25); }
+#contact h2 { color: #fff; }
+#contact h2 em {
+  background: linear-gradient(180deg, #ffffff 0%, rgba(255,255,255,.78) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.contact-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  width: 100%;
+  max-width: 720px;
+  text-align: center;
+}
+.contact-lede {
+  font-size: 16px;
+  line-height: 1.7;
+  color: rgba(255,255,255,.72);
+  margin: 0;
+  max-width: 54ch;
+}
+.contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+.contact-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 14px 28px;
+  border-radius: 100px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-decoration: none;
+  transition: transform .25s cubic-bezier(.2,.7,.2,1), box-shadow .25s ease,
+              background .25s ease, border-color .25s ease, color .25s ease;
+}
+.contact-btn-primary {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-d) 100%);
+  color: #fff;
+  border: 1px solid transparent;
+  box-shadow: 0 6px 20px rgba(255,138,76,.3);
+}
+.contact-btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(255,138,76,.45);
+}
+.contact-btn-ghost {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.18);
+  color: rgba(255,255,255,.88);
+  text-transform: uppercase;
+  letter-spacing: .16em;
+  font-size: 11.5px;
+}
+.contact-btn-ghost:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255,255,255,.4);
+  background: rgba(255,255,255,.1);
+  color: #fff;
+}
+.contact-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: .1em;
+  color: rgba(255,255,255,.45);
+}
+.contact-meta a {
+  color: rgba(255,255,255,.72);
+  text-decoration: none;
+  transition: color .2s ease;
+}
+.contact-meta a:hover { color: var(--accent-l); }
+.contact-meta-sep { opacity: .3; }
+
+/* ─── Pointer glare on the new cards ─────────────────────────────────────────
+   Matches the existing .extended-card / .project-card treatment. */
+.role-card::after,
+.venture-card::after,
+.study-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    280px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(255,255,255,.22) 0%,
+    rgba(255,255,255,.06) 35%,
+    transparent 65%
+  );
+  opacity: 0;
+  transition: opacity .3s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+.role-card:hover::after,
+.venture-card:hover::after,
+.study-card:hover::after { opacity: 1; }
+
+/* ─── Mobile ─────────────────────────────────────────────────────────────────
+   Studio recruiters routinely scan on a phone, so these are load-bearing. */
+@media (max-width: 900px) {
+  .role-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .hero-actions { gap: 10px; }
+  .hero-btn { padding: 11px 20px; font-size: 10.5px; }
+  .role-card { padding: 24px 22px 22px; }
+  .role-card-head { gap: 13px; }
+  .role-logo { width: 46px; height: 46px; }
+  .role-ident h3 { font-size: 19px; }
+  .venture-hero { flex-direction: column; margin-bottom: 18px; }
+  .venture-hero-art { flex-basis: auto; padding: 32px; }
+  .loc-panel { width: min(85%, 280px); }
+  .venture-grid { grid-template-columns: 1fr; gap: 18px; }
+  .study-card { padding: 16px 18px; gap: 13px; }
+  .study-period { display: none; }
+  .contact-btn { padding: 12px 22px; font-size: 11px; }
+  .contact-btn-primary { max-width: 100%; overflow-wrap: anywhere; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-actions { animation: none; }
+  .hero-btn,
+  .role-card,
+  .venture-hero,
+  .venture-card,
+  .study-card,
+  .loc-panel,
+  .venture-cta,
+  .contact-btn { transition: none; }
+  .hero-btn:hover,
+  .role-card:hover,
+  .venture-hero:hover,
+  .venture-card:hover,
+  .study-card:hover,
+  .contact-btn:hover { transform: none; }
+  .venture-hero:hover .loc-panel { transform: none; }
+  .venture-kicker .dot,
+  .loc-review .loc-dot { animation: none; }
+}

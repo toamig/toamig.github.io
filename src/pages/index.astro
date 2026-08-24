@@ -7,17 +7,39 @@ import experience     from '../data/experience.json';
 import technologies   from '../data/technologies.json';
 import techCategories from '../data/techCategories.json';
 import projects       from '../data/projects.json';
+import ventures       from '../data/ventures.json';
+import pluginsData    from '../data/plugins.json';
 import profile        from '../data/profile.json';
+import cvExtras       from '../data/cvExtras.json';
 
-// Decorative 8x8 Sesqui position for the Personal Projects feature card.
-// 'v' = gold piece (links top to bottom), 'h' = pale piece (links left to right).
-const boardCells = Array.from({ length: 64 }, (_, i) => {
-  const r = Math.floor(i / 8);
-  const c = i % 8;
-  return { dark: (r + c) % 2 === 1, piece: null as null | 'v' | 'h' };
-});
-for (const [r, c] of [[0,3],[1,3],[2,4],[3,4],[4,4],[5,3],[6,3],[7,3]]) boardCells[r * 8 + c].piece = 'v';
-for (const [r, c] of [[2,6],[3,0],[3,1],[4,6],[5,6]]) boardCells[r * 8 + c].piece = 'h';
+const contact = cvExtras.contact;
+
+// cvExtras stores bare hostnames; the markup needs absolute URLs.
+const absolute = (u: string) => (/^https?:/i.test(u) ? u : `https://${u}`);
+
+// Only real off-site URLs become links. Some experience entries carry '' or '/'
+// as a placeholder, and those should not render a dead "visit site" affordance.
+const isExternal = (u?: string) => !!u && /^https?:/i.test(u);
+
+// Ventures marked `hidden` are parked, not deleted: Sesqui has no /sesqui route
+// on this site yet, so linking it would 404. Flip `hidden` once it deploys.
+const shownVentures = ventures.filter(v => !v.hidden);
+const featuredVenture = shownVentures.find(v => v.featured);
+const otherVentures   = shownVentures.filter(v => !v.featured);
+
+// Derived so the plugins card can never drift out of sync with plugins.json.
+const visiblePlugins = pluginsData.filter(p => !p.hidden);
+const livePluginCount = visiblePlugins.filter(p => p.status === 'live').length;
+const pluginStat = `${visiblePlugins.length} plugins · ${livePluginCount} live on Fab`;
+
+// Decorative localisation rows for the Polyglyph card art.
+const locRows = [
+  { code: 'EN', w: 74, state: 'source' },
+  { code: 'PT', w: 88, state: 'done'   },
+  { code: 'JA', w: 52, state: 'done'   },
+  { code: 'DE', w: 95, state: 'review' },
+  { code: 'ES', w: 63, state: 'queued' },
+];
 ---
 <BaseLayout
   title="Miguel Vieira (Toamig) · Game Engineer & Tech Lead"
@@ -61,6 +83,11 @@ for (const [r, c] of [[2,6],[3,0],[3,1],[4,6],[5,6]]) boardCells[r * 8 + c].piec
         <span>AI</span>
         <span>Leadership</span>
       </div>
+
+      <div class="hero-actions">
+        <a class="hero-btn hero-btn-primary" href="/cv">View CV</a>
+        <a class="hero-btn hero-btn-ghost" href="#contact">Get in touch</a>
+      </div>
     </div>
     <div class="scroll-down">
       <a href="#content" aria-label="Scroll to content"></a>
@@ -70,7 +97,7 @@ for (const [r, c] of [[2,6],[3,0],[3,1],[4,6],[5,6]]) boardCells[r * 8 + c].piec
   <!-- ── Sections ──────────────────────────────────────────────────── -->
   <div id="content">
 
-    <!-- About -->
+    <!-- 01 · Profile -->
     <section id="about">
       <div class="container">
         <div class="about-content">
@@ -91,7 +118,7 @@ for (const [r, c] of [[2,6],[3,0],[3,1],[4,6],[5,6]]) boardCells[r * 8 + c].piec
       </div>
     </section>
 
-    <!-- Experience -->
+    <!-- 02 · Career -->
     <section id="experience">
       <div class="container">
         <div class="section-header">
@@ -102,22 +129,70 @@ for (const [r, c] of [[2,6],[3,0],[3,1],[4,6],[5,6]]) boardCells[r * 8 + c].piec
           </p>
           <h2>Where I've <em>shipped</em>.</h2>
         </div>
-        <div class="cards-container">
+        <div class="role-grid">
           {experience.map(e => (
-            <a class="extended-card" href={e.href} target="_blank" rel="noopener noreferrer">
+            <article class="role-card">
               {/* Explicit `current` flag from the admin wins; if undefined, fall
                   back to auto-detecting from the period text for legacy data. */}
               {((e as any).current ?? (e.period?.includes('Present') || e.period?.includes('Ongoing'))) && (
                 <span class="current-pill">Current</span>
               )}
-              {e.logo
-                ? <img src={e.logo} alt={`${e.name} Logo`} class="card-logo" />
-                : <div class="card-logo" />
-              }
-              <div class="card-details">
-                <h3>{e.name}</h3>
-                <p class="role">{e.role}</p>
-                <p class="time-period">{e.period}</p>
+              <header class="role-card-head">
+                {e.logo
+                  ? <img src={e.logo} alt={`${e.name} logo`} class="role-logo" />
+                  : <div class="role-logo role-logo-empty" aria-hidden="true">{e.name.charAt(0)}</div>
+                }
+                <div class="role-ident">
+                  <h3>{e.name}</h3>
+                  <p class="role-title">{e.role}</p>
+                  <p class="role-meta">
+                    <span>{e.period}</span>
+                    {e.location && <><span class="role-meta-sep">·</span><span>{e.location}</span></>}
+                  </p>
+                </div>
+              </header>
+              {e.bullets?.length > 0 && (
+                <ul class="role-bullets">
+                  {e.bullets.slice(0, 4).map(b => <li>{b}</li>)}
+                </ul>
+              )}
+              {isExternal(e.href) && (
+                <a class="role-link" href={e.href} target="_blank" rel="noopener noreferrer">
+                  {e.name} site
+                </a>
+              )}
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 · Showcase -->
+    <section id="projects">
+      <div class="container">
+        <div class="section-header">
+          <p class="section-eyebrow">
+            <span class="num">03</span>
+            <span class="sep">·</span>
+            <span class="tag">Showcase</span>
+          </p>
+          <h2>Games I've <em>worked on</em>.</h2>
+        </div>
+        <div class="cards-container">
+          {projects.map((p, i) => (
+            <a
+              class="project-card"
+              style={`background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url('${p.image}')`}
+              href={p.href}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span class="project-index">PRJ / {String(i + 1).padStart(2, '0')}</span>
+              <div class="project-details">
+                {p.role && <p class="project-role">{p.role}</p>}
+                <h3>{p.name}</h3>
+                <p>{p.desc}</p>
+                <span class="project-cta">View project</span>
               </div>
             </a>
           ))}
@@ -125,12 +200,95 @@ for (const [r, c] of [[2,6],[3,0],[3,1],[4,6],[5,6]]) boardCells[r * 8 + c].piec
       </div>
     </section>
 
-    <!-- Technologies -->
+    <!-- 04 · Building -->
+    <section id="building">
+      <div class="container">
+        <div class="section-header">
+          <p class="section-eyebrow">
+            <span class="num">04</span>
+            <span class="sep">·</span>
+            <span class="tag">Building</span>
+          </p>
+          <h2>What I'm <em>building</em>.</h2>
+        </div>
+
+        {featuredVenture && (
+          <a
+            class="venture-hero"
+            href={featuredVenture.href}
+            target={featuredVenture.external ? '_blank' : null}
+            rel={featuredVenture.external ? 'noopener noreferrer' : null}
+          >
+            <div class="venture-hero-art" aria-hidden="true">
+              <div class="loc-panel">
+                <div class="loc-head">
+                  <span class="loc-key">MENU_START</span>
+                  <span class="loc-count">5 languages</span>
+                </div>
+                <div class="loc-rows">
+                  {locRows.map(r => (
+                    <div class={`loc-row loc-${r.state}`}>
+                      <span class="loc-code">{r.code}</span>
+                      <span class="loc-bar"><i style={`width:${r.w}%`}></i></span>
+                      <span class="loc-dot"></span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div class="venture-hero-body">
+              <p class="venture-kicker">
+                <span class="dot" aria-hidden="true"></span>
+                <span>{featuredVenture.kicker}</span>
+                <span class="venture-sep">·</span>
+                <span>{featuredVenture.state}</span>
+              </p>
+              <h3>{featuredVenture.name}</h3>
+              <p class="venture-role">{featuredVenture.role}</p>
+              <p class="venture-desc">{featuredVenture.desc}</p>
+              <div class="venture-tags">
+                {featuredVenture.tags.map(t => <span>{t}</span>)}
+              </div>
+              <span class="venture-cta">{featuredVenture.cta}</span>
+            </div>
+          </a>
+        )}
+
+        <div class="venture-grid">
+          {otherVentures.map(v => (
+            <a
+              class="venture-card"
+              href={v.href}
+              target={v.external ? '_blank' : null}
+              rel={v.external ? 'noopener noreferrer' : null}
+            >
+              <p class="venture-kicker">
+                <span>{v.kicker}</span>
+                {(v.id === 'plugins' ? pluginStat : v.state) && (
+                  <>
+                    <span class="venture-sep">·</span>
+                    <span>{v.id === 'plugins' ? pluginStat : v.state}</span>
+                  </>
+                )}
+              </p>
+              <h3>{v.name}</h3>
+              <p class="venture-desc">{v.desc}</p>
+              <div class="venture-tags">
+                {v.tags.map(t => <span>{t}</span>)}
+              </div>
+              <span class="venture-cta">{v.cta}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 · Toolbox -->
     <section id="technologies">
       <div class="container">
         <div class="section-header">
           <p class="section-eyebrow">
-            <span class="num">03</span>
+            <span class="num">05</span>
             <span class="sep">·</span>
             <span class="tag">Toolbox</span>
           </p>
@@ -156,295 +314,64 @@ for (const [r, c] of [[2,6],[3,0],[3,1],[4,6],[5,6]]) boardCells[r * 8 + c].piec
       </div>
     </section>
 
-    <!-- Education -->
+    <!-- 06 · Studies -->
     <section id="education">
-      <div class="container">
-        <div class="section-header">
-          <p class="section-eyebrow">
-            <span class="num">04</span>
-            <span class="sep">·</span>
-            <span class="tag">Studies</span>
-          </p>
-          <h2>How I <em>got here</em>.</h2>
-        </div>
-        <div class="cards-container">
-          {education.map(e => (
-            <a class="extended-card" href={e.href} target="_blank" rel="noopener noreferrer">
-              {/* Same explicit-flag-with-fallback rule as experience above. */}
-              {((e as any).current ?? (e.period?.includes('Present') || e.period?.includes('Ongoing'))) && (
-                <span class="current-pill">Current</span>
-              )}
-              <img src={e.logo} alt={`${e.name} Logo`} class="card-logo" />
-              <div class="card-details">
-                <h3>{e.name}</h3>
-                <p class="role">{e.role}</p>
-                <p class="time-period">{e.period}</p>
-              </div>
-            </a>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    <!-- Projects -->
-    <section id="projects">
-      <div class="container">
-        <div class="section-header">
-          <p class="section-eyebrow">
-            <span class="num">05</span>
-            <span class="sep">·</span>
-            <span class="tag">Showcase</span>
-          </p>
-          <h2>Selected <em>projects</em>.</h2>
-        </div>
-        <div class="cards-container">
-          {projects.map((p, i) => (
-            <a
-              class="project-card"
-              style={`background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url('${p.image}')`}
-              href={p.href}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <span class="project-index">PRJ / {String(i + 1).padStart(2, '0')}</span>
-              <div class="project-details">
-                <h3>{p.name}</h3>
-                <p>{p.desc}</p>
-                <span class="project-cta">View project</span>
-              </div>
-            </a>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    <!-- Personal Projects -->
-    <section id="personal-projects">
       <div class="container">
         <div class="section-header">
           <p class="section-eyebrow">
             <span class="num">06</span>
             <span class="sep">·</span>
-            <span class="tag">Personal</span>
+            <span class="tag">Studies</span>
           </p>
-          <h2>Built <em>for fun</em>.</h2>
+          <h2>How I <em>got here</em>.</h2>
         </div>
+        <div class="study-grid">
+          {education.map(e => (
+            <a class="study-card" href={e.href} target="_blank" rel="noopener noreferrer">
+              <img src={e.logo} alt={`${e.name} logo`} class="study-logo" />
+              <div class="study-details">
+                <h3>{e.name}</h3>
+                <p class="study-role">{e.role}</p>
+              </div>
+              <span class="study-period">{e.period}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
 
-        <a class="play-card" href="/sesqui/" aria-label="Play Sesqui">
-          <div class="play-card-art" aria-hidden="true">
-            <div class="sesqui-board">
-              {boardCells.map(cell => (
-                <div class={`sq ${cell.dark ? 'sq-d' : 'sq-l'}`}>
-                  {cell.piece === 'v' && <span class="pc pc-v"></span>}
-                  {cell.piece === 'h' && <span class="pc pc-h"></span>}
-                </div>
-              ))}
-            </div>
-          </div>
-          <div class="play-card-body">
-            <p class="play-card-kicker">
-              <span class="dot" aria-hidden="true"></span>
-              <span>Board game</span>
-              <span class="play-card-sep">·</span>
-              <span>Playable</span>
+    <!-- 07 · Contact -->
+    <section id="contact">
+      <div class="container">
+        <div class="contact-panel">
+          <div class="section-header">
+            <p class="section-eyebrow">
+              <span class="num">07</span>
+              <span class="sep">·</span>
+              <span class="tag">Contact</span>
             </p>
-            <h3>Sesqui</h3>
-            <p class="play-card-desc">
-              A two-player connection game on an 8×8 board. Black links top to
-              bottom, White links left to right. Play a friend, take on four
-              tiers of AI, or watch the engines battle it out.
-            </p>
-            <div class="play-card-tags">
-              <span>Strategy</span>
-              <span>React</span>
-              <span>4 AI levels</span>
-            </div>
-            <span class="play-card-cta">Play now</span>
+            <h2>Let's <em>talk</em>.</h2>
           </div>
-        </a>
+          <p class="contact-lede">
+            Open to engineering leadership roles, contract Unreal work, and studio
+            consulting. The fastest way to reach me is email.
+          </p>
+          <div class="contact-actions">
+            <a class="contact-btn contact-btn-primary" href={`mailto:${contact.email}`}>{contact.email}</a>
+            <a class="contact-btn contact-btn-ghost" href="/cv">View CV</a>
+          </div>
+          <div class="contact-meta">
+            <a href={absolute(contact.linkedin)} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            <span class="contact-meta-sep" aria-hidden="true">·</span>
+            <a href={absolute(contact.github)} target="_blank" rel="noopener noreferrer">GitHub</a>
+            <span class="contact-meta-sep" aria-hidden="true">·</span>
+            <a href={absolute(contact.itch)} target="_blank" rel="noopener noreferrer">itch.io</a>
+            <span class="contact-meta-sep" aria-hidden="true">·</span>
+            <span class="contact-location">{contact.location}</span>
+          </div>
+        </div>
       </div>
     </section>
 
   </div>
 </BaseLayout>
-
-<style>
-  /* ─── Personal Projects ──────────────────────────────────────────────── */
-  #personal-projects {
-    background-color: var(--bg);
-    background-image:
-      radial-gradient(ellipse 50% 40% at 100% 0%, rgba(255,138,76,.05) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 40% at 0% 100%, rgba(41,128,185,.05) 0%, transparent 60%);
-  }
-
-  /* Feature card — Sesqui board art + copy, modelled on the About panel */
-  .play-card {
-    position: relative;
-    display: flex;
-    align-items: stretch;
-    width: 100%;
-    max-width: 960px;
-    margin: 0 auto;
-    background: linear-gradient(135deg, #fbf6ee 0%, #ffffff 60%);
-    border: 1px solid rgba(255,138,76,.14);
-    border-radius: 20px;
-    overflow: hidden;
-    text-decoration: none;
-    color: var(--text);
-    box-shadow:
-      0 1px 2px rgba(10,22,40,.04),
-      0 12px 28px rgba(10,22,40,.05),
-      0 24px 56px rgba(255,138,76,.10);
-    transition: transform .35s cubic-bezier(.2,.7,.2,1), box-shadow .35s ease, border-color .35s ease;
-  }
-  .play-card:hover {
-    transform: translateY(-6px);
-    border-color: rgba(255,138,76,.4);
-    box-shadow:
-      0 1px 2px rgba(10,22,40,.04),
-      0 16px 40px rgba(10,22,40,.08),
-      0 32px 72px rgba(255,138,76,.16);
-  }
-
-  /* Art panel — authentic Sesqui "Midnight" palette */
-  .play-card-art {
-    flex: 0 0 42%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 36px;
-    background: radial-gradient(ellipse 80% 70% at 50% 18%, #2c2552 0%, #17172e 55%, #0e0e1c 100%);
-  }
-  .sesqui-board {
-    display: grid;
-    grid-template-columns: repeat(8, 1fr);
-    gap: 2px;
-    width: min(78%, 240px);
-    aspect-ratio: 1;
-    padding: 8px;
-    border-radius: 10px;
-    background: #20203a;
-    box-shadow: 0 14px 30px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,213,74,.10);
-    transition: transform .35s cubic-bezier(.2,.7,.2,1);
-  }
-  .play-card:hover .sesqui-board { transform: scale(1.04) rotate(-1deg); }
-  .sq {
-    aspect-ratio: 1;
-    border-radius: 2px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .sq-l { background: #34345a; }
-  .sq-d { background: #262648; }
-  .pc { width: 68%; height: 68%; border-radius: 50%; }
-  .pc-v {
-    background: radial-gradient(circle at 35% 30%, #ffe488 0%, #ffd54a 55%, #ecae28 100%);
-    box-shadow: 0 1px 2px rgba(0,0,0,.45), 0 0 8px rgba(255,213,74,.45);
-  }
-  .pc-h {
-    background: radial-gradient(circle at 35% 30%, #ffffff 0%, #d7d8e6 70%, #aeb0c6 100%);
-    box-shadow: 0 1px 2px rgba(0,0,0,.4);
-  }
-
-  /* Copy panel */
-  .play-card-body {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 14px;
-    padding: clamp(28px, 4vw, 44px);
-  }
-  .play-card-kicker {
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: .18em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin: 0;
-  }
-  .play-card-kicker .dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 0 0 var(--accent-glow);
-    animation: status-pulse 2.4s ease-out infinite;
-  }
-  .play-card-kicker .play-card-sep { opacity: .4; }
-  .play-card-body h3 {
-    font-family: var(--font-display);
-    font-size: clamp(28px, 3.4vw, 38px);
-    font-weight: 600;
-    letter-spacing: -.02em;
-    line-height: 1.05;
-    font-variation-settings: 'opsz' 48, 'wght' 600;
-    color: var(--text);
-    margin: 0;
-  }
-  .play-card-desc {
-    font-size: 14.5px;
-    line-height: 1.65;
-    color: var(--text-sub);
-    max-width: 46ch;
-    margin: 0;
-  }
-  .play-card-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 2px;
-  }
-  .play-card-tags span {
-    font-family: var(--font-mono);
-    font-size: 10.5px;
-    font-weight: 600;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    color: var(--text-sub);
-    padding: 5px 10px;
-    border: 1px solid var(--border);
-    border-radius: 100px;
-    background: rgba(255,255,255,.6);
-  }
-  .play-card-cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 8px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: .16em;
-    text-transform: uppercase;
-    color: var(--accent-d);
-    transition: gap .25s ease, color .25s ease;
-  }
-  .play-card-cta::after {
-    content: '→';
-    font-family: var(--font-display);
-    font-size: 15px;
-    letter-spacing: 0;
-  }
-  .play-card:hover .play-card-cta { gap: 14px; color: var(--accent); }
-
-  @media (max-width: 768px) {
-    .play-card { flex-direction: column; }
-    .play-card-art { flex-basis: auto; padding: 32px; }
-    .sesqui-board { width: min(60%, 220px); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .play-card,
-    .sesqui-board,
-    .play-card-cta { transition: none; }
-    .play-card-kicker .dot { animation: none; }
-    .play-card:hover { transform: none; }
-    .play-card:hover .sesqui-board { transform: none; }
-  }
-</style>
-

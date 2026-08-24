@@ -1,0 +1,58 @@
+[
+  {
+    "id": "polyglyph",
+    "name": "Polyglyph",
+    "kicker": "SaaS",
+    "state": "Private beta",
+    "role": "Founder & Engineer",
+    "desc": "An AI localization platform for game studios. Pull strings straight out of Unreal, route each job to the model you choose, review every line with your team, then ship the approved translations back into the build.",
+    "tags": ["TypeScript", "React", "Postgres", "UE5 Plugin"],
+    "href": "https://polyglyph.app",
+    "cta": "Visit polyglyph.app",
+    "external": true,
+    "featured": true,
+    "hidden": false
+  },
+  {
+    "id": "plugins",
+    "name": "Unreal Engine Plugins",
+    "kicker": "Products",
+    "state": "",
+    "role": "Author",
+    "desc": "Modular UE5 plugins covering combat, inventory, dialog, world streaming, and multiplayer social. Each one drops into a project without dragging a framework in behind it.",
+    "tags": ["C++", "UE5", "GAS"],
+    "href": "/Plugins",
+    "cta": "Browse the plugins",
+    "external": false,
+    "featured": false,
+    "hidden": false
+  },
+  {
+    "id": "consulting",
+    "name": "AI Infrastructure Consulting",
+    "kicker": "Service",
+    "state": "Available",
+    "role": "Consultant",
+    "desc": "Governed AI infrastructure for game studios: a knowledge layer and a layered pipeline that make adoption safe, consistent, and measurable, on whichever AI stack the studio picks.",
+    "tags": ["Governance", "Pipeline", "Model-agnostic"],
+    "href": "/AI-Setup-Consulting",
+    "cta": "See how it works",
+    "external": false,
+    "featured": false,
+    "hidden": false
+  },
+  {
+    "id": "sesqui",
+    "name": "Sesqui",
+    "kicker": "Board game",
+    "state": "Not deployed",
+    "role": "Designer & Engineer",
+    "desc": "A two-player connection game on an 8x8 board. Gold links top to bottom, pale links left to right. Play a friend, take on four tiers of AI, or watch the engines battle it out.",
+    "tags": ["Strategy", "React", "4 AI levels"],
+    "href": "/sesqui/",
+    "cta": "Play now",
+    "external": false,
+    "featured": false,
+    "hidden": true
+  }
+]
