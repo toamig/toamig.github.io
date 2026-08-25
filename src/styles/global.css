@@ -2627,9 +2627,16 @@ footer p { font-size: 13px; opacity: 0.4; letter-spacing: .02em; }
 #contact {
   background-color: var(--dark);
   background-image:
+    /* Settles into the footer's own top colour so the page closes on one dark
+       block instead of two stacked ones with a seam between them. */
+    linear-gradient(to bottom, transparent 68%, #07111e 100%),
     radial-gradient(ellipse 60% 50% at 15% 0%, rgba(255,138,76,.10) 0%, transparent 60%),
     radial-gradient(ellipse 60% 50% at 85% 100%, rgba(41,128,185,.14) 0%, transparent 60%);
+  padding-bottom: 72px;
 }
+/* The divider earns its place between a light section and the footer; against
+   the contact panel it just draws a line through a continuous dark field. */
+#content:has(#contact:last-child) + footer { border-top: none; }
 #contact .section-header { margin-bottom: 22px; }
 #contact .section-eyebrow { color: rgba(255,255,255,.4); }
 #contact .section-eyebrow .num { color: var(--accent-l); }
