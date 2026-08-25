@@ -14,6 +14,19 @@ import cvExtras       from '../data/cvExtras.json';
 
 const contact = cvExtras.contact;
 
+// cvExtras stores bare hostnames; the markup needs absolute URLs.
+const absolute = (u: string) => (/^https?:/i.test(u) ? u : `https://${u}`);
+
+// The social links live here rather than in the site footer: named links in
+// the section about reaching me read far better to a recruiter than unlabelled
+// icons in page chrome, and this way each link has exactly one home.
+const contactChannels = [
+  { label: 'LinkedIn',  href: absolute(contact.linkedin)  },
+  { label: 'GitHub',    href: absolute(contact.github)    },
+  { label: 'itch.io',   href: absolute(contact.itch)      },
+  { label: 'Instagram', href: absolute(contact.instagram) },
+];
+
 // Only real off-site URLs become links. Some experience entries carry '' or '/'
 // as a placeholder, and those should not render a dead affordance.
 const isExternal = (u?: string) => !!u && /^https?:/i.test(u);
@@ -422,10 +435,11 @@ const pgLangs = [
             <a class="contact-btn contact-btn-primary" href={`mailto:${contact.email}`}>Email me</a>
             <a class="contact-btn contact-btn-ghost" href="/cv">View CV</a>
           </div>
-          {/* Social links live in the site footer directly below, so repeating
-              them here would put LinkedIn and GitHub on screen twice. This row
-              carries only what the footer does not: the address itself and
-              where I am. */}
+          <div class="contact-channels">
+            {contactChannels.map(c => (
+              <a href={c.href} target="_blank" rel="noopener noreferrer">{c.label}</a>
+            ))}
+          </div>
           <div class="contact-meta">
             <a href={`mailto:${contact.email}`}>{contact.email}</a>
             <span class="contact-meta-sep" aria-hidden="true">·</span>
