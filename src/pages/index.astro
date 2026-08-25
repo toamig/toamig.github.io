@@ -18,7 +18,7 @@ const contact = cvExtras.contact;
 const absolute = (u: string) => (/^https?:/i.test(u) ? u : `https://${u}`);
 
 // Only real off-site URLs become links. Some experience entries carry '' or '/'
-// as a placeholder, and those should not render a dead "visit site" affordance.
+// as a placeholder, and those should not render a dead affordance.
 const isExternal = (u?: string) => !!u && /^https?:/i.test(u);
 
 // Ventures marked `hidden` are parked, not deleted: Sesqui has no /sesqui route
@@ -32,13 +32,29 @@ const visiblePlugins = pluginsData.filter(p => !p.hidden);
 const livePluginCount = visiblePlugins.filter(p => p.status === 'live').length;
 const pluginStat = `${visiblePlugins.length} plugins · ${livePluginCount} live on Fab`;
 
-// Decorative localisation rows for the Polyglyph card art.
-const locRows = [
-  { code: 'EN', w: 74, state: 'source' },
-  { code: 'PT', w: 88, state: 'done'   },
-  { code: 'JA', w: 52, state: 'done'   },
-  { code: 'DE', w: 95, state: 'review' },
-  { code: 'ES', w: 63, state: 'queued' },
+// ── Polyglyph cockpit mock ────────────────────────────────────────────────
+// Redrawn from the product's own marketing previews (frontend/src/components/
+// marketing/{ui,previews}.tsx), so this is the real app surface rather than a
+// stand-in: same window chrome, same dark tokens, same sample project, same
+// "progress by language" panel. Sample figures are the product's own.
+const pgRail = [
+  { id: 'overview', d: null, rects: [[3,3,7,9],[14,3,7,5],[14,12,7,9],[3,16,7,5]] },
+  { id: 'strings',  d: 'M4 6h16 M4 12h10 M4 18h13' },
+  { id: 'jobs',     d: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18 M12 7v5l3.5 2' },
+  { id: 'glossary', d: 'M5 19.5A2.5 2.5 0 0 1 7.5 17H20V3H7.5A2.5 2.5 0 0 0 5 5.5v14Z M5 19.5A2.5 2.5 0 0 0 7.5 22H20v-5' },
+  { id: 'team',     d: 'M9 4.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7 M3 20c0-3 2.7-5 6-5s6 2 6 5 M16.5 4.8a3.5 3.5 0 0 1 0 6.4' },
+  { id: 'settings', d: 'M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6 M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.5-2-3.4-2.4 1a7.7 7.7 0 0 0-2.6-1.5L14 2h-4l-.4 2.6a7.7 7.7 0 0 0-2.6 1.5l-2.4-1-2 3.4 2 1.5a7.6 7.6 0 0 0 0 3l-2 1.5 2 3.4 2.4-1a7.7 7.7 0 0 0 2.6 1.5L10 22h4l.4-2.6a7.7 7.7 0 0 0 2.6-1.5l2.4 1 2-3.4-2-1.5Z' },
+];
+const pgStats = [
+  { label: 'Strings',    value: '12,480', tone: ''           },
+  { label: 'Translated', value: '87%',    tone: 'is-info'    },
+  { label: 'Approved',   value: '74%',    tone: 'is-success' },
+];
+const pgLangs = [
+  { code: 'de', pct: 92, approved: 92, review: 6,  ready: true  },
+  { code: 'ja', pct: 88, approved: 88, review: 9,  ready: true  },
+  { code: 'fr', pct: 81, approved: 81, review: 14, ready: false },
+  { code: 'ko', pct: 63, approved: 63, review: 22, ready: false },
 ];
 ---
 <BaseLayout
@@ -131,37 +147,45 @@ const locRows = [
         </div>
         <div class="role-grid">
           {experience.map(e => (
-            <article class="role-card">
-              {/* Explicit `current` flag from the admin wins; if undefined, fall
-                  back to auto-detecting from the period text for legacy data. */}
-              {((e as any).current ?? (e.period?.includes('Present') || e.period?.includes('Ongoing'))) && (
-                <span class="current-pill">Current</span>
-              )}
-              <header class="role-card-head">
-                {e.logo
-                  ? <img src={e.logo} alt={`${e.name} logo`} class="role-logo" />
-                  : <div class="role-logo role-logo-empty" aria-hidden="true">{e.name.charAt(0)}</div>
-                }
-                <div class="role-ident">
+            <div class="role-card">
+              <div class="role-inner">
+
+                <div class="role-face role-front">
+                  {/* Explicit `current` flag from the admin wins; if undefined, fall
+                      back to auto-detecting from the period text for legacy data. */}
+                  {((e as any).current ?? (e.period?.includes('Present') || e.period?.includes('Ongoing'))) && (
+                    <span class="current-pill">Current</span>
+                  )}
+                  {e.logo
+                    ? <img src={e.logo} alt={`${e.name} logo`} class="role-logo" />
+                    : <div class="role-logo role-logo-empty" aria-hidden="true">{e.name.charAt(0)}</div>
+                  }
                   <h3>{e.name}</h3>
                   <p class="role-title">{e.role}</p>
-                  <p class="role-meta">
-                    <span>{e.period}</span>
-                    {e.location && <><span class="role-meta-sep">·</span><span>{e.location}</span></>}
-                  </p>
+                  <p class="role-period">{e.period}</p>
+                  <button class="role-toggle" data-role-toggle aria-expanded="false">
+                    <span>What I did</span>
+                  </button>
                 </div>
-              </header>
-              {e.bullets?.length > 0 && (
-                <ul class="role-bullets">
-                  {e.bullets.slice(0, 4).map(b => <li>{b}</li>)}
-                </ul>
-              )}
-              {isExternal(e.href) && (
-                <a class="role-link" href={e.href} target="_blank" rel="noopener noreferrer">
-                  {e.name} site
-                </a>
-              )}
-            </article>
+
+                <div class="role-face role-back" aria-hidden="true">
+                  <p class="role-back-head">{e.name}</p>
+                  <ul class="role-bullets">
+                    {e.bullets?.map(b => <li>{b}</li>)}
+                  </ul>
+                  <div class="role-back-foot">
+                    {isExternal(e.href)
+                      ? <a class="role-link" href={e.href} target="_blank" rel="noopener noreferrer">Company site</a>
+                      : <span></span>
+                    }
+                    <button class="role-toggle role-toggle-back" data-role-toggle aria-expanded="false">
+                      <span>Back</span>
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
           ))}
         </div>
       </div>
@@ -220,19 +244,64 @@ const locRows = [
             rel={featuredVenture.external ? 'noopener noreferrer' : null}
           >
             <div class="venture-hero-art" aria-hidden="true">
-              <div class="loc-panel">
-                <div class="loc-head">
-                  <span class="loc-key">MENU_START</span>
-                  <span class="loc-count">5 languages</span>
-                </div>
-                <div class="loc-rows">
-                  {locRows.map(r => (
-                    <div class={`loc-row loc-${r.state}`}>
-                      <span class="loc-code">{r.code}</span>
-                      <span class="loc-bar"><i style={`width:${r.w}%`}></i></span>
-                      <span class="loc-dot"></span>
-                    </div>
+              <div class="pg-window">
+                <div class="pg-rail">
+                  <span class="pg-rail-logo"></span>
+                  {pgRail.map((icon, i) => (
+                    <span class={`pg-rail-icon${i === 0 ? ' is-active' : ''}`}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                        {icon.rects
+                          ? icon.rects.map(r => <rect x={r[0]} y={r[1]} width={r[2]} height={r[3]} rx="1.5" />)
+                          : <path d={icon.d} />
+                        }
+                      </svg>
+                    </span>
                   ))}
+                </div>
+                <div class="pg-main">
+                  <div class="pg-topbar">
+                    <div class="pg-crumb">
+                      <span>Aurora Chronicles</span>
+                      <span class="pg-slash">/</span>
+                      <span class="pg-crumb-active">Overview</span>
+                    </div>
+                    <div class="pg-topbar-right">
+                      <span class="pg-search">Search <i>⌘K</i></span>
+                      <span class="pg-avatar"></span>
+                    </div>
+                  </div>
+                  <div class="pg-body">
+                    <div class="pg-stats">
+                      {pgStats.map(s => (
+                        <div class="pg-stat">
+                          <p class="pg-stat-label">{s.label}</p>
+                          <p class={`pg-stat-value ${s.tone}`}>{s.value}</p>
+                        </div>
+                      ))}
+                    </div>
+                    <div class="pg-panel">
+                      <div class="pg-panel-head">
+                        <span class="pg-panel-title">Progress by language</span>
+                        <span class="pg-legend">
+                          <i class="pg-dot pg-dot-a"></i>Approved
+                          <i class="pg-dot pg-dot-r"></i>Review
+                        </span>
+                      </div>
+                      {pgLangs.map(l => (
+                        <div class="pg-lang">
+                          <div class="pg-lang-head">
+                            <span class="pg-lang-code">{l.code}</span>
+                            {l.ready && <span class="pg-pill">Ready</span>}
+                            <span class="pg-lang-pct">{l.pct}%<i>approved</i></span>
+                          </div>
+                          <div class="pg-lang-bar">
+                            <i class="pg-seg-a" style={`width:${l.approved}%`}></i>
+                            <i class="pg-seg-r" style={`width:${l.review}%`}></i>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -264,12 +333,8 @@ const locRows = [
             >
               <p class="venture-kicker">
                 <span>{v.kicker}</span>
-                {(v.id === 'plugins' ? pluginStat : v.state) && (
-                  <>
-                    <span class="venture-sep">·</span>
-                    <span>{v.id === 'plugins' ? pluginStat : v.state}</span>
-                  </>
-                )}
+                <span class="venture-sep">·</span>
+                <span>{v.id === 'plugins' ? pluginStat : v.state}</span>
               </p>
               <h3>{v.name}</h3>
               <p class="venture-desc">{v.desc}</p>
@@ -375,3 +440,46 @@ const locRows = [
 
   </div>
 </BaseLayout>
+
+<script>
+  // Career cards flip to their reverse rather than growing, so opening one
+  // never reflows the grid around it. Both faces stay in the DOM; aria-hidden
+  // and pointer-events follow the flip so only the visible face is reachable.
+  document.querySelectorAll<HTMLElement>('.role-card').forEach(card => {
+    const toggles = card.querySelectorAll<HTMLButtonElement>('[data-role-toggle]');
+    const front   = card.querySelector('.role-front');
+    const back    = card.querySelector('.role-back');
+
+    const setFlipped = (flipped: boolean) => {
+      card.classList.toggle('is-flipped', flipped);
+      toggles.forEach(b => b.setAttribute('aria-expanded', String(flipped)));
+      front?.setAttribute('aria-hidden', String(flipped));
+      back?.setAttribute('aria-hidden', String(!flipped));
+      // Move focus with the card so keyboard users land on the face they just
+      // revealed instead of a button that just rotated out of view.
+      if (flipped) card.querySelector<HTMLButtonElement>('.role-toggle-back')?.focus();
+      else card.querySelector<HTMLButtonElement>('.role-front .role-toggle')?.focus();
+    };
+
+    toggles.forEach(btn => btn.addEventListener('click', () => {
+      setFlipped(!card.classList.contains('is-flipped'));
+    }));
+
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && card.classList.contains('is-flipped')) setFlipped(false);
+    });
+  });
+
+  // Mark the cards whose history overruns the face, so only those show the
+  // scroll fade. Measured after fonts settle, since line wrapping (and so the
+  // list height) changes once the display face swaps in.
+  const markOverflow = () => {
+    document.querySelectorAll<HTMLElement>('.role-card').forEach(card => {
+      const list = card.querySelector('.role-bullets');
+      if (!list) return;
+      card.classList.toggle('has-more', list.scrollHeight > list.clientHeight + 1);
+    });
+  };
+  document.fonts?.ready.then(markOverflow) ?? markOverflow();
+  window.addEventListener('resize', markOverflow);
+</script>

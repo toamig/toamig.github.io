@@ -249,7 +249,9 @@ const jsonLd = {
           };
 
           document.addEventListener('pointermove', (e) => {
-            const card = (e.target as Element | null)?.closest?.('.extended-card, .project-card, .role-card, .venture-card, .study-card') as HTMLElement | null;
+            // Career cards are excluded on purpose: they own a 3D flip on an
+            // inner element, and a tilt transform on the wrapper fights it.
+            const card = (e.target as Element | null)?.closest?.('.extended-card, .project-card, .venture-card, .study-card') as HTMLElement | null;
             // Left the current card (onto another card or into a gap): spring it back.
             if (card !== active) { rest(active); active = card; }
             if (!card) return;
