@@ -2230,10 +2230,6 @@ footer p { font-size: 13px; opacity: 0.4; letter-spacing: .02em; }
 .venture-hero-art {
   flex: 0 0 44%;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 36px;
-  background: radial-gradient(ellipse 85% 70% at 50% 15%, #1e2b52 0%, #141c36 55%, #0d1122 100%);
 }
 
 /* Polyglyph hero mock ───────────────────────────────────────────────────────
@@ -2248,10 +2244,9 @@ footer p { font-size: 13px; opacity: 0.4; letter-spacing: .02em; }
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 30px 20px;
-  border-radius: 14px;
+  padding: 38px 28px;
   overflow: hidden;
-  background: radial-gradient(ellipse 95% 75% at 50% 8%, #16203a 0%, #0d1220 55%, #080b11 100%);
+  background: radial-gradient(ellipse 95% 80% at 50% 6%, #16203a 0%, #0d1220 52%, #080b11 100%);
 }
 /* The two glows the product hero runs on: blue for the AI draft, green for the
    human sign-off it resolves into. */
@@ -2807,7 +2802,8 @@ footer p { font-size: 13px; opacity: 0.4; letter-spacing: .02em; }
   .role-logo { height: 92px; }
   .role-logo-empty { width: 92px; font-size: 34px; }
   .venture-hero { flex-direction: column; margin-bottom: 18px; }
-  .venture-hero-art { flex-basis: auto; padding: 28px 20px; }
+  .venture-hero-art { flex-basis: auto; }
+  .pg-stage { padding: 30px 20px; }
   .venture-grid { grid-template-columns: 1fr; gap: 18px; }
   .study-card { padding: 16px 18px; gap: 13px; }
   .study-period { display: none; }
