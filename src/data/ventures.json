@@ -3,7 +3,7 @@
     "id": "polyglyph",
     "name": "Polyglyph",
     "kicker": "SaaS",
-    "state": "Private beta",
+    "state": "Public beta",
     "role": "Founder & Engineer",
     "desc": "An AI localization platform for game studios. Pull strings straight out of Unreal, route each job to the model you choose, review every line with your team, then ship the approved translations back into the build.",
     "tags": ["TypeScript", "React", "Postgres", "UE5 Plugin"],

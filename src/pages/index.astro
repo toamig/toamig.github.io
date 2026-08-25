@@ -42,30 +42,61 @@ const visiblePlugins = pluginsData.filter(p => !p.hidden);
 const livePluginCount = visiblePlugins.filter(p => p.status === 'live').length;
 const pluginStat = `${visiblePlugins.length} plugins · ${livePluginCount} live on Fab`;
 
-// ── Polyglyph cockpit mock ────────────────────────────────────────────────
-// Redrawn from the product's own marketing previews (frontend/src/components/
-// marketing/{ui,previews}.tsx), so this is the real app surface rather than a
-// stand-in: same window chrome, same dark tokens, same sample project, same
-// "progress by language" panel. Sample figures are the product's own.
-const pgRail = [
-  { id: 'overview', d: null, rects: [[3,3,7,9],[14,3,7,5],[14,12,7,9],[3,16,7,5]] },
-  { id: 'strings',  d: 'M4 6h16 M4 12h10 M4 18h13' },
-  { id: 'jobs',     d: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18 M12 7v5l3.5 2' },
-  { id: 'glossary', d: 'M5 19.5A2.5 2.5 0 0 1 7.5 17H20V3H7.5A2.5 2.5 0 0 0 5 5.5v14Z M5 19.5A2.5 2.5 0 0 0 7.5 22H20v-5' },
-  { id: 'team',     d: 'M9 4.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7 M3 20c0-3 2.7-5 6-5s6 2 6 5 M16.5 4.8a3.5 3.5 0 0 1 0 6.4' },
-  { id: 'settings', d: 'M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6 M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.5-2-3.4-2.4 1a7.7 7.7 0 0 0-2.6-1.5L14 2h-4l-.4 2.6a7.7 7.7 0 0 0-2.6 1.5l-2.4-1-2 3.4 2 1.5a7.6 7.6 0 0 0 0 3l-2 1.5 2 3.4 2.4-1a7.7 7.7 0 0 0 2.6 1.5L10 22h4l.4-2.6a7.7 7.7 0 0 0 2.6-1.5l2.4 1 2-3.4-2-1.5Z' },
+// ── Polyglyph hero mock ───────────────────────────────────────────────────
+// Redrawn from the product's own landing page rather than its dashboard. The
+// personality there is the brand glyph field (six writing systems, straight
+// from frontend/src/lib/glyphs.ts) sitting behind one line of game prose that
+// resolves into a new language. The string, the locales, the drafting model
+// and the status colours are all the product's own.
+const PG_SOURCE = 'The dragon awaits beyond the gate.';
+const PG_TARGETS = [
+  { code: 'de',    text: 'Der Drache wartet jenseits des Tors.', status: 'approved' },
+  { code: 'ja',    text: '竜は門の向こうで待っている。',              status: 'approved' },
+  { code: 'fr',    text: 'Le dragon attend au-delà de la porte.', status: 'approved' },
+  { code: 'pt-BR', text: 'O dragão aguarda além do portão.',      status: 'review'   },
+  { code: 'ko',    text: '용은 문 너머에서 기다린다.',                status: 'review'   },
 ];
-const pgStats = [
-  { label: 'Strings',    value: '12,480', tone: ''           },
-  { label: 'Translated', value: '87%',    tone: 'is-info'    },
-  { label: 'Approved',   value: '74%',    tone: 'is-success' },
+
+// The brand's alphabet: poly + glyph, as actual characters. Six writing systems
+// evenly weighted so no one script dominates the field.
+const PG_GLYPH_CHARS = [
+  'Ω', 'Δ', 'Λ', 'Σ', 'Φ', 'Ψ', 'Ξ',
+  'Ж', 'Д', 'Я', 'Б', 'Ф', 'Э', 'Ч',
+  'É', 'Ü', 'Ñ', 'Ç', 'Ø', 'Å', 'Æ',
+  'あ', 'さ', 'ゆ', 'ア', 'ネ', '語', '字',
+  '한', '글', '어', '문', '말', '사', '랑',
+  'א', 'ש', 'ל', 'מ', 'ת', 'נ', 'ר',
 ];
-const pgLangs = [
-  { code: 'de', pct: 92, approved: 92, review: 6,  ready: true  },
-  { code: 'ja', pct: 88, approved: 88, review: 9,  ready: true  },
-  { code: 'fr', pct: 81, approved: 81, review: 14, ready: false },
-  { code: 'ko', pct: 63, approved: 63, review: 22, ready: false },
-];
+
+// The product's own deterministic PRNG, so the scatter is identical on every
+// build instead of reshuffling between deploys.
+function pgSeeded(seed: number): () => number {
+  return () => {
+    seed |= 0;
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+// A jittered grid rather than pure randomness, so the field reads as evenly
+// textured without ever looking tiled.
+const pgGlyphs = (() => {
+  const rand = pgSeeded(20260720);
+  const cols = 6;
+  const rows = 6;
+  return Array.from({ length: cols * rows }, (_, i) => ({
+    char:    PG_GLYPH_CHARS[Math.floor(rand() * PG_GLYPH_CHARS.length)],
+    x:       ((i % cols) + 0.5) * (100 / cols) + (rand() - 0.5) * 12,
+    y:       (Math.floor(i / cols) + 0.5) * (100 / rows) + (rand() - 0.5) * 12,
+    size:    11 + rand() * 18,
+    opacity: (0.07 + rand() * 0.13).toFixed(3),
+    rotate:  ((rand() - 0.5) * 16).toFixed(1),
+    pulses:  rand() < 0.25,
+    delay:   (rand() * 11).toFixed(2),
+  }));
+})();
 ---
 <BaseLayout
   title="Miguel Vieira (Toamig) · Game Engineer & Tech Lead"
@@ -254,64 +285,39 @@ const pgLangs = [
             rel={featuredVenture.external ? 'noopener noreferrer' : null}
           >
             <div class="venture-hero-art" aria-hidden="true">
-              <div class="pg-window">
-                <div class="pg-rail">
-                  <span class="pg-rail-logo"></span>
-                  {pgRail.map((icon, i) => (
-                    <span class={`pg-rail-icon${i === 0 ? ' is-active' : ''}`}>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                        {icon.rects
-                          ? icon.rects.map(r => <rect x={r[0]} y={r[1]} width={r[2]} height={r[3]} rx="1.5" />)
-                          : <path d={icon.d} />
-                        }
-                      </svg>
-                    </span>
+              <div class="pg-stage">
+                <div class="pg-field">
+                  {pgGlyphs.map(g => (
+                    <span
+                      class={`pg-glyph${g.pulses ? ' is-pulsing' : ''}`}
+                      style={`left:${g.x}%;top:${g.y}%;font-size:${g.size}px;--o:${g.opacity};--rot:${g.rotate}deg;animation-delay:${g.delay}s`}
+                    >{g.char}</span>
                   ))}
                 </div>
-                <div class="pg-main">
-                  <div class="pg-topbar">
-                    <div class="pg-crumb">
-                      <span>Aurora Chronicles</span>
-                      <span class="pg-slash">/</span>
-                      <span class="pg-crumb-active">Overview</span>
-                    </div>
-                    <div class="pg-topbar-right">
-                      <span class="pg-search">Search <i>⌘K</i></span>
-                      <span class="pg-avatar"></span>
-                    </div>
+
+                <div class="pg-card">
+                  <div class="pg-card-head">
+                    <span class="pg-key">quest.dragon_intro</span>
+                    <span class="pg-live"><i></i>translating</span>
                   </div>
-                  <div class="pg-body">
-                    <div class="pg-stats">
-                      {pgStats.map(s => (
-                        <div class="pg-stat">
-                          <p class="pg-stat-label">{s.label}</p>
-                          <p class={`pg-stat-value ${s.tone}`}>{s.value}</p>
-                        </div>
-                      ))}
+
+                  <p class="pg-label">source · en</p>
+                  <p class="pg-source">{PG_SOURCE}</p>
+
+                  <div class="pg-target">
+                    <div class="pg-target-head">
+                      <span class="pg-code" data-pg-code>{PG_TARGETS[0].code}</span>
+                      <span class="pg-status is-approved" data-pg-status>approved</span>
                     </div>
-                    <div class="pg-panel">
-                      <div class="pg-panel-head">
-                        <span class="pg-panel-title">Progress by language</span>
-                        <span class="pg-legend">
-                          <i class="pg-dot pg-dot-a"></i>Approved
-                          <i class="pg-dot pg-dot-r"></i>Review
-                        </span>
-                      </div>
-                      {pgLangs.map(l => (
-                        <div class="pg-lang">
-                          <div class="pg-lang-head">
-                            <span class="pg-lang-code">{l.code}</span>
-                            {l.ready && <span class="pg-pill">Ready</span>}
-                            <span class="pg-lang-pct">{l.pct}%<i>approved</i></span>
-                          </div>
-                          <div class="pg-lang-bar">
-                            <i class="pg-seg-a" style={`width:${l.approved}%`}></i>
-                            <i class="pg-seg-r" style={`width:${l.review}%`}></i>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                    <p class="pg-line" data-pg-line lang="de"></p>
+                    <p class="pg-drafted">drafted · Claude Sonnet 5</p>
                   </div>
+
+                  <div class="pg-progress-head">
+                    <span>9 languages</span>
+                    <span class="pg-approved">6 approved · human sign-off</span>
+                  </div>
+                  <div class="pg-bar"><i class="pg-bar-a"></i><i class="pg-bar-r"></i></div>
                 </div>
               </div>
             </div>
@@ -332,6 +338,8 @@ const pgLangs = [
             </div>
           </a>
         )}
+
+        <script type="application/json" id="pg-targets" set:html={JSON.stringify(PG_TARGETS)}></script>
 
         <div class="venture-grid">
           {otherVentures.map(v => (
@@ -493,4 +501,49 @@ const pgLangs = [
   };
   document.fonts?.ready.then(markOverflow) ?? markOverflow();
   window.addEventListener('resize', markOverflow);
+
+  // Polyglyph card: cycle the target locale, letting each translation resolve
+  // into place word by word the way the product hero does. Characters rather
+  // than words for scripts that do not space them, so ja and ko settle at a
+  // sensible rhythm instead of arriving as one block.
+  (() => {
+    const data = document.getElementById('pg-targets');
+    const line = document.querySelector<HTMLElement>('[data-pg-line]');
+    const code = document.querySelector<HTMLElement>('[data-pg-code]');
+    const status = document.querySelector<HTMLElement>('[data-pg-status]');
+    if (!data?.textContent || !line || !code || !status) return;
+
+    const targets = JSON.parse(data.textContent) as {
+      code: string; text: string; status: string;
+    }[];
+    if (!targets.length) return;
+
+    const paint = (i: number) => {
+      const t = targets[i];
+      code.textContent = t.code;
+      status.textContent = t.status === 'approved' ? 'approved' : 'in review';
+      status.className = 'pg-status ' + (t.status === 'approved' ? 'is-approved' : 'is-review');
+
+      line.lang = t.code;
+      line.textContent = '';
+      const spaced = t.text.includes(' ');
+      const parts = spaced ? t.text.split(' ') : [...t.text];
+      parts.forEach((part, n) => {
+        const span = document.createElement('span');
+        span.className = 'pg-word';
+        span.textContent = part;
+        span.style.animationDelay = (n * (spaced ? 78 : 40)) + 'ms';
+        line.appendChild(span);
+        if (spaced && n < parts.length - 1) line.appendChild(document.createTextNode(' '));
+      });
+    };
+
+    paint(0);
+    // The cycle is decoration, not information, so it stays put when the
+    // visitor has asked for less motion.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    let i = 0;
+    setInterval(() => { i = (i + 1) % targets.length; paint(i); }, 2600);
+  })();
 </script>

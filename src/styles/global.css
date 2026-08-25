@@ -2236,190 +2236,204 @@ footer p { font-size: 13px; opacity: 0.4; letter-spacing: .02em; }
   background: radial-gradient(ellipse 85% 70% at 50% 15%, #1e2b52 0%, #141c36 55%, #0d1122 100%);
 }
 
-/* Polyglyph product window ──────────────────────────────────────────────────
-   Redrawn from the product's own marketing previews so this reads as the real
-   app: same chrome (icon rail, breadcrumb, command-K, avatar) and the same
-   dark tokens it ships with (canvas #0e1319, rail #0b0f15, surface #161d26,
-   approved #41c07d, review #5b9bf0, primary #5b8def). */
-.pg-window {
+/* Polyglyph hero mock ───────────────────────────────────────────────────────
+   Redrawn from the product's own landing page. Its personality is the brand
+   glyph field (six writing systems as real characters) behind a single line of
+   game prose resolving into another language, not a stats dashboard. Tokens
+   are the product's: canvas #0e141d, panel #11161d, approved #49c884,
+   review #5b9bf0, drafting blue #2563eb. */
+.pg-stage {
+  position: relative;
   display: flex;
-  width: 100%;
-  max-width: 420px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,.10);
-  background: #0e1319;
-  overflow: hidden;
-  box-shadow: 0 18px 40px rgba(0,0,0,.45);
-  transition: transform .35s cubic-bezier(.2,.7,.2,1);
-}
-.venture-hero:hover .pg-window { transform: translateY(-4px) scale(1.02); }
-
-.pg-rail {
-  flex: 0 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  width: 34px;
-  padding: 9px 0;
-  background: #0b0f15;
-  border-right: 1px solid rgba(255,255,255,.06);
-}
-.pg-rail-logo {
-  width: 16px; height: 16px;
-  margin-bottom: 6px;
-  border-radius: 5px;
-  background: linear-gradient(135deg, #5b8def, #41c07d);
-}
-.pg-rail-icon {
-  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px; height: 22px;
-  border-radius: 6px;
-  color: #47535f;
-}
-.pg-rail-icon svg { width: 12px; height: 12px; }
-.pg-rail-icon.is-active { background: #1a2740; color: #5b8def; }
-
-.pg-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-.pg-topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  height: 30px;
-  padding: 0 11px;
-  border-bottom: 1px solid rgba(255,255,255,.06);
-}
-.pg-crumb {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 9.5px;
-  color: #64748b;
-  white-space: nowrap;
+  width: 100%;
+  padding: 30px 20px;
+  border-radius: 14px;
   overflow: hidden;
+  background: radial-gradient(ellipse 95% 75% at 50% 8%, #16203a 0%, #0d1220 55%, #080b11 100%);
 }
-.pg-slash { color: #47535f; }
-.pg-crumb-active { color: #cbd5e1; font-weight: 500; }
-.pg-topbar-right { display: flex; align-items: center; gap: 7px; }
-.pg-search {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 2px 5px;
-  border: 1px solid rgba(255,255,255,.10);
-  border-radius: 4px;
-  font-size: 8px;
-  color: #64748b;
-}
-.pg-search i {
-  font-family: var(--font-mono);
-  font-style: normal;
-  font-size: 7.5px;
-  color: #94a3b8;
-  background: rgba(255,255,255,.05);
-  border: 1px solid rgba(255,255,255,.10);
-  border-radius: 3px;
-  padding: 0 2px;
-}
-.pg-avatar {
-  width: 15px; height: 15px;
+/* The two glows the product hero runs on: blue for the AI draft, green for the
+   human sign-off it resolves into. */
+.pg-stage::before,
+.pg-stage::after {
+  content: '';
+  position: absolute;
   border-radius: 50%;
-  background: linear-gradient(135deg, #5b8def, #41c07d);
+  filter: blur(46px);
+  pointer-events: none;
+}
+.pg-stage::before {
+  top: -22%; left: -12%;
+  width: 68%; height: 68%;
+  background: rgba(37,99,235,.30);
+}
+.pg-stage::after {
+  bottom: -26%; right: -14%;
+  width: 60%; height: 60%;
+  background: rgba(65,192,125,.16);
 }
 
-.pg-body { padding: 11px; }
-.pg-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
-.pg-stat {
-  padding: 8px;
-  border-radius: 7px;
-  border: 1px solid rgba(255,255,255,.06);
-  background: #161d26;
-}
-.pg-stat-label {
-  margin: 0;
-  font-size: 7.5px;
-  font-weight: 600;
-  letter-spacing: .09em;
-  text-transform: uppercase;
-  color: #64748b;
-}
-.pg-stat-value {
-  margin: 4px 0 0;
-  font-size: 17px;
-  font-weight: 600;
-  letter-spacing: -.02em;
-  font-variant-numeric: tabular-nums;
-  color: #e2e8f0;
+.pg-field { position: absolute; inset: 0; pointer-events: none; }
+.pg-glyph {
+  position: absolute;
   line-height: 1;
+  color: #7ba6ff;
+  opacity: var(--o);
+  transform: translate(-50%, -50%) rotate(var(--rot));
+  font-family: var(--font-mono), 'Segoe UI', 'Yu Gothic UI', 'Malgun Gothic', system-ui, sans-serif;
+  user-select: none;
 }
-.pg-stat-value.is-info    { color: #5b9bf0; }
-.pg-stat-value.is-success { color: #41c07d; }
+/* A handful of glyphs take a single slow breath on staggered offsets, the way
+   the product's field does, rather than the whole grid blinking together. */
+@keyframes pg-glyph-pulse {
+  0%, 18%, 100% { opacity: var(--o); color: #7ba6ff; text-shadow: none; }
+  6%, 11% {
+    opacity: calc(var(--o) + .55);
+    color: #2563eb;
+    text-shadow: 0 0 6px rgba(37,99,235,.9), 0 0 24px rgba(37,99,235,.55);
+  }
+}
+.pg-glyph.is-pulsing { animation: pg-glyph-pulse 11s ease-in-out infinite; }
 
-.pg-panel {
-  margin-top: 7px;
-  padding: 9px;
-  border-radius: 7px;
-  border: 1px solid rgba(255,255,255,.06);
-  background: #161d26;
+/* The hero card: one string, mid-translation. */
+.pg-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 320px;
+  padding: 15px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: #0e141d;
+  box-shadow: 0 35px 80px -30px rgba(0,0,0,.9);
+  transition: transform .35s cubic-bezier(.2,.7,.2,1);
 }
-.pg-panel-head {
+.venture-hero:hover .pg-card { transform: translateY(-4px) scale(1.02); }
+
+.pg-card-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 4px;
-  padding: 0 2px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255,255,255,.05);
 }
-.pg-panel-title { font-size: 9.5px; font-weight: 600; color: #cbd5e1; }
-.pg-legend {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 7.5px;
-  color: #64748b;
-}
-.pg-dot { width: 5px; height: 5px; border-radius: 50%; display: inline-block; }
-.pg-dot-a { background: #41c07d; }
-.pg-dot-r { background: #5b9bf0; margin-left: 4px; }
-
-.pg-lang { padding: 4px 2px; }
-.pg-lang-head { display: flex; align-items: center; gap: 5px; margin-bottom: 4px; }
-.pg-lang-code {
+.pg-key {
   font-family: var(--font-mono);
   font-size: 9.5px;
-  font-weight: 500;
-  color: #cbd5e1;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #64748b;
 }
-.pg-pill {
-  padding: 1px 4px;
+.pg-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #49c884;
+}
+.pg-live i {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: #49c884;
+  animation: pg-blink 2s ease-in-out infinite;
+}
+@keyframes pg-blink { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+
+.pg-label {
+  margin: 12px 0 0;
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #475569;
+}
+.pg-source {
+  margin: 4px 0 0;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: #e2e8f0;
+}
+
+.pg-target {
+  margin-top: 11px;
+  padding: 11px;
+  border-radius: 11px;
+  border: 1px solid rgba(255,255,255,.06);
+  background: #11161d;
+}
+.pg-target-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.pg-code { font-family: var(--font-mono); font-size: 10.5px; font-weight: 500; color: #cbd5e1; }
+.pg-status {
+  padding: 2px 5px;
   border-radius: 3px;
-  background: #11271c;
-  color: #41c07d;
-  font-size: 6.5px;
+  font-size: 8px;
   font-weight: 700;
   letter-spacing: .06em;
   text-transform: uppercase;
 }
-.pg-lang-pct {
-  margin-left: auto;
-  font-size: 9.5px;
-  font-weight: 600;
-  color: #cbd5e1;
+.pg-status.is-approved { background: #12281d; color: #49c884; }
+.pg-status.is-review   { background: #15243a; color: #5b9bf0; }
+
+/* The signature moment: a translation settling into place word by word rather
+   than swapping. Only opacity, transform and blur animate, so the line never
+   reflows mid-resolve. */
+.pg-line {
+  margin: 0;
+  min-height: 2.4em;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: #f8fafc;
 }
-.pg-lang-pct i { font-style: normal; font-weight: 400; color: #64748b; margin-left: 3px; }
-.pg-lang-bar {
+@keyframes pg-resolve {
+  from { opacity: 0; transform: translateY(.8em) scale(.92); filter: blur(7px); }
+  to   { opacity: 1; transform: none; filter: blur(0); }
+}
+.pg-word {
+  display: inline-block;
+  animation: pg-resolve 560ms cubic-bezier(.22, 1, .36, 1) both;
+}
+.pg-drafted {
+  margin: 7px 0 0;
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  color: #475569;
+}
+
+.pg-progress-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 12px 0 5px;
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+.pg-approved { color: #49c884; }
+.pg-bar {
   display: flex;
   height: 5px;
-  width: 100%;
   border-radius: 100px;
   background: #1e2832;
   overflow: hidden;
 }
-.pg-seg-a { background: #41c07d; }
-.pg-seg-r { background: #5b9bf0; }
+.pg-bar-a { width: 67%; background: #41c07d; }
+.pg-bar-r { width: 22%; background: #5b9bf0; }
 
 .venture-hero-body {
   flex: 1;
