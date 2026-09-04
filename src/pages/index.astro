@@ -464,10 +464,18 @@ const pgGlyphs = (() => {
   // Career cards flip to their reverse rather than growing, so opening one
   // never reflows the grid around it. Both faces stay in the DOM; aria-hidden
   // and pointer-events follow the flip so only the visible face is reachable.
+  // The faces swap visibility at the flip's midpoint (.35s, see .role-face in
+  // global.css) and a hidden element cannot take focus, so focus lands once the
+  // incoming face is up rather than on the click. The margin over .35s is there
+  // because the swap happens on a frame boundary, not on the exact millisecond.
+  // Reduced motion drops the flip transition, so there the swap is immediate.
+  const FOCUS_DELAY = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 420;
+
   document.querySelectorAll<HTMLElement>('.role-card').forEach(card => {
     const toggles = card.querySelectorAll<HTMLButtonElement>('[data-role-toggle]');
     const front   = card.querySelector('.role-front');
     const back    = card.querySelector('.role-back');
+    let focusTimer = 0;
 
     const setFlipped = (flipped: boolean) => {
       card.classList.toggle('is-flipped', flipped);
@@ -476,8 +484,11 @@ const pgGlyphs = (() => {
       back?.setAttribute('aria-hidden', String(!flipped));
       // Move focus with the card so keyboard users land on the face they just
       // revealed instead of a button that just rotated out of view.
-      if (flipped) card.querySelector<HTMLButtonElement>('.role-toggle-back')?.focus();
-      else card.querySelector<HTMLButtonElement>('.role-front .role-toggle')?.focus();
+      clearTimeout(focusTimer);
+      focusTimer = window.setTimeout(() => {
+        const sel = flipped ? '.role-toggle-back' : '.role-front .role-toggle';
+        card.querySelector<HTMLButtonElement>(sel)?.focus();
+      }, FOCUS_DELAY);
     };
 
     toggles.forEach(btn => btn.addEventListener('click', () => {

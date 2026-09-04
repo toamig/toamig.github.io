@@ -1983,12 +1983,22 @@ footer p { font-size: 13px; opacity: 0.4; letter-spacing: .02em; }
   overflow: hidden;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  transition: box-shadow .25s ease, border-color .25s ease;
+  /* backface-visibility only holds while the 3D context does. Firefox with
+     hardware acceleration off (and any engine falling back to software
+     compositing) flattens preserve-3d, and the front face then paints
+     mirrored on top of the back. Visibility is the fallback that needs no 3D
+     context: it swaps at the midpoint of the .7s flip, so whichever face is
+     turning away is gone while the card is edge-on. */
+  visibility: visible;
+  transition: box-shadow .25s ease, border-color .25s ease, visibility 0s linear .35s;
 }
-/* backface-visibility alone still leaves the hidden face hit-testable in some
-   engines, so the flip state drives pointer-events explicitly. */
+/* Hiding the away face also takes it out of hit-testing and tab order, which
+   backface-visibility never did on its own. */
 .role-card:not(.is-flipped) .role-back,
-.role-card.is-flipped .role-front { pointer-events: none; }
+.role-card.is-flipped .role-front {
+  visibility: hidden;
+  pointer-events: none;
+}
 
 .role-front {
   align-items: center;
