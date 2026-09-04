@@ -1987,10 +1987,13 @@ footer p { font-size: 13px; opacity: 0.4; letter-spacing: .02em; }
      hardware acceleration off (and any engine falling back to software
      compositing) flattens preserve-3d, and the front face then paints
      mirrored on top of the back. Visibility is the fallback that needs no 3D
-     context: it swaps at the midpoint of the .7s flip, so whichever face is
-     turning away is gone while the card is edge-on. */
+     context, and the delay is what puts the swap where the card is edge-on.
+     That moment is NOT halfway through the .7s: the easing above is heavily
+     front-loaded, so the rotation passes 90deg at ~95ms and spends the rest of
+     the run settling. Swap a hair before it, while the outgoing face is down
+     to a few percent of its width, so its reverse never gets a frame. */
   visibility: visible;
-  transition: box-shadow .25s ease, border-color .25s ease, visibility 0s linear .35s;
+  transition: box-shadow .25s ease, border-color .25s ease, visibility 0s linear .09s;
 }
 /* Hiding the away face also takes it out of hit-testing and tab order, which
    backface-visibility never did on its own. */
