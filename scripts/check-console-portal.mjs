@@ -32,12 +32,17 @@ try {
   await page.waitForFunction(()=>document.getElementById('device-flight').dataset.portalState==='entering');
   await pause(600);await page.screenshot({path:`${directory}/portal-zoom.png`});
   check('Entering expands the physical screen',await page.$eval('#device-flight',el=>new DOMMatrix(getComputedStyle(el).transform).a>1));
+  check('The camera move scales the handheld render surface',await page.$eval('#console-frame',el=>el.clientWidth===1280&&el.clientHeight===720));
   await page.waitForFunction(()=>document.getElementById('device-flight').dataset.portalState==='active');
   await child.waitForFunction(()=>document.getElementById('boot').dataset.phase==='playing');
   check('One click unlocks startup sound inside the screen',await child.evaluate(()=>document.documentElement.dataset.audioState==='running' && document.documentElement.dataset.startupAudio==='played'));
   check('Entry keeps the same console document alive',child===await(await page.$('#console-frame')).contentFrame());
   check('The legacy page is inert while the console is active',await page.evaluate(()=>document.querySelector('body > header').inert && getComputedStyle(document.documentElement).overflowY==='hidden'));
-  check('The console keeps its 16 by 9 render surface through the camera move',await page.$eval('#console-frame',el=>el.clientWidth===1280&&el.clientHeight===720));
+  // Once it is open the console gets the window itself. Scaling a fixed surface to cover the
+  // window used to crop the system bar off the top and the control bar off the bottom.
+  check('The open console fills the window exactly',await page.evaluate(()=>{const f=document.getElementById('console-frame').getBoundingClientRect();return f.x===0&&f.y===0&&Math.abs(f.width-innerWidth)<2&&Math.abs(f.height-innerHeight)<2;}));
+  check('The open console lays out for the real window',await child.evaluate(()=>innerWidth===parent.innerWidth&&innerHeight===parent.innerHeight));
+  check('Both of the console bars are inside the window',await child.evaluate(()=>document.querySelector('.system-header').getBoundingClientRect().top>=-1&&document.querySelector('.control-bar').getBoundingClientRect().bottom<=innerHeight+1));
   await page.keyboard.press('Enter');await child.waitForFunction(()=>document.getElementById('boot').hidden);
   await page.keyboard.press('ArrowDown');
   check('Keyboard input reaches the console after entry',await child.evaluate(()=>document.activeElement.id==='item-game-1'));
@@ -49,6 +54,9 @@ try {
   await page.waitForFunction(()=>document.getElementById('device-flight').dataset.portalState==='docked');
   check('Return zooms out to the same portfolio position',Math.abs(await page.evaluate(()=>scrollY)-scrollBefore)<3);
   check('Returning restores keyboard focus and background interaction',await page.evaluate(()=>document.activeElement.matches('.playroom-enter') && !document.querySelector('body > header').inert));
+  // Returning re-arms the dormant console, which reloads the frame, so take a fresh handle.
+  await page.waitForFunction(()=>document.getElementById('device-screen').classList.contains('is-ready'));
+  child=await (await page.$('#console-frame')).contentFrame();
   check('Returning readies a fresh dormant console',await child.evaluate(()=>document.documentElement.dataset.docked==='true' && document.body.dataset.view==='library'));
   await page.click('.playroom-enter');await page.waitForFunction(()=>document.getElementById('device-flight').dataset.portalState==='active');
   child=await (await page.$('#console-frame')).contentFrame();
@@ -79,7 +87,7 @@ try {
   check('The handheld fits a mobile viewport',await page.evaluate(()=>{const r=document.getElementById('device-flight').getBoundingClientRect();return r.left>=0 && r.right<=innerWidth && document.documentElement.scrollWidth===innerWidth;}));
   await page.screenshot({path:`${directory}/portal-mobile.png`});
   await page.click('.playroom-enter');await page.waitForFunction(()=>document.getElementById('device-flight').dataset.portalState==='active');
-  check('Entering on mobile preserves the handheld screen surface',await child.evaluate(()=>innerWidth===1280 && document.documentElement.scrollWidth===1280));
+  check('Entering on mobile hands the console the phone viewport',await child.evaluate(()=>innerWidth===parent.innerWidth && document.documentElement.scrollWidth===innerWidth));
   await child.waitForFunction(()=>document.getElementById('boot').dataset.phase==='playing');
   await page.keyboard.press('Enter');await child.waitForFunction(()=>document.getElementById('boot').hidden);
   await child.evaluate(()=>document.getElementById('portfolio-exit').click());await page.waitForFunction(()=>document.getElementById('device-flight').dataset.portalState==='docked');
