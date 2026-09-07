@@ -8,43 +8,90 @@ export function installNavigation(actions: {
   shoulder: (step: number) => void; unlock: () => void; boot: () => boolean;
   suspended?: () => boolean;
 }) {
+  /** The screen reads top to bottom as a stack of bands. Moving past the edge of one band
+   *  steps into the next, so the header, the breadcrumb, the content and the control bar are
+   *  always connected rather than islands the pad cannot cross. */
+  const bands = () => Array.from(document.querySelectorAll<HTMLElement>('.system-header, .screen-topbar, #library-screen, .app-screen, .control-bar')).filter(visible);
+  const controlsIn = (band: HTMLElement) => Array.from(band.querySelectorAll<HTMLElement>(selector)).filter(visible);
+
   function spatial(direction: Direction) {
     const active = document.activeElement as HTMLElement;
     const horizontal = direction === 'left' || direction === 'right';
     const sign = direction === 'left' || direction === 'up' ? -1 : 1;
     const scope = document.querySelector<HTMLElement>('#os-shell')!;
-    const candidates = Array.from(scope.querySelectorAll<HTMLElement>(selector)).filter(visible);
-    if (!candidates.length) return;
-    if (!scope.contains(active)) { candidates[0].focus(); actions.moved(); return; }
-    const row = active.closest<HTMLElement>('[data-nav-row]');
-    if (horizontal && row) {
-      const options = Array.from(row.querySelectorAll<HTMLElement>(selector)).filter(visible);
-      const next = options[Math.max(0, Math.min(options.length - 1, options.indexOf(active) + sign))];
-      if (next && next !== active) { next.focus(); actions.moved(); }
+    if (!scope.contains(active)) {
+      const first = Array.from(scope.querySelectorAll<HTMLElement>(selector)).filter(visible)[0];
+      if (first) { first.focus(); actions.moved(); }
       return;
     }
+    const reach = (el: HTMLElement) => { el.focus({preventScroll:true}); el.scrollIntoView({block:'nearest', inline:'nearest', behavior:smoothness()}); actions.moved(); };
+
+    // A row is a single line of controls: left and right walk it and stop at its ends.
+    const row = active.closest<HTMLElement>('[data-nav-row]');
+    if (horizontal && row) {
+      const options = controlsIn(row);
+      const next = options[options.indexOf(active) + sign];
+      if (next) reach(next);
+      return;
+    }
+
+    const list = bands();
+    const index = list.findIndex(band => band.contains(active));
+    const band = list[index];
+    if (!band) return;
     const origin = active.getBoundingClientRect();
-    const centerX = origin.left + origin.width / 2;
-    const centerY = origin.top + origin.height / 2;
-    const scored = candidates.filter(el => el !== active && (horizontal || !row || el.closest('[data-nav-row]') !== row)).map(el => {
-      const rect = el.getBoundingClientRect();
-      const dx = rect.left + rect.width / 2 - centerX;
-      const dy = rect.top + rect.height / 2 - centerY;
-      const distance = (horizontal ? dx : dy) * sign;
-      const offset = Math.abs(horizontal ? dy : dx);
-      return {el, rect, score: distance > 8 && (!horizontal || offset < 80) ? distance + offset * 1.4 : Infinity};
-    }).sort((a,b) => a.score - b.score);
-    const next = scored[0];
-    const screen = active.closest<HTMLElement>('.app-screen');
-    if (screen && !horizontal && screen.scrollHeight > screen.clientHeight + 2) {
-      const bounds = screen.getBoundingClientRect();
-      if (!next || next.score === Infinity || next.rect.top > bounds.bottom - 40 || next.rect.bottom < bounds.top + 30) {
-        const room = sign > 0 ? screen.scrollHeight - screen.clientHeight - screen.scrollTop : screen.scrollTop;
-        if (room > 1) { screen.scrollBy({top: sign * Math.min(170, room), behavior: smoothness()}); actions.moved(); return; }
+    const centreX = origin.left + origin.width / 2;
+    const centreY = origin.top + origin.height / 2;
+
+    // Within the band, the nearest control in the direction travelled, penalising sideways drift.
+    const scored = controlsIn(band)
+      .filter(el => el !== active && (horizontal || !row || el.closest('[data-nav-row]') !== row))
+      .map(el => {
+        const rect = el.getBoundingClientRect();
+        const along = ((horizontal ? rect.left + rect.width / 2 - centreX : rect.top + rect.height / 2 - centreY)) * sign;
+        const drift = Math.abs(horizontal ? rect.top + rect.height / 2 - centreY : rect.left + rect.width / 2 - centreX);
+        return { el, score: along > 8 && (!horizontal || drift < 80) ? along + drift * 1.4 : Infinity };
+      })
+      .sort((a, b) => a.score - b.score);
+    if (scored[0] && scored[0].score < Infinity) {
+      let winner = scored[0].el;
+      // Dropping into a grid lands on the start of the row, not on whichever cell happens to
+      // sit under the middle of a full-width control above it.
+      const grid = winner.closest<HTMLElement>('[data-nav-grid]');
+      if (grid && !horizontal && !active.closest('[data-nav-grid]')) {
+        const edge = winner.getBoundingClientRect().top;
+        const first = controlsIn(grid)
+          .filter(el => Math.abs(el.getBoundingClientRect().top - edge) < 20)
+          .sort((a, b) => a.getBoundingClientRect().left - b.getBoundingClientRect().left)[0];
+        if (first) winner = first;
+      }
+      reach(winner);
+      return;
+    }
+
+    // Nothing left in this band. Read on if it still scrolls, otherwise cross into the next one.
+    if (!horizontal) {
+      const room = sign > 0 ? band.scrollHeight - band.clientHeight - band.scrollTop : band.scrollTop;
+      if (band.scrollHeight > band.clientHeight + 2 && room > 1) {
+        band.scrollBy({ top: sign * Math.min(200, room), behavior: smoothness() });
+        actions.moved();
+        return;
+      }
+      for (let next = index + sign; next >= 0 && next < list.length; next += sign) {
+        const pool = controlsIn(list[next]);
+        if (!pool.length) continue;
+        // Enter on the edge nearest the one just left, at the closest column.
+        const edge = pool.reduce((best, el) => {
+          const rect = el.getBoundingClientRect();
+          const value = sign > 0 ? rect.top : -rect.bottom;
+          return value < best ? value : best;
+        }, Infinity);
+        const entry = pool
+          .filter(el => { const rect = el.getBoundingClientRect(); return Math.abs((sign > 0 ? rect.top : -rect.bottom) - edge) < 40; })
+          .sort((a, b) => Math.abs(a.getBoundingClientRect().left + a.getBoundingClientRect().width / 2 - centreX) - Math.abs(b.getBoundingClientRect().left + b.getBoundingClientRect().width / 2 - centreX))[0];
+        if (entry) { reach(entry); return; }
       }
     }
-    if (next?.score < Infinity) { next.el.focus({preventScroll:true}); next.el.scrollIntoView({block:'nearest', inline:'nearest', behavior:smoothness()}); actions.moved(); }
-    else if (!horizontal) (screen || document.documentElement).scrollBy({top: sign * 160, behavior:smoothness()});
   }
   const move = (direction: Direction) => { if (!actions.direction(direction)) spatial(direction); };
   let keyRepeatAt = 0;

@@ -73,6 +73,9 @@
 .portal-open .portal-blackout { visibility: visible; }
 .device-flight[data-portal-state]:not([data-portal-state="docked"]) { z-index: 8999; }
 .device-flight[data-portal-state]:not([data-portal-state="docked"]) .device-enter-target { display: none; }
+.device-flight.is-immersive { position: fixed; inset: 0; width: auto; height: auto; aspect-ratio: auto; transform: none; }
+.device-flight.is-immersive .device-screen { position: absolute; inset: 0; width: auto; height: auto; border: 0; border-radius: 0; box-shadow: none; transform: none; }
+.device-flight.is-immersive .device-screen iframe { position: absolute; inset: 0; width: 100%; height: 100%; transform: none; }
 .device-flight.is-immersive .handheld-shell { visibility: hidden; }
 .device-flight.is-immersive .device-screen, .device-flight.is-immersive iframe { pointer-events: auto; }
 .device-flight.is-immersive .device-glass { display: none; }

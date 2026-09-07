@@ -111,14 +111,31 @@ try {
   await press('Escape');
   await view('library');
 
-  // Journal.
-  await page.evaluate(() => { location.hash = '#journal/journal-0'; });
+  // Journal. The whole timeline is here, so pick the entries by what they carry rather than
+  // by position: some moments have a gallery, and some have no photograph at all.
+  const journal = await page.evaluate(() => {
+    const data = JSON.parse(document.getElementById('library-data').textContent);
+    const entries = data.items.filter(i => i.category === 'journal');
+    return {
+      count: entries.length,
+      withPhotos: entries.find(i => (i.gallery || []).length > 1)?.id,
+      photoCount: (entries.find(i => (i.gallery || []).length > 1)?.gallery || []).length,
+      without: entries.find(i => !(i.gallery || []).length)?.id,
+    };
+  });
+  check('The journal carries the whole timeline', journal.count >= 30);
+  await page.evaluate(id => { location.hash = `#journal/${id}`; }, journal.withPhotos);
   await view('journal');
   current = await state();
-  check('Journal opens on its first photograph with the controls focused', current.active === 'photo-next' && await page.$eval('#photo-position', el => el.textContent === '1 / 4'));
+  check('Journal opens on its first photograph with the controls focused', current.active === 'photo-next' && await page.$eval('#photo-position', (el, total) => el.textContent === `1 / ${total}`, journal.photoCount));
   await press('ArrowRight');
-  check('Right moves to the next photograph', await page.$eval('#photo-position', el => el.textContent === '2 / 4'));
+  check('Right moves to the next photograph', await page.$eval('#photo-position', (el, total) => el.textContent === `2 / ${total}`, journal.photoCount));
   check('The photograph backdrop matches the photograph', await page.evaluate(() => document.getElementById('journal-backdrop').getAttribute('src') === document.getElementById('journal-image').getAttribute('src')));
+  await page.evaluate(id => { location.hash = `#journal/${id}`; }, journal.without);
+  await pause(500);
+  check('A moment without photographs says so instead of showing an empty frame', await page.evaluate(() => document.getElementById('journal-figure').hidden && !document.getElementById('journal-plain').hidden && document.getElementById('photo-next').hidden));
+  await page.evaluate(id => { location.hash = `#journal/${id}`; }, journal.withPhotos);
+  await pause(400);
   await page.waitForFunction(() => document.getElementById('journal-image').complete);
   await shot('journal');
   await press('Escape');
@@ -129,7 +146,11 @@ try {
   await view('search');
   check('Search focuses its field', (await state()).active === 'library-search');
   await page.type('#library-search', 'Dakar');
-  check('Search filters the whole library', await page.evaluate(() => [...document.querySelectorAll('[data-search-item]')].filter(el => !el.hidden).length === 1));
+  // The timeline is in the library too, so a game's name also matches the day it shipped.
+  check('Search filters the whole library', await page.evaluate(() => {
+    const shown = [...document.querySelectorAll('[data-search-item]')].filter(el => !el.hidden);
+    return shown.length > 0 && shown.length < 5 && shown.some(el => el.dataset.searchItem === 'game-0') && shown.every(el => el.dataset.searchText.includes('dakar'));
+  }));
   await shot('search');
   await press('ArrowDown');
   await press('Enter');
@@ -292,6 +313,7 @@ try {
   await fs.writeFile(`${output}/results.json`, JSON.stringify({ checks, layouts, failures }, null, 2));
 } catch (error) {
   console.error(`Failed after ${checks.length} checks: ${error.message}`);
+  console.error(error.stack);
   if (failures.length) console.error(failures.join('\n'));
   process.exitCode = 1;
 } finally {

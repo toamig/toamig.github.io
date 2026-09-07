@@ -28,10 +28,15 @@ function layout() {
   const rect=placement.getBoundingClientRect();
   dock={x:rect.x,y:rect.y+scrollY,width:rect.width,height:rect.width/2.4};
   gsap.set(flight,{position:'absolute',left:dock.x,top:dock.y,width:dock.width,height:dock.height,x:0,y:0,scale:1,rotationX:12,rotationY:-9,rotationZ:-7,transformPerspective:1800});
-  sizePreview();
+  previewSurface();
   document.documentElement.classList.add('portal-ready');
 }
-function sizePreview() { frame.style.transform=`scale(${screen.clientWidth/1280})`; }
+const SURFACE={width:1280,height:720};
+function previewSurface() {
+  frame.style.width=`${SURFACE.width}px`;frame.style.height=`${SURFACE.height}px`;
+  sizePreview();
+}
+function sizePreview() { frame.style.transform=`scale(${screen.clientWidth/SURFACE.width})`; }
 function load() {
   if (!frame.hasAttribute('src')) frame.src=frame.dataset.src!;
   return ready;
@@ -48,6 +53,9 @@ function isolate(active:boolean) {
   } else { for(const [el,value]of inertState)el.inert=value;inertState.clear(); }
 }
 function immersiveTransform() {
+  // Once the console fills the window the full-bleed layout owns the geometry, and reapplying
+  // the camera's covering scale on top of it would crop the console's own edges.
+  if (flight.classList.contains('is-immersive')) return;
   const rect=placement.getBoundingClientRect();
   dock={x:rect.x,y:rect.y+scrollY,width:rect.width,height:rect.width/2.4};
   const x=innerWidth/2-(dock.x+dock.width/2),y=innerHeight/2-(dock.y-scrollY+dock.height/2);
@@ -55,11 +63,18 @@ function immersiveTransform() {
   gsap.set(flight,{position:'fixed',left:dock.x,top:dock.y-scrollY,x,y,scale:zoom,rotationX:0,rotationY:0,rotationZ:0});
 }
 function fullView() {
-  immersiveTransform();flight.classList.add('is-immersive');frame.tabIndex=0;
+  immersiveTransform();
+  flight.classList.add('is-immersive');
+  // Hand the console the window it is actually on. Scaling a fixed 16:9 surface to cover the
+  // window crops whatever does not fit, which on most windows means losing the system bar at
+  // the top and the control bar at the bottom.
+  gsap.set(flight,{clearProps:'transform,left,top,width,height,position'});
+  frame.style.transform='none';frame.style.width='100%';frame.style.height='100%';
+  frame.tabIndex=0;
   setPhase('active');api?.enter();frame.contentWindow?.focus();
 }
 function resetFrame() {
-  api=undefined;screen.classList.remove('is-ready');frame.removeAttribute('src');frame.tabIndex=-1;
+  api=undefined;screen.classList.remove('is-ready');frame.removeAttribute('src');frame.tabIndex=-1;previewSurface();
   ready=makeReady();
 }
 
@@ -97,6 +112,11 @@ async function leave() {
   const rect=placement.getBoundingClientRect();
   dock={x:rect.x,y:rect.y+scrollY,width:rect.width,height:rect.width/2.4};
   flight.classList.remove('is-immersive');frame.tabIndex=-1;
+  // Put the handheld back on its preview surface, then start the return from where the
+  // full-bleed console just was.
+  previewSurface();
+  gsap.set(flight,{width:dock.width,height:dock.height,transformPerspective:1800});
+  immersiveTransform();
   animation=gsap.timeline({onComplete:()=>{
     isolate(false);setPhase('docked');layout();resetFrame();
     gsap.set(blackout,{opacity:0});

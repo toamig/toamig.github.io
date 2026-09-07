@@ -13,7 +13,9 @@ const get = <T extends HTMLElement>(id: string) => document.getElementById(id) a
 const all = <T extends HTMLElement = HTMLElement>(selector: string) => Array.from(document.querySelectorAll<T>(selector));
 const read = (key: string) => { try { return localStorage.getItem(key); } catch { return null; } };
 const save = (key: string, value: string) => { try { localStorage.setItem(key, value); } catch { /* Preferences are optional. */ } };
-const defaultState: State = {console:true, view:'library', category:'games', item:'game-0', profileTab:'overview', company:0, photo:0, query:'', parent:false};
+const firstCategory = categories[0].id;
+const firstItem = items.find(i => i.category === firstCategory)!.id;
+const defaultState: State = {console:true, view:'library', category:firstCategory, item:firstItem, profileTab:'overview', company:0, photo:0, query:'', parent:false};
 let state = {...defaultState};
 const embedded = window.parent !== window && new URLSearchParams(location.search).has('embedded');
 let portalDormant = embedded, portalStarted = false;
@@ -153,12 +155,17 @@ function renderProject() {
 function renderJournal() {
   const item = currentItem();
   get('journal-title').textContent = item.name; get('journal-date').textContent = item.subtitle; get('journal-description').textContent = item.description;
-  const gallery = item.gallery || [item.image];
-  state.photo = Math.max(0, Math.min(state.photo, gallery.length - 1));
-  const image = get<HTMLImageElement>('journal-image'); image.src = gallery[state.photo]; get<HTMLImageElement>('journal-backdrop').src = gallery[state.photo]; image.alt = `${item.name}, photograph ${state.photo + 1}`;
-  get('photo-position').textContent = `${state.photo + 1} / ${gallery.length}`;
+  const gallery = (item.gallery?.length ? item.gallery : item.image ? [item.image] : []);
+  get('journal-figure').hidden = !gallery.length;
+  get('journal-plain').hidden = gallery.length > 0;
+  get('photo-previous').hidden = gallery.length < 2; get('photo-next').hidden = gallery.length < 2; get('photo-position').hidden = !gallery.length;
+  if (gallery.length) {
+    state.photo = Math.max(0, Math.min(state.photo, gallery.length - 1));
+    const image = get<HTMLImageElement>('journal-image'); image.src = gallery[state.photo]; get<HTMLImageElement>('journal-backdrop').src = gallery[state.photo]; image.alt = `${item.name}, photograph ${state.photo + 1}`;
+    get('photo-position').textContent = `${state.photo + 1} / ${gallery.length}`;
+  } else state.photo = 0;
   get<HTMLAnchorElement>('journal-link').href = item.href; if(embedded)get<HTMLAnchorElement>('journal-link').target='_top';
-  get<HTMLButtonElement>('photo-previous').disabled = gallery.length < 2; get<HTMLButtonElement>('photo-next').disabled = gallery.length < 2;
+
 }
 
 function filterSearch() {
@@ -187,7 +194,7 @@ function render(focus = true) {
   get('item-hint').innerHTML = state.view === 'library' ? '<kbd>↑ ↓</kbd> Explore' : '<kbd>↑ ↓</kbd> Navigate';
   if (focus && bootPhase === 'closed') {
     const target = state.focus && get(state.focus);
-    const landing: Record<View, string> = {library:`item-${state.item}`, search:'library-search', profile:`profile-tab-${state.profileTab}`, project:'project-link', journal:'photo-next', contact:'email-link', settings:'sound-setting'};
+    const landing: Record<View, string> = {library:`item-${state.item}`, search:'library-search', profile:`profile-tab-${state.profileTab}`, project:'project-link', journal:(currentItem().gallery?.length || 0) > 1 ? 'photo-next' : 'journal-link', contact:'email-link', settings:'sound-setting'};
     const fallback = get(landing[state.view]) || get('screen-back');
     (target && target.getClientRects().length ? target : fallback).focus({preventScroll:true});
   }
@@ -236,8 +243,11 @@ function back() {
   audio.cue('back');
   if (state.view === 'library') { if(embedded)window.parent.postMessage({type:'toamig:exit'},location.origin);else get(`category-${state.category}`).focus({preventScroll:true}); return; }
   if(embedded && embeddedHistory.length) { state=embeddedHistory.pop()!;history.replaceState(state,'',hashFor(state));render();return; }
-  if (state.parent) history.back();
-  else { state = {...state, view:'library', focus:undefined}; history.replaceState(state, '', hashFor(state)); render(); }
+  const home = () => { state = {...state, view:'library', focus:undefined}; history.replaceState(state, '', hashFor(state)); render(); };
+  if (!state.parent) { home(); return; }
+  const from = state.view;
+  history.back();
+  setTimeout(() => { if (state.view === from) home(); }, 240);
 }
 
 function soundUI() {
@@ -321,6 +331,7 @@ function direction(direction: Direction) {
     const entries = groupItems(); const index = entries.findIndex(i => i.id === state.item) + sign;
     if (index < 0) get(`category-${state.category}`).focus({preventScroll:true});
     else if (index < entries.length) selectItem(entries[index].id);
+    else { const action = document.querySelector<HTMLElement>('.feature:not([hidden]) .actions button, .feature:not([hidden]) .actions a'); if (action) action.focus({preventScroll:true}); else return false; }
     return true;
   }
   if (state.view === 'profile' && active.matches('[data-profile-tab]') && horizontal) {
@@ -351,7 +362,7 @@ all('[data-company]').forEach(button => button.addEventListener('click', () => {
 all('[data-career]').forEach(button => button.addEventListener('click', () => showProfileTab('career', Number(button.dataset.career))));
 all('[data-career]').forEach(button => button.addEventListener('focus', () => { if (state.view === 'profile' && Number(button.dataset.career) !== state.company) showProfileTab('career', Number(button.dataset.career)); }));
 get('screen-back').addEventListener('click', back); get('back-control').addEventListener('click', back);
-get('home-control').addEventListener('click', () => { if (state.view === 'library') selectItem('game-0'); else navigate({...defaultState}, false); });
+get('home-control').addEventListener('click', () => { if (state.view === 'library') selectItem(firstItem); else navigate({...defaultState}, false); });
 get('sound-control').addEventListener('click', () => toggleSound()); get('boot-sound').addEventListener('click', () => toggleSound());
 get<HTMLInputElement>('sound-setting').addEventListener('change', event => toggleSound((event.target as HTMLInputElement).checked));
 get<HTMLInputElement>('volume-setting').addEventListener('input', event => { const value = (event.target as HTMLInputElement).valueAsNumber; audio.setVolume(value / 100); save('toamig-os-volume', String(value)); });
