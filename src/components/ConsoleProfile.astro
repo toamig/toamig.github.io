@@ -3,6 +3,7 @@ import Icon from './ConsoleIcon.astro';
 import profile from '../data/profile.json';
 import experience from '../data/experience.json';
 import technologies from '../data/technologies.json';
+import techCategories from '../data/techCategories.json';
 import education from '../data/education.json';
 import extras from '../data/cvExtras.json';
 const tabs = [{id:'overview', name:'Overview'}, {id:'career', name:'Career'}, {id:'toolkit', name:'Toolkit'}, {id:'education', name:'Education'}];
@@ -23,7 +24,14 @@ const tabs = [{id:'overview', name:'Overview'}, {id:'career', name:'Career'}, {i
   </div>
   <div class="profile-pane" id="profile-toolkit" role="tabpanel" aria-labelledby="profile-tab-toolkit" data-profile-pane="toolkit" hidden>
     <div class="pane-heading"><p class="eyeline">From an idea to a playable world</p><h1>Tools of the trade.</h1><p>Gameplay, multiplayer, animation, tooling, and the systems behind them.</p></div>
-    <div class="toolkit-grid" data-nav-grid>{technologies.filter(t => !t.cvOnly).map(t => <a href={t.href} target="_blank" rel="noopener noreferrer"><img src={t.src} alt="" /><span>{t.name}</span><Icon name="arrow" /></a>)}</div>
+    <div class="toolkit-groups">{techCategories.map(category => {
+      const tools = technologies.filter(t => t.category === category.id && !t.cvOnly);
+      // A long group runs the full width rather than stacking into a tall narrow column.
+      return tools.length > 0 && <section class:list={['toolkit-group', { 'is-wide': tools.length > 3 }]}>
+        <p class="toolkit-group-label">{category.name}</p>
+        <div class="toolkit-grid" data-nav-grid>{tools.map(t => <a href={t.href} target="_blank" rel="noopener noreferrer"><span class="tool-mark"><img src={t.src} alt="" /></span><span class="tool-name">{t.name}</span><Icon name="arrow" /></a>)}</div>
+      </section>;
+    })}</div>
   </div>
   <div class="profile-pane education-pane" id="profile-education" role="tabpanel" aria-labelledby="profile-tab-education" data-profile-pane="education" hidden>
     <div class="pane-heading"><p class="eyeline">Stay curious</p><h1>Always learning.</h1></div>
