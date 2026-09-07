@@ -1,0 +1,44 @@
+---
+import '../styles/console.css';
+import fontUrl from '../assets/fonts/Inter-Regular.ttf?url';
+import profile from '../data/profile.json';
+const title = 'Miguel Vieira (Toamig) | Game Engineer & Tech Lead';
+const description = profile.shortVersion.lead;
+const identity = {
+  '@context': 'https://schema.org', '@type': 'Person', '@id': 'https://toamig.com/#miguel',
+  name: 'Miguel Vieira', alternateName: 'Toamig', jobTitle: 'Game Engineer & Tech Lead', description,
+  url: 'https://toamig.com/', image: 'https://toamig.com/me/IMG_7.JPEG',
+  sameAs: ['https://www.linkedin.com/in/toamig/', 'https://github.com/toamig', 'https://toamig.itch.io'],
+};
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content="Miguel Vieira" />
+    <meta name="theme-color" content="#080d17" />
+    <link rel="canonical" href="https://toamig.com/console/" />
+    <script is:inline>if (window.parent !== window && new URLSearchParams(location.search).has('embedded')) document.documentElement.dataset.docked = 'true';</script>
+    <link rel="icon" href="/logo_head.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/logo.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="preload" href={fontUrl} as="font" type="font/ttf" crossorigin />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://toamig.com/" />
+    <meta property="og:image" content="https://toamig.com/og/home.png?v=20260817-4" />
+    <meta property="og:image:alt" content="Miguel Vieira (Toamig), game engineer and tech lead" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content="https://toamig.com/og/home.png?v=20260817-4" />
+    <script type="application/ld+json" set:html={JSON.stringify(identity)} />
+  </head>
+  <body><slot /></body>
+</html>

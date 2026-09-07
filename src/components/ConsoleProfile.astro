@@ -1,0 +1,33 @@
+---
+import Icon from './ConsoleIcon.astro';
+import profile from '../data/profile.json';
+import experience from '../data/experience.json';
+import technologies from '../data/technologies.json';
+import education from '../data/education.json';
+import extras from '../data/cvExtras.json';
+const tabs = [{id:'overview', name:'Overview'}, {id:'career', name:'Career'}, {id:'toolkit', name:'Toolkit'}, {id:'education', name:'Education'}];
+---
+<section class="app-screen profile-screen" id="screen-profile" data-screen="profile" aria-label="Developer profile" hidden>
+  <nav class="screen-tabs" aria-label="Profile sections" role="tablist" data-nav-row>{tabs.map((t, i) => <button id={`profile-tab-${t.id}`} role="tab" aria-selected={i === 0 ? 'true' : 'false'} aria-controls={`profile-${t.id}`} tabindex={i === 0 ? 0 : -1} data-profile-tab={t.id}>{t.name}</button>)}</nav>
+  <div class="profile-pane profile-overview" id="profile-overview" role="tabpanel" aria-labelledby="profile-tab-overview" data-profile-pane="overview">
+    <div class="profile-portrait"><img src="/console/miguel.webp" alt="Miguel Vieira" /><span class="portrait-location"><Icon name="location" />Portugal</span></div>
+    <div class="profile-copy"><p class="eyeline">The person behind Toamig</p><h1>Miguel Vieira<span>.</span></h1><p class="profile-role">Game engineer. Tech lead. Player at heart.</p><p class="body-copy">{profile.shortVersion.lead}</p><p class="body-copy">{profile.shortVersion.body}</p><div class="actions" data-nav-row><a class="action primary" href="/cv">View my CV<Icon name="arrow" /></a><button class="action subtle" data-open="contact">Let’s talk</button></div></div>
+    <div class="profile-studio-strip"><span>Part of the journey</span><div data-nav-row>{experience.filter(e => e.logo).map(e => { const i = experience.indexOf(e); return <button class="studio-mark" data-company={i} aria-label={`Explore my work at ${e.name}`}><img src={`/console/studios/${i}.webp`} alt={e.name} /></button>; })}</div></div>
+  </div>
+  <div class="profile-pane career-pane" id="profile-career" role="tabpanel" aria-labelledby="profile-tab-career" data-profile-pane="career" hidden>
+    <div class="pane-heading"><p class="eyeline">Built with good people</p><h1>The journey so far.</h1><p>From the first prototype to the teams that ship.</p></div>
+    <div class="career-layout">
+      <nav class="company-list" aria-label="Career history" data-nav-column>{experience.map((e, i) => <button class="company-option" data-career={i} aria-pressed={i === 0 ? 'true' : 'false'}><span class="company-logo">{e.logo ? <img src={`/console/studios/${i}.webp`} alt="" /> : <span>IG</span>}</span><span><strong>{e.name}</strong><small>{e.period.replaceAll(' - ', ' to ')}</small></span><Icon name="chevron" /></button>)}</nav>
+      <div class="career-detail">{experience.map((e, i) => <article data-career-panel={i} hidden={i !== 0}><div class="career-detail-logo">{e.logo ? <img src={`/console/studios/${i}.webp`} alt={e.name} /> : <span>{e.name}</span>}</div><p class="eyeline">{e.name}</p><h2>{e.role}</h2><p class="career-period">{e.period.replaceAll(' - ', ' to ')}<span>{e.location}</span></p><ul class="contribution-list">{e.bullets.map(b => <li>{b}</li>)}</ul>{e.href.startsWith('https://') && <a class="text-link" href={e.href} target="_blank" rel="noopener noreferrer">Visit studio<Icon name="arrow" /></a>}</article>)}</div>
+    </div>
+  </div>
+  <div class="profile-pane" id="profile-toolkit" role="tabpanel" aria-labelledby="profile-tab-toolkit" data-profile-pane="toolkit" hidden>
+    <div class="pane-heading"><p class="eyeline">From an idea to a playable world</p><h1>Tools of the trade.</h1><p>Gameplay, multiplayer, animation, tooling, and the systems behind them.</p></div>
+    <div class="toolkit-grid" data-nav-grid>{technologies.filter(t => !t.cvOnly).map(t => <a href={t.href} target="_blank" rel="noopener noreferrer"><img src={t.src} alt="" /><span>{t.name}</span><Icon name="arrow" /></a>)}</div>
+  </div>
+  <div class="profile-pane education-pane" id="profile-education" role="tabpanel" aria-labelledby="profile-tab-education" data-profile-pane="education" hidden>
+    <div class="pane-heading"><p class="eyeline">Stay curious</p><h1>Always learning.</h1></div>
+    <div class="education-grid">{education.map(e => <article><img src={e.logo} alt="University of Porto, FEUP" /><p class="eyeline">{e.period.replaceAll(' - ', ' to ')}</p><h2>{e.role}</h2><a href={e.href} class="text-link" target="_blank" rel="noopener noreferrer">University of Porto<Icon name="arrow" /></a></article>)}</div>
+    <div class="education-notes"><div><h3>Sharing what I learn</h3>{extras.certifications.filter(c => c.name.includes('CCP')).map(c => <p>{c.name}<br /><span>{c.issuer}, {c.year}</span></p>)}</div><div><h3>Languages</h3>{extras.languages.map(l => <p>{l.name}<span>{l.level}</span></p>)}</div></div>
+  </div>
+</section>

@@ -4,6 +4,7 @@ import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   site: 'https://toamig.com',
+  devToolbar: { enabled: false },
   integrations: [
     sitemap({
       // Keep private / noindexed / non-page routes out of the sitemap.

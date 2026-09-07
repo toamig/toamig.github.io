@@ -288,3 +288,21 @@ Remove this section when the next minor version ships — it's only relevant dur
 - Add sections for systems not mentioned in the changelog (for update runs)
 - Remove existing content unless the changelog explicitly says something was removed
 - Change the visual style, colors, or layout patterns of existing pages
+
+---
+
+## Portfolio and Console
+
+`src/pages/index.astro` is the professional portfolio. Its After hours section contains a handheld console that opens the alternative portfolio by zooming into its screen. `src/pages/console.astro` serves that console at `/console/`: a startup sequence, a category bar, an item rail, and inline screens (project, journal, profile, contact, settings, search). Inside the console there are no dialogs, popups, or scrollbars, and only the Toamig logo appears, never console-maker branding.
+
+- `src/components/ConsolePortal.astro`, `src/styles/console-portal.css`, and `src/scripts/console-portal.ts` own the handheld, its lazy-loaded live iframe, and the GSAP entry and return camera moves. `console-portal-bridge.ts` defines the same-origin prepare/enter/leave API. Keep the iframe mounted so returning to the console preserves its state.
+- The whole handheld silhouette is one entry target: the screen and the placement anchor take no pointer events, and the target sits above them in the 3D stack. Keep it that way, or clicks land on the screen and do nothing.
+- The playroom caption sits outside `.playroom-environment`, in the section's own flow. The shell is rotated in 3D and paints past its box, so anything positioned inside that box gets covered at some widths.
+- The docked console is silent and suspended. Entry unlocks audio from the user gesture; exit restores portfolio focus and scrolling. Embedded console navigation uses an internal history stack so browser Back leaves the console in one step. `/console/` also works as a standalone page.
+
+- `src/data/console.ts` builds the categories and items from the existing JSON data.
+- `src/scripts/console.ts` owns state, hash routing, and rendering. `console-boot.ts` is the startup sequence (mark, note, bokeh field, burst) on one clock, `console-navigation.ts` maps the keyboard and standard controllers to moves, `console-audio.ts` synthesizes every sound, and `console-scene.ts` draws the ambient canvas behind the menu.
+- The rail keeps the highlighted entry anchored and slides the list beneath it, the way the PSP cross media bar moves the icons rather than a cursor. Nothing on the page shows a scrollbar: a fade and a bobbing chevron say that a screen continues.
+- `src/styles/console.css` is the page's only stylesheet; `src/layouts/ConsoleLayout.astro` carries the head.
+- `scripts/prepare-console-art.mjs` derives `public/console/` from the source images before `dev` and `build`. The output is gitignored.
+- `npm run check:console` drives the standalone console and the handheld portal with Puppeteer against a running dev server and writes screenshots to `.cache/console-qa`. Run it after touching the console or its portal.
