@@ -1,0 +1,49 @@
+---
+import Logo from './Logo.astro';
+import Icon from './ConsoleIcon.astro';
+import '../styles/console-portal.css';
+---
+<section id="playroom" class="playroom" aria-labelledby="playroom-title">
+  <div class="playroom-grain" aria-hidden="true"></div>
+  <div class="playroom-inner">
+    <div class="playroom-copy">
+      <p class="playroom-eyebrow"><span></span> After hours</p>
+      <h2 id="playroom-title">Still a player<br />at <em>heart.</em></h2>
+      <p>Same developer. A different way in.<br />Pick up the handheld and explore my world.</p>
+      <a href="/console/" class="playroom-enter" data-enter-console><span class="playroom-enter-icon"><Icon name="power" /></span><span>Enter the console</span><Icon name="arrow" /></a>
+      <span class="playroom-hint">Keyboard, controller, or a little curiosity.</span>
+    </div>
+    <div class="playroom-environment">
+      <div class="playroom-orbit" aria-hidden="true"></div>
+      <div class="playroom-table" aria-hidden="true"></div>
+      <div class="playroom-shadow" aria-hidden="true"></div>
+      <div class="device-placement" id="device-placement" aria-hidden="true"></div>
+    </div>
+  </div>
+  <p class="playroom-caption"><span>01 / Personal collection</span><span>A little more me.</span></p>
+</section>
+
+<div id="portal-blackout" class="portal-blackout" aria-hidden="true"></div>
+<div id="device-flight" class="device-flight" data-portal-state="docked">
+  <div class="handheld-shell" aria-hidden="true">
+    <div class="handheld-back"></div>
+    <span class="handheld-shoulder shoulder-left"></span><span class="handheld-shoulder shoulder-right"></span>
+    <div class="handheld-face"></div>
+    <span class="handheld-brand"><Logo /> TOAMIG</span><span class="handheld-edition">PORTABLE / 01</span>
+    <div class="handheld-dpad"><span></span><i></i></div>
+    <div class="handheld-stick"><span></span></div>
+    <div class="handheld-buttons"><i>△</i><i>○</i><i>×</i><i>□</i></div>
+    <div class="handheld-speaker speaker-left"></div><div class="handheld-speaker speaker-right"></div>
+    <div class="handheld-system"><span>HOME</span><i></i><span>VOL</span><b>−</b><b>+</b></div>
+    <div class="handheld-start"><span>SELECT</span><i></i><span>START</span><i></i></div>
+    <span class="handheld-power"><i></i> POWER</span>
+    <span class="handheld-screw screw-left"></span><span class="handheld-screw screw-right"></span>
+  </div>
+  <div class="device-screen" id="device-screen">
+    <div class="device-placeholder" aria-hidden="true"><Logo /><span>Your world. Press start.</span></div>
+    <iframe id="console-frame" data-src="/console/?embedded=1" title="Toamig console portfolio" allow="autoplay; fullscreen; gamepad" tabindex="-1"></iframe>
+    <span class="device-glass" aria-hidden="true"></span>
+  </div>
+  <a href="/console/" class="device-enter-target" data-enter-console aria-label="Enter the handheld console"><span class="device-enter-label">Press start <Icon name="arrow" /></span></a>
+</div>
+<script>import '../scripts/console-portal';</script>

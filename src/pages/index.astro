@@ -2,6 +2,7 @@
 import BaseLayout        from '../layouts/BaseLayout.astro';
 import Logo              from '../components/Logo.astro';
 import HeroConstellation from '../components/HeroConstellation.astro';
+import ConsolePortal     from '../components/ConsolePortal.astro';
 import education      from '../data/education.json';
 import experience     from '../data/experience.json';
 import technologies   from '../data/technologies.json';
@@ -145,6 +146,7 @@ const pgGlyphs = (() => {
         <a class="hero-btn hero-btn-primary" href="/cv">View CV</a>
         <a class="hero-btn hero-btn-ghost" href="#contact">Get in touch</a>
       </div>
+      <a class="hero-playroom-link" href="#playroom">Or, take the player entrance <span aria-hidden="true">↗</span></a>
     </div>
     <div class="scroll-down">
       <a href="#content" aria-label="Scroll to content"></a>
@@ -458,6 +460,7 @@ const pgGlyphs = (() => {
     </section>
 
   </div>
+  <ConsolePortal />
 </BaseLayout>
 
 <script>
