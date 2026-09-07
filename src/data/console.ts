@@ -21,8 +21,8 @@ export interface ConsoleItem {
   meta: string[]; bullets: string[]; studio?: string; studioLogo?: string; gallery?: string[];
 }
 
-const studioForProject: Record<string, number> = { 'Dakar Desert Rally': 3, 'Timefront': 1, 'Road Kings': 3, 'AutoRocket': 5 };
-const contributionForProject: Record<string, number[]> = { 'Dakar Desert Rally': [0], 'Timefront': [0, 1, 2, 3, 4], 'Road Kings': [1, 2], 'AutoRocket': [0, 1, 2] };
+const studioForProject: Record<string, number> = { 'Dakar Desert Rally': 3, 'Timefront': 1, 'Road Kings': 3, 'AutoRocket': 5, 'Totally Basketball': 4, 'Aotearoa Explorers': 4 };
+const contributionForProject: Record<string, number[]> = { 'Dakar Desert Rally': [0], 'Timefront': [0, 1, 2, 3, 4], 'Road Kings': [1, 2], 'AutoRocket': [0, 1, 2], 'Totally Basketball': [0, 2], 'Aotearoa Explorers': [0, 1] };
 
 /** Real artwork for the ventures, so none of them falls back to a generic symbol. */
 const ventureArt: Record<string, { image: string; thumbnail: string }> = {
