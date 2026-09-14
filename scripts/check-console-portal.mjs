@@ -44,11 +44,18 @@ try {
   check('The open console lays out for the real window',await child.evaluate(()=>innerWidth===parent.innerWidth&&innerHeight===parent.innerHeight));
   check('Both of the console bars are inside the window',await child.evaluate(()=>document.querySelector('.system-header').getBoundingClientRect().top>=-1&&document.querySelector('.control-bar').getBoundingClientRect().bottom<=innerHeight+1));
   await page.keyboard.press('Enter');await child.waitForFunction(()=>document.getElementById('boot').hidden);
+  // The console opens on whatever its own data puts first, so take the entry below that one from
+  // the page, along with the screen that kind of entry opens on.
+  const next=await child.evaluate(()=>{
+    const {items,categories}=JSON.parse(document.getElementById('library-data').textContent);
+    const entry=items.filter(i=>i.category===categories[0].id)[1];
+    return {id:`item-${entry.id}`,screen:entry.category==='profile'?'profile':entry.category==='journal'?'journal':'project'};
+  });
   await page.keyboard.press('ArrowDown');
-  check('Keyboard input reaches the console after entry',await child.evaluate(()=>document.activeElement.id==='item-game-1'));
-  await page.keyboard.press('Enter');await child.waitForFunction(()=>document.body.dataset.view==='project');
+  check('Keyboard input reaches the console after entry',await child.evaluate(id=>document.activeElement.id===id,next.id));
+  await page.keyboard.press('Enter');await child.waitForFunction(screen=>document.body.dataset.view===screen,{},next.screen);
   await page.keyboard.press('Escape');await child.waitForFunction(()=>document.body.dataset.view==='library');
-  check('Console Back restores the selected item',await child.evaluate(()=>document.activeElement.id==='item-game-1'));
+  check('Console Back restores the selected item',await child.evaluate(id=>document.activeElement.id===id,next.id));
   await child.click('.system-header [data-open="profile"]');
   await child.click('#portfolio-exit');
   await page.waitForFunction(()=>document.getElementById('device-flight').dataset.portalState==='docked');

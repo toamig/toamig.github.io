@@ -16,6 +16,12 @@ try {
   page.on('pageerror',error=>errors.push(error.message));
   page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
   await page.goto(url,{waitUntil:'networkidle0'});
+  // The category order is the console's own data, so read the rail ids from the page. The rail
+  // checks move through five entries, so they run on the first category that has that many.
+  const library=await page.evaluate(()=>JSON.parse(document.getElementById('library-data').textContent));
+  const entries=library.categories.map(c=>library.items.filter(i=>i.category===c.id).map(i=>`item-${i.id}`));
+  const railIndex=entries.findIndex(ids=>ids.length>=5),railItems=entries[railIndex];
+  assert.ok(railItems && entries[0].length>=2,'The library has a category with five entries and a first category with two');
   check('Sound is enabled before the first interaction',await page.$eval('#boot-sound',el=>el.getAttribute('aria-pressed')==='true'));
   if (await page.$eval('#boot',el=>el.dataset.phase==='waiting')) await page.keyboard.press('Enter');
   await page.waitForFunction(()=>document.getElementById('boot').dataset.phase==='playing');
@@ -45,6 +51,9 @@ try {
   await pause(120);
   check('The startup renderer stops after the reveal',endTime===await page.$eval('#boot-canvas',el=>el.dataset.time));
 
+  // Walk right to the rail under test the way a player would, and let it settle before timing it.
+  for(let i=0;i<railIndex;i++)await page.keyboard.press('ArrowRight');
+  await page.waitForFunction(id=>document.activeElement.id===id,{},railItems[0]);await pause(500);
   await page.keyboard.press('ArrowDown');await pause(65);
   const reversalJump=await page.evaluate(()=>{
     const position=()=>new DOMMatrix(getComputedStyle(document.getElementById('rail-track')).transform).m42;
@@ -55,9 +64,9 @@ try {
   check('Reversing the rail keeps its current position',reversalJump<2);
   await page.keyboard.press('ArrowDown');await page.keyboard.press('ArrowDown');await page.keyboard.press('ArrowDown');
   await pause(750);
-  check('Rapid inputs settle on the requested item',await page.evaluate(()=>document.activeElement.id==='item-game-3' && Math.abs(new DOMMatrix(getComputedStyle(document.getElementById('rail-track')).transform).m42-parseFloat(document.getElementById('rail-track').style.transform.replace(/[^-\d.]/g,'')))<.5));
+  check('Rapid inputs settle on the requested item',await page.evaluate(id=>document.activeElement.id===id && Math.abs(new DOMMatrix(getComputedStyle(document.getElementById('rail-track')).transform).m42-parseFloat(document.getElementById('rail-track').style.transform.replace(/[^-\d.]/g,'')))<.5,railItems[3]));
   await page.mouse.move(210,450);await page.mouse.wheel({deltaY:100});await pause(180);
-  check('The wheel advances one item without scrolling the page',await page.evaluate(()=>document.activeElement.id==='item-game-4' && scrollY===0));
+  check('The wheel advances one item without scrolling the page',await page.evaluate(id=>document.activeElement.id===id && scrollY===0,railItems[4]));
   await page.click('.system-header [data-open="profile"]');await pause(600);
   check('Studio logos are visible on the profile landing screen',await page.evaluate(()=>{
     const strip=document.querySelector('.profile-studio-strip').getBoundingClientRect();
@@ -73,7 +82,7 @@ try {
   await client.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:rail.x,y:rail.y-45}]});
   await client.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
   await pause(700);
-  check('A vertical swipe advances the rail without a ghost click',await page.$eval('[data-item].is-selected',el=>el.dataset.item==='game-1'));
+  check('A vertical swipe advances the rail without a ghost click',await page.$eval('[data-item].is-selected',(el,id)=>el.id===id,entries[0][1]));
 
   const fallback=await browser.newPage();
   fallback.on('pageerror',error=>errors.push(error.message));
@@ -87,7 +96,7 @@ try {
   await fallback.waitForFunction(()=>Number(document.getElementById('boot-canvas').dataset.time)>6);
   check('The fallback draws visible particles when WebGL is unavailable',await fallback.$eval('#boot-canvas',el=>el.getContext('2d').getImageData(0,0,el.width,el.height).data.some((value,i)=>i%4!==3 && value>35)));
   await fallback.keyboard.press('Enter');await fallback.waitForFunction(()=>document.getElementById('boot').hidden);
-  check('Skipping the fallback restores menu focus',await fallback.evaluate(()=>document.activeElement.id==='item-game-0' && !document.getElementById('os-shell').inert));
+  check('Skipping the fallback restores menu focus',await fallback.evaluate(id=>document.activeElement.id===id && !document.getElementById('os-shell').inert,entries[0][0]));
 
   const reduced=await browser.newPage();const effectsRequests=[];
   reduced.on('request',request=>{if(/console-boot-vfx|three\.js/.test(request.url()))effectsRequests.push(request.url());});

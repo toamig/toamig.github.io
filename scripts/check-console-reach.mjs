@@ -46,13 +46,22 @@ try {
     return before;
   };
   const walk = async (key, presses) => { let last = ''; for (let i = 0; i < presses; i++) last = await step(key); return last; };
+  /** Walks until focus is inside `target`, allowing a move for every control on the screen, so a long screen gets as many presses as it has stops. */
+  const walkTo = async (key, target) => {
+    const stops = await page.evaluate(() => [...document.querySelectorAll('a[href], button:not(:disabled), input:not(:disabled)')].filter(el => el.getClientRects().length && !el.closest('[hidden], [inert]')).length);
+    let last = await focused();
+    for (let i = 0; i < stops && !(await page.evaluate(t => !!document.activeElement.closest(t), target)); i++) last = await step(key);
+    return last;
+  };
 
-  const items = await page.evaluate(() => {
+  const { items, order } = await page.evaluate(() => {
     const data = JSON.parse(document.getElementById('library-data').textContent);
     const byCategory = {};
     for (const item of data.items) (byCategory[item.category] ||= []).push(item.id);
-    return byCategory;
+    return { items: byCategory, order: data.categories.map(category => category.id) };
   });
+  // The console opens on whatever its data puts first, so the library checks start there too.
+  const home = `#library/${order[0]}/${items[order[0]][0]}`;
 
   // Every entry in every category rail, walked end to end the way a player scrolls it.
   for (const [category, ids] of Object.entries(items)) {
@@ -65,40 +74,51 @@ try {
   }
 
   // The panel beside the rail describes the selection, and its actions have to be reachable.
-  await open('#library/games/game-0');
-  await page.evaluate(() => document.getElementById('item-game-0').focus());
-  const intoPanel = await step('ArrowRight');
+  // Left and right change category, so the pad reaches the panel by moving down past the last
+  // entry, and moving up from the panel returns to the rail.
+  await open(home);
+  await page.evaluate(id => document.getElementById(`item-${id}`).focus(), items[order[0]][0]);
+  const intoPanel = await walk('ArrowDown', items[order[0]].length);
   const onPanel = await page.evaluate(() => !!document.activeElement.closest('.feature'));
   note('the rail reaches the panel beside it', onPanel, `landed on ${intoPanel}`);
   if (onPanel) {
-    const backToRail = await step('ArrowLeft');
+    const backToRail = await step('ArrowUp');
     note('the panel returns to the rail', backToRail.startsWith('item-'), `landed on ${backToRail}`);
   }
 
   // Each screen has to connect upward to the system bar and downward to the control bar.
   const screens = [
-    ['library', '#library/games/game-0'], ['project', '#project/game-0'], ['journal', '#journal/journal-0'],
+    ['library', home], ['project', '#project/game-0'], ['journal', '#journal/journal-0'],
     ['profile overview', '#profile/overview'], ['profile career', '#profile/career'], ['profile toolkit', '#profile/toolkit'],
     ['profile education', '#profile/education'], ['contact', '#contact'], ['settings', '#settings'], ['search', '#search'],
   ];
   for (const [name, hash] of screens) {
     await open(hash);
-    const up = await walk('ArrowUp', 12);
+    const up = await walkTo('ArrowUp', '.system-header');
     note(`${name} reaches the system bar`, await page.evaluate(() => !!document.activeElement.closest('.system-header')), `stopped at ${up}`);
     await open(hash);
-    const down = await walk('ArrowDown', 18);
+    const down = await walkTo('ArrowDown', '.control-bar');
     note(`${name} reaches the control bar`, await page.evaluate(() => !!document.activeElement.closest('.control-bar')), `stopped at ${down}`);
   }
 
-  // Grids are walked in both directions, so no cell is stranded.
+  // Grids are walked in every direction from every cell reached so far, so no cell is stranded.
+  // The toolkit is several grids side by side and stacked, which a walk that only ever moves
+  // down and right cannot cover even though a player can.
   for (const [name, hash, selector] of [['toolkit', '#profile/toolkit', '.toolkit-grid a'], ['search results', '#search', '.search-result'], ['studios', '#profile/overview', '.profile-studio-strip button'], ['career', '#profile/career', '.company-option']]) {
     await open(hash);
+    const screen = hash.slice(1).split('/')[0];
     const ids = await page.evaluate(s => [...document.querySelectorAll(s)].filter(el => el.getClientRects().length).map(el => el.id), selector);
     if (!ids.length) { note(`${name} grid has cells`, false, 'none found'); continue; }
-    await page.evaluate(id => document.getElementById(id).focus(), ids[0]);
     const seen = new Set([ids[0]]);
-    for (const key of ['ArrowDown', 'ArrowRight', 'ArrowDown', 'ArrowRight', 'ArrowDown', 'ArrowRight']) {
-      for (let i = 0; i < ids.length; i++) seen.add(await step(key));
+    const queue = [ids[0]];
+    while (queue.length) {
+      const from = queue.shift();
+      for (const key of ['ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowLeft']) {
+        if ((await view()) !== screen) await open(hash);
+        await page.evaluate(id => document.getElementById(id).focus(), from);
+        const to = await step(key);
+        if (ids.includes(to) && !seen.has(to)) { seen.add(to); queue.push(to); }
+      }
     }
     const missed = ids.filter(id => !seen.has(id));
     note(`${name} grid reaches every cell (${ids.length})`, !missed.length, `${missed.length} missed`);
@@ -128,11 +148,11 @@ try {
     note(`the controller's back button leaves ${name}`, (await view()) === 'library', `landed on ${await view()}`);
   }
   // The shoulder buttons move between categories, and the options button opens the settings.
-  await open('#library/games/game-0');
+  await open(home);
   await padPress(5);
-  note('the right shoulder changes category', (await page.evaluate(() => document.body.dataset.category)) === 'plugins');
+  note('the right shoulder changes category', (await page.evaluate(() => document.body.dataset.category)) === order[1]);
   await padPress(4);
-  note('the left shoulder changes back', (await page.evaluate(() => document.body.dataset.category)) === 'games');
+  note('the left shoulder changes back', (await page.evaluate(() => document.body.dataset.category)) === order[0]);
   await padPress(9);
   note('the options button opens the settings', (await view()) === 'settings');
 } finally {

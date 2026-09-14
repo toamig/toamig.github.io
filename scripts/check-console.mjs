@@ -34,6 +34,21 @@ try {
 
   // Startup.
   await page.goto(url, { waitUntil: 'networkidle0' });
+  // Which category leads and which entries follow is the console's own data, so the walk below
+  // reads that order from the page rather than naming categories and entries by position.
+  const library = await page.evaluate(() => JSON.parse(document.getElementById('library-data').textContent));
+  const entriesOf = category => library.items.filter(item => item.category === category);
+  const [first, second, third] = library.categories.map(category => category.id);
+  const firstItems = entriesOf(first), secondItems = entriesOf(second), thirdItems = entriesOf(third);
+  /** The screen an entry opens on, which follows from the kind of entry it is. */
+  const screenFor = item => item.category === 'profile' ? 'profile' : item.category === 'journal' ? 'journal' : 'project';
+  assert.ok(firstItems.length >= 3 && secondItems.length >= 2 && thirdItems.length >= 1, 'The first three categories have enough entries to walk the rail');
+  assert.ok(screenFor(secondItems[0]) === 'project', 'The second category opens project screens');
+  /** The backdrop carries the selection's own artwork, and clears for an entry that has none. */
+  const artworkFor = item => page.waitForFunction(image => {
+    const shown = [...document.querySelectorAll('.world-art')].filter(el => el.classList.contains('is-visible'));
+    return image ? document.body.classList.contains('has-art') && shown.some(el => el.style.backgroundImage.includes(image)) : !document.body.classList.contains('has-art') && !shown.length;
+  }, {}, item.image);
   current = await state();
   check('First visit shows the startup screen', current.boot && ['waiting', 'playing'].includes(current.phase));
   check('Nothing on the page is a dialog or popup', await page.evaluate(() => !document.querySelector('dialog, [role="dialog"], [aria-modal]')));
@@ -48,52 +63,56 @@ try {
   await page.screenshot({ path: `${output}/intro-playing.png` });
   await press('Enter');
   await page.waitForFunction(() => document.getElementById('boot').hidden);
-  check('Enter skips the startup and lands on the first game', (await state()).active === 'item-game-0');
+  check('Enter skips the startup and lands on the first entry', (await state()).active === `item-${firstItems[0].id}`);
   await shot('home');
 
   // Library: rail, category bar, artwork.
   await press('ArrowDown');
   current = await state();
-  check('Down moves along the rail', current.active === 'item-game-1' && current.hash === '#library/games/game-1');
-  await page.waitForFunction(() => document.body.classList.contains('has-art') && [...document.querySelectorAll('.world-art')].some(el => el.classList.contains('is-visible') && el.style.backgroundImage.includes('game-1')));
+  check('Down moves along the rail', current.active === `item-${firstItems[1].id}` && current.hash === `#library/${first}/${firstItems[1].id}`);
+  await artworkFor(firstItems[1]);
   check('Artwork follows the selection', true);
-  await shot('game');
+  await shot('rail');
   check('The rail has no scrollbar and slides the list instead', await page.evaluate(() => getComputedStyle(document.getElementById('item-rail')).overflowY === 'clip' && /translateY\(-?\d+px\)/.test(document.getElementById('rail-track').style.transform)));
   const railShift = () => page.$eval('#rail-track', el => parseFloat(el.style.transform.replace(/[^-\d.]/g, '')));
   const shiftBefore = await railShift();
   await press('ArrowDown');
-  check('Moving down slides the list up and keeps the selection anchored', (await railShift()) < shiftBefore && (await state()).active === 'item-game-2');
+  check('Moving down slides the list up and keeps the selection anchored', (await railShift()) < shiftBefore && (await state()).active === `item-${firstItems[2].id}`);
   await press('ArrowUp');
   await press('ArrowUp', 2);
-  check('Up past the first item reaches the category bar', (await state()).active === 'category-games');
+  check('Up past the first item reaches the category bar', (await state()).active === `category-${first}`);
   await press('ArrowRight');
   current = await state();
-  check('Right on the category bar switches category and keeps the bar focused', current.category === 'plugins' && current.active === 'category-plugins');
+  check('Right on the category bar switches category and keeps the bar focused', current.category === second && current.active === `category-${second}`);
   check('Switching category animates the rail in', await page.evaluate(() => document.getAnimations().some(a => a.animationName === 'rail-enter')));
   await press('ArrowDown');
-  check('Down from the category bar enters the rail', (await state()).active === 'item-plugin-0');
-  await shot('plugins');
+  check('Down from the category bar enters the rail', (await state()).active === `item-${secondItems[0].id}`);
+  // The leading category may carry no artwork at all, so check the backdrop again where it does.
+  await artworkFor(secondItems[0]);
+  check('Artwork follows the selection into another category', true);
+  await shot(second);
   await press('ArrowRight');
   current = await state();
-  check('Right on the rail switches category and focuses its item', current.category === 'creations' && current.active === 'item-polyglyph');
+  check('Right on the rail switches category and focuses its item', current.category === third && current.active === `item-${thirdItems[0].id}`);
   await press('ArrowLeft');
   await press('End');
-  check('End reaches the last plugin', (await state()).active === 'item-plugin-4');
+  check('End reaches the last entry', (await state()).active === `item-${secondItems.at(-1).id}`);
   await press('Home');
-  check('Home reaches the first plugin', (await state()).active === 'item-plugin-0');
+  check('Home reaches the first entry', (await state()).active === `item-${secondItems[0].id}`);
 
   // Project screen.
+  const project = secondItems[0];
   await press('Enter');
   await view('project');
   current = await state();
-  check('Enter opens the project screen with its primary action focused', current.active === 'project-link' && current.hash === '#project/plugin-0');
-  check('Plugin projects link to their documentation', await page.$eval('#project-link', el => el.getAttribute('href') === '/Plugins/CascadeCombatSystem'));
+  check('Enter opens the project screen with its primary action focused', current.active === 'project-link' && current.hash === `#project/${project.id}`);
+  check('The project screen links to the entry\'s own destination', await page.$eval('#project-link', (el, href) => el.getAttribute('href') === href, project.href));
   check('The project screen is inline with a back control', await page.evaluate(() => !document.getElementById('screen-topbar').hidden && document.getElementById('library-screen').hidden));
   check('Screens hide their scrollbars', await page.evaluate(() => [...document.querySelectorAll('.app-screen')].every(s => getComputedStyle(s).scrollbarWidth === 'none')));
   await shot('project');
   await press('Escape');
   await view('library');
-  check('Escape returns to the library and restores focus', (await state()).active === 'item-plugin-0');
+  check('Escape returns to the library and restores focus', (await state()).active === `item-${project.id}`);
 
   // Profile.
   await page.click('.system-header [data-open="profile"]');
@@ -190,7 +209,7 @@ try {
   await view('library');
   await page.click('#home-control');
   current = await state();
-  check('The home control returns to the first game', current.active === 'item-game-0' && current.category === 'games');
+  check('The home control returns to the first entry', current.active === `item-${firstItems[0].id}` && current.category === first);
   await page.reload({ waitUntil: 'networkidle0' });
   check('The startup is skipped on a return visit', !(await state()).boot);
   check('Preferences persist on reload', await page.evaluate(() => document.body.classList.contains('motion-off') && !document.querySelector('#sound-setting').checked && document.querySelector('#sound-control').getAttribute('aria-pressed') === 'false'));
@@ -229,28 +248,28 @@ try {
     await pause(70);
   };
   await padPress(13);
-  check('The D-pad moves along the rail', (await state()).active === 'item-game-1');
+  check('The D-pad moves along the rail', (await state()).active === `item-${firstItems[1].id}`);
   await padPress(5);
-  check('The right shoulder switches category', (await state()).category === 'plugins');
+  check('The right shoulder switches category', (await state()).category === second);
   await padPress(4);
-  check('The left shoulder switches back', (await state()).category === 'games');
+  check('The left shoulder switches back', (await state()).category === first);
   await padPress(0);
-  await view('project');
-  check('The confirm button opens the project', true);
+  await view(screenFor(firstItems[1]));
+  check('The confirm button opens the selected entry', true);
   await padPress(1);
   await view('library');
-  check('The back button returns to the library', (await state()).active === 'item-game-1');
+  check('The back button returns to the library', (await state()).active === `item-${firstItems[1].id}`);
   await padPress(9);
   await view('settings');
   check('The options button opens settings', true);
   await padPress(9);
   await view('library');
-  check('The options button closes settings again', (await state()).active === 'item-game-1');
+  check('The options button closes settings again', (await state()).active === `item-${firstItems[1].id}`);
   await page.evaluate(() => { window.testPad.axes[1] = -0.8; });
   await pause(70);
   await page.evaluate(() => { window.testPad.axes[1] = 0; });
   await pause(70);
-  check('The left stick moves along the rail', (await state()).active === 'item-game-0');
+  check('The left stick moves along the rail', (await state()).active === `item-${firstItems[0].id}`);
   await page.evaluate(() => { window.testPad.connected = false; });
   await pause(80);
   check('Disconnecting the controller returns the keyboard status', await page.$eval('#controller-status', el => el.textContent.includes('Keyboard ready')));
@@ -300,6 +319,8 @@ try {
   await open('#plugin-1');
   check('Deep links select the category and item', await page.evaluate(() => document.body.dataset.category === 'plugins' && document.getElementById('item-plugin-1').getAttribute('aria-selected') === 'true'));
   check('A deep-linked project opens directly', (await open('#project/game-2')).view === 'project' && await page.$eval('#project-title', el => el.textContent === 'Road Kings'));
+  const plugin = entriesOf('plugins')[0];
+  check('Plugin projects link to their documentation', (await open(`#project/${plugin.id}`)).view === 'project' && await page.$eval('#project-link', (el, href) => el.getAttribute('href') === href && href.startsWith('/Plugins/') && el.target !== '_blank', plugin.href));
 
   // Without JavaScript.
   const noScript = await browser.newPage();
