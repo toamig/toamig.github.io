@@ -8,7 +8,7 @@ import sharp from 'sharp';
  * repeated dev start or build costs nothing.
  */
 const read = async name => JSON.parse(await fs.readFile(`src/data/${name}.json`, 'utf8'));
-const [projects, plugins, events, experience] = await Promise.all([read('projects'), read('plugins'), read('events'), read('experience')]);
+const [projects, plugins, events, experience, ventures] = await Promise.all([read('projects'), read('plugins'), read('events'), read('experience'), read('ventures')]);
 // Mirrors the ordering in src/data/console.ts: the whole timeline, newest first.
 const journal = events.slice().sort((a, b) => b.date.localeCompare(a.date));
 const modified = async file => { try { return (await fs.stat(file)).mtimeMs; } catch { return -1; } };
@@ -44,9 +44,14 @@ for (const [i, entry] of journal.entries()) {
 for (const [i, studio] of experience.entries()) {
   if (studio.logo) await derive(`public${studio.logo}`, `public/console/studios/${i}.webp`, logo => logo.resize({ width: 420, withoutEnlargement: true }).webp({ quality: 88 }), false);
 }
-// The ventures carry their own artwork, so none of them falls back to a generic symbol.
-await derive('public/ventures/polyglyph/hero.png', 'public/console/ventures/polyglyph.webp', hero => hero.resize({ width: 1600, withoutEnlargement: true }).webp({ quality: 84 }), false);
-await derive('public/ventures/polyglyph/mark.png', 'public/console/ventures/polyglyph-mark.webp', mark => mark.resize({ width: 480, withoutEnlargement: true }).webp({ quality: 88 }), false);
+// The ventures carry their own artwork, so none of them falls back to a generic symbol. Mirrors
+// ventureArt() in src/data/console.ts: the key art, then the mark as the rail cover, or a cover cut
+// from the key art when there is no mark.
+for (const v of ventures.filter(v => !v.hidden)) {
+  if (v.image) await derive(`public${v.image}`, `public/console/ventures/${v.id}.webp`, art => art.resize({ width: 1600, withoutEnlargement: true }).webp({ quality: 84 }), false);
+  if (v.mark) await derive(`public${v.mark}`, `public/console/ventures/${v.id}-mark.webp`, mark => mark.resize({ width: 480, withoutEnlargement: true }).webp({ quality: 88 }), false);
+  else if (v.image) await derive(`public${v.image}`, `public/console/ventures/${v.id}-cover.webp`, art => art.resize({ width: 480, withoutEnlargement: true }).webp({ quality: 84 }), false);
+}
 await derive('public/me/IMG_7.JPEG', 'public/console/miguel.webp', portrait => portrait.resize(500, 500).webp({ quality: 84 }));
 
 if (missing.length) console.warn(`Missing ${missing.length} source image(s): ${missing.slice(0, 5).join(', ')}${missing.length > 5 ? ', …' : ''}`);

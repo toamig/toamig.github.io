@@ -2203,8 +2203,8 @@ footer p { font-size: 13px; opacity: 0.4; letter-spacing: .02em; }
 }
 
 /* ─── 04 Building ────────────────────────────────────────────────────────────
-   One section carrying the products, the SaaS, and the consulting practice,
-   so three destinations surface without three sections of chrome. */
+   One section carrying the SaaS, the games, the products, and the consulting
+   practice, so every destination surfaces without a section of chrome each. */
 #building {
   background-color: var(--bg);
   background-image:
@@ -2584,6 +2584,135 @@ footer p { font-size: 13px; opacity: 0.4; letter-spacing: .02em; }
 }
 .venture-card .venture-cta { margin-top: auto; padding-top: 8px; }
 
+/* Games. Each card wears its own game's night palette (set inline from
+   ventures.json), the way the Polyglyph hero wears the product's tokens, and
+   leads with the key art so the game reads before a word of copy does. */
+.venture-games {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto 24px;
+}
+.venture-game {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--vg-bg);
+  border: 1px solid color-mix(in srgb, var(--vg-accent) 18%, transparent);
+  border-radius: 20px;
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--vg-ink);
+  box-shadow:
+    0 1px 2px rgba(10,22,40,.06),
+    0 12px 28px rgba(10,22,40,.10),
+    0 24px 56px var(--vg-glow);
+  transition: transform .35s cubic-bezier(.2,.7,.2,1), box-shadow .35s ease, border-color .35s ease;
+}
+a.venture-game:hover {
+  transform: translateY(-6px);
+  border-color: color-mix(in srgb, var(--vg-accent) 45%, transparent);
+  box-shadow:
+    0 1px 2px rgba(10,22,40,.06),
+    0 16px 40px rgba(10,22,40,.14),
+    0 32px 72px var(--vg-glow);
+}
+.venture-game-art {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+/* Melt the art into the card body instead of ending it on a hard edge. */
+.venture-game-art::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 58%, var(--vg-bg) 100%);
+  pointer-events: none;
+}
+.venture-game-key {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .6s cubic-bezier(.2,.7,.2,1);
+}
+a.venture-game:hover .venture-game-key { transform: scale(1.035); }
+/* The logo sits in the empty sky the key art leaves for it, as on the store
+   capsule. Pixel logos scale by whole pixels so the grid stays crisp. */
+.venture-game-logo {
+  position: absolute;
+  z-index: 1;
+  left: 6%;
+  top: 50%;
+  width: 40%;
+  height: auto;
+  transform: translateY(-58%);
+  filter: drop-shadow(0 6px 18px rgba(0,0,0,.45));
+}
+.venture-game-logo.is-pixel {
+  /* Native size wherever the card is wide enough, so no pixel row is dropped. */
+  width: 235px;
+  max-width: 46%;
+  image-rendering: pixelated;
+}
+.venture-game-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 6px 28px 26px;
+}
+.venture-game .venture-kicker { color: color-mix(in srgb, var(--vg-ink) 58%, transparent); }
+.venture-game .venture-kicker .dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--vg-accent);
+  box-shadow: 0 0 10px var(--vg-accent);
+}
+.venture-game h3 {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 2.6vw, 30px);
+  font-weight: 600;
+  letter-spacing: -.02em;
+  line-height: 1.05;
+  font-variation-settings: 'opsz' 48, 'wght' 600;
+  color: var(--vg-ink);
+  margin: 0;
+}
+.venture-game-tagline {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--vg-accent);
+  margin: -4px 0 0;
+}
+.venture-game .venture-desc {
+  color: color-mix(in srgb, var(--vg-ink) 76%, transparent);
+  max-width: none;
+}
+.venture-game .venture-tags span {
+  color: color-mix(in srgb, var(--vg-ink) 80%, transparent);
+  border-color: color-mix(in srgb, var(--vg-ink) 18%, transparent);
+  background: color-mix(in srgb, var(--vg-ink) 5%, transparent);
+}
+.venture-game .venture-cta { color: var(--vg-accent); margin-top: auto; padding-top: 8px; }
+a.venture-game:hover .venture-cta { gap: 14px; }
+.venture-game-note {
+  margin-top: auto;
+  padding-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--vg-ink) 45%, transparent);
+}
+
 /* ─── 06 Studies: compact row ────────────────────────────────────────────────
    Demoted from a full card grid. With five years shipped, the degree is
    confirmation rather than headline. */
@@ -2818,6 +2947,8 @@ footer p { font-size: 13px; opacity: 0.4; letter-spacing: .02em; }
   .venture-hero-art { flex-basis: auto; }
   .pg-stage { padding: 30px 20px; }
   .venture-grid { grid-template-columns: 1fr; gap: 18px; }
+  .venture-games { grid-template-columns: 1fr; gap: 18px; margin-bottom: 18px; }
+  .venture-game-body { padding: 4px 22px 22px; }
   .study-card { padding: 16px 18px; gap: 13px; }
   .study-period { display: none; }
   .contact-btn { padding: 12px 22px; font-size: 11px; }
@@ -2835,6 +2966,8 @@ footer p { font-size: 13px; opacity: 0.4; letter-spacing: .02em; }
   .role-toggle::after,
   .venture-hero,
   .venture-card,
+  .venture-game,
+  .venture-game-key,
   .study-card,
   .pg-window,
   .venture-cta,
@@ -2843,6 +2976,8 @@ footer p { font-size: 13px; opacity: 0.4; letter-spacing: .02em; }
   .hero-btn:hover,
   .venture-hero:hover,
   .venture-card:hover,
+  a.venture-game:hover,
+  a.venture-game:hover .venture-game-key,
   .study-card:hover,
   .contact-channels a:hover,
   .contact-btn:hover { transform: none; }

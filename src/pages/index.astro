@@ -36,7 +36,10 @@ const isExternal = (u?: string) => !!u && /^https?:/i.test(u);
 // on this site yet, so linking it would 404. Flip `hidden` once it deploys.
 const shownVentures = ventures.filter(v => !v.hidden);
 const featuredVenture = shownVentures.find(v => v.featured);
-const otherVentures   = shownVentures.filter(v => !v.featured);
+// The games get a row of their own, led by their key art; a text card would
+// throw away the one thing a game can show at a glance.
+const gameVentures  = shownVentures.filter(v => !v.featured && v.kind === 'game');
+const otherVentures = shownVentures.filter(v => !v.featured && v.kind !== 'game');
 
 // Derived so the plugins card can never drift out of sync with plugins.json.
 const visiblePlugins = pluginsData.filter(p => !p.hidden);
@@ -342,6 +345,61 @@ const pgGlyphs = (() => {
         )}
 
         <script type="application/json" id="pg-targets" set:html={JSON.stringify(PG_TARGETS)}></script>
+
+        {gameVentures.length > 0 && (
+          <div class="venture-games">
+            {gameVentures.map(v => {
+              // A game with no public build yet is a card, not a link.
+              const Card = v.href ? 'a' : 'article';
+              return (
+                <Card
+                  class="venture-game"
+                  style={`--vg-bg:${v.palette?.bg};--vg-ink:${v.palette?.ink};--vg-accent:${v.palette?.accent};--vg-glow:${v.palette?.glow}`}
+                  href={v.href || null}
+                  target={v.href && v.external ? '_blank' : null}
+                  rel={v.href && v.external ? 'noopener noreferrer' : null}
+                >
+                  <div class="venture-game-art">
+                    <img
+                      class="venture-game-key"
+                      src={v.image}
+                      alt={v.imageAlt}
+                      style={v.focus ? `object-position:${v.focus}` : null}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    {v.logo && (
+                      <img
+                        class:list={['venture-game-logo', { 'is-pixel': v.pixelArt }]}
+                        src={v.logo}
+                        alt={v.logoAlt}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    )}
+                  </div>
+                  <div class="venture-game-body">
+                    <p class="venture-kicker">
+                      <span class="dot" aria-hidden="true"></span>
+                      <span>{v.kicker}</span>
+                      <span class="venture-sep">·</span>
+                      <span>{v.state}</span>
+                    </p>
+                    <h3>{v.name}</h3>
+                    {v.tagline && <p class="venture-game-tagline">{v.tagline}</p>}
+                    <p class="venture-desc">{v.desc}</p>
+                    <div class="venture-tags">
+                      {v.tags.map(t => <span>{t}</span>)}
+                    </div>
+                    {v.href
+                      ? <span class="venture-cta">{v.cta}</span>
+                      : v.note && <span class="venture-game-note">{v.note}</span>}
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+        )}
 
         <div class="venture-grid">
           {otherVentures.map(v => (

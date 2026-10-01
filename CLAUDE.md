@@ -301,6 +301,7 @@ Remove this section when the next minor version ships — it's only relevant dur
 - The docked console is silent and suspended. Entry unlocks audio from the user gesture; exit restores portfolio focus and scrolling. Embedded console navigation uses an internal history stack so browser Back leaves the console in one step. `/console/` also works as a standalone page.
 
 - `src/data/console.ts` builds the categories and items from the existing JSON data.
+- `src/data/ventures.json` feeds three surfaces: the homepage Building section (a `kind: "game"` venture gets an art-led card in its own row), the console (games lead the Games shelf, the rest go to Creations, art derived from each venture's `image` and `mark`), and both CVs' Independent Work section (any venture with a `cv` line). A game with no public build leaves `href` empty and the link is hidden everywhere.
 - `src/scripts/console.ts` owns state, hash routing, and rendering. `console-boot.ts` is the startup sequence (mark, note, bokeh field, burst) on one clock, `console-navigation.ts` maps the keyboard and standard controllers to moves, `console-audio.ts` synthesizes every sound, and `console-scene.ts` draws the ambient canvas behind the menu.
 - The rail keeps the highlighted entry anchored and slides the list beneath it, the way the PSP cross media bar moves the icons rather than a cursor. Nothing on the page shows a scrollbar: a fade and a bobbing chevron say that a screen continues.
 - `src/styles/console.css` is the page's only stylesheet; `src/layouts/ConsoleLayout.astro` carries the head.

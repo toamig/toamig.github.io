@@ -142,6 +142,8 @@ function renderProject() {
   get('project-symbol').hidden = !!item.image;
   get('project-caption').textContent = item.meta.join(' / ');
   const link = get<HTMLAnchorElement>('project-link');
+  // A game still in development has nowhere to send anyone yet.
+  link.hidden = !item.href;
   link.href = item.href; link.target = item.href.startsWith('https://') ? '_blank' : embedded ? '_top' : '_self'; link.rel = 'noopener noreferrer'; link.childNodes[0].textContent = `${item.action} `;
   const studio = get<HTMLImageElement>('project-studio'); studio.hidden = !item.studioLogo;
   if (item.studioLogo) { studio.src = item.studioLogo; studio.alt = item.studio || ''; }
@@ -195,7 +197,10 @@ function render(focus = true) {
   if (focus && bootPhase === 'closed') {
     const target = state.focus && get(state.focus);
     const landing: Record<View, string> = {library:`item-${state.item}`, search:'library-search', profile:`profile-tab-${state.profileTab}`, project:'project-link', journal:(currentItem().gallery?.length || 0) > 1 ? 'photo-next' : 'journal-link', contact:'email-link', settings:'sound-setting'};
-    const fallback = get(landing[state.view]) || get('screen-back');
+    // A landing can be hidden (a game still in development has no link yet), and focus on a hidden
+    // element is silently dropped, so take the screen's first visible action instead.
+    const shown = (el: HTMLElement | null) => (el && el.getClientRects().length ? el : null);
+    const fallback = shown(get(landing[state.view])) || document.querySelector<HTMLElement>(`#screen-${state.view} .actions :is(a, button):not([hidden])`) || get('screen-back');
     (target && target.getClientRects().length ? target : fallback).focus({preventScroll:true});
   }
   updateScrollCues(); setTimeout(updateScrollCues, 150);

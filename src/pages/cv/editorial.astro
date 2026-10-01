@@ -6,6 +6,7 @@ import technologies   from '../../data/technologies.json';
 import techCategories from '../../data/techCategories.json';
 import projects       from '../../data/projects.json';
 import plugins        from '../../data/plugins.json';
+import ventures       from '../../data/ventures.json';
 import cv             from '../../data/cvExtras.json';
 
 const exp = experience;
@@ -29,6 +30,10 @@ const techByCat = techCategories.map(cat => ({
 
 const featuredProjects = projects;
 const publishedPlugins = plugins.filter(p => !p.hidden);
+// The products and games I build on my own. A venture joins the CV by
+// carrying a one-line `cv` summary in ventures.json.
+const independentWork = ventures.filter(v => !v.hidden && v.cv);
+const bareUrl = (u: string) => u.replace(/^https?:\/\//, '');
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -226,6 +231,8 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
       border-radius: 6px;
       border-left: 3px solid var(--accent);
     }
+    /* An odd one out takes the full row instead of leaving a hole beside it. */
+    .highlights li:last-child:nth-child(odd) { grid-column: 1 / -1; }
     .highlights li {
       font-size: 10.5px; line-height: 1.45; color: var(--ink-sub);
       list-style: none; padding-left: 12px; position: relative;
@@ -342,6 +349,8 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
       color: var(--ink); letter-spacing: -.005em;
     }
     .work-item .desc { font-size: 11px; color: var(--ink-sub); line-height: 1.45; }
+    .indie-meta { font-size: 9.5px; color: var(--muted); font-style: italic; margin-top: 1px; }
+    .indie-link { color: var(--accent); text-decoration: none; white-space: nowrap; }
 
     .plugin-list { display: flex; flex-direction: column; gap: 5px; }
     .plugin-item {
@@ -357,7 +366,7 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
     .plugin-ver { font-size: 10px; color: var(--muted); font-variant-numeric: tabular-nums; }
 
     /* ── Certifications ───────────────────────────────────────── */
-    .cert-list { font-size: 11px; }
+    .cert-list { font-size: 10.5px; }
     .cert-list .row {
       display: flex; justify-content: space-between; align-items: baseline;
       gap: 8px; padding: 3px 0;
@@ -478,6 +487,20 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
           </div>
         </section>
 
+        <!-- In the sidebar rather than on page 2: the sidebar ends well
+             short of the experience column, and page 2 is the full one. -->
+        <section>
+          <h2>Certifications</h2>
+          <div class="cert-list">
+            {cv.certifications.map((c: any) => (
+              <div class="row">
+                <span class="name">{c.name}{c.issuer && <span class="iss">, {c.issuer}</span>}</span>
+                <span class="yr">{c.year}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
         <section>
           <h2>Interests</h2>
           <div class="interest-list">
@@ -544,6 +567,24 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
       )}
 
       <section>
+        <h2>Independent Work</h2>
+        <div class="work-list">
+          {independentWork.map(v => (
+            <div class="work-item">
+              <div>
+                <div class="name">{v.name}</div>
+                <div class="indie-meta">{v.role}<br />{v.state}</div>
+              </div>
+              <div class="desc">
+                {v.cv}
+                {/^https?:/.test(v.href) && <> <a class="indie-link" href={v.href}>{bareUrl(v.href)}</a></>}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section>
         <h2>Education</h2>
         {education.map(e => (
           <div class="edu-entry">
@@ -576,18 +617,6 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
               <span class="plugin-name">{p.name}</span>
               <span class="plugin-tag">{p.tagline.length > 130 ? p.tagline.slice(0, 130) + '…' : p.tagline}</span>
               <span class="plugin-ver">v{p.version}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section>
-        <h2>Certifications</h2>
-        <div class="cert-list">
-          {cv.certifications.map((c: any) => (
-            <div class="row">
-              <span class="name">{c.name}{c.issuer && <span class="iss">, {c.issuer}</span>}</span>
-              <span class="yr">{c.year}</span>
             </div>
           ))}
         </div>

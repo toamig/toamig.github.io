@@ -100,8 +100,11 @@ try {
   await press('Home');
   check('Home reaches the first entry', (await state()).active === `item-${secondItems[0].id}`);
 
-  // Project screen.
-  const project = secondItems[0];
+  // Project screen. Walk to the first entry that has a destination: a game still in development has
+  // no link yet, and its screen is checked on its own below.
+  const projectIndex = secondItems.findIndex(item => item.href);
+  const project = secondItems[projectIndex];
+  await press('ArrowDown', projectIndex);
   await press('Enter');
   await view('project');
   current = await state();
@@ -113,6 +116,17 @@ try {
   await press('Escape');
   await view('library');
   check('Escape returns to the library and restores focus', (await state()).active === `item-${project.id}`);
+  const linkless = secondItems.find(item => !item.href);
+  if (linkless) {
+    await press('Home');
+    await press('ArrowDown', secondItems.indexOf(linkless));
+    await press('Enter');
+    await view('project');
+    check('A project with nowhere to go yet hides its link and lands on an action it has', await page.evaluate(() =>
+      document.getElementById('project-link').hidden && !!document.activeElement.closest('#screen-project .actions') && document.activeElement.getClientRects().length > 0));
+    await press('Escape');
+    await view('library');
+  }
 
   // Profile.
   await page.click('.system-header [data-open="profile"]');

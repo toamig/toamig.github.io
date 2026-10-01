@@ -6,6 +6,7 @@ import technologies   from '../../data/technologies.json';
 import techCategories from '../../data/techCategories.json';
 import projects       from '../../data/projects.json';
 import plugins        from '../../data/plugins.json';
+import ventures       from '../../data/ventures.json';
 import cv             from '../../data/cvExtras.json';
 
 const exp = experience;
@@ -17,6 +18,10 @@ const techByCat = techCategories.map(cat => ({
 
 const featuredProjects = projects;
 const publishedPlugins = plugins.filter(p => !p.hidden);
+// The products and games I build on my own. A venture joins the CV by
+// carrying a one-line `cv` summary in ventures.json.
+const independentWork = ventures.filter(v => !v.hidden && v.cv);
+const bareUrl = (u: string) => u.replace(/^https?:\/\//, '');
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -191,6 +196,8 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
       padding: 8px 12px; background: var(--accent-bg); border-radius: 4px;
       display: grid; grid-template-columns: 1fr 1fr; gap: 3px 18px;
     }
+    /* An odd one out takes the full row instead of leaving a hole beside it. */
+    .highlights li:last-child:nth-child(odd) { grid-column: 1 / -1; }
     .highlights li {
       font-size: 10.5px; line-height: 1.45; color: var(--ink-sub);
       padding-left: 12px; position: relative;
@@ -215,6 +222,7 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
       font-variant-numeric: tabular-nums;
     }
     .entry-loc { font-size: 10px; color: var(--muted); margin-top: 1px; font-style: italic; }
+    .entry-loc a { color: inherit; text-decoration: none; }
     .entry ul { margin: 3px 0 0 0; padding: 0; list-style: none; }
     .entry ul li {
       font-size: 10.5px; line-height: 1.5; color: var(--ink-sub);
@@ -360,18 +368,6 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
       ))}
     </section>
 
-    <section>
-      <h2>Education</h2>
-      {education.map(e => (
-        <div class="entry">
-          <div class="entry-head">
-            <div class="entry-title">{e.role}<span class="sep">·</span><span class="role">{e.name}</span></div>
-            <div class="entry-date">{e.period}</div>
-          </div>
-        </div>
-      ))}
-    </section>
-
     <div class="page-footer">
       <span>Miguel Vieira · CV · <a href={`https://${cv.contact.website}`}>{cv.contact.website}</a></span>
       <span class="pageno">Page 1 of 2</span>
@@ -389,6 +385,34 @@ const publishedPlugins = plugins.filter(p => !p.hidden);
         <span class="pageno">Page 2 of 2</span>
       </span>
     </header>
+
+    <!-- Page 1 is full with the profile and experience, so the sections that
+         follow experience start here, in the same reading order. -->
+    <section>
+      <h2>Independent Work</h2>
+      {independentWork.map(v => (
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">{v.name}<span class="sep">·</span><span class="role">{v.role}</span></div>
+            <div class="entry-date">{v.state}</div>
+          </div>
+          {/^https?:/.test(v.href) && <div class="entry-loc"><a href={v.href}>{bareUrl(v.href)}</a></div>}
+          <ul><li>{v.cv}</li></ul>
+        </div>
+      ))}
+    </section>
+
+    <section>
+      <h2>Education</h2>
+      {education.map(e => (
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">{e.role}<span class="sep">·</span><span class="role">{e.name}</span></div>
+            <div class="entry-date">{e.period}</div>
+          </div>
+        </div>
+      ))}
+    </section>
 
     <section>
       <h2>Technical Skills</h2>

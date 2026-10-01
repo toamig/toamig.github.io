@@ -24,12 +24,28 @@ export interface ConsoleItem {
 const studioForProject: Record<string, number> = { 'Dakar Desert Rally': 3, 'Timefront': 1, 'Road Kings': 3, 'AutoRocket': 5, 'Totally Basketball': 4, 'Aotearoa Explorers': 4 };
 const contributionForProject: Record<string, number[]> = { 'Dakar Desert Rally': [0], 'Timefront': [0, 1, 2, 3, 4], 'Road Kings': [1, 2], 'AutoRocket': [0, 1, 2], 'Totally Basketball': [0, 2], 'Aotearoa Explorers': [0, 1] };
 
-/** Real artwork for the ventures, so none of them falls back to a generic symbol. */
-const ventureArt: Record<string, { image: string; thumbnail: string }> = {
-  polyglyph: { image: '/console/ventures/polyglyph.webp', thumbnail: '/console/ventures/polyglyph-mark.webp' },
+/** Artwork for the ventures that borrow theirs from elsewhere on the site. */
+const borrowedArt: Record<string, { image: string; thumbnail: string }> = {
   consulting: { image: '/og/ai-setup-consulting.png', thumbnail: '/og/ai-setup-consulting.png' },
   plugins: { image: '/console/art/plugin-1.webp', thumbnail: '/console/covers/plugin-1.webp' },
 };
+
+interface Venture { id: string; image?: string; mark?: string }
+
+/**
+ * Real artwork for every venture, so none of them falls back to a generic symbol. Ventures that name
+ * their own image and mark get the console copies scripts/prepare-console-art.mjs derives from them;
+ * a mark makes the better rail cover when there is one, the key art otherwise.
+ */
+function ventureArt(v: Venture) {
+  if (borrowedArt[v.id]) return borrowedArt[v.id];
+  return {
+    image: v.image ? `/console/ventures/${v.id}.webp` : '',
+    thumbnail: v.mark ? `/console/ventures/${v.id}-mark.webp` : v.image ? `/console/ventures/${v.id}-cover.webp` : '',
+  };
+}
+
+const shownVentures = ventures.filter(v => !v.hidden);
 
 const tagName = Object.fromEntries(timelineTags.map(t => [t.id, t.name]));
 const iconForTag: Record<string, string> = { studies: 'book', professional: 'briefcase', travels: 'location', personal: 'spark', hobbies: 'spark', work: 'briefcase' };
@@ -62,6 +78,12 @@ export const journalEntries = (events as TimelineEvent[])
   });
 
 export const consoleItems: ConsoleItem[] = [
+  // The games I am making lead the shelf, ahead of the ones I made with studios.
+  ...shownVentures.filter(v => v.kind === 'game').map(v => ({
+    id: v.id, category: 'games', name: v.name, subtitle: v.role, description: v.desc,
+    ...ventureArt(v), href: v.href, action: v.cta,
+    meta: [v.state, 'Independent'], bullets: v.bullets || [],
+  })),
   ...projects.map((p, i) => {
     const studio = experience[studioForProject[p.name]];
     return {
@@ -77,10 +99,10 @@ export const consoleItems: ConsoleItem[] = [
     image: `/console/art/plugin-${i}.webp`, thumbnail: `/console/covers/plugin-${i}.webp`, href: p.docsUrl, action: 'Open documentation',
     meta: ['Unreal Engine', p.domain, p.status === 'live' ? 'Available on Fab' : 'In development'], bullets: p.tags,
   })),
-  ...ventures.filter(v => !v.hidden).map(v => ({
+  ...shownVentures.filter(v => v.kind !== 'game').map(v => ({
     id: v.id, category: 'creations', name: v.name, subtitle: v.role, description: v.desc,
-    image: ventureArt[v.id]?.image || '', thumbnail: ventureArt[v.id]?.thumbnail || '',
-    href: v.href, action: v.cta, meta: [v.kicker, v.state].filter(Boolean), bullets: v.tags,
+    ...ventureArt(v), href: v.href, action: v.cta,
+    meta: [v.kicker, v.state].filter(Boolean), bullets: v.bullets || v.tags,
   })),
   ...[
     { id: 'overview', name: 'Meet the developer', subtitle: 'Miguel Vieira', description: profile.shortVersion.lead },
