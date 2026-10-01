@@ -2640,24 +2640,6 @@ a.venture-game:hover {
   transition: transform .6s cubic-bezier(.2,.7,.2,1);
 }
 a.venture-game:hover .venture-game-key { transform: scale(1.035); }
-/* The logo sits in the empty sky the key art leaves for it, as on the store
-   capsule. Pixel logos scale by whole pixels so the grid stays crisp. */
-.venture-game-logo {
-  position: absolute;
-  z-index: 1;
-  left: 6%;
-  top: 50%;
-  width: 40%;
-  height: auto;
-  transform: translateY(-58%);
-  filter: drop-shadow(0 6px 18px rgba(0,0,0,.45));
-}
-.venture-game-logo.is-pixel {
-  /* Native size wherever the card is wide enough, so no pixel row is dropped. */
-  width: 235px;
-  max-width: 46%;
-  image-rendering: pixelated;
-}
 .venture-game-body {
   flex: 1;
   display: flex;
