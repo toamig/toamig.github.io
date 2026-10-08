@@ -20,8 +20,10 @@
     "location": "Remote",
     "bullets": [
       "Currently directing the engineering and gameplay team on Timefront, an RTS / battle-royale hybrid built in Unreal Engine 5.",
-      "Architected extensible gameplay systems for long-term feature expansion and multiplayer scalability across many concurrent actors in a single session.",
-      "Built and hire the gameplay engineering team: run technical interviews, onboarding, and mentorship for junior and mid engineers.",
+      "Architected extensible gameplay systems that scale to hundreds of concurrent actors in a single session.",
+      "Profiled in Unreal Insights and planned the refactors that took 400 on-map characters from 8 to 60 fps.",
+      "Planned the technical approach for adding multiplayer support, and still implement features hands-on.",
+      "Hire and grow the gameplay engineering team: technical interviews, onboarding, and training for junior and mid engineers.",
       "Partner with Cinematics, VFX, Character, and Technical Art leads to land integrated gameplay features end-to-end.",
       "Established code-review, architecture, and Git/branching standards adopted across the engineering organisation."
     ],
@@ -50,8 +52,8 @@
     "location": "Vila Nova de Gaia, Portugal",
     "bullets": [
       "Joined as Junior Multiplayer Programmer on Dakar Desert Rally: bugfixed and refactored multiplayer and replication systems to harden online play across PC, PS4, PS5, Xbox One, and Xbox Series X.",
-      "Promoted to Tools Programmer (Feb 2023): built Houdini-Engine integrations and editor tooling for the art and tech-art teams, including a Houdini integration compatible with World Partition streaming.",
-      "Promoted to Tools Lead Programmer on Road Kings (May 2023): led sprint planning, architecture reviews, and cross-department coordination for the tools team; established software architecture guidelines."
+      "Promoted to Tools Programmer (Feb 2023): fixed engine bugs, extended the Houdini Engine plugin for Unreal (including World Partition streaming support), and built editor plugins designed for reuse across projects.",
+      "Promoted to Tools Lead Programmer on Road Kings (May 2023): led the tools department through sprint planning, task estimates, architecture reviews, and cross-department coordination; established software architecture guidelines."
     ]
   },
   {
