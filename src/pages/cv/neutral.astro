@@ -16,11 +16,17 @@ const techByCat = techCategories.map(cat => ({
   items: technologies.filter(t => t.category === cat.id).map(t => t.name),
 })).filter(g => g.items.length > 0);
 
-const featuredProjects = projects;
+const featuredProjects = projects.filter((p: any) => !p.cvHidden);
 const publishedPlugins = plugins.filter(p => !p.hidden);
-// The products and games I build on my own. A venture joins the CV by
-// carrying a one-line `cv` summary in ventures.json.
-const independentWork = ventures.filter(v => !v.hidden && v.cv);
+// The products, AI systems and games I build on my own. A venture joins the CV
+// by carrying a one-line `cv` summary in ventures.json; the AI systems that are
+// tooling rather than ventures live in cvExtras.json and sit between the two.
+const shown = ventures.filter(v => !v.hidden && v.cv);
+const independentWork = [
+  ...shown.filter(v => v.kind !== 'game'),
+  ...cv.aiSystems,
+  ...shown.filter(v => v.kind === 'game'),
+];
 const bareUrl = (u: string) => u.replace(/^https?:\/\//, '');
 ---
 <!DOCTYPE html>

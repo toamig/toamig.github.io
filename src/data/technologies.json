@@ -5,6 +5,7 @@
   { "src": "",                              "name": "Java",        "category": "languages",       "href": "",                                              "cvOnly": true },
   { "src": "",                              "name": "Python",      "category": "languages",       "href": "",                                              "cvOnly": true },
   { "src": "",                              "name": "JavaScript",  "category": "languages",       "href": "",                                              "cvOnly": true },
+  { "src": "",                              "name": "TypeScript", "category": "languages", "href": "", "cvOnly": true },
   { "src": "",                              "name": "PHP",         "category": "languages",       "href": "",                                              "cvOnly": true },
   { "src": "",                              "name": "Prolog",      "category": "languages",       "href": "",                                              "cvOnly": true },
   { "src": "",                              "name": "Scheme",      "category": "languages",       "href": "",                                              "cvOnly": true },
@@ -18,5 +19,13 @@
   { "src": "/technologies/claude.svg",     "name": "Claude",      "category": "ai",              "href": "https://www.anthropic.com/claude" },
   { "src": "/technologies/claude-code.svg","name": "Claude Code", "category": "ai",              "href": "https://claude.com/product/claude-code" },
   { "src": "/technologies/chatgpt.svg",    "name": "ChatGPT",     "category": "ai",              "href": "https://chat.openai.com/" },
-  { "src": "/technologies/codex.svg",      "name": "Codex",       "category": "ai",              "href": "https://openai.com/codex/" }
+  { "src": "/technologies/codex.svg",      "name": "Codex",       "category": "ai",              "href": "https://openai.com/codex/" },
+  { "src": "",                              "name": "React", "category": "web", "href": "", "cvOnly": true },
+  { "src": "",                              "name": "Fastify", "category": "web", "href": "", "cvOnly": true },
+  { "src": "",                              "name": "PostgreSQL", "category": "web", "href": "", "cvOnly": true },
+  { "src": "",                              "name": "Render", "category": "web", "href": "", "cvOnly": true },
+  { "src": "",                              "name": "Cloudflare", "category": "web", "href": "", "cvOnly": true },
+  { "src": "",                              "name": "LLM APIs", "category": "ai-eng", "href": "", "cvOnly": true },
+  { "src": "",                              "name": "Agent memory & retrieval", "category": "ai-eng", "href": "", "cvOnly": true },
+  { "src": "",                              "name": "Batching & prompt caching", "category": "ai-eng", "href": "", "cvOnly": true }
 ]

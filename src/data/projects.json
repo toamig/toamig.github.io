@@ -31,6 +31,7 @@
     "href": "https://www.meta.com/experiences/totally-basketball/6781908485204434/",
     "image": "/projects/totally-basketball.jpg",
     "name": "Totally Basketball",
+    "cvHidden": true,
     "role": "",
     "desc": "VR basketball game."
   },
@@ -38,6 +39,7 @@
     "href": "https://sites.google.com/view/gcednz/teaching-learning/aotearoa-explorers",
     "image": "/projects/cape.jpg",
     "name": "Aotearoa Explorers",
+    "cvHidden": true,
     "role": "",
     "desc": "Educational exploration game."
   }

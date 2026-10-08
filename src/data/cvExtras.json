@@ -14,7 +14,15 @@
     "Promoted twice to leadership roles within three years.",
     "Currently directing the engineering and gameplay team on Timefront (RTS / battle-royale hybrid).",
     "Author of five modular Unreal Engine plugins in active development, covering combat, inventory, dialog, world-streaming, and multiplayer social.",
-    "Founder of Polyglyph, an AI localization platform for game studios in public beta, and maker of two indie games: Counting Sheep (demo on itch.io) and Synthform (in development)."
+    "Founder of Polyglyph, a multi-provider LLM localization platform built solo and in public beta; also designed the agent knowledge layer and AI review pipeline behind every personal project."
+  ],
+  "aiSystems": [
+    {
+      "name": "Agent Engineering Toolchain",
+      "role": "Architect & Engineer",
+      "state": "In daily use",
+      "cv": "Memory and retrieval layer for AI coding agents across 16 private repos (retrieval protocol, schema validation, secret scanning, per-repo CI, cross-machine sync) and an LLM-gated pre-commit review for UE5 C++. Offered to studios as AI adoption consulting."
+    }
   ],
   "languages": [
     { "name": "Portuguese", "level": "Native" },
@@ -26,7 +34,9 @@
     "Strategic planning",
     "Mentorship",
     "Cross-discipline communication",
-    "Architecture & code review"
+    "Architecture & code review",
+    "Product ownership",
+    "AI adoption strategy"
   ],
   "certifications": [
     { "name": "Certificate of Pedagogical Competences (CCP)", "issuer": "ENA · IEFP", "year": "2026" },

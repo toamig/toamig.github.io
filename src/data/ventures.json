@@ -13,7 +13,7 @@
       "Unreal Engine plugin that pushes strings from the engine's own localization tools and pulls approved lines back.",
       "Multi-tenant Fastify, Prisma and PostgreSQL backend with a background job queue, under a React 19 dashboard."
     ],
-    "cv": "AI localization platform for game studios: an Unreal plugin pushes the strings, each job goes to the model the studio picks, and reviewed translations ship back into the build. Fastify, Prisma, PostgreSQL, React.",
+    "cv": "Multi-provider LLM localization platform for game studios, built and operated solo: an Unreal plugin pushes strings, jobs route to Anthropic, OpenAI, Mistral or xAI with batching and prompt caching to cut cost, and humans approve every line. Fastify, pg-boss, PostgreSQL and React on Render and Cloudflare Pages.",
     "image": "/ventures/polyglyph/hero.png",
     "mark": "/ventures/polyglyph/mark.png",
     "href": "https://polyglyph.app",
@@ -38,7 +38,7 @@
       "An Unreal-style editor for levels, landscapes and Blueprint actors, saving diffable data to disk.",
       "Five elemental biomes, and bosses that stay guarded until you punish an opening."
     ],
-    "cv": "Synthwave roguelite action RPG on its own Three.js and WebGPU engine, with an effect system modelled on Unreal's GAS and an Unreal-style level and Blueprint editor.",
+    "cv": "Synthwave roguelite action RPG on its own Three.js and WebGPU engine, with a GAS-style effect system and an Unreal-style editor.",
     "image": "/ventures/synthform/key-art.webp",
     "imageAlt": "Synthform key art: a giant made of glowing cubes stands on a neon grid under a striped synthwave sun, ringed by the shapes a cube can become.",
     "focus": "50% 22%",
@@ -66,7 +66,7 @@
       "Six pastures that each accept one kind of number: any, even, prime, square, Fibonacci, or a multiple of three.",
       "A store page studio that draws the itch.io listing images from the game's own art."
     ],
-    "cv": "Cozy pixel-art number puzzle roguelite with deckbuilding: a plain JavaScript rules engine with a solver and simulator for balance, under a Pixi.js client.",
+    "cv": "Number puzzle roguelite with deckbuilding: a JavaScript rules engine with a solver and simulator for balance, on Pixi.js.",
     "image": "/ventures/counting-sheep/capsule.webp",
     "imageAlt": "Counting Sheep capsule art: a sleepy stone gargoyle leans on a moonlit fence among three pixel sheep, beside the Counting Sheep logo.",
     "palette": { "bg": "#1b1d29", "ink": "#e6dbc4", "accent": "#d4a44c", "glow": "rgba(212,164,76,.26)" },

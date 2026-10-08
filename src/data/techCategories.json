@@ -1,7 +1,9 @@
 [
   { "id": "languages",       "name": "Languages"       },
   { "id": "engines",         "name": "Engines"         },
+  { "id": "web",             "name": "Web & Cloud"     },
   { "id": "art-tools",       "name": "Art Tools"       },
   { "id": "version-control", "name": "Version Control" },
-  { "id": "ai",              "name": "AI Tools"        }
+  { "id": "ai",              "name": "AI Tools"        },
+  { "id": "ai-eng",          "name": "AI Engineering"  }
 ]
