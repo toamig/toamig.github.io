@@ -51,6 +51,20 @@ jobs:
           key: og-v1-${{ github.sha }}
           restore-keys: og-v1-
 
+      # The console's derived artwork (scripts/prepare-console-art.mjs), with the
+      # manifest that says what each image was made from. The key follows the
+      # sources, so a deploy that changes no image restores an exact match and
+      # saves nothing; otherwise the nearest one is restored and only the
+      # changed images are redone.
+      - name: Restore console art cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            public/console
+            .cache/console-art.json
+          key: console-art-v1-${{ hashFiles('scripts/prepare-console-art.mjs', 'src/data/*.json', 'public/**') }}
+          restore-keys: console-art-v1-
+
       - uses: actions/configure-pages@v4
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
