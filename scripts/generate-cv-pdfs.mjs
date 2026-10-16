@@ -17,8 +17,17 @@
 //   3. Emit `cv/miguel-vieira-cv-{variant}.pdf` next to the HTML pages.
 //
 // Output paths line up with what the "Download PDF" buttons link to.
+//
+// A PDF is a pure function of its page: the HTML, the local files it pulls in
+// (stylesheets, the logo, anything their url()s name), this script and the
+// Chromium that prints it. Each rendered PDF is kept in .cache/cv-pdfs with a
+// fingerprint of those inputs, and a build whose fingerprint matches copies
+// the kept PDF instead of starting Chromium. The deploy workflow caches that
+// folder between runs.
 
 import puppeteer from 'puppeteer';
+import { execSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import http from 'node:http';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -27,6 +36,9 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
 const distDir    = path.resolve(__dirname, '..', 'dist');
+
+const cacheDir   = path.resolve(__dirname, '..', '.cache', 'cv-pdfs');
+const VARIANTS   = ['neutral', 'editorial'];
 
 const PORT = 4567;
 const HOST = '127.0.0.1';
@@ -112,7 +124,7 @@ async function generatePdf(browser, variant) {
   // always catch CSS-driven font fetches.
   await page.evaluate(() => document.fonts.ready);
 
-  const outPath = path.join(distDir, 'cv', `miguel-vieira-cv-${variant}.pdf`);
+  const outPath = pdfPath(variant);
   await page.pdf({
     path: outPath,
     format: 'A4',
@@ -125,6 +137,37 @@ async function generatePdf(browser, variant) {
   return outPath;
 }
 
+// Local files a page or stylesheet references, resolved under dist/. Links to
+// other pages and to the PDFs themselves have no extension worth hashing.
+const ASSET = /\.(css|js|mjs|svg|png|jpe?g|webp|gif|woff2?|ttf|otf)$/i;
+function localRefs(text) {
+  const refs = [...text.matchAll(/(?:src|href)="(\/[^"#?]+)"|url\(\s*['"]?(\/[^'")?#]+)/g)]
+    .map(m => m[1] || m[2]);
+  return [...new Set(refs)].filter(r => ASSET.test(r));
+}
+
+async function fingerprint(variant) {
+  const hash = createHash('sha1');
+  hash.update(await fs.readFile(__filename));
+  hash.update(puppeteer.defaultBrowserRevision ?? '');
+  const html = await fs.readFile(path.join(distDir, 'cv', variant, 'index.html'), 'utf8');
+  hash.update(html);
+  const seen = new Set();
+  const visit = async (ref) => {
+    if (seen.has(ref)) return;
+    seen.add(ref);
+    const bytes = await fs.readFile(path.join(distDir, ref)).catch(() => null);
+    hash.update(ref);
+    if (!bytes) return;
+    hash.update(bytes);
+    if (ref.endsWith('.css')) for (const inner of localRefs(bytes.toString('utf8'))) await visit(inner);
+  };
+  for (const ref of localRefs(html).sort()) await visit(ref);
+  return hash.digest('hex');
+}
+
+const pdfPath = variant => path.join(distDir, 'cv', `miguel-vieira-cv-${variant}.pdf`);
+
 async function main() {
   // Sanity check: was the site built?
   try {
@@ -132,6 +175,31 @@ async function main() {
   } catch {
     console.error('[cv-pdfs] dist/cv/neutral/index.html not found — run `astro build` first.');
     process.exit(1);
+  }
+
+  // Reuse every PDF whose page has not changed since it was last printed.
+  await fs.mkdir(cacheDir, { recursive: true });
+  const todo = [];
+  for (const variant of VARIANTS) {
+    const print = await fingerprint(variant);
+    const kept = path.join(cacheDir, `${variant}.pdf`);
+    const keptPrint = await fs.readFile(path.join(cacheDir, `${variant}.sha1`), 'utf8').catch(() => '');
+    if (keptPrint === print && await fs.access(kept).then(() => true, () => false)) {
+      await fs.copyFile(kept, pdfPath(variant));
+      console.log(`[cv-pdfs] reused cv/miguel-vieira-cv-${variant}.pdf (page unchanged)`);
+    } else {
+      todo.push({ variant, print, kept });
+    }
+  }
+  if (!todo.length) return;
+
+  // CI installs dependencies without Puppeteer's browser download, so fetch
+  // Chromium here, only on the builds that actually print something.
+  let executable = '';
+  try { executable = puppeteer.executablePath(); } catch {}
+  if (!executable || !(await fs.access(executable).then(() => true, () => false))) {
+    console.log('[cv-pdfs] installing Chromium for Puppeteer');
+    execSync('npx puppeteer browsers install chrome', { stdio: 'inherit' });
   }
 
   const server = await startServer();
@@ -144,10 +212,12 @@ async function main() {
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
 
-    for (const variant of ['neutral', 'editorial']) {
+    for (const { variant, print, kept } of todo) {
       const out = await generatePdf(browser, variant);
       const rel = path.relative(distDir, out).replace(/\\/g, '/');
       console.log(`[cv-pdfs] wrote ${rel}`);
+      await fs.copyFile(out, kept);
+      await fs.writeFile(path.join(cacheDir, `${variant}.sha1`), print);
     }
   } finally {
     if (browser) await browser.close();

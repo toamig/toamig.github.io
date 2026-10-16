@@ -38,8 +38,21 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
-      - run: npm ci
+
+      # The installed dependencies, keyed on the lockfile, so npm ci only runs
+      # when a dependency changed. Puppeteer's Chromium is left out: it is only
+      # needed when a CV page changed, and scripts/generate-cv-pdfs.mjs fetches
+      # it then, rather than every run restoring a few hundred MB for nothing.
+      - name: Restore dependencies
+        id: modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: modules-v1-${{ runner.os }}-node20-${{ hashFiles('package-lock.json') }}
+      - if: steps.modules.outputs.cache-hit != 'true'
+        run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
 
       # Rendered OG / social images, keyed on the data and assets they are drawn
       # from (see src/lib/og-cache.ts). These dominate build time, and almost no
@@ -64,6 +77,16 @@ jobs:
             .cache/console-art.json
           key: console-art-v1-${{ hashFiles('scripts/prepare-console-art.mjs', 'src/data/*.json', 'public/**') }}
           restore-keys: console-art-v1-
+
+      # The last printed CV PDFs with the fingerprint of the page each came
+      # from (scripts/generate-cv-pdfs.mjs). A deploy that leaves the CV pages
+      # alone copies them instead of starting Chromium.
+      - name: Restore CV PDF cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/cv-pdfs
+          key: cv-pdfs-v1-${{ github.sha }}
+          restore-keys: cv-pdfs-v1-
 
       - uses: actions/configure-pages@v4
       - run: npm run build
