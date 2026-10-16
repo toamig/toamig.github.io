@@ -5,6 +5,7 @@
 // banner in their tag's colour. Moment-only rules are in styles/timeline.css.
 import BaseLayout  from '../../layouts/BaseLayout.astro';
 import PhotoViewer from '../../components/PhotoViewer.astro';
+import TransitionScope from '../../components/TransitionScope.astro';
 import { moments, type Moment } from '../../data/timeline';
 import '../../styles/work.css';
 import '../../styles/timeline.css';
@@ -43,6 +44,7 @@ const shareText = `${m.title}${m.description ? ': ' + m.description : ''}`;
   ogImageHeight={m.images.length ? undefined : 630}
   bodyClass="theme-dark work-page moment-page"
 >
+  <TransitionScope slot="head" />
   <main class="wp">
     <div class={`wp-hero${m.banner ? '' : ' is-plain'}`} style={`--dot:${color}`}>
       {m.banner ? (

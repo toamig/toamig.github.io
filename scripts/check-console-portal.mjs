@@ -17,7 +17,7 @@ try {
   await page.goto(url,{waitUntil:'networkidle2'});
   check('The professional portfolio is the default homepage',await page.$('.front-page .hero-tagline') && !await page.$('#os-shell'));
   check('The hero offers a player entrance',await page.$('.hero-playroom-link[href="#playroom"]'));
-  check('The professional content and contact links are preserved',await page.evaluate(()=>['about','experience','projects','building','technologies','education','contact'].every(id=>document.getElementById(id))));
+  check('The professional content and contact links are preserved',await page.evaluate(()=>['work','career','profile','contact'].every(id=>document.getElementById(id))));
   check('The console frame is lazy-loaded below the portfolio',await page.$eval('#console-frame',el=>!el.hasAttribute('src')));
   await page.screenshot({path:`directory/portal-hero.png`.replace('directory',directory)});
   await page.click('.hero-playroom-link');

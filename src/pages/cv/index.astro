@@ -1,6 +1,7 @@
 ---
 import BaseLayout    from '../../layouts/BaseLayout.astro';
 import ResumeChooser from '../../components/ResumeChooser.astro';
+import TransitionScope from '../../components/TransitionScope.astro';
 import '../../styles/cv.css';
 import '../../styles/work-transition.css';
 ---
@@ -10,5 +11,6 @@ import '../../styles/work-transition.css';
   ogUrl="https://toamig.com/cv/"
   bodyClass="theme-dark cv-page"
 >
+  <TransitionScope slot="head" />
   <ResumeChooser />
 </BaseLayout>

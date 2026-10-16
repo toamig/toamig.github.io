@@ -79,7 +79,12 @@ if (dialog) {
     try { vt = (document as any).startViewTransition({ update: run, types: ['photo'] }); }
     catch { vt = (document as any).startViewTransition(run); }
     stall = window.setTimeout(() => vt.skipTransition(), 400);
-    return vt.finished.finally(() => root.classList.remove('pv-morphing'));
+    // Skipping (above, or a hidden tab) rejects these with an AbortError; the
+    // viewer has already changed state by then, so there is nothing to do.
+    vt.ready.catch(() => {});
+    vt.updateCallbackDone.catch(() => {});
+    const done = () => root.classList.remove('pv-morphing');
+    return vt.finished.then(done, done);
   };
 
   const open = async (i: number) => {

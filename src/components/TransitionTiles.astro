@@ -15,6 +15,8 @@
 // a return from a detail page "to-grid" for its quicker choreography.
 //
 // Goes in BaseLayout's head slot: <TransitionTiles slot="head" ... />.
+import TransitionScope from './TransitionScope.astro';
+
 interface Props {
   /** Path the detail pages live under, e.g. "/work/". */
   base: string;
@@ -25,6 +27,7 @@ interface Props {
 }
 const { base, idPrefix, namePrefix, expect } = Astro.props;
 ---
+<TransitionScope />
 <link rel="expect" href={expect} blocking="render" />
 <script is:inline define:vars={{ base, idPrefix, namePrefix }}>
   let settle;
@@ -59,14 +62,28 @@ const { base, idPrefix, namePrefix, expect } = Astro.props;
     }
     return true;
   };
+  // Skipped transitions reject their promises with an AbortError (the other
+  // page did not opt in, a redirect fired mid-load, the tab is hidden). That is
+  // expected and needs nothing from us; reading e.viewTransition is what makes
+  // those rejections ours, so they are swallowed here instead of surfacing as
+  // an uncaught error in the visitor's console.
+  const swallow = (vt) => {
+    vt.ready.catch(() => {});
+    vt.updateCallbackDone.catch(() => {});
+    return vt;
+  };
   addEventListener('pageswap', (e) => {
-    if (e.viewTransition && e.activation) mark(detailId(e.activation.entry.url));
+    if (!e.viewTransition) return;
+    swallow(e.viewTransition).finished.catch(() => {});
+    if (e.activation) mark(detailId(e.activation.entry.url));
   });
   addEventListener('pagereveal', (e) => {
     if (!e.viewTransition) { settle(); return; }
+    const vt = swallow(e.viewTransition);
     const from = window.navigation && navigation.activation && navigation.activation.from;
     const found = mark(from ? detailId(from.url) : null);
-    if (found && e.viewTransition.types) e.viewTransition.types.add('to-grid');
-    e.viewTransition.finished.finally(() => { clear(); settle(); });
+    if (found && vt.types) vt.types.add('to-grid');
+    const done = () => { clear(); settle(); };
+    vt.finished.then(done, done);
   });
 </script>

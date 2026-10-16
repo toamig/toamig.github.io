@@ -3,6 +3,7 @@
 // homepage tile's art and this page's banner share a view-transition-name, so
 // opening a tile grows it into the page (see styles/work-transition.css).
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import TransitionScope from '../../components/TransitionScope.astro';
 import { work, workWithDetail, SHELVES } from '../../data/work';
 import '../../styles/work.css';
 import '../../styles/work-transition.css';
@@ -39,6 +40,7 @@ const ogImage = item.image && !item.image.endsWith('.svg') ? `https://toamig.com
   ogImageAlt={item.imageAlt || item.name}
   bodyClass="theme-dark work-page"
 >
+  <TransitionScope slot="head" />
   <main class="wp">
     <div class="wp-hero">
       <div class="wp-art" style={`view-transition-name:work-${item.id};view-transition-class:work-art`}>

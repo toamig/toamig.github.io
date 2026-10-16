@@ -9,7 +9,9 @@
    (the tile's caption, the page's title and back link, the header) has names
    of its own, so it stays above the moving art instead of popping in once the
    art lands. */
-@view-transition { navigation: auto; }
+/* The opt-in itself (the @view-transition at-rule) is supplied per navigation by
+   components/TransitionScope.astro, so links to pages outside this set never
+   start a transition that cannot run. */
 
 ::view-transition-group(*) {
   animation-duration: .55s;

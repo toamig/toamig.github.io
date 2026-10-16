@@ -1,0 +1,39 @@
+---
+// Opts a page into cross-document view transitions, but only for navigations
+// to a page that takes part in one (the homepage, /work/, /Timeline/, /cv/).
+//
+// A blanket `@view-transition { navigation: auto }` also covers links to pages
+// that do not opt in (Plugins, Consulting, the console, Radar). The browser
+// then starts a transition it can never run and logs an uncaught "Transition
+// was skipped" in the destination's console on every such navigation, from a
+// promise page code cannot reach. So the at-rule lives in a stylesheet this
+// script switches on and off from the Navigation API's `navigate` event, which
+// names the destination of every navigation (links, Back and Forward, typed
+// addresses). A page that arrives opted in stays eligible to receive one.
+//
+// Browsers without the Navigation API keep the plain, always-on opt-in.
+//
+// Goes in BaseLayout's head slot: <TransitionScope slot="head" />. Pages that
+// use <TransitionTiles> get it from there.
+---
+<script is:inline>
+  (() => {
+    const rule = document.createElement('style');
+    rule.textContent = '@view-transition { navigation: auto; }';
+    document.head.append(rule);
+    if (!window.navigation) return;
+
+    // Routes that opt in: the homepage, /work/<id>, /Timeline[/<id>], /cv[/<format>].
+    const PARTICIPATES = /^\/(?:work\/[^/]+|timeline(?:\/[^/]+)?|cv(?:\/(?:editorial|neutral))?)?\/?$/i;
+    const eligible = (on) => { rule.media = on ? 'all' : 'not all'; };
+
+    navigation.addEventListener('navigate', (e) => {
+      if (e.downloadRequest !== null) return;
+      let to;
+      try { to = new URL(e.destination.url); } catch { return; }
+      eligible(to.origin === location.origin && PARTICIPATES.test(to.pathname));
+    });
+    // A page restored from the back-forward cache keeps the last answer.
+    addEventListener('pageshow', (e) => { if (e.persisted) eligible(true); });
+  })();
+</script>
