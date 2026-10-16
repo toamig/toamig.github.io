@@ -1,0 +1,60 @@
+---
+// Career as one scannable list: a row per role, newest first, with the detail
+// folded underneath. A recruiter reads the whole history in a glance and opens
+// only the rows they care about; the full version is the CV.
+import experience from '../../data/experience.json';
+
+// Explicit `current` from the admin wins; legacy entries fall back to the
+// period text, the same rule the old career cards used.
+const isCurrent = (e: (typeof experience)[number]) =>
+  (e as any).current ?? (e.period?.includes('Present') || e.period?.includes('Ongoing'));
+const isExternal = (u?: string) => !!u && /^https?:/i.test(u);
+const firstYear = Math.min(...experience.map(e => Number(e.period.match(/\d{4}/)?.[0] ?? 9999)));
+---
+<section id="career" class="hn-section cr" aria-labelledby="career-title">
+  <div class="hn-wrap">
+    <div class="hn-head">
+      <h2 class="hn-title" id="career-title">Career<sup class="hn-datum">since {firstYear}</sup></h2>
+      <div class="hn-lede-group">
+        <p class="hn-lede">
+          From multiplayer and tools programming to leading engineering teams. Open a role for what I did there.
+        </p>
+        <a class="hn-link" href="/cv">Open the full CV</a>
+      </div>
+    </div>
+
+    <div class="cr-track" data-career>
+      <span class="cr-rail" aria-hidden="true"><span class="cr-rail-fill" data-career-rail></span></span>
+      <ol class="cr-list">
+        {experience.map((e, i) => (
+          <li class="cr-row" data-current={isCurrent(e) ? '' : undefined}>
+            <button class="cr-head" type="button" aria-expanded="false" aria-controls={`cr-more-${i}`}>
+              <span class="cr-logo">
+                {e.logo
+                  ? <img src={e.logo} alt="" loading="lazy" decoding="async" />
+                  : <span aria-hidden="true">{e.name.charAt(0)}</span>}
+              </span>
+              <span class="cr-company">
+                {e.name}
+                {isCurrent(e) && <span class="cr-now">Now</span>}
+              </span>
+              <span class="cr-role">{e.role}</span>
+              <span class="cr-when">{e.period}</span>
+              <span class="cr-plus" aria-hidden="true"></span>
+            </button>
+            <div class="cr-more" id={`cr-more-${i}`}>
+              <div class="cr-more-inner">
+                <ul>
+                  {e.bullets?.map(b => <li>{b}</li>)}
+                </ul>
+                {isExternal(e.href) && (
+                  <a class="hn-link cr-site" href={e.href} target="_blank" rel="noopener noreferrer">{e.name} website</a>
+                )}
+              </div>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </div>
+</section>

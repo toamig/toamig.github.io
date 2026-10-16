@@ -1,0 +1,70 @@
+/* Cross-document view transitions between the homepage Work grid and the
+   /work/<id>/ pages. Both pages opt in, and the tile's art and the page's
+   banner share a view-transition-name, so the tile grows into the page and
+   shrinks back on Back. Browsers without support just navigate.
+
+   Layering matters here: named elements are lifted above the rest of the page
+   while the transition runs, in document paint order. The art carries its own
+   fade (see .wk-art::after and .wp-art::after), and the text that sits on it
+   (the tile's caption, the page's title and back link, the header) has names
+   of its own, so it stays above the moving art instead of popping in once the
+   art lands. */
+@view-transition { navigation: auto; }
+
+::view-transition-group(*) {
+  animation-duration: .55s;
+  animation-timing-function: cubic-bezier(.2, .7, .2, 1);
+}
+::view-transition-old(root),
+::view-transition-new(root) { animation-duration: .3s; }
+
+/* Layers stack in document order, which would put any named tile or banner
+   over the fixed header; keep the header on top. */
+::view-transition-group(site-header) { z-index: 10; }
+
+/* The tile and the banner have different shapes; cover both snapshots so the
+   art crops like an image instead of stretching. */
+::view-transition-old(*.work-art),
+::view-transition-new(*.work-art) {
+  height: 100%;
+  object-fit: cover;
+  overflow: clip;
+}
+
+/* Text leaving gets out of the way fast; text arriving rises in as the art
+   settles under it. */
+::view-transition-old(*.work-body),
+::view-transition-old(work-intro),
+::view-transition-old(work-back) {
+  animation: wt-out .18s ease both;
+}
+::view-transition-new(*.work-body),
+::view-transition-new(work-intro),
+::view-transition-new(work-back) {
+  animation: wt-rise .45s cubic-bezier(.2, .7, .2, 1) .2s both;
+}
+@keyframes wt-out  { to   { opacity: 0; } }
+@keyframes wt-rise { from { opacity: 0; transform: translateY(12px); } }
+
+/* Back to the grid (the homepage tags it "to-grid"). Quicker than opening a
+   project, as an exit should be; eased in and out rather than launching at
+   full speed, since the homepage is still settling in the first frames; and
+   the banner hands over to the tile's own art early, so what shrinks is the
+   clean tile image rather than the banner with its long dark fade. */
+html:active-view-transition-type(to-grid)::view-transition-group(*) {
+  animation-duration: .42s;
+  animation-timing-function: cubic-bezier(.4, 0, .2, 1);
+}
+html:active-view-transition-type(to-grid)::view-transition-old(*.work-art),
+html:active-view-transition-type(to-grid)::view-transition-new(*.work-art) {
+  animation-duration: .22s;
+}
+html:active-view-transition-type(to-grid)::view-transition-new(*.work-body) {
+  animation: wt-rise .32s cubic-bezier(.2, .7, .2, 1) .24s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) { animation: none !important; }
+}

@@ -1,0 +1,121 @@
+---
+// The homepage Work section: everything Miguel has made, as one bento grid that
+// filters by shelf. A tile carries art, a name and one line; the detail lives a
+// click away (a /work/<id>/ page, or the thing's own page on this site), so the
+// homepage stays the same length however many projects get added.
+import PolyglyphMock from '../PolyglyphMock.astro';
+import RadarMark     from '../RadarMark.astro';
+import { work, SHELVES, shelfCount, pluginCovers } from '../../data/work';
+
+const FEED = import.meta.env.DEV ? 'https://toamig.com/radar/latest.json' : '/radar/latest.json';
+---
+<section id="work" class="hn-section wk" aria-labelledby="work-title">
+  <div class="hn-wrap">
+    <div class="hn-head">
+      <h2 class="hn-title" id="work-title">Work<sup class="hn-datum">{work.length}</sup></h2>
+      <p class="hn-lede">
+        Games I've shipped with studios, and the games, products and tools I build on my own.
+      </p>
+    </div>
+
+    <div class="wk-filters" role="group" aria-label="Show work from">
+      <button class="wk-chip" type="button" data-filter="all" aria-pressed="true">
+        All <span class="wk-n">{work.length}</span>
+      </button>
+      {SHELVES.map(s => (
+        <button class="wk-chip" type="button" data-filter={s.id} aria-pressed="false">
+          {s.label} <span class="wk-n">{shelfCount(s.id)}</span>
+        </button>
+      ))}
+    </div>
+
+    <div class="wk-grid" data-work-grid data-filter="all">
+      {work.map(w => (
+        <a
+          class={`wk-tile wk-${w.size}`}
+          id={`w-${w.id}`}
+          href={w.href}
+          data-shelf={w.shelf}
+          data-id={w.id}
+          data-radar-tile={w.id === 'radar' ? FEED : undefined}
+          style={w.palette
+            ? `--tile-accent:${w.palette.accent};--tile-glow:${w.palette.glow}`
+            : undefined}
+        >
+          <div class="wk-art">
+            {w.id === 'polyglyph' ? (
+              <PolyglyphMock />
+            ) : w.id === 'plugins' ? (
+              <div class="wk-cycle" data-cycle>
+                {pluginCovers.map((p, i) => (
+                  <img
+                    class={i === 0 ? 'is-on' : undefined}
+                    src={i === 0 ? p.cover : undefined}
+                    data-src={i === 0 ? undefined : p.cover}
+                    alt=""
+                    decoding="async"
+                  />
+                ))}
+              </div>
+            ) : w.id === 'radar' ? (
+              <div class="wr" data-radar-page>
+                <div class="wr-page">
+                  <div class="wr-mast">
+                    <span class="wr-brand" role="img" aria-label={w.name}>
+                      <RadarMark class="wr-mark" />
+                      <span class="wr-word" data-text="Radar" aria-hidden="true">Radar</span>
+                    </span>
+                    <span class="wr-meta">
+                      <span class="wr-no" data-wr-no>Daily</span>
+                      <span data-wr-date>briefing</span>
+                    </span>
+                  </div>
+                  <h3 class="wr-title" data-wr-title>{w.line}</h3>
+                  <p class="wr-foot">
+                    <span>{w.label}</span>
+                    <span class="wr-state" data-wr-state>{w.state}</span>
+                  </p>
+                </div>
+                <div class="wr-shot"><img data-wr-card alt="" decoding="async" /></div>
+              </div>
+            ) : w.id === 'consulting' ? (
+              <svg class="wk-diagram" viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                <g fill="none" stroke-width="1.5">
+                  <rect x="70" y="38"  width="180" height="30" rx="8" stroke="rgba(255,255,255,.22)" />
+                  <rect x="70" y="86"  width="180" height="30" rx="8" stroke="rgba(255,138,76,.75)" />
+                  <rect x="70" y="134" width="180" height="30" rx="8" stroke="rgba(255,255,255,.22)" />
+                  <path d="M160 68v18M160 116v18" stroke="rgba(255,255,255,.3)" stroke-dasharray="3 4" />
+                </g>
+                <g fill="rgba(255,138,76,.9)">
+                  <circle cx="98" cy="101" r="4" /><circle cx="130" cy="101" r="4" />
+                  <circle cx="162" cy="101" r="4" /><circle cx="194" cy="101" r="4" />
+                  <circle cx="226" cy="101" r="4" />
+                </g>
+              </svg>
+            ) : w.image ? (
+              <img
+                src={w.tile ?? w.image}
+                alt=""
+                decoding="async"
+                style={w.focus ? `object-position:${w.focus}` : undefined}
+              />
+            ) : null}
+          </div>
+
+          {w.id !== 'radar' && <div class="wk-body">
+            <p class="wk-label">
+              <span>{w.label}</span>
+              {w.state && <span class="wk-state">{w.state}</span>}
+            </p>
+            <h3 class="wk-name">{w.name}</h3>
+            <p class="wk-line">{w.line}</p>
+          </div>}
+
+          <span class="wk-go" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg>
+          </span>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>

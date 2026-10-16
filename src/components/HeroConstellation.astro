@@ -15,6 +15,8 @@
 <canvas class="hero-constellation" aria-hidden="true"></canvas>
 
 <script>
+  import { afterTransition } from '../scripts/after-transition';
+
   const canvas = document.querySelector<HTMLCanvasElement>('.hero-constellation');
 
   function boot(cv: HTMLCanvasElement) {
@@ -260,5 +262,7 @@
     new IntersectionObserver(entries => { inView = entries[0].isIntersecting; syncVisibility(); }).observe(host);
   }
 
-  if (canvas) boot(canvas);
+  // Creating the WebGL context and compiling shaders is the heaviest thing the
+  // homepage does at startup; let an incoming page transition finish first.
+  if (canvas) afterTransition().then(() => boot(canvas));
 </script>

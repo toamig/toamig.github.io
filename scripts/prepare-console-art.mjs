@@ -70,6 +70,28 @@ for (const v of ventures.filter(v => !v.hidden)) {
 }
 derive('public/me/IMG_7.JPEG', 'public/console/miguel.webp', portrait => portrait.resize(500, 500).webp({ quality: 84 }));
 
+// The homepage Work grid and the header's Work menu (src/data/work.ts). Tiles are at most about
+// 560px wide, so 1120px covers a 2x screen; the full-size sources were up to 3840px, and decoding
+// a dozen of them at once stalled the page transition back to the grid. Thumbnails are for the
+// menu's 36px squares. Same ids as work.ts: a project's slugged name, a venture's id.
+const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const raster = p => !!p && !/\.svg$/i.test(p);
+const tile = art => art.resize({ width: 1120, withoutEnlargement: true }).webp({ quality: 80 });
+const thumb = art => art.resize(112, 112, { fit: 'cover' }).webp({ quality: 80 });
+const markThumb = mark => mark.resize(112, 112, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } }).webp({ quality: 88 });
+for (const p of projects) {
+  derive(`public${p.image}`, `public/tiles/${slug(p.name)}.webp`, tile);
+  derive(`public${p.image}`, `public/tiles/${slug(p.name)}-thumb.webp`, thumb);
+}
+const shownPlugins = plugins.filter(p => !p.hidden);
+for (const p of shownPlugins) derive(`public${p.cover}`, `public/tiles/plugin-${slug(p.name)}.webp`, tile);
+if (shownPlugins[0]) derive(`public${shownPlugins[0].logo}`, 'public/tiles/plugins-thumb.webp', markThumb, false);
+for (const v of ventures.filter(v => !v.hidden)) {
+  if (raster(v.image)) derive(`public${v.image}`, `public/tiles/${v.id}.webp`, tile, false);
+  if (raster(v.mark)) derive(`public${v.mark}`, `public/tiles/${v.id}-thumb.webp`, markThumb, false);
+  else if (!v.mark && raster(v.image)) derive(`public${v.image}`, `public/tiles/${v.id}-thumb.webp`, thumb, false);
+}
+
 // One worker per core. The outputs are independent, and one image at a time leaves most of a
 // CI runner idle on a cold cache.
 let next = 0;

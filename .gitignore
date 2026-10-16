@@ -35,3 +35,5 @@ Thumbs.db
 
 # Console artwork derived from the source images by scripts/prepare-console-art.mjs (runs before dev and build)
 public/console/
+# Work grid tiles and menu thumbnails, derived by the same script
+public/tiles/

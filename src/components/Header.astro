@@ -1,64 +1,135 @@
 ---
+// The site header. It follows the homepage's own map: Work (a menu with the
+// same three shelves as the grid, which is where Plugins, Radar and Consulting
+// now live), Career, About, Timeline and Contact, with the CV as the one
+// highlighted action. On the homepage the section links track where you are.
 import Logo from './Logo.astro';
+import { work, SHELVES, shelfCount } from '../data/work';
+import '../styles/site-header.css';
+
+const path = Astro.url.pathname.toLowerCase();
+const isHome = path === '/';
+const current =
+  path.startsWith('/work/')     ? 'work' :
+  path.startsWith('/timeline')  ? 'timeline' :
+  path.startsWith('/cv')        ? 'cv' : '';
+
+const links = [
+  { id: 'career',   label: 'Career',   href: '/#career' },
+  { id: 'about',    label: 'About',    href: '/#profile' },
+  { id: 'timeline', label: 'Timeline', href: '/Timeline' },
+  { id: 'contact',  label: 'Contact',  href: '/#contact' },
+];
+
+const shelves = SHELVES.map(s => ({
+  ...s,
+  count: shelfCount(s.id),
+  href: `/?shelf=${s.id}#work`,
+  items: work.filter(w => w.shelf === s.id),
+}));
 ---
-<header>
-  <nav>
-    <div id="header-placeholder">
-      <Logo class="logo-header" id="my-logo" firstPathStyle="fill: #ff8a4c" />
+<header class="site-header" data-site-header data-home={isHome ? '' : undefined}>
+  <div class="sh-bar">
+    <a class="sh-brand" href="/" aria-label="Toamig, home">
+      <Logo class="sh-logo" firstPathStyle="fill: #ff8a4c" />
+    </a>
+
+    <nav class="sh-nav" aria-label="Main">
+      <span class="sh-hover" aria-hidden="true" data-hover></span>
+      <button
+        class="sh-link sh-work"
+        type="button"
+        aria-expanded="false"
+        aria-controls="sh-menu"
+        data-menu-toggle
+        data-section="work"
+        aria-current={current === 'work' ? 'page' : undefined}
+      >
+        Work
+        <svg class="sh-chev" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </button>
+      {links.map(l => (
+        <a
+          class="sh-link"
+          href={l.href}
+          data-section={l.id}
+          aria-current={current === l.id ? 'page' : undefined}
+        >{l.label}</a>
+      ))}
+    </nav>
+
+    <div class="sh-end">
+      <a class="sh-cv" href="/cv" aria-current={current === 'cv' ? 'page' : undefined}>CV</a>
+      <button class="sh-burger" type="button" aria-expanded="false" aria-controls="sh-sheet" aria-label="Open menu" data-sheet-toggle>
+        <span></span><span></span>
+      </button>
     </div>
-    <button class="hamburger" aria-label="Toggle menu">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-    <div class="nav-menu">
-      <a href="/">Home</a>
-      <a href="/Plugins" class="nav-plugins">Plugins</a>
-      <a href="/Timeline">Timeline</a>
-      <a href="/radar/">Toa Radar</a>
-      <a href="/cv" class="nav-resume">CV</a>
+  </div>
+
+  <!-- Work menu: the grid's shelves, one column each -->
+  <div class="sh-menu" id="sh-menu" data-menu>
+    <div class="sh-menu-cols">
+      {shelves.map((s, i) => (
+        <div class="sh-col" style={`--i:${i}`}>
+          <a class="sh-col-head" href={s.href} data-shelf={s.id}>
+            {s.label}<span class="sh-n">{s.count}</span>
+          </a>
+          <ul>
+            {s.items.map(w => (
+              <li>
+                <a class="sh-w" href={w.href}>
+                  {w.thumb
+                    ? <img src={w.thumb} alt="" loading="lazy" decoding="async" />
+                    : <span class="sh-w-init" aria-hidden="true">{w.name.charAt(0)}</span>}
+                  <span class="sh-w-text">
+                    <span class="sh-w-name">{w.name}</span>
+                    <span class="sh-w-label">{w.state ?? w.label}</span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
     </div>
-  </nav>
+    <div class="sh-menu-foot">
+      <a class="sh-all" href="/#work" data-shelf="all">All work, on one grid</a>
+    </div>
+  </div>
+
+  <!-- Phone menu -->
+  <div class="sh-sheet" id="sh-sheet" data-sheet>
+    <nav class="sh-sheet-inner" aria-label="Main">
+      <ul class="sh-sheet-list">
+        <li style="--i:0">
+          <button class="sh-sheet-link" type="button" aria-expanded="false" aria-controls="sh-sheet-work" data-sheet-work>
+            Work
+            <svg class="sh-chev" viewBox="0 0 12 12" width="14" height="14" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </button>
+          <div class="sh-sheet-sub" id="sh-sheet-work">
+            <div class="sh-sheet-sub-inner">
+              {shelves.map(s => (
+                <div class="sh-sheet-shelf">
+                  <a class="sh-col-head" href={s.href} data-shelf={s.id}>{s.label}<span class="sh-n">{s.count}</span></a>
+                  <div class="sh-sheet-items">
+                    {s.items.map(w => <a href={w.href}>{w.name}</a>)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </li>
+        {links.map((l, i) => (
+          <li style={`--i:${i + 1}`}>
+            <a class="sh-sheet-link" href={l.href} aria-current={current === l.id ? 'page' : undefined}>{l.label}</a>
+          </li>
+        ))}
+      </ul>
+      <a class="sh-sheet-cv" href="/cv" style={`--i:${links.length + 1}`}>View CV</a>
+    </nav>
+  </div>
 </header>
 
 <script>
-  // Header scroll behaviour
-  const header = document.querySelector('header') as HTMLElement | null;
-  const logo   = document.querySelector('.logo-header') as HTMLElement | null;
-  if (header) {
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > header.clientHeight) {
-        header.classList.add('scrolled');
-        if (logo) { logo.style.visibility = 'visible'; logo.style.width = 'auto'; }
-      } else {
-        header.classList.remove('scrolled');
-        if (logo) { logo.style.visibility = 'hidden'; logo.style.width = '0'; }
-      }
-    });
-  }
-
-  // Hamburger menu
-  const hamburger = document.querySelector('.hamburger') as HTMLElement | null;
-  const navMenu   = document.querySelector('.nav-menu') as HTMLElement | null;
-  if (hamburger && navMenu) {
-    hamburger.addEventListener('click', () => {
-      hamburger.classList.toggle('active');
-      navMenu.classList.toggle('active');
-      document.body.classList.toggle('menu-open');
-    });
-    navMenu.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-        hamburger.classList.remove('active');
-        navMenu.classList.remove('active');
-        document.body.classList.remove('menu-open');
-      });
-    });
-    document.addEventListener('click', (e) => {
-      if (!hamburger.contains(e.target as Node) && !navMenu.contains(e.target as Node)) {
-        hamburger.classList.remove('active');
-        navMenu.classList.remove('active');
-        document.body.classList.remove('menu-open');
-      }
-    });
-  }
+  import '../scripts/site-header';
 </script>

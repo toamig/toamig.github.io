@@ -74,6 +74,7 @@ jobs:
         with:
           path: |
             public/console
+            public/tiles
             .cache/console-art.json
           key: console-art-v1-${{ hashFiles('scripts/prepare-console-art.mjs', 'src/data/*.json', 'public/**') }}
           restore-keys: console-art-v1-

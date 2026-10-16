@@ -1,0 +1,112 @@
+---
+// One page per piece of work that has no home of its own on this site. The
+// homepage tile's art and this page's banner share a view-transition-name, so
+// opening a tile grows it into the page (see styles/work-transition.css).
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { work, workWithDetail, SHELVES } from '../../data/work';
+import '../../styles/work.css';
+import '../../styles/work-transition.css';
+
+export function getStaticPaths() {
+  return workWithDetail.map(w => ({ params: { id: w.id } }));
+}
+
+const { id } = Astro.params;
+const item = work.find(w => w.id === id)!;
+
+// Prev and next walk the same order as the homepage grid.
+const at = workWithDetail.findIndex(w => w.id === id);
+const prev = workWithDetail[(at - 1 + workWithDetail.length) % workWithDetail.length];
+const next = workWithDetail[(at + 1) % workWithDetail.length];
+
+const shelf = SHELVES.find(s => s.id === item.shelf)?.label;
+const facts = [
+  item.role && { term: 'Role', value: item.role },
+  item.studio && { term: 'Studio', value: item.studio.name },
+  item.studio && { term: 'When', value: item.studio.period },
+  item.state && { term: 'Status', value: item.state },
+  item.tags.length > 0 && { term: 'Built with', value: item.tags.join(', ') },
+].filter(Boolean) as { term: string; value: string }[];
+
+const pageUrl = `https://toamig.com/work/${item.id}/`;
+const ogImage = item.image && !item.image.endsWith('.svg') ? `https://toamig.com${item.image}` : undefined;
+---
+<BaseLayout
+  title={`${item.name} · Miguel Vieira (Toamig)`}
+  description={item.line}
+  ogUrl={pageUrl}
+  ogImage={ogImage}
+  ogImageAlt={item.imageAlt || item.name}
+  bodyClass="work-page"
+>
+  <main class="wp">
+    <div class="wp-hero">
+      <div class="wp-art" style={`view-transition-name:work-${item.id};view-transition-class:work-art`}>
+        {item.image && (
+          <img
+            src={item.image}
+            alt={item.imageAlt}
+            style={item.focus ? `object-position:${item.focus}` : undefined}
+            decoding="async"
+            fetchpriority="high"
+          />
+        )}
+      </div>
+      <div class="wp-bar" style="view-transition-name:work-back">
+        <a class="wp-back" href={`/#w-${item.id}`}>All work</a>
+      </div>
+    </div>
+
+    <div class="wp-wrap">
+
+      <div class="wp-intro" style="view-transition-name:work-intro">
+        <p class="wp-shelf">{shelf}</p>
+        <h1 class="wp-title">{item.name}</h1>
+        <p class="wp-line">{item.line}</p>
+        <div class="wp-cta">
+          {item.link
+            ? <a class="wp-btn" href={item.link.href} target={item.link.external ? '_blank' : undefined} rel={item.link.external ? 'noopener noreferrer' : undefined}>{item.link.label}</a>
+            : item.note && <span class="wp-note">{item.note}</span>}
+        </div>
+      </div>
+
+      <div class="wp-grid">
+        {facts.length > 0 && (
+          <dl class="wp-facts">
+            {facts.map(f => (
+              <div><dt>{f.term}</dt><dd>{f.value}</dd></div>
+            ))}
+          </dl>
+        )}
+
+        <div class="wp-body">
+          {item.desc !== item.line && <p class="wp-desc">{item.desc}</p>}
+
+          {item.bullets.length > 0 && (
+            <>
+              <h2 class="wp-h2">What I built</h2>
+              <ul class="wp-list">{item.bullets.map(b => <li>{b}</li>)}</ul>
+            </>
+          )}
+
+          {item.studio && item.studio.bullets.length > 0 && (
+            <>
+              <h2 class="wp-h2">My role at {item.studio.name}</h2>
+              <ul class="wp-list">{item.studio.bullets.map(b => <li>{b}</li>)}</ul>
+            </>
+          )}
+        </div>
+      </div>
+
+      <nav class="wp-more" aria-label="More work">
+        {[prev, next].map((w, i) => (
+          <a class="wp-next" href={w.href}>
+            {w.image && <img src={w.tile ?? w.image} alt="" loading="lazy" decoding="async" style={w.focus ? `object-position:${w.focus}` : undefined} />}
+            <span class="wp-next-dir">{i === 0 ? 'Previous' : 'Next'}</span>
+            <span class="wp-next-name">{w.name}</span>
+          </a>
+        ))}
+      </nav>
+    </div>
+  </main>
+</BaseLayout>

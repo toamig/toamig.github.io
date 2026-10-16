@@ -119,6 +119,7 @@ const jsonLd = {
     <meta name="twitter:image:alt"   content={ogImageAlt} />
 
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <slot name="head" />
   </head>
   <body class={bodyClass}>
     <MusicPlayer />
