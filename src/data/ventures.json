@@ -77,6 +77,30 @@
     "hidden": false
   },
   {
+    "id": "radar",
+    "kind": "publication",
+    "name": "Toa Radar",
+    "kicker": "Daily briefing",
+    "state": "New every morning",
+    "role": "Creator & Engineer",
+    "tagline": "A daily visual briefing on game development and AI engineering.",
+    "desc": "A daily visual briefing on game development and AI engineering, researched, written and laid out by Claude every morning. Each issue is printed like a two-ink risograph: a new pair of inks, a paper stock and a headline typeface every day.",
+    "tags": ["Astro", "Claude Code", "GitHub Actions"],
+    "bullets": [
+      "A morning sweep reads about 35 sources and Claude Haiku scores every candidate against a reader profile.",
+      "A scheduled Claude Code routine researches, writes and composes the issue, then validates, screenshots and publishes it.",
+      "Every issue picks its inks, paper and display face from a contrast-checked catalog, so no combination is unreadable.",
+      "A kit of display formats (charts, timelines, comparisons, custom art) lets each day's layout fit its stories."
+    ],
+    "image": "/ventures/radar/cover.svg",
+    "mark": "/ventures/radar/mark.svg",
+    "href": "/radar/",
+    "cta": "Read Toa Radar",
+    "external": false,
+    "featured": false,
+    "hidden": false
+  },
+  {
     "id": "plugins",
     "name": "Unreal Engine Plugins",
     "kicker": "Products",

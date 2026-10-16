@@ -3,6 +3,7 @@ import BaseLayout        from '../layouts/BaseLayout.astro';
 import Logo              from '../components/Logo.astro';
 import HeroConstellation from '../components/HeroConstellation.astro';
 import ConsolePortal     from '../components/ConsolePortal.astro';
+import RadarTeaser       from '../components/RadarTeaser.astro';
 import education      from '../data/education.json';
 import experience     from '../data/experience.json';
 import technologies   from '../data/technologies.json';
@@ -39,7 +40,9 @@ const featuredVenture = shownVentures.find(v => v.featured);
 // The games get a row of their own, led by their key art; a text card would
 // throw away the one thing a game can show at a glance.
 const gameVentures  = shownVentures.filter(v => !v.featured && v.kind === 'game');
-const otherVentures = shownVentures.filter(v => !v.featured && v.kind !== 'game');
+// Toa Radar changes every day, so it gets a live window rather than a card.
+const radarVenture  = shownVentures.find(v => v.kind === 'publication');
+const otherVentures = shownVentures.filter(v => !v.featured && !v.kind);
 
 // Derived so the plugins card can never drift out of sync with plugins.json.
 const visiblePlugins = pluginsData.filter(p => !p.hidden);
@@ -390,6 +393,17 @@ const pgGlyphs = (() => {
               );
             })}
           </div>
+        )}
+
+        {radarVenture && (
+          <RadarTeaser
+            name={radarVenture.name}
+            kicker={radarVenture.kicker}
+            state={radarVenture.state}
+            line={radarVenture.tagline ?? radarVenture.desc}
+            href={radarVenture.href}
+            cta={radarVenture.cta}
+          />
         )}
 
         <div class="venture-grid">
