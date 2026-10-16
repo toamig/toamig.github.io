@@ -18,8 +18,14 @@
 ::view-transition-old(root),
 ::view-transition-new(root) { animation-duration: .3s; }
 
-/* Layers stack in document order, which would put any named tile or banner
-   over the fixed header; keep the header on top. */
+/* Layers stack in the order they were found, and a layer only the new page
+   has goes on top of all of them. Moving between two moments (or projects)
+   gives the incoming banner its own new name, so it would cover the title and
+   back link while it fades in. Pin the order instead: art at the bottom, the
+   text that sits on it above, the header above everything. */
+::view-transition-group(work-intro),
+::view-transition-group(work-back),
+::view-transition-group(*.work-body) { z-index: 5; }
 ::view-transition-group(site-header) { z-index: 10; }
 
 /* The tile and the banner have different shapes; cover both snapshots so the
