@@ -1,0 +1,204 @@
+/* ─── Polyglyph mock (components/PolyglyphMock.astro) ───────────────────────────────────────────────────────
+   Redrawn from the product's own landing page. Its personality is the brand
+   glyph field (six writing systems as real characters) behind a single line of
+   game prose resolving into another language, not a stats dashboard. Tokens
+   are the product's: canvas #0e141d, panel #11161d, approved #49c884,
+   review #5b9bf0, drafting blue #2563eb. */
+.pg-stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 38px 28px;
+  overflow: hidden;
+  background: radial-gradient(ellipse 95% 80% at 50% 6%, #16203a 0%, #0d1220 52%, #080b11 100%);
+}
+/* The two glows the product hero runs on: blue for the AI draft, green for the
+   human sign-off it resolves into. */
+.pg-stage::before,
+.pg-stage::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(46px);
+  pointer-events: none;
+}
+.pg-stage::before {
+  top: -22%; left: -12%;
+  width: 68%; height: 68%;
+  background: rgba(37,99,235,.30);
+}
+.pg-stage::after {
+  bottom: -26%; right: -14%;
+  width: 60%; height: 60%;
+  background: rgba(65,192,125,.16);
+}
+
+.pg-field { position: absolute; inset: 0; pointer-events: none; }
+.pg-glyph {
+  position: absolute;
+  line-height: 1;
+  color: #7ba6ff;
+  opacity: var(--o);
+  transform: translate(-50%, -50%) rotate(var(--rot));
+  font-family: var(--font-mono), 'Segoe UI', 'Yu Gothic UI', 'Malgun Gothic', system-ui, sans-serif;
+  user-select: none;
+}
+/* A handful of glyphs take a single slow breath on staggered offsets, the way
+   the product's field does, rather than the whole grid blinking together. */
+@keyframes pg-glyph-pulse {
+  0%, 18%, 100% { opacity: var(--o); color: #7ba6ff; text-shadow: none; }
+  6%, 11% {
+    opacity: calc(var(--o) + .55);
+    color: #2563eb;
+    text-shadow: 0 0 6px rgba(37,99,235,.9), 0 0 24px rgba(37,99,235,.55);
+  }
+}
+.pg-glyph.is-pulsing { animation: pg-glyph-pulse 11s ease-in-out infinite; }
+
+/* The hero card: one string, mid-translation. */
+.pg-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 320px;
+  padding: 15px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: #0e141d;
+  box-shadow: 0 35px 80px -30px rgba(0,0,0,.9);
+  transition: transform .35s cubic-bezier(.2,.7,.2,1);
+}
+
+.pg-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+}
+.pg-key {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+.pg-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #49c884;
+}
+.pg-live i {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: #49c884;
+  animation: pg-blink 2s ease-in-out infinite;
+}
+@keyframes pg-blink { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+
+.pg-label {
+  margin: 12px 0 0;
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #475569;
+}
+.pg-source {
+  margin: 4px 0 0;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: #e2e8f0;
+}
+
+.pg-target {
+  margin-top: 11px;
+  padding: 11px;
+  border-radius: 11px;
+  border: 1px solid rgba(255,255,255,.06);
+  background: #11161d;
+}
+.pg-target-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.pg-code { font-family: var(--font-mono); font-size: 10.5px; font-weight: 500; color: #cbd5e1; }
+.pg-status {
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.pg-status.is-approved { background: #12281d; color: #49c884; }
+.pg-status.is-review   { background: #15243a; color: #5b9bf0; }
+
+/* The signature moment: a translation settling into place word by word rather
+   than swapping. Only opacity, transform and blur animate, so the line never
+   reflows mid-resolve. */
+.pg-line {
+  margin: 0;
+  min-height: 2.4em;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: #f8fafc;
+}
+@keyframes pg-resolve {
+  from { opacity: 0; transform: translateY(.8em) scale(.92); filter: blur(7px); }
+  to   { opacity: 1; transform: none; filter: blur(0); }
+}
+.pg-word {
+  display: inline-block;
+  animation: pg-resolve 560ms cubic-bezier(.22, 1, .36, 1) both;
+}
+.pg-drafted {
+  margin: 7px 0 0;
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  color: #475569;
+}
+
+.pg-progress-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 12px 0 5px;
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+.pg-approved { color: #49c884; }
+.pg-bar {
+  display: flex;
+  height: 5px;
+  border-radius: 100px;
+  background: #1e2832;
+  overflow: hidden;
+}
+.pg-bar-a { width: 67%; background: #41c07d; }
+.pg-bar-r { width: 22%; background: #5b9bf0; }
+
+/* The glyphs' breathing, the live dot and the word-by-word resolve are all
+   decoration; with reduced motion the card simply shows its text. */
+@media (prefers-reduced-motion: reduce) {
+  .pg-glyph.is-pulsing, .pg-live i, .pg-word { animation: none; }
+  .pg-card { transition: none; }
+}
+

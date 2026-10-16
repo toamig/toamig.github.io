@@ -4,7 +4,9 @@
 // systems, straight from frontend/src/lib/glyphs.ts) sitting behind one line of
 // game prose that resolves into a new language. The string, the locales, the
 // drafting model and the status colours are all the product's own. Styles are
-// the .pg-* rules in global.css; the locale cycle runs in src/scripts/home.ts.
+// in styles/polyglyph-mock.css; the locale cycle runs in src/scripts/home.ts.
+import '../styles/polyglyph-mock.css';
+
 const PG_SOURCE = 'The dragon awaits beyond the gate.';
 const PG_TARGETS = [
   { code: 'de',    text: 'Der Drache wartet jenseits des Tors.', status: 'approved' },

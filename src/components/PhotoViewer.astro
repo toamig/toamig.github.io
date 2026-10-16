@@ -1,0 +1,64 @@
+---
+// A full-screen photo viewer for a set of photos (a Timeline moment's, today).
+// Anything with data-pv-open="<index>" opens it at that photo; if that element
+// holds an <img>, the photo grows out of it, and closing shrinks it back into
+// the photo's own thumbnail on the page. Arrows, swipe, the strip and the keys
+// move between photos; Escape, the close button or a click on the backdrop
+// closes. It shows the small copy at once and the original as soon as it has
+// loaded. Behaviour in scripts/photo-viewer.ts, styles in styles/photo-viewer.css.
+import '../styles/photo-viewer.css';
+
+interface Props {
+  photos: { src: string; thumb: string; alt: string }[];
+  title: string;
+}
+const { photos, title } = Astro.props;
+const many = photos.length > 1;
+---
+{photos.length > 0 && (
+  <dialog class="pv" data-pv aria-label={`Photos from ${title}`}>
+    <div class="pv-top">
+      <p class="pv-count" aria-live="polite"><span data-pv-index>1</span> of {photos.length}</p>
+      <p class="pv-title">{title}</p>
+      <div class="pv-tools">
+        <a class="pv-tool" data-pv-original href={photos[0].src} target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /></svg>
+          <span>Original</span>
+        </a>
+        <button class="pv-tool pv-close" type="button" data-pv-close aria-label="Close" autofocus>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="pv-stage" data-pv-stage>
+      {many && (
+        <button class="pv-nav pv-prev" type="button" data-pv-step="-1" aria-label="Previous photo">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
+        </button>
+      )}
+      <img class="pv-img" data-pv-img alt="" draggable="false" />
+      {many && (
+        <button class="pv-nav pv-next" type="button" data-pv-step="1" aria-label="Next photo">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+        </button>
+      )}
+    </div>
+
+    {many && (
+      <div class="pv-strip" data-pv-strip>
+        {photos.map((p, i) => (
+          <button class="pv-thumb" type="button" data-pv-go={i} aria-label={`Photo ${i + 1}`}>
+            <img src={p.thumb} alt="" loading="lazy" decoding="async" />
+          </button>
+        ))}
+      </div>
+    )}
+
+    <script type="application/json" data-pv-data set:html={JSON.stringify(photos)}></script>
+  </dialog>
+)}
+
+<script>
+  import '../scripts/photo-viewer';
+</script>

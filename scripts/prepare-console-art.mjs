@@ -95,6 +95,14 @@ for (const e of events) {
   derive(source, `public/tiles/moment-${e.id}.webp`, art => art.resize(560, 400, { fit: 'cover' }).webp({ quality: 80 }));
   derive(source, `public/tiles/moment-${e.id}-wide.webp`, art => art.resize({ width: 1800, withoutEnlargement: true }).webp({ quality: 80 }));
 }
+// Every photo of a moment, small, for its page's gallery and the photo viewer's strip. The viewer
+// itself shows the originals; this copy is also what it shows while an original loads.
+for (const e of events) {
+  for (const [n, image] of (e.images || []).entries()) {
+    if (!raster(image)) continue;
+    derive(`public/${image.replace(/^\//, '')}`, `public/tiles/moment-${e.id}-${n}.webp`, photo => photo.resize({ width: 480, withoutEnlargement: true }).webp({ quality: 78 }));
+  }
+}
 for (const v of ventures.filter(v => !v.hidden)) {
   if (raster(v.image)) derive(`public${v.image}`, `public/tiles/${v.id}.webp`, tile, false);
   if (raster(v.mark)) derive(`public${v.mark}`, `public/tiles/${v.id}-thumb.webp`, markThumb, false);

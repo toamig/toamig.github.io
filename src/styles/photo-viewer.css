@@ -1,0 +1,176 @@
+/* ─── Photo viewer (components/PhotoViewer.astro) ──────────────────────────────
+   A modal <dialog> over the whole window: the count, the title and the tools
+   on top, the photo in the middle with its arrows, the strip below. */
+
+/* The page keeps its scrollbar's room while the viewer is open, so locking
+   the scroll never shifts the text underneath sideways (and back on close). */
+html:has(.pv) { scrollbar-gutter: stable; }
+html:has(.pv[open]) { overflow: hidden; }
+
+/* While a photo morphs in or out it is the only thing that moves. The page's
+   other transition layers (header, banner, title, back link) would otherwise
+   be lifted above the viewer for the length of the morph and drop back under
+   it at the end, which reads as text flashing across the photo. */
+html.pv-morphing *:not([data-pv-img]):not([data-pv-source]) { view-transition-name: none !important; }
+::view-transition-group(pv-photo) { z-index: 10; }
+/* The page's picture and the viewer's photo have different shapes (a 4:3 crop,
+   a full portrait). Both fill the moving frame for the whole morph, so no part
+   of it is ever covered by a single half-faded image with the page showing
+   through. */
+::view-transition-old(pv-photo),
+::view-transition-new(pv-photo) {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  overflow: clip;
+}
+html:active-view-transition-type(photo)::view-transition-group(*) {
+  animation-duration: .42s;
+  animation-timing-function: cubic-bezier(.2, .7, .2, 1);
+}
+html:active-view-transition-type(photo)::view-transition-old(root),
+html:active-view-transition-type(photo)::view-transition-new(root) { animation-duration: .24s; }
+
+.pv {
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: rgba(5, 11, 22, .96);
+  color: #eef3fa;
+  font-family: var(--font);
+}
+.pv[open] {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+.pv::backdrop { background: rgba(5, 11, 22, .6); }
+/* No CSS entrance animation here on purpose: one keyed to [open] restarts
+   from transparent whenever anything around it changes (such as the morph
+   finishing), flashing the page through the viewer for a frame. When there is
+   no morph, scripts/photo-viewer.ts fades the viewer in once, by script. */
+
+.pv-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px clamp(14px, 3vw, 28px);
+}
+.pv-count {
+  flex: 1 1 0;
+  margin: 0;
+  color: rgba(226, 235, 246, .7);
+  font: 500 13px/1 var(--font-mono);
+}
+.pv-title {
+  flex: 2 1 0;
+  overflow: hidden;
+  margin: 0;
+  text-align: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 15px;
+  font-weight: 600;
+}
+.pv-tools { flex: 1 1 0; display: flex; justify-content: flex-end; gap: 8px; }
+.pv-tool {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 42px;
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(163, 190, 226, .26);
+  background: rgba(255, 255, 255, .04);
+  color: #eef3fa;
+  font: 500 14px/1 var(--font);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color .2s, border-color .2s;
+}
+.pv-tool:hover { background: rgba(255, 255, 255, .1); border-color: rgba(255, 255, 255, .4); }
+.pv-close { padding: 0; }
+.pv-tool:focus-visible,
+.pv-nav:focus-visible,
+.pv-thumb:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* The stage is a size container, so the photo can be held to its box in both
+   directions (a percentage height would not resolve against a grid row). */
+.pv-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 0;
+  padding: 4px clamp(10px, 7vw, 104px);
+  container-type: size;
+  touch-action: pan-y;
+}
+.pv-img {
+  max-width: 100cqw;
+  max-height: 100cqh;
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 30px 80px -30px rgba(0, 0, 0, .85);
+  user-select: none;
+  -webkit-user-select: none;
+}
+.pv-nav {
+  position: absolute;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  border: 1px solid rgba(163, 190, 226, .26);
+  background: rgba(10, 22, 40, .75);
+  color: #fff;
+  cursor: pointer;
+  translate: 0 -50%;
+  transition: background-color .2s, border-color .2s, transform .3s cubic-bezier(.2, .7, .2, 1);
+}
+.pv-nav:hover { background: rgba(19, 40, 74, .95); border-color: rgba(255, 255, 255, .45); }
+.pv-prev { left: clamp(8px, 2vw, 28px); }
+.pv-next { right: clamp(8px, 2vw, 28px); }
+.pv-prev:hover { transform: translateX(-2px); }
+.pv-next:hover { transform: translateX(2px); }
+
+.pv-strip {
+  display: flex;
+  justify-content: safe center;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 12px clamp(14px, 3vw, 28px) 18px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(163, 190, 226, .3) transparent;
+}
+.pv-thumb {
+  flex: none;
+  width: 68px; height: 50px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 8px;
+  background: #13284a;
+  cursor: pointer;
+  opacity: .5;
+  transition: opacity .25s, box-shadow .25s;
+}
+.pv-thumb:hover { opacity: .85; }
+.pv-thumb[aria-current] { opacity: 1; box-shadow: 0 0 0 2px var(--accent); }
+.pv-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+/* On a phone the photo gets the whole width; swiping moves between photos. */
+@media (max-width: 560px) {
+  .pv-nav, .pv-title { display: none; }
+  .pv-stage { padding: 4px 8px; }
+  .pv-tool span { display: none; }
+  .pv-tool { padding: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pv-tool, .pv-nav, .pv-thumb { transition: none; }
+}

@@ -22,6 +22,8 @@ export interface Moment {
   tags: MomentTag[];
   /** Original photos, in order. */
   images: string[];
+  /** Every photo with its small copy, for the gallery and the photo viewer. */
+  photos: { src: string; thumb: string; alt: string }[];
   /** The first photo, cut for the card. */
   thumb?: string;
   /** The first photo at banner size, for the moment's page. */
@@ -58,6 +60,14 @@ function toMoment(e: (typeof events)[number]): Moment {
     paragraphs: Array.isArray(ext) ? ext.filter(Boolean) : (typeof ext === 'string' && ext.trim() ? [ext] : []),
     tags: (Array.isArray(ev.tags) ? ev.tags : ev.category ? [ev.category] : []).map(tagInfo),
     images,
+    // Indexed against the raw list, as the image script names the small copies.
+    photos: (ev.images ?? [])
+      .map((img: string, n: number) => img && {
+        src: asset(img),
+        thumb: raster(img) ? `/tiles/moment-${e.id}-${n}.webp` : asset(img),
+      })
+      .filter(Boolean)
+      .map((p: { src: string; thumb: string }, n: number) => ({ ...p, alt: `${e.title}, photo ${n + 1}` })),
     thumb: raster(first) ? `/tiles/moment-${e.id}.webp` : undefined,
     banner: raster(first) ? `/tiles/moment-${e.id}-wide.webp` : undefined,
     links: (ev.links ?? []).filter((l: any) => l?.url)

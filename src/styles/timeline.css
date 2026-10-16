@@ -241,6 +241,10 @@
     linear-gradient(180deg, #0f2240, #0a1628);
 }
 .wp-hero.is-plain { height: clamp(220px, 34vh, 340px); }
+/* The way back on the left, the photos on the right. */
+.moment-page .wp-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.mp-photos { gap: 8px; padding: 0 16px; font-family: var(--font); cursor: pointer; }
+.mp-photos::before { content: none; }
 .mp-tags { display: inline-flex; flex-wrap: wrap; gap: 6px 14px; margin-left: 14px; color: var(--hn-sub); font-weight: 500; }
 .mp-share { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px; }
 .mp-body {
