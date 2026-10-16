@@ -5,6 +5,7 @@ import HeroConstellation from '../components/HeroConstellation.astro';
 import ConsolePortal     from '../components/ConsolePortal.astro';
 import WorkGrid          from '../components/home/WorkGrid.astro';
 import CareerList        from '../components/home/CareerList.astro';
+import TransitionTiles   from '../components/TransitionTiles.astro';
 import education      from '../data/education.json';
 import experience     from '../data/experience.json';
 import technologies   from '../data/technologies.json';
@@ -35,8 +36,8 @@ const currentJob = experience.find(e => (e as any).current ?? e.period?.includes
 const byId = (id: string) => work.find(w => w.id === id);
 const nowItems = [
   currentJob && {
-    title: `${currentJob.role} at ${currentJob.name}`,
-    sub: `Since ${currentJob.period.split(' - ')[0]}`,
+    title: currentJob.role,
+    sub: `at ${currentJob.name} since ${currentJob.period.split(' - ')[0]}`,
     href: '#career',
     thumb: currentJob.logo,
     logo: true,
@@ -77,62 +78,10 @@ const tools = technologies.filter(t => !(t as any).cvOnly && t.src);
   ogImageAlt="Miguel Vieira (Toamig), game engineer and tech lead"
   ogImageWidth={1200}
   ogImageHeight={630}
-  bodyClass="home"
+  bodyClass="theme-dark home"
 >
-  <!-- Page transitions to and from /work/<id>/ (styles/work-transition.css).
-       Only the tile involved gets transition names, set at the moment of
-       navigating: pageswap when leaving for a project, pagereveal when coming
-       back from one. Naming every tile up front would lift them all into their
-       own layers and fade each one separately. The expect link holds the first
-       frame until the grid is parsed, so the tile exists when pagereveal runs. -->
-  <link slot="head" rel="expect" href="#career" blocking="render" />
-  <script is:inline slot="head">
-    (() => {
-      // window.__afterTransition (read via scripts/after-transition.ts) lets
-      // heavy startup wait until an incoming transition has finished.
-      let settle;
-      window.__afterTransition = new Promise((resolve) => { settle = resolve; });
-      if (!('onpagereveal' in window)) settle();
-
-      const workId = (url) => {
-        try {
-          const m = new URL(url, location.href).pathname.match(/^\/work\/([^/]+)\/?$/);
-          return m ? m[1] : null;
-        } catch { return null; }
-      };
-      const clear = () => document.querySelectorAll('.wk-art, .wk-body').forEach((el) => {
-        el.style.removeProperty('view-transition-name');
-        el.style.removeProperty('view-transition-class');
-      });
-      const mark = (id) => {
-        clear();
-        const tile = id && document.getElementById('w-' + id);
-        if (!tile) return;
-        const art = tile.querySelector('.wk-art');
-        const body = tile.querySelector('.wk-body');
-        if (art) {
-          art.style.setProperty('view-transition-name', 'work-' + id);
-          art.style.setProperty('view-transition-class', 'work-art');
-        }
-        if (body) {
-          body.style.setProperty('view-transition-name', 'work-body');
-          body.style.setProperty('view-transition-class', 'work-body');
-        }
-      };
-      addEventListener('pageswap', (e) => {
-        if (e.viewTransition && e.activation) mark(workId(e.activation.entry.url));
-      });
-      addEventListener('pagereveal', (e) => {
-        if (!e.viewTransition) { settle(); return; }
-        const from = window.navigation && navigation.activation && navigation.activation.from;
-        const id = from ? workId(from.url) : null;
-        mark(id);
-        // Coming back from a project has its own, quicker choreography.
-        if (id && e.viewTransition.types) e.viewTransition.types.add('to-grid');
-        e.viewTransition.finished.finally(() => { clear(); settle(); });
-      });
-    })();
-  </script>
+  <!-- Tile-to-page transitions with /work/<id>/; see the component. -->
+  <TransitionTiles slot="head" base="/work/" idPrefix="w-" namePrefix="work-" expect="#career" />
 
   <!-- ── Hero ─────────────────────────────────────────────────────── -->
   <div class="front-page has-now">

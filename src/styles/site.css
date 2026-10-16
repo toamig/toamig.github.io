@@ -1,0 +1,145 @@
+/* ─── The site's dark field ─────────────────────────────────────────────────────
+   Shared by every page in the new structure (home, /work/, /Timeline/, /cv/):
+   the colour tokens, the section frame and its big headings, the text link and
+   the filter chips. A page opts in with `theme-dark` on <body> (BaseLayout's
+   bodyClass); the .hn-* classes are namespaced, so they cost nothing elsewhere.
+   Page-specific styling lives in its own sheet (home.css, work.css,
+   timeline.css, cv.css). */
+
+body.theme-dark {
+  --hn-bg:          #0a1628;
+  --hn-raise:       #0e1e36;
+  --hn-raise-2:     #13284a;
+  --hn-line:        rgba(163, 190, 226, .13);
+  --hn-line-strong: rgba(163, 190, 226, .26);
+  --hn-text:        #eef3fa;
+  --hn-sub:         #a7b7cc;
+  --hn-muted:       #8396b0;
+  --hn-ease:        cubic-bezier(.2, .7, .2, 1);
+  background: var(--hn-bg);
+  color: var(--hn-text);
+}
+
+/* Smooth in-page scrolling, switched on by the page script once it has landed:
+   on from the start, it would also glide to a #fragment on arrival, and that
+   glide runs under the page transition back from a detail page. */
+html.is-smooth { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html.is-smooth { scroll-behavior: auto; }
+}
+
+/* ─── Section frame ────────────────────────────────────────────────────────── */
+.hn-section {
+  padding: clamp(56px, 6.5vw, 92px) 0;
+  scroll-margin-top: 72px;
+  overflow: visible;
+}
+.hn-wrap {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 clamp(16px, 4vw, 48px);
+}
+.hn-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 440px);
+  align-items: end;
+  gap: 20px 48px;
+  margin-bottom: clamp(24px, 3.4vw, 40px);
+}
+.hn-title {
+  margin: 0;
+  text-align: left;
+  color: var(--hn-text);
+  font-family: var(--font-display);
+  font-size: clamp(52px, 8.4vw, 112px);
+  font-weight: 640;
+  line-height: .88;
+  letter-spacing: -.05em;
+  font-variation-settings: 'opsz' 96, 'wght' 640;
+}
+/* A datum, not a decoration: the count of projects, the year the career starts. */
+.hn-datum {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;  /* moves under the title whole, never split across it */
+  top: -.1em;
+  margin-left: .22em;
+  vertical-align: top;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1;
+  color: var(--accent);
+}
+.hn-lede {
+  margin: 0;
+  max-width: 46ch;
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--hn-sub);
+}
+.hn-lede-group { display: grid; gap: 14px; justify-items: start; }
+.hn-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--hn-text);
+  text-decoration: none;
+  padding-bottom: 2px;
+  background: linear-gradient(var(--accent), var(--accent)) 0 100% / 100% 1px no-repeat;
+  transition: background-size .35s var(--hn-ease), color .2s;
+}
+.hn-link::after {
+  content: '';
+  width: 7px; height: 7px;
+  border-top: 1.5px solid currentColor;
+  border-right: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform .3s var(--hn-ease);
+}
+.hn-link:hover { color: #fff; background-size: 100% 2px; }
+.hn-link:hover::after { transform: translateX(3px) rotate(45deg); }
+.hn-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 2px; }
+
+@media (max-width: 860px) {
+  .hn-head { grid-template-columns: minmax(0, 1fr); align-items: start; }
+}
+
+/* ─── Filter chips ─────────────────────────────────────────────────────────── */
+.hn-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.hn-chip {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid var(--hn-line-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--hn-sub);
+  font: 500 14px/1 var(--font);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color .25s, color .25s, border-color .25s;
+}
+.hn-n { font: 500 12px/1 var(--font-mono); color: var(--hn-muted); transition: color .25s; }
+.hn-chip:hover { color: var(--hn-text); border-color: rgba(255,255,255,.4); }
+.hn-chip[aria-pressed="true"] { background: var(--hn-text); border-color: var(--hn-text); color: var(--hn-bg); }
+.hn-chip[aria-pressed="true"] .hn-n { color: #50627c; }
+.hn-chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+/* A coloured dot for chips that stand for a category with its own colour. */
+.hn-dot {
+  flex: none;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--dot, var(--accent));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hn-link, .hn-link::after, .hn-chip { transition: none; }
+}

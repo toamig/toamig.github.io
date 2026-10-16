@@ -37,11 +37,22 @@ const ogImage = item.image && !item.image.endsWith('.svg') ? `https://toamig.com
   ogUrl={pageUrl}
   ogImage={ogImage}
   ogImageAlt={item.imageAlt || item.name}
-  bodyClass="work-page"
+  bodyClass="theme-dark work-page"
 >
   <main class="wp">
     <div class="wp-hero">
       <div class="wp-art" style={`view-transition-name:work-${item.id};view-transition-class:work-art`}>
+        {/* The tile-sized copy, already cached from the grid, sits under the
+            full image, so the morph from the tile has a picture from its
+            first frame and the sharper one simply takes over when it lands. */}
+        {item.tile && (
+          <img
+            src={item.tile}
+            alt=""
+            aria-hidden="true"
+            style={item.focus ? `object-position:${item.focus}` : undefined}
+          />
+        )}
         {item.image && (
           <img
             src={item.image}

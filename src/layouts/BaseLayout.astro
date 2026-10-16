@@ -3,6 +3,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import MusicPlayer from '../components/MusicPlayer.astro';
 import '../styles/global.css';
+import '../styles/site.css';
 
 interface Props {
   title: string;
@@ -148,12 +149,12 @@ const jsonLd = {
         const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
         // ── Scroll reveals ─────────────────────────────────────────────
-        // Targets cover both server-rendered content and the Timeline's
-        // client-rendered event cards (picked up via MutationObserver).
+        // Targets the older pages' sections and cards, including any added
+        // after load (picked up via MutationObserver). The homepage, Timeline
+        // and CV run their own motion and use none of these classes.
         const SELECTOR = [
           '.section-header', '.extended-card', '.tech-category',
           '.project-card', '.play-card', '.about-content',
-          '.event-card', '.timeline-year-mark', '.cv-card',
           '.role-card', '.venture-hero', '.venture-card', '.venture-game',
           '.study-card', '.contact-panel',
         ].join(',');

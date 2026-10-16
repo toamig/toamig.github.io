@@ -18,13 +18,13 @@ const FEED = import.meta.env.DEV ? 'https://toamig.com/radar/latest.json' : '/ra
       </p>
     </div>
 
-    <div class="wk-filters" role="group" aria-label="Show work from">
-      <button class="wk-chip" type="button" data-filter="all" aria-pressed="true">
-        All <span class="wk-n">{work.length}</span>
+    <div class="hn-chips wk-filters" role="group" aria-label="Show work from">
+      <button class="hn-chip wk-chip" type="button" data-filter="all" aria-pressed="true">
+        All <span class="hn-n">{work.length}</span>
       </button>
       {SHELVES.map(s => (
-        <button class="wk-chip" type="button" data-filter={s.id} aria-pressed="false">
-          {s.label} <span class="wk-n">{shelfCount(s.id)}</span>
+        <button class="hn-chip wk-chip" type="button" data-filter={s.id} aria-pressed="false">
+          {s.label} <span class="hn-n">{shelfCount(s.id)}</span>
         </button>
       ))}
     </div>
@@ -42,7 +42,7 @@ const FEED = import.meta.env.DEV ? 'https://toamig.com/radar/latest.json' : '/ra
             ? `--tile-accent:${w.palette.accent};--tile-glow:${w.palette.glow}`
             : undefined}
         >
-          <div class="wk-art">
+          <div class="wk-art" data-vt-art>
             {w.id === 'polyglyph' ? (
               <PolyglyphMock />
             ) : w.id === 'plugins' ? (
@@ -102,7 +102,7 @@ const FEED = import.meta.env.DEV ? 'https://toamig.com/radar/latest.json' : '/ra
             ) : null}
           </div>
 
-          {w.id !== 'radar' && <div class="wk-body">
+          {w.id !== 'radar' && <div class="wk-body" data-vt-body>
             <p class="wk-label">
               <span>{w.label}</span>
               {w.state && <span class="wk-state">{w.state}</span>}

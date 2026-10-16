@@ -1,0 +1,72 @@
+---
+// Page transitions between a page of tiles (the homepage Work grid, the
+// Timeline) and their detail pages (styles/work-transition.css). Only the tile
+// involved gets transition names, set at the moment of navigating: pageswap
+// when leaving for a detail page, pagereveal when coming back from one. Naming
+// every tile up front would lift them all into layers of their own and fade
+// each one separately.
+//
+// A tile is found by id (`${idPrefix}${id}`) and marks its picture with
+// data-vt-art and its caption with data-vt-body. The picture is named
+// `${namePrefix}${id}`, the same name the detail page gives its banner.
+//
+// Also creates window.__afterTransition (scripts/after-transition.ts), so the
+// page's heavy startup can wait for an incoming transition to finish, and tags
+// a return from a detail page "to-grid" for its quicker choreography.
+//
+// Goes in BaseLayout's head slot: <TransitionTiles slot="head" ... />.
+interface Props {
+  /** Path the detail pages live under, e.g. "/work/". */
+  base: string;
+  idPrefix: string;
+  namePrefix: string;
+  /** An element after the tiles; the first frame waits until it is parsed. */
+  expect: string;
+}
+const { base, idPrefix, namePrefix, expect } = Astro.props;
+---
+<link rel="expect" href={expect} blocking="render" />
+<script is:inline define:vars={{ base, idPrefix, namePrefix }}>
+  let settle;
+  window.__afterTransition = new Promise((resolve) => { settle = resolve; });
+  if (!('onpagereveal' in window)) settle();
+
+  const detailId = (url) => {
+    try {
+      const path = new URL(url, location.href).pathname;
+      if (!path.toLowerCase().startsWith(base.toLowerCase())) return null;
+      const id = decodeURIComponent(path.slice(base.length).replace(/\/$/, ''));
+      return id && !id.includes('/') ? id : null;
+    } catch { return null; }
+  };
+  const clear = () => document.querySelectorAll('[data-vt-art], [data-vt-body]').forEach((el) => {
+    el.style.removeProperty('view-transition-name');
+    el.style.removeProperty('view-transition-class');
+  });
+  const mark = (id) => {
+    clear();
+    const tile = id && document.getElementById(idPrefix + id);
+    if (!tile) return false;
+    const art = tile.querySelector('[data-vt-art]');
+    const body = tile.querySelector('[data-vt-body]');
+    if (art) {
+      art.style.setProperty('view-transition-name', namePrefix + id);
+      art.style.setProperty('view-transition-class', 'work-art');
+    }
+    if (body) {
+      body.style.setProperty('view-transition-name', 'work-body');
+      body.style.setProperty('view-transition-class', 'work-body');
+    }
+    return true;
+  };
+  addEventListener('pageswap', (e) => {
+    if (e.viewTransition && e.activation) mark(detailId(e.activation.entry.url));
+  });
+  addEventListener('pagereveal', (e) => {
+    if (!e.viewTransition) { settle(); return; }
+    const from = window.navigation && navigation.activation && navigation.activation.from;
+    const found = mark(from ? detailId(from.url) : null);
+    if (found && e.viewTransition.types) e.viewTransition.types.add('to-grid');
+    e.viewTransition.finished.finally(() => { clear(); settle(); });
+  });
+</script>

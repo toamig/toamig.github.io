@@ -86,6 +86,15 @@ for (const p of projects) {
 const shownPlugins = plugins.filter(p => !p.hidden);
 for (const p of shownPlugins) derive(`public${p.cover}`, `public/tiles/plugin-${slug(p.name)}.webp`, tile);
 if (shownPlugins[0]) derive(`public${shownPlugins[0].logo}`, 'public/tiles/plugins-thumb.webp', markThumb, false);
+// Timeline moments (src/data/timeline.ts): a card thumbnail and a banner for the moment's page,
+// both from its first photo. Phone photos run to 4000px, and the cards show them about 200px wide.
+for (const e of events) {
+  const first = (e.images || [])[0];
+  if (!raster(first)) continue;
+  const source = `public/${first.replace(/^\//, '')}`;
+  derive(source, `public/tiles/moment-${e.id}.webp`, art => art.resize(560, 400, { fit: 'cover' }).webp({ quality: 80 }));
+  derive(source, `public/tiles/moment-${e.id}-wide.webp`, art => art.resize({ width: 1800, withoutEnlargement: true }).webp({ quality: 80 }));
+}
 for (const v of ventures.filter(v => !v.hidden)) {
   if (raster(v.image)) derive(`public${v.image}`, `public/tiles/${v.id}.webp`, tile, false);
   if (raster(v.mark)) derive(`public${v.mark}`, `public/tiles/${v.id}-thumb.webp`, markThumb, false);

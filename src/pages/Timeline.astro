@@ -1,659 +1,101 @@
 ---
+// The Timeline: who Miguel is outside the CV, then every moment, grouped by
+// year along a rail, in the same structure as the homepage (styles/site.css)
+// with its own rules in styles/timeline.css. Moments are rendered here at build
+// time; scripts/timeline.ts filters and re-sorts them. Each card opens the
+// moment's page, its photo growing into the page banner.
 import BaseLayout        from '../layouts/BaseLayout.astro';
 import HeroConstellation from '../components/HeroConstellation.astro';
-import events       from '../data/events.json';
-import profile      from '../data/profile.json';
-import timelineTags from '../data/timelineTags.json';
+import TransitionTiles   from '../components/TransitionTiles.astro';
+import profile           from '../data/profile.json';
+import { moments, years, filterTags } from '../data/timeline';
+import '../styles/timeline.css';
+import '../styles/work-transition.css';
 
-const filterTags = timelineTags.filter(t => t.filter);
+const first = years[years.length - 1]?.year;
 ---
 <BaseLayout
   title="Miguel Vieira (Toamig) · Timeline"
   description="Learn more about Miguel Vieira: game developer, traveller, and serial hobbyist."
   ogUrl="https://toamig.com/Timeline/"
+  bodyClass="theme-dark timeline-page"
 >
-  <!-- ── About Hero ────────────────────────────────────────────────── -->
-  <section id="about-2">
+  <TransitionTiles slot="head" base="/Timeline/" idPrefix="t-" namePrefix="moment-" expect="#tl-end" />
+
+  <section class="tl-intro" aria-labelledby="tl-title">
     <HeroConstellation />
-    <div class="about-content-2">
-      <img src="/me/IMG_7.JPEG" alt="Miguel Vieira, game engineer and tech lead" class="profile-image" />
-      <div class="about-text-2">
-        <div class="section-header">
-          <p class="section-eyebrow">
-            <span class="num">01</span>
-            <span class="sep">·</span>
-            <span class="tag">Who</span>
-          </p>
-          <h2>About <em>me</em>.</h2>
-        </div>
-        <p class="p1">{profile.timelineAbout.intro}</p>
-        <p class="p2">{profile.timelineAbout.body}</p>
-        <p class="p3">{profile.timelineAbout.closing}</p>
+    <div class="hn-wrap tl-intro-grid">
+      <img class="tl-photo" src="/me/IMG_7.JPEG" alt="Miguel Vieira, game engineer and tech lead" decoding="async" />
+      <div class="tl-intro-text">
+        <h1 class="hn-title" id="tl-title">Timeline<sup class="hn-datum">{moments.length} moments since {first}</sup></h1>
+        <p class="tl-lead">{profile.timelineAbout.intro}</p>
+        <p class="tl-text">{profile.timelineAbout.body}</p>
+        <p class="tl-text">{profile.timelineAbout.closing}</p>
       </div>
-    </div>
-    <div class="scroll-down">
-      <a href="#life-timeline"></a>
     </div>
   </section>
 
-  <!-- ── Life Timeline ─────────────────────────────────────────────── -->
-  <section id="life-timeline">
-    <div class="container">
-      <div class="section-header">
-        <p class="section-eyebrow">
-          <span class="num">02</span>
-          <span class="sep">·</span>
-          <span class="tag">Chronicle</span>
-        </p>
-        <h2>Life <em>timeline</em>.</h2>
-      </div>
-
-      <div class="timeline-controls">
-        <div class="filter-section">
-          <h3>Filter by Category:</h3>
-          <div class="filter-buttons">
-            <button class="filter-btn active" data-category="all">All</button>
-            {filterTags.map(t => (
-              <button class="filter-btn" data-category={t.id}>{t.name}</button>
-            ))}
-          </div>
-        </div>
-        <div class="date-sort-row">
-          <div class="date-filter-section">
-            <label for="year-filter-select">Filter by Date:</label>
-            <select id="year-filter-select">
-              <option value="">All Years</option>
-            </select>
-            <select id="month-filter-select" disabled>
-              <option value="">All Months</option>
-            </select>
-          </div>
-          <div class="sort-section">
-            <button class="sort-toggle-btn" id="sort-toggle" aria-label="Toggle sort order">
-              <span class="sort-label">Sort:</span>
-              <span class="sort-value" id="sort-value">Newest First</span>
+  <section class="hn-section tl" id="moments" aria-label="Moments">
+    <div class="hn-wrap">
+      <div class="tl-controls">
+        <div class="hn-chips" role="group" aria-label="Show moments from">
+          <button class="hn-chip tl-chip" type="button" data-tag="all" aria-pressed="true">
+            All <span class="hn-n">{moments.length}</span>
+          </button>
+          {filterTags.map(t => (
+            <button class="hn-chip tl-chip" type="button" data-tag={t.id} aria-pressed="false" style={`--dot:${t.color}`}>
+              <i class="hn-dot" aria-hidden="true"></i>{t.name} <span class="hn-n">{t.count}</span>
             </button>
-          </div>
+          ))}
+        </div>
+        <button class="hn-chip tl-sort" type="button" data-sort aria-label="Change the order">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4v16M3 16l4 4 4-4M17 20V4M13 8l4-4 4 4" /></svg>
+          <span data-sort-label>Newest first</span>
+        </button>
+      </div>
+
+      <nav class="tl-years" aria-label="Jump to a year" data-tl-years>
+        {years.map(y => <a href={`#y-${y.year}`} data-year-link={y.year}>{y.year}</a>)}
+      </nav>
+
+      <div class="tl-track" data-tl-track>
+        <span class="tl-rail" aria-hidden="true"><span class="tl-rail-fill" data-tl-rail></span></span>
+        <div class="tl-yearlist" data-tl-list>
+          {years.map(y => (
+            <section class="tl-year" id={`y-${y.year}`} data-year={y.year} aria-labelledby={`yl-${y.year}`}>
+              <h2 class="tl-year-label" id={`yl-${y.year}`}>{y.year}</h2>
+              <ol class="tl-list">
+                {y.moments.map(m => (
+                  <li class="tl-item" data-tags={m.tags.map(t => t.id).join(' ')}>
+                    <a class="tl-card" id={`t-${m.id}`} href={`/Timeline/${m.id}/`} style={`--dot:${m.tags[0]?.color ?? '#64748b'}`}>
+                      <span class="tl-node" aria-hidden="true"></span>
+                      {m.thumb && (
+                        <div class="tl-thumb" data-vt-art>
+                          <img src={m.thumb} alt="" decoding="async" />
+                        </div>
+                      )}
+                      <div class="tl-body" data-vt-body>
+                        <p class="tl-meta">
+                          <time datetime={m.date}>{m.shortDate}</time>
+                          {m.tags.map(t => <span class="tl-tag" style={`--dot:${t.color}`}><i class="hn-dot" aria-hidden="true"></i>{t.name}</span>)}
+                        </p>
+                        <h3 class="tl-title">{m.title}</h3>
+                        {m.description && <p class="tl-desc">{m.description}</p>}
+                      </div>
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          ))}
         </div>
       </div>
-
-      <div class="timeline-grid" id="timeline-grid"></div>
-      <div class="no-results" id="no-results" style="display:none;">
-        <p>No events found for the selected filter.</p>
-      </div>
+      <p class="tl-empty" data-tl-empty hidden>Nothing under that filter yet.</p>
+      <span id="tl-end"></span>
     </div>
   </section>
-
-  <!-- Events data — baked at build time -->
-  <script id="events-data" type="application/json" set:html={JSON.stringify(events)}></script>
-  <script id="tags-data"   type="application/json" set:html={JSON.stringify(timelineTags)}></script>
 </BaseLayout>
 
 <script>
-// ── Helpers ──────────────────────────────────────────────────────────────────
-function escapeHtml(s: string = ''): string {
-  return String(s)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-}
-
-function createParagraphsFromText(text: string | string[]): HTMLDivElement {
-  const container = document.createElement('div');
-  container.className = 'event-extended-description';
-  if (!text || (Array.isArray(text) && text.length === 0)) return container;
-  const parts: string[] = Array.isArray(text)
-    ? text
-    : String(text).replace(/\r\n/g, '\n').replace(/\r/g, '\n').split(/\n{2,}/g);
-  parts.forEach(pText => {
-    const p = document.createElement('p');
-    p.innerHTML = escapeHtml(pText).replace(/\n/g, '<br>');
-    container.appendChild(p);
-  });
-  return container;
-}
-
-// ── State ────────────────────────────────────────────────────────────────────
-interface LifeEvent {
-  id: string;
-  date: string;
-  title: string;
-  category?: string;
-  categories?: string[];
-  tags?: string[];
-  description?: string;
-  extendedDescription?: string | string[];
-  expandable?: boolean;
-  images?: string[];
-  links?: { text?: string; label?: string; url: string }[];
-  documents?: { text?: string; label?: string; name?: string; url: string }[];
-}
-
-interface TagDef { id: string; name: string; color: string; filter?: boolean; }
-
-let lifeEvents: LifeEvent[] = [];
-let tagDefs: TagDef[] = [];
-let currentFilter      = 'all';
-let currentSort        = 'date-desc';
-let currentYearFilter  = '';
-let currentMonthFilter = '';
-
-// ── Load ─────────────────────────────────────────────────────────────────────
-function loadEvents() {
-  const el = document.getElementById('events-data');
-  try {
-    lifeEvents = el ? JSON.parse(el.textContent || '[]') : [];
-    if (!Array.isArray(lifeEvents)) lifeEvents = [];
-  } catch (e) {
-    console.warn('events-data parse failed', e);
-    lifeEvents = [];
-  }
-  const tagsEl = document.getElementById('tags-data');
-  try {
-    tagDefs = tagsEl ? JSON.parse(tagsEl.textContent || '[]') : [];
-    if (!Array.isArray(tagDefs)) tagDefs = [];
-  } catch (e) {
-    console.warn('tags-data parse failed', e);
-    tagDefs = [];
-  }
-  initTimeline();
-}
-
-// ── Init ─────────────────────────────────────────────────────────────────────
-function initTimeline() {
-  initLightbox();
-  initShareMenu();
-  renderEvents();
-  setupEventListeners();
-}
-
-// ── Dropdown helpers ──────────────────────────────────────────────────────────
-function getAvailableYears(): string[] {
-  const years = new Set<string>();
-  lifeEvents.forEach(ev => { if (ev.date?.length >= 4) years.add(ev.date.substring(0, 4)); });
-  return Array.from(years).sort((a, b) => b.localeCompare(a));
-}
-function getAvailableMonths(year: string): string[] {
-  const months = new Set<string>();
-  lifeEvents.forEach(ev => {
-    if (ev.date?.length >= 7 && ev.date.substring(0, 4) === year) months.add(ev.date.substring(5, 7));
-  });
-  return Array.from(months).sort((a, b) => a.localeCompare(b));
-}
-function populateYearDropdown() {
-  const sel = document.getElementById('year-filter-select') as HTMLSelectElement | null;
-  if (!sel) return;
-  sel.innerHTML = '<option value="">All Years</option>';
-  getAvailableYears().forEach(y => {
-    const opt = document.createElement('option');
-    opt.value = y; opt.textContent = y;
-    sel.appendChild(opt);
-  });
-}
-function populateMonthDropdown(year: string) {
-  const sel = document.getElementById('month-filter-select') as HTMLSelectElement | null;
-  if (!sel) return;
-  sel.innerHTML = '<option value="">All Months</option>';
-  const names: Record<string, string> = { '01':'January','02':'February','03':'March','04':'April','05':'May','06':'June','07':'July','08':'August','09':'September','10':'October','11':'November','12':'December' };
-  getAvailableMonths(year).forEach(m => {
-    const opt = document.createElement('option');
-    opt.value = m; opt.textContent = names[m] || m;
-    sel.appendChild(opt);
-  });
-}
-
-// ── Event listeners ───────────────────────────────────────────────────────────
-function setupEventListeners() {
-  document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', function(this: HTMLElement) {
-      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      this.classList.add('active');
-      currentFilter = this.dataset.category ?? 'all';
-      renderEvents();
-    });
-  });
-
-  const yearSel  = document.getElementById('year-filter-select')  as HTMLSelectElement | null;
-  const monthSel = document.getElementById('month-filter-select') as HTMLSelectElement | null;
-  if (yearSel) {
-    populateYearDropdown();
-    yearSel.addEventListener('change', function(this: HTMLSelectElement) {
-      currentYearFilter  = this.value;
-      currentMonthFilter = '';
-      if (monthSel) { monthSel.value = ''; }
-      if (currentYearFilter) {
-        populateMonthDropdown(currentYearFilter);
-        if (monthSel) monthSel.disabled = false;
-      } else {
-        if (monthSel) { monthSel.innerHTML = '<option value="">All Months</option>'; monthSel.disabled = true; }
-      }
-      renderEvents();
-    });
-  }
-  if (monthSel) {
-    monthSel.addEventListener('change', function(this: HTMLSelectElement) {
-      currentMonthFilter = this.value;
-      renderEvents();
-    });
-  }
-
-  const sortToggle = document.getElementById('sort-toggle');
-  const sortValue  = document.getElementById('sort-value');
-  if (sortToggle && sortValue) {
-    sortToggle.addEventListener('click', () => {
-      currentSort = currentSort === 'date-desc' ? 'date-asc' : 'date-desc';
-      sortValue.textContent = currentSort === 'date-desc' ? 'Newest First' : 'Oldest First';
-      renderEvents();
-    });
-  }
-
-  const grid = document.getElementById('timeline-grid');
-  if (grid) {
-    grid.addEventListener('keydown', (e) => {
-      const target = (e.target as Element).closest?.('.clickable-card[tabindex]') as HTMLElement | null;
-      if (!target) return;
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); target.click(); }
-    });
-  }
-}
-
-// ── Filter & sort ─────────────────────────────────────────────────────────────
-function getTags(ev: LifeEvent): string[] {
-  if (Array.isArray(ev.tags)) return ev.tags;
-  if (Array.isArray(ev.categories)) return ev.categories;
-  if (ev.category) return [ev.category];
-  return [];
-}
-function filterEvents(events: LifeEvent[]): LifeEvent[] {
-  let res = events.slice();
-  if (currentFilter && currentFilter !== 'all') res = res.filter(e => getTags(e).includes(currentFilter));
-  if (currentYearFilter) {
-    res = res.filter(e => e.date?.substring(0, 4) === currentYearFilter);
-    if (currentMonthFilter) res = res.filter(e => e.date?.length >= 7 && e.date.substring(5, 7) === currentMonthFilter);
-  }
-  return res;
-}
-function sortEvents(events: LifeEvent[]): LifeEvent[] {
-  const arr = events.slice();
-  if (currentSort === 'date-asc') return arr.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  return arr.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-}
-function formatDate(dateString: string): string {
-  if (!dateString) return '';
-  const hasDay = /^\d{4}-\d{2}-\d{2}$/.test(dateString);
-  const d = new Date(dateString);
-  if (isNaN(d.getTime())) return escapeHtml(dateString);
-  return d.toLocaleDateString('en-US', hasDay
-    ? { year: 'numeric', month: 'long', day: 'numeric' }
-    : { year: 'numeric', month: 'long' });
-}
-function getCategoryInfo(category: string): { name: string; color: string } {
-  const def = tagDefs.find(t => t.id === category);
-  if (def) return { name: def.name, color: def.color };
-  return { name: category || 'Other', color: '#64748b' };
-}
-
-function buildEventUrl(id: string): string {
-  return `${window.location.origin}/Timeline/${encodeURIComponent(id)}/`;
-}
-function resolveAssetUrl(u: string): string {
-  if (!u) return '';
-  if (u.startsWith('/') || /^https?:/i.test(u) || u.startsWith('data:') || u.startsWith('mailto:')) return u;
-  return `/${u}`;
-}
-
-// ── Render ────────────────────────────────────────────────────────────────────
-function renderEvents() {
-  const grid      = document.getElementById('timeline-grid');
-  const noResults = document.getElementById('no-results');
-  if (!grid) return;
-  grid.innerHTML = '';
-
-  const sorted = sortEvents(filterEvents(lifeEvents));
-  if (sorted.length === 0) { if (noResults) noResults.style.display = 'block'; return; }
-  if (noResults) noResults.style.display = 'none';
-
-  let lastYear: string | null = null;
-  sorted.forEach(event => {
-    const year = (event.date || '').substring(0, 4);
-    if (year && year !== lastYear) {
-      const yearMark = document.createElement('div');
-      yearMark.className = 'timeline-year-mark';
-      yearMark.setAttribute('aria-hidden', 'true');
-      yearMark.textContent = year;
-      grid.appendChild(yearMark);
-      lastYear = year;
-    }
-
-    const tags        = getTags(event);
-    const isExpandable = event.expandable === true;
-
-    const card = document.createElement('article');
-    card.className = 'event-card';
-
-    // Header row (tags + actions)
-    const header = document.createElement('div');
-    header.className = 'event-header';
-    const tagsContainer = document.createElement('div');
-    tagsContainer.className = 'event-tags-container';
-    tags.forEach(tag => {
-      const cat = getCategoryInfo(tag);
-      const span = document.createElement('span');
-      span.className = 'event-category';
-      span.style.backgroundColor = cat.color;
-      span.textContent = cat.name;
-      tagsContainer.appendChild(span);
-    });
-
-    const actions = document.createElement('div');
-    actions.className = 'event-actions';
-    const dateSpan = document.createElement('span');
-    dateSpan.className = 'event-date';
-    dateSpan.textContent = formatDate(event.date || '');
-    actions.appendChild(dateSpan);
-
-    const shareBtn = document.createElement('button');
-    shareBtn.className = 'event-share-btn';
-    shareBtn.setAttribute('aria-label', `Share ${event.title}`);
-    shareBtn.setAttribute('type', 'button');
-    shareBtn.dataset.eventId = event.id;
-    shareBtn.dataset.eventTitle = event.title || '';
-    shareBtn.dataset.eventDescription = event.description || '';
-    shareBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`;
-    shareBtn.addEventListener('click', (ev) => {
-      ev.stopPropagation();
-      openShareMenu(shareBtn, event);
-    });
-    actions.appendChild(shareBtn);
-
-    header.appendChild(tagsContainer);
-    header.appendChild(actions);
-
-    // Content (title + short desc)
-    const content = document.createElement('div');
-    content.className = 'event-content';
-    const h3 = document.createElement('h3');
-    h3.textContent = event.title || 'Untitled';
-    const shortP = document.createElement('p');
-    shortP.className = 'event-description';
-    shortP.textContent = event.description || '';
-    content.appendChild(h3);
-    content.appendChild(shortP);
-    if (isExpandable) {
-      const ind = document.createElement('span');
-      ind.className = 'expand-indicator';
-      ind.innerHTML = '&#9660;';
-      content.appendChild(ind);
-    }
-
-    // Expandable section
-    const expandable = document.createElement('div');
-    expandable.className = 'event-expandable';
-
-    if (event.extendedDescription) {
-      const isEmpty = Array.isArray(event.extendedDescription)
-        ? event.extendedDescription.length === 0
-        : !String(event.extendedDescription).trim();
-      if (!isEmpty) expandable.appendChild(createParagraphsFromText(event.extendedDescription as string | string[]));
-    }
-
-    if (Array.isArray(event.images) && event.images.length > 0) {
-      const imagesWrap = document.createElement('div');
-      imagesWrap.className = 'event-images';
-      event.images.forEach((imgSrc, idx) => {
-        if (!imgSrc) return;
-        const wrap = document.createElement('div');
-        wrap.className = 'img-wrap';
-
-        const img = document.createElement('img');
-        img.className = 'event-image';
-        img.src = imgSrc.startsWith('/') ? imgSrc : `/${imgSrc}`;
-        img.alt = event.title || `image ${idx + 1}`;
-        img.loading = 'lazy';
-        img.decoding = 'async';
-        img.dataset.eventId    = String(event.id);
-        img.dataset.imageIndex = String(idx);
-        img.addEventListener('click', (ev) => { ev.stopPropagation(); openImageLightbox(String(event.id), idx); });
-
-        wrap.appendChild(img);
-        imagesWrap.appendChild(wrap);
-      });
-      expandable.appendChild(imagesWrap);
-    }
-
-    if (Array.isArray(event.links) && event.links.length > 0) {
-      const linksWrap = document.createElement('div');
-      linksWrap.className = 'event-links';
-      event.links.forEach(link => {
-        if (!link?.url) return;
-        const a = document.createElement('a');
-        a.className = 'event-link';
-        a.href = link.url;
-        a.target = '_blank';
-        a.rel = 'noopener noreferrer';
-        a.textContent = link.text || link.label || link.url;
-        a.addEventListener('click', ev => ev.stopPropagation());
-        linksWrap.appendChild(a);
-      });
-      expandable.appendChild(linksWrap);
-    }
-
-    if (Array.isArray(event.documents) && event.documents.length > 0) {
-      const docsWrap = document.createElement('div');
-      docsWrap.className = 'event-documents';
-      event.documents.forEach(doc => {
-        if (!doc?.url) return;
-        const a = document.createElement('a');
-        a.className = 'event-document';
-        a.href = resolveAssetUrl(doc.url);
-        a.target = '_blank';
-        a.rel = 'noopener noreferrer';
-        const icon = document.createElement('span');
-        icon.className = 'document-icon';
-        icon.innerHTML = '&#128196;';
-        const text = document.createElement('span');
-        text.className = 'document-text';
-        text.textContent = doc.text || doc.label || doc.name || 'View Document';
-        a.appendChild(icon);
-        a.appendChild(text);
-        a.addEventListener('click', ev => ev.stopPropagation());
-        docsWrap.appendChild(a);
-      });
-      expandable.appendChild(docsWrap);
-    }
-
-    if (isExpandable) {
-      card.classList.add('clickable-card');
-      card.setAttribute('role', 'button');
-      card.setAttribute('tabindex', '0');
-      card.addEventListener('click', (e) => {
-        const tgt = e.target as Element;
-        if (tgt.tagName === 'A' || tgt.tagName === 'IMG') return;
-        if (tgt.closest('a') || tgt.closest('img') || tgt.closest('.event-share-btn') || tgt.closest('.share-menu')) return;
-        card.classList.toggle('expanded');
-        const indicator = card.querySelector('.expand-indicator');
-        if (indicator) indicator.innerHTML = card.classList.contains('expanded') ? '&#9650;' : '&#9660;';
-      });
-    }
-
-    card.appendChild(header);
-    card.appendChild(content);
-    card.appendChild(expandable);
-    grid.appendChild(card);
-  });
-}
-
-// ── Share menu ────────────────────────────────────────────────────────────────
-let shareMenu: HTMLElement | null = null;
-let activeShareBtn: HTMLElement | null = null;
-
-function initShareMenu() {
-  if (document.querySelector('.share-menu')) {
-    shareMenu = document.querySelector('.share-menu');
-    return;
-  }
-  shareMenu = document.createElement('div');
-  shareMenu.className = 'share-menu';
-  shareMenu.setAttribute('role', 'menu');
-  shareMenu.innerHTML = `
-    <button class="share-item" data-action="native" role="menuitem" hidden>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
-      <span>Share…</span>
-    </button>
-    <button class="share-item" data-action="linkedin" role="menuitem">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.063 2.063 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452z"/></svg>
-      <span>LinkedIn</span>
-    </button>
-    <button class="share-item" data-action="twitter" role="menuitem">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-      <span>Share on X</span>
-    </button>
-    <button class="share-item" data-action="copy" role="menuitem">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
-      <span class="share-copy-label">Copy link</span>
-    </button>
-  `;
-  document.body.appendChild(shareMenu);
-
-  const nativeBtn = shareMenu.querySelector<HTMLButtonElement>('[data-action="native"]');
-  if (nativeBtn && typeof navigator.share === 'function') {
-    nativeBtn.hidden = false;
-  }
-
-  shareMenu.addEventListener('click', async (e) => {
-    const btn = (e.target as Element).closest<HTMLButtonElement>('.share-item');
-    if (!btn || !activeShareBtn) return;
-    const id    = activeShareBtn.dataset.eventId || '';
-    const title = activeShareBtn.dataset.eventTitle || '';
-    const desc  = activeShareBtn.dataset.eventDescription || '';
-    const url   = buildEventUrl(id);
-    const action = btn.dataset.action;
-
-    if (action === 'native') {
-      try { await navigator.share({ title, text: desc, url }); } catch { /* user cancelled */ }
-      closeShareMenu();
-    } else if (action === 'linkedin') {
-      window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank', 'noopener,noreferrer');
-      closeShareMenu();
-    } else if (action === 'twitter') {
-      const text = `${title}: ${desc}`.trim();
-      window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
-      closeShareMenu();
-    } else if (action === 'copy') {
-      const label = btn.querySelector('.share-copy-label');
-      try {
-        await navigator.clipboard.writeText(url);
-        if (label) label.textContent = 'Copied!';
-        setTimeout(() => { if (label) label.textContent = 'Copy link'; closeShareMenu(); }, 900);
-      } catch {
-        if (label) label.textContent = 'Copy failed';
-        setTimeout(() => { if (label) label.textContent = 'Copy link'; }, 900);
-      }
-    }
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!shareMenu?.classList.contains('open')) return;
-    const tgt = e.target as Element;
-    if (tgt.closest('.share-menu') || tgt.closest('.event-share-btn')) return;
-    closeShareMenu();
-  });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeShareMenu();
-  });
-  window.addEventListener('scroll', closeShareMenu, { passive: true });
-  window.addEventListener('resize', closeShareMenu);
-}
-
-function openShareMenu(btn: HTMLElement, _event: LifeEvent) {
-  if (!shareMenu) return;
-  if (activeShareBtn === btn && shareMenu.classList.contains('open')) {
-    closeShareMenu();
-    return;
-  }
-  activeShareBtn = btn;
-  const rect = btn.getBoundingClientRect();
-  shareMenu.classList.add('open');
-  // Position after showing so we can measure
-  const menuRect = shareMenu.getBoundingClientRect();
-  let left = rect.right - menuRect.width;
-  let top  = rect.bottom + 8;
-  if (left < 8) left = 8;
-  if (left + menuRect.width > window.innerWidth - 8) left = window.innerWidth - menuRect.width - 8;
-  if (top + menuRect.height > window.innerHeight - 8) top = rect.top - menuRect.height - 8;
-  shareMenu.style.left = `${left + window.scrollX}px`;
-  shareMenu.style.top  = `${top  + window.scrollY}px`;
-}
-
-function closeShareMenu() {
-  if (!shareMenu) return;
-  shareMenu.classList.remove('open');
-  activeShareBtn = null;
-}
-
-// ── Lightbox ──────────────────────────────────────────────────────────────────
-let lightboxModal: HTMLElement | null = null;
-let currentEventImages: string[]     = [];
-let currentImageIndex                = 0;
-
-function initLightbox() {
-  if (document.querySelector('.image-lightbox')) {
-    lightboxModal = document.querySelector('.image-lightbox');
-    return;
-  }
-  lightboxModal = document.createElement('div');
-  lightboxModal.className = 'image-lightbox';
-  lightboxModal.innerHTML = `
-    <div class="lightbox-overlay"></div>
-    <div class="lightbox-content">
-      <button class="lightbox-close" aria-label="Close">&times;</button>
-      <button class="lightbox-nav lightbox-prev" aria-label="Previous image">&#8249;</button>
-      <button class="lightbox-nav lightbox-next" aria-label="Next image">&#8250;</button>
-      <div class="lightbox-image-container">
-        <img class="lightbox-image" src="" alt="">
-        <div class="lightbox-counter"></div>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(lightboxModal);
-  lightboxModal.querySelector('.lightbox-close')!.addEventListener('click', closeLightbox);
-  lightboxModal.querySelector('.lightbox-overlay')!.addEventListener('click', closeLightbox);
-  lightboxModal.querySelector('.lightbox-prev')!.addEventListener('click', () => navigateImage(-1));
-  lightboxModal.querySelector('.lightbox-next')!.addEventListener('click', () => navigateImage(1));
-  document.addEventListener('keydown', (e) => {
-    if (!lightboxModal?.classList.contains('active')) return;
-    if (e.key === 'Escape') closeLightbox();
-    if (e.key === 'ArrowLeft') navigateImage(-1);
-    if (e.key === 'ArrowRight') navigateImage(1);
-  });
-}
-
-function openImageLightbox(eventId: string, imageIndex: number) {
-  const ev = lifeEvents.find(x => String(x.id) === eventId);
-  if (!ev?.images?.length) return;
-  currentEventImages = ev.images.filter(Boolean);
-  currentImageIndex  = Math.min(Math.max(0, imageIndex), currentEventImages.length - 1);
-  updateLightboxImage();
-  lightboxModal?.classList.add('active');
-  document.body.style.overflow = 'hidden';
-}
-function closeLightbox() {
-  lightboxModal?.classList.remove('active');
-  document.body.style.overflow = '';
-}
-function navigateImage(delta: number) {
-  if (!currentEventImages.length) return;
-  currentImageIndex = (currentImageIndex + delta + currentEventImages.length) % currentEventImages.length;
-  updateLightboxImage();
-}
-function updateLightboxImage() {
-  if (!lightboxModal) return;
-  const imgEl     = lightboxModal.querySelector('.lightbox-image') as HTMLImageElement | null;
-  const counterEl = lightboxModal.querySelector('.lightbox-counter');
-  const rawSrc = currentEventImages[currentImageIndex] || '';
-  if (imgEl) imgEl.src = rawSrc && !rawSrc.startsWith('/') ? `/${rawSrc}` : rawSrc;
-  if (counterEl) counterEl.textContent = `${currentImageIndex + 1} / ${currentEventImages.length}`;
-}
-
-// ── Boot ──────────────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', loadEvents);
+  import '../scripts/timeline';
 </script>

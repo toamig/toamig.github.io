@@ -4,108 +4,31 @@
    and the page reads as one place rather than alternating bands. Class names
    are new (hn-, now-, wk-, cr-, ab-, ct-) so the shared scroll reveal and
    card tilt in BaseLayout leave these sections alone; motion here is owned by
-   src/scripts/home.ts. */
-
-body.home {
-  --hn-bg:          #0a1628;
-  --hn-raise:       #0e1e36;
-  --hn-raise-2:     #13284a;
-  --hn-line:        rgba(163, 190, 226, .13);
-  --hn-line-strong: rgba(163, 190, 226, .26);
-  --hn-text:        #eef3fa;
-  --hn-sub:         #a7b7cc;
-  --hn-muted:       #8396b0;
-  --hn-ease:        cubic-bezier(.2, .7, .2, 1);
-  background: var(--hn-bg);
-  color: var(--hn-text);
-}
-/* Smooth in-page scrolling, switched on by home.ts once the page has landed:
-   on from the start, it would also glide to a #fragment on arrival, and that
-   glide runs under the page transition from a /work/ page. */
-html.is-smooth { scroll-behavior: smooth; }
-@media (prefers-reduced-motion: reduce) {
-  html.is-smooth { scroll-behavior: auto; }
-}
-
-/* ─── Shared section frame ─────────────────────────────────────────────────── */
-.hn-section {
-  padding: clamp(56px, 6.5vw, 92px) 0;
-  scroll-margin-top: 72px;
-  overflow: visible;
-}
-.hn-wrap {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 clamp(16px, 4vw, 48px);
-}
-.hn-head {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 440px);
-  align-items: end;
-  gap: 20px 48px;
-  margin-bottom: clamp(24px, 3.4vw, 40px);
-}
-.hn-title {
-  margin: 0;
-  text-align: left;
-  color: var(--hn-text);
-  font-family: var(--font-display);
-  font-size: clamp(52px, 8.4vw, 112px);
-  font-weight: 640;
-  line-height: .88;
-  letter-spacing: -.05em;
-  font-variation-settings: 'opsz' 96, 'wght' 640;
-}
-/* A datum, not a decoration: the count of projects, the year the career starts. */
-.hn-datum {
-  position: relative;
-  top: -.1em;
-  margin-left: .22em;
-  vertical-align: top;
-  font-family: var(--font-mono);
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0;
-  line-height: 1;
-  color: var(--accent);
-}
-.hn-lede {
-  margin: 0;
-  max-width: 46ch;
-  font-size: 17px;
-  line-height: 1.55;
-  color: var(--hn-sub);
-}
-.hn-lede-group { display: grid; gap: 14px; justify-items: start; }
-.hn-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--hn-text);
-  text-decoration: none;
-  padding-bottom: 2px;
-  background: linear-gradient(var(--accent), var(--accent)) 0 100% / 100% 1px no-repeat;
-  transition: background-size .35s var(--hn-ease), color .2s;
-}
-.hn-link::after {
-  content: '';
-  width: 7px; height: 7px;
-  border-top: 1.5px solid currentColor;
-  border-right: 1.5px solid currentColor;
-  transform: rotate(45deg);
-  transition: transform .3s var(--hn-ease);
-}
-.hn-link:hover { color: #fff; background-size: 100% 2px; }
-.hn-link:hover::after { transform: translateX(3px) rotate(45deg); }
-
-@media (max-width: 860px) {
-  .hn-head { grid-template-columns: minmax(0, 1fr); align-items: start; }
-}
+   src/scripts/home.ts. Tokens, the section frame and the chips are shared, in
+   site.css. */
 
 /* ─── Hero additions ───────────────────────────────────────────────────────── */
+/* The hero dissolves into the page instead of ending on an edge, the way the
+   Timeline's intro does: its gradient lands on the page colour, and the
+   constellation, the dot grid and the aurora all fade out before the hero's
+   last pixel, so nothing is cut off where the Work section begins. */
+body.home .front-page {
+  background:
+    radial-gradient(ellipse 70% 60% at 20% 50%, rgba(41,128,185,.18) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 50% at 80% 30%, rgba(29,111,160,.12) 0%, transparent 60%),
+    linear-gradient(180deg, #0a1628 0%, #0f2040 45%, var(--hn-bg) 100%);
+}
+body.home .front-page .hero-constellation,
+body.home .front-page::before {
+  -webkit-mask-image: linear-gradient(#000 55%, transparent 96%);
+  mask-image: linear-gradient(#000 55%, transparent 96%);
+}
+/* The aurora is drawn 20% larger than the hero on every side, so the hero's
+   foot sits about 86% of the way down its box. */
+body.home .front-page::after {
+  -webkit-mask-image: linear-gradient(#000 45%, transparent 82%);
+  mask-image: linear-gradient(#000 45%, transparent 82%);
+}
 /* The "now" strip takes the scroll cue's place, so the content block shifts up
    to keep its optical centre. */
 .front-page.has-now { padding-bottom: 104px; }
@@ -203,33 +126,7 @@ html.is-smooth { scroll-behavior: smooth; }
 }
 
 /* ─── Work ─────────────────────────────────────────────────────────────────── */
-.wk-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 20px;
-}
-.wk-chip {
-  appearance: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 40px;
-  padding: 0 16px;
-  border: 1px solid var(--hn-line-strong);
-  border-radius: 999px;
-  background: transparent;
-  color: var(--hn-sub);
-  font: 500 14px/1 var(--font);
-  cursor: pointer;
-  transition: background-color .25s, color .25s, border-color .25s;
-}
-.wk-n { font: 500 12px/1 var(--font-mono); color: var(--hn-muted); transition: color .25s; }
-.wk-chip:hover { color: var(--hn-text); border-color: rgba(255,255,255,.4); }
-.wk-chip[aria-pressed="true"] { background: var(--hn-text); border-color: var(--hn-text); color: var(--hn-bg); }
-.wk-chip[aria-pressed="true"] .wk-n { color: #50627c; }
-.wk-chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-
+.wk-filters { margin-bottom: 20px; }
 .wk-grid {
   position: relative;
   display: grid;

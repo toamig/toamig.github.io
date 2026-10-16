@@ -1,0 +1,280 @@
+/* ─── Timeline (/Timeline/ and /Timeline/<id>/) ────────────────────────────────
+   Tokens, section frame and chips come from site.css; the moment pages also
+   use the /work/ page layout (work.css), so a moment opens the same way a
+   project does. */
+
+/* ─── Intro ────────────────────────────────────────────────────────────────── */
+.tl-intro {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(124px, 16vh, 176px) 0 clamp(40px, 5vw, 72px);
+  background:
+    radial-gradient(ellipse 70% 60% at 18% 30%, rgba(41,128,185,.16), transparent 65%),
+    linear-gradient(180deg, #0a1628 0%, #0d1d38 60%, #0a1628 100%);
+}
+/* The constellation fades out toward the moments instead of ending on a line. */
+.tl-intro .hero-constellation {
+  -webkit-mask-image: linear-gradient(#000 55%, transparent);
+  mask-image: linear-gradient(#000 55%, transparent);
+}
+.tl-intro-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(32px, 6vw, 88px);
+}
+.tl-photo {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 24px;
+  box-shadow: 0 30px 80px -40px rgba(0,0,0,.85), inset 0 0 0 1px var(--hn-line);
+}
+.tl-intro-text .hn-title { margin-bottom: 26px; }
+.tl-lead {
+  margin: 0;
+  max-width: 50ch;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: clamp(20px, 2vw, 25px);
+  line-height: 1.32;
+  letter-spacing: -.01em;
+  font-variation-settings: 'opsz' 32, 'wght' 440;
+}
+.tl-text { margin: 14px 0 0; max-width: 64ch; color: var(--hn-sub); font-size: 16.5px; line-height: 1.65; }
+
+/* ─── Controls ─────────────────────────────────────────────────────────────── */
+.tl { padding-top: clamp(24px, 3vw, 40px); }
+.tl-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.tl-sort svg { flex: none; }
+.tl-years {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: clamp(28px, 4vw, 44px);
+}
+.tl-years a {
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: var(--hn-muted);
+  font: 500 13px/1 var(--font-mono);
+  text-decoration: none;
+  transition: color .2s, background-color .2s;
+}
+.tl-years a:hover { color: #fff; background: rgba(255,255,255,.06); }
+.tl-years a.is-here { color: var(--accent-l); background: rgba(255,138,76,.1); }
+.tl-years a:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* ─── Track: year labels, the rail, and the moments ────────────────────────── */
+.tl-track {
+  --lab: 132px;   /* the year column */
+  --gap: 28px;
+  --pad: 44px;    /* room left of the cards for the rail and its nodes */
+  position: relative;
+}
+.tl-rail {
+  position: absolute;
+  top: 10px; bottom: 10px;
+  left: calc(var(--lab) + var(--gap) + 10px);
+  width: 2px;
+  border-radius: 2px;
+  background: var(--hn-line);
+  overflow: hidden;
+}
+.tl-rail-fill {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(var(--accent), #ffc29c);
+  transform-origin: 50% 0;
+  transform: scaleY(0);
+}
+/* Each year is a <section>; global.css gives sections padding and an
+   overflow clip, and the clip would stop the year label from sticking. */
+.tl-year {
+  display: grid;
+  grid-template-columns: var(--lab) minmax(0, 1fr);
+  column-gap: var(--gap);
+  padding: 0 0 clamp(28px, 4vw, 48px);
+  overflow: visible;
+  scroll-margin-top: 92px;
+}
+/* The year stays beside its moments while you read through them. */
+.tl-year-label {
+  position: sticky;
+  top: 88px;
+  align-self: start;
+  margin: 0;
+  text-align: right;
+  color: var(--hn-text);
+  font-family: var(--font-display);
+  font-size: clamp(40px, 4.6vw, 60px);
+  line-height: .9;
+  letter-spacing: -.045em;
+  font-variation-settings: 'opsz' 96, 'wght' 620;
+}
+.tl-list {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 0 0 0 var(--pad);
+  list-style: none;
+}
+.tl-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: var(--hn-raise);
+  box-shadow: inset 0 0 0 1px var(--hn-line);
+  color: var(--hn-text);
+  text-decoration: none;
+  /* Coming back from a moment (/Timeline/#t-<id>) lands with its card in view. */
+  scroll-margin-top: clamp(96px, 26vh, 240px);
+  transition: background-color .3s, box-shadow .4s var(--hn-ease), transform .45s var(--hn-ease);
+}
+.tl-card:has(.tl-thumb) { grid-template-columns: 196px minmax(0, 1fr); padding: 14px 18px 14px 14px; }
+.tl-card:hover {
+  background: #102443;
+  transform: translateX(4px);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--dot) 60%, transparent), 0 22px 50px -26px rgba(0,0,0,.75);
+}
+.tl-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+/* Each moment's node on the rail, in the colour of its first tag. */
+.tl-node {
+  position: absolute;
+  top: 24px;
+  left: calc(4px - var(--pad));
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  border: 3px solid var(--dot);
+  background: var(--hn-bg);
+  box-shadow: 0 0 0 4px var(--hn-bg);
+  transition: transform .4s var(--hn-ease);
+}
+.tl-card:hover .tl-node { transform: scale(1.25); }
+.tl-thumb {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 7 / 5;
+  border-radius: 12px;
+  background: var(--hn-raise-2);
+}
+.tl-thumb img {
+  display: block;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform .9s var(--hn-ease);
+}
+.tl-card:hover .tl-thumb img { transform: scale(1.05); }
+.tl-body { display: grid; align-content: center; gap: 6px; min-width: 0; }
+.tl-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  margin: 0;
+  color: var(--hn-sub);
+  font-size: 13px;
+}
+.tl-meta time { color: var(--hn-text); font: 500 13px var(--font-mono); }
+.tl-tag { display: inline-flex; align-items: center; gap: 6px; }
+.tl-title {
+  margin: 0;
+  text-align: left;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: clamp(19px, 1.7vw, 23px);
+  line-height: 1.15;
+  letter-spacing: -.015em;
+  font-variation-settings: 'opsz' 32, 'wght' 600;
+}
+.tl-desc {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  max-width: 70ch;
+  margin: 0;
+  color: var(--hn-sub);
+  font-size: 15px;
+  line-height: 1.55;
+}
+.tl-empty { margin: 0 0 0 calc(var(--lab, 0px) + 72px); color: var(--hn-sub); }
+
+@media (max-width: 860px) {
+  .tl-intro-grid { grid-template-columns: minmax(0, 1fr); }
+  .tl-photo { max-width: 200px; }
+}
+@media (max-width: 760px) {
+  .tl-track { --lab: 0px; --gap: 0px; --pad: 32px; }
+  .tl-year { grid-template-columns: minmax(0, 1fr); }
+  .tl-year-label {
+    position: static;
+    margin: 0 0 14px var(--pad);
+    text-align: left;
+    font-size: 40px;
+  }
+  .tl-card:has(.tl-thumb) { grid-template-columns: 92px minmax(0, 1fr); gap: 14px; padding: 12px; }
+  .tl-thumb { aspect-ratio: 1; border-radius: 10px; }
+  .tl-desc { -webkit-line-clamp: 2; font-size: 14.5px; }
+  .tl-empty { margin-left: 32px; }
+}
+
+/* ─── A moment's page (/Timeline/<id>/) ────────────────────────────────────── */
+/* Without a photo, the banner is a lit field in the moment's colour. */
+.mp-plain {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(60% 90% at 70% 10%, color-mix(in srgb, var(--dot) 40%, transparent), transparent 70%),
+    linear-gradient(180deg, #0f2240, #0a1628);
+}
+.wp-hero.is-plain { height: clamp(220px, 34vh, 340px); }
+.mp-tags { display: inline-flex; flex-wrap: wrap; gap: 6px 14px; margin-left: 14px; color: var(--hn-sub); font-weight: 500; }
+.mp-share { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px; }
+.mp-body {
+  max-width: 780px;
+  margin-top: clamp(40px, 5vw, 64px);
+  padding-top: clamp(28px, 4vw, 40px);
+  border-top: 1px solid var(--hn-line);
+}
+.mp-body .wp-desc + .wp-desc { margin-top: 18px; }
+.mp-share .hn-chip svg { flex: none; }
+.mp-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  margin-top: 32px;
+}
+.mp-gallery a {
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  border-radius: 14px;
+  background: var(--hn-raise);
+}
+.mp-gallery img {
+  display: block;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform .9s var(--hn-ease);
+}
+.mp-gallery a:hover img { transform: scale(1.05); }
+.mp-gallery a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.mp-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 28px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tl-card, .tl-node, .tl-thumb img, .tl-years a, .mp-gallery img { transition: none; }
+  .tl-card:hover { transform: none; }
+}
