@@ -57,14 +57,20 @@ export const SHELVES: { id: WorkShelf; label: string }[] = [
 // The grid's composition when every shelf is showing. Anything not listed
 // still appears, as a small tile at the end, so a new project never goes
 // missing just because nobody placed it.
+//
+// The grid is four columns, so the spans below (xl 4, wide 2, sm 1) should add
+// up to a multiple of four or the last row is left short. Today: 4 + 8 x 2 +
+// 4 x 1 = 24, six full rows. Adding a project means choosing which tile
+// changes size to keep that true.
 const LAYOUT: [string, WorkSize][] = [
   ['polyglyph',          'xl'],
   ['timefront',          'wide'],
   ['synthform',          'wide'],
   ['counting-sheep',     'wide'],
+  ['sesqui',             'wide'],
   ['radar',              'wide'],
-  ['dakar-desert-rally', 'sm'],
-  ['road-kings',         'sm'],
+  ['dakar-desert-rally', 'wide'],
+  ['road-kings',         'wide'],
   ['plugins',            'wide'],
   ['autorocket',         'sm'],
   ['consulting',         'sm'],

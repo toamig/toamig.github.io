@@ -131,16 +131,28 @@
   },
   {
     "id": "sesqui",
+    "kind": "game",
     "name": "Sesqui",
     "kicker": "Board game",
-    "state": "Not deployed",
+    "state": "Free in browser",
     "role": "Designer & Engineer",
-    "desc": "A two-player connection game on an 8x8 board. Gold links top to bottom, pale links left to right. Play a friend, take on four tiers of AI, or watch the engines battle it out.",
-    "tags": ["Strategy", "React", "4 AI levels"],
+    "tagline": "Connect your two edges first.",
+    "desc": "A two-player connection game on an 8x8 board. Black links top to bottom, White links left to right. Play a friend online or on one device, take on five engines up to a self-trained neural net, or watch two engines battle it out.",
+    "tags": ["Strategy", "React", "5 AI engines"],
+    "bullets": [
+      "Five engines to play against: random, heuristic, Monte Carlo, alpha-beta, and a self-trained AlphaZero net.",
+      "Play a friend online, or pass one device between two players.",
+      "Watch two engines battle it out, and replay your games move by move.",
+      "A React and Vite web app with Supabase behind online play, and an Android wrapper through Capacitor."
+    ],
+    "image": "/ventures/sesqui/key-art.webp",
+    "imageAlt": "Sesqui: an 8x8 board with a column of gold stones linking top to bottom past a few white ones.",
+    "mark": "/ventures/sesqui/mark.png",
+    "palette": { "bg": "#15122a", "ink": "#eef0fa", "accent": "#ffd24a", "glow": "rgba(255,210,74,.26)" },
     "href": "/sesqui/",
-    "cta": "Play now",
+    "cta": "Play Sesqui",
     "external": false,
     "featured": false,
-    "hidden": true
+    "hidden": false
   }
 ]

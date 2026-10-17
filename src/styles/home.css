@@ -304,6 +304,14 @@ body.home .front-page::after {
 /* Busy key art with its own lettering: knock it back so the tile's name wins. */
 .wk-tile[data-id="plugins"] .wk-cycle img { filter: brightness(.62) saturate(1.05); }
 
+/* Sesqui: the board sits on the right of its art, clear of the caption on the
+   left, so the dark fade only needs to cover the left side. Across the whole
+   foot of the tile it would swallow the board's lower rows. */
+.wk-tile[data-id="sesqui"] .wk-art::after {
+  -webkit-mask-image: linear-gradient(to right, #000 0%, #000 40%, transparent 62%);
+  mask-image: linear-gradient(to right, #000 0%, #000 40%, transparent 62%);
+}
+
 /* Radar: today's front page, printed in today's paper, inks and headline
    face (set as --rd-* by src/scripts/radar-theme.ts). The defaults are Radar's
    own safe theme, so the tile is still a print before the feed arrives. Once
