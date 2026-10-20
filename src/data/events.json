@@ -466,7 +466,7 @@
     "description": "Shipped my first game, Dakar Desert Rally.",
     "extendedDescription": [
       "In October 2022, Dakar Desert Rally was officially released, the first AAA title I ever contributed to, and one of the most valuable learning experiences of my career so far.",
-      "I joined Saber Interactive Porto just three months before release, during the final bug-fixing and polishing phase of development. My work focused on improving the multiplayer experience, resolving replication issues, and refining gameplay systems across various areas.",
+      "I joined Saber Interactive just three months before release, during the final bug-fixing and polishing phase of development. My work focused on improving the multiplayer experience, resolving replication issues, and refining gameplay systems across various areas.",
       "Because the project was being shipped on multiple platforms, including PlayStation and Xbox, I also had the chance to work closely with console-specific builds and requirements. It gave me first-hand insight into the final stages of the production pipeline, from QA feedback to the submission process and release preparation.",
       "Despite joining late in development, it was incredibly rewarding to see the game go live and know that I had contributed to its final shape. It was a defining moment that deepened my understanding of large-scale production and multiplayer systems."
     ],
@@ -484,7 +484,7 @@
         "url": "https://www.dakarthegame.com/en/"
       },
       {
-        "text": "Saber Interactive Porto",
+        "text": "Saber Interactive",
         "url": "https://www.linkedin.com/company/saber-interactive-porto/"
       }
     ],
@@ -493,7 +493,7 @@
   {
     "id": "evt-2022-Saber",
     "date": "2022-08",
-    "title": "Joined Saber Interactive Porto",
+    "title": "Joined Saber Interactive",
     "category": "professional",
     "description": "Started my career in the AAA games industry.",
     "extendedDescription": [
@@ -536,7 +536,7 @@
     ],
     "links": [
       {
-        "text": "Saber Interactive Porto",
+        "text": "Saber Interactive",
         "url": "https://www.linkedin.com/company/saber-interactive-porto/"
       }
     ],
@@ -811,7 +811,7 @@
     "description": "Founded the Tools department and became the Tools Lead Programmer.",
     "extendedDescription": [
       "After a successful journey in the multiplayer department, I was offered the opportunity to pick up and lead the development of a core tool for the Road Kings project.",
-      "This marked the formal start of the Tools department at Saber Porto. I became in charge of closing the communication and pipeline gaps between the programmer and art teams as well as developing tools to speed up and automate processes.",
+      "This marked the formal start of the Tools department at Saber Interactive. I became in charge of closing the communication and pipeline gaps between the programmer and art teams as well as developing tools to speed up and automate processes.",
       "It was an amazing opportunity to solidify my leadership skills and my knowledge in the field of game development."
     ],
     "images": [

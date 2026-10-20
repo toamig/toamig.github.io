@@ -81,8 +81,8 @@ const LAYOUT: [string, WorkSize][] = [
 // Which studio each shipped game was made at, so its page can say what the job
 // was. Only the pairings the CV itself states; the rest stay unattributed.
 const STUDIO_OF: Record<string, string> = {
-  'dakar-desert-rally': 'Saber Interactive Porto',
-  'road-kings':         'Saber Interactive Porto',
+  'dakar-desert-rally': 'Saber Interactive',
+  'road-kings':         'Saber Interactive',
   'timefront':          'Flama Craftworks',
   'autorocket':         'Dive Studios (FEUP / Visionarium)',
 };

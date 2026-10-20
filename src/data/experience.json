@@ -7,8 +7,10 @@
     "period": "Mar 2026 - Present",
     "location": "Remote",
     "bullets": [
-      "Contract Unreal Engine 5 game engineering for AAA partner studios.",
-      "Gameplay, tools, and systems work across multiple client engagements."
+      "Contract Unreal Engine 5 gameplay engineering for AAA partner studios, working across C++ and Blueprint.",
+      "Combat features and abilities built on the Gameplay Ability System, in a project using World Partition.",
+      "Character and pawn setup, including animation integration.",
+      "AI behaviors and the gameplay systems they plug into."
     ]
   },
   {
@@ -46,7 +48,7 @@
   {
     "href": "https://saberporto.com/",
     "logo": "/experience/saber.jfif",
-    "name": "Saber Interactive Porto",
+    "name": "Saber Interactive",
     "role": "Tools Lead Programmer",
     "period": "Aug 2022 - Jan 2024",
     "location": "Vila Nova de Gaia, Portugal",
