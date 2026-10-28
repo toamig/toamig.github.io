@@ -59,23 +59,24 @@ export const SHELVES: { id: WorkShelf; label: string }[] = [
 // missing just because nobody placed it.
 //
 // The grid is four columns, so the spans below (xl 4, wide 2, sm 1) should add
-// up to a multiple of four or the last row is left short. Today: 4 + 8 x 2 +
-// 4 x 1 = 24, six full rows. Adding a project means choosing which tile
+// up to a multiple of four or the last row is left short. Today: 4 + 7 x 2 +
+// 6 x 1 = 24, six full rows. Adding a project means choosing which tile
 // changes size to keep that true.
 const LAYOUT: [string, WorkSize][] = [
-  ['polyglyph',          'xl'],
-  ['timefront',          'wide'],
-  ['synthform',          'wide'],
-  ['counting-sheep',     'wide'],
-  ['sesqui',             'wide'],
-  ['radar',              'wide'],
-  ['dakar-desert-rally', 'wide'],
-  ['road-kings',         'wide'],
-  ['plugins',            'wide'],
-  ['autorocket',         'sm'],
-  ['consulting',         'sm'],
-  ['totally-basketball', 'sm'],
-  ['aotearoa-explorers', 'sm'],
+  ['polyglyph',             'xl'],
+  ['timefront',             'wide'],
+  ['synthform',             'wide'],
+  ['counting-sheep',        'wide'],
+  ['sesqui',                'wide'],
+  ['long-road-to-heaven',   'sm'],
+  ['radar',                 'sm'],
+  ['dakar-desert-rally',    'wide'],
+  ['road-kings',            'wide'],
+  ['plugins',               'wide'],
+  ['autorocket',            'sm'],
+  ['consulting',            'sm'],
+  ['totally-basketball',    'sm'],
+  ['aotearoa-explorers',    'sm'],
 ];
 
 // Which studio each shipped game was made at, so its page can say what the job

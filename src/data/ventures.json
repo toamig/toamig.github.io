@@ -77,6 +77,32 @@
     "hidden": false
   },
   {
+    "id": "long-road-to-heaven",
+    "kind": "game",
+    "name": "The Long Road to Heaven",
+    "kicker": "Game",
+    "state": "Playable in browser",
+    "role": "Designer & Engineer",
+    "tagline": "Cultivate Qi. Break through. Begin again.",
+    "desc": "A mobile idle game in a xianxia cultivation world. Qi gathers while you are away, each breakthrough opens a new realm, and past the Saint realm you can reincarnate: cultivation resets, while karma and the Eternal Tree carry into the next life.",
+    "tags": ["React", "Capacitor", "Idle", "Mobile"],
+    "bullets": [
+      "A prestige loop built on tuned curves: karma accrues from the Qi earned in each life, with a balance dashboard that charts the progression.",
+      "An in-browser designer panel that edits the game's data through forms and commits the changes straight to the repo.",
+      "Ships to Android through Capacitor, with in-app purchases on RevenueCat, AdMob and GameAnalytics, plus desktop and installable web builds.",
+      "Localised into ten languages, including Chinese, Japanese and Korean, with music and sound by Alexandre Bandola."
+    ],
+    "image": "/ventures/long-road-to-heaven/key-art.webp",
+    "imageAlt": "The Long Road to Heaven: a pixel-art cultivation hall of red pillars and silk curtains, its round doorway opening onto misty green mountains at dusk.",
+    "mark": "/ventures/long-road-to-heaven/mark.png",
+    "palette": { "bg": "#160d0b", "ink": "#f3e6d0", "accent": "#e8a33a", "glow": "rgba(232,163,58,.26)" },
+    "href": "https://titarta.github.io/MartialArtsIdle/",
+    "cta": "Play in browser",
+    "external": true,
+    "featured": false,
+    "hidden": false
+  },
+  {
     "id": "radar",
     "kind": "publication",
     "name": "Toa Radar",
