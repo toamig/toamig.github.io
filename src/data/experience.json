@@ -8,7 +8,7 @@
     "location": "Remote",
     "bullets": [
       "Contract Unreal Engine 5 gameplay engineering for AAA partner studios, working across C++ and Blueprint.",
-      "Combat features and abilities built on the Gameplay Ability System, in a project using World Partition.",
+      "Combat features and abilities built on the **Gameplay Ability System**, in a project using **World Partition**.",
       "Character and pawn setup, including animation integration.",
       "AI behaviors and the gameplay systems they plug into."
     ]
@@ -17,16 +17,16 @@
     "href": "https://www.flamacraftworks.com/",
     "logo": "/experience/image02.png",
     "name": "Flama Craftworks",
-    "role": "Engineering Director",
+    "role": "Consultant (formerly Engineering Director)",
     "period": "Mar 2025 - Present",
     "location": "Remote",
     "bullets": [
-      "Currently directing the engineering and gameplay team on Timefront, an RTS / battle-royale hybrid built in Unreal Engine 5.",
-      "Architected extensible gameplay systems that scale to hundreds of concurrent actors in a single session.",
-      "Profiled in Unreal Insights and planned the refactors that took 400 on-map characters from 8 to 60 fps.",
-      "Planned the technical approach for adding multiplayer support, and still implement features hands-on.",
-      "Hire and grow the gameplay engineering team: technical interviews, onboarding, and training for junior and mid engineers.",
-      "Partner with Cinematics, VFX, Character, and Technical Art leads to land integrated gameplay features end-to-end.",
+      "Directed the engineering and gameplay team on Timefront, an RTS / battle-royale hybrid built in Unreal Engine 5; now consult on it occasionally.",
+      "Architected extensible gameplay systems on the **Gameplay Ability System** that scale to hundreds of concurrent actors in a single session, with character animation on **vertex animation textures** (VAT) and spatial optimizations.",
+      "Profiled in **Unreal Insights** and planned the refactors that took 400 on-map characters from 8 to 60 fps.",
+      "Led the multiplayer architecture and the project refactor and migration to support it, implementing **Replication Graph** and features hands-on.",
+      "Hired and grew the gameplay engineering team: technical interviews, onboarding, and training for junior and mid engineers.",
+      "Partnered with Cinematics, VFX, Character, and Technical Art leads to land integrated gameplay features end-to-end.",
       "Established code-review, architecture, and Git/branching standards adopted across the engineering organisation."
     ],
     "current": false
@@ -40,9 +40,10 @@
     "location": "Vila Nova de Gaia, Portugal",
     "bullets": [
       "Core team developer across two unannounced action-adventure projects in Unreal Engine 5.",
-      "Established the technical foundation and gameplay architecture of the early prototypes.",
-      "Implemented systems across animation, combat, UI, and editor tooling.",
-      "Contributed to the design and implementation of action-adventure combat mechanics."
+      "Established the technical foundation and gameplay architecture of the early prototypes, introducing the **Gameplay Ability System**.",
+      "Implemented systems across animation, combat, UI, and editor tooling, including character locomotion on the **Advanced Locomotion System**.",
+      "Defined the animation rules for external contracted teams, and set up **animation retargeting**, in editor and at runtime, so one set of animations works across multiple characters.",
+      "Contributed to the design and implementation of action-adventure combat, starting a combat framework that extends GAS, with AI and combat behaviors on **StateTree** and **EQS**."
     ]
   },
   {
@@ -53,9 +54,10 @@
     "period": "Aug 2022 - Jan 2024",
     "location": "Vila Nova de Gaia, Portugal",
     "bullets": [
-      "Joined as Junior Multiplayer Programmer on Dakar Desert Rally: bugfixed and refactored multiplayer and replication systems to harden online play across PC, PS4, PS5, Xbox One, and Xbox Series X.",
-      "Promoted to Tools Programmer (Feb 2023): fixed engine bugs, extended the Houdini Engine plugin for Unreal (including World Partition streaming support), and built editor plugins designed for reuse across projects.",
-      "Promoted to Tools Lead Programmer on Road Kings (May 2023): led the tools department through sprint planning, task estimates, architecture reviews, and cross-department coordination; established software architecture guidelines."
+      "Joined as Junior Multiplayer Programmer on Dakar Desert Rally: bugfixed and refactored multiplayer and **replication** systems to harden online play across PC, PS4, PS5, Xbox One, and Xbox Series X.",
+      "Promoted to Tools Programmer (Feb 2023): fixed low-level engine bugs and changed engine source to extend the editor, built **Slate** editor plugins designed for reuse across projects, and extended the **Houdini Engine** plugin for Unreal with **World Partition** streaming support.",
+      "Promoted to Tools Lead Programmer on Road Kings (May 2023): led the tools department through sprint planning, task estimates, architecture reviews, and cross-department coordination; established software architecture guidelines.",
+      "Built tools that sped up development and gave the art team an independent, creative pipeline while keeping performance in check, optimizing their assets before they reach builds and runtime."
     ]
   },
   {

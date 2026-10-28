@@ -5,6 +5,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import TransitionScope from '../../components/TransitionScope.astro';
 import { work, workWithDetail, SHELVES } from '../../data/work';
+import { emphasize } from '../../lib/emphasis';
 import '../../styles/work.css';
 import '../../styles/work-transition.css';
 
@@ -98,14 +99,14 @@ const ogImage = item.image && !item.image.endsWith('.svg') ? `https://toamig.com
           {item.bullets.length > 0 && (
             <>
               <h2 class="wp-h2">What I built</h2>
-              <ul class="wp-list">{item.bullets.map(b => <li>{b}</li>)}</ul>
+              <ul class="wp-list">{item.bullets.map(b => <li set:html={emphasize(b)} />)}</ul>
             </>
           )}
 
           {item.studio && item.studio.bullets.length > 0 && (
             <>
               <h2 class="wp-h2">My role at {item.studio.name}</h2>
-              <ul class="wp-list">{item.studio.bullets.map(b => <li>{b}</li>)}</ul>
+              <ul class="wp-list">{item.studio.bullets.map(b => <li set:html={emphasize(b)} />)}</ul>
             </>
           )}
         </div>

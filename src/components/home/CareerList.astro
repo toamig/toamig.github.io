@@ -3,6 +3,7 @@
 // folded underneath. A recruiter reads the whole history in a glance and opens
 // only the rows they care about; the full version is the CV.
 import experience from '../../data/experience.json';
+import { emphasize } from '../../lib/emphasis';
 
 // Explicit `current` from the admin wins; legacy entries fall back to the
 // period text, the same rule the old career cards used.
@@ -45,7 +46,7 @@ const firstYear = Math.min(...experience.map(e => Number(e.period.match(/\d{4}/)
             <div class="cr-more" id={`cr-more-${i}`}>
               <div class="cr-more-inner">
                 <ul>
-                  {e.bullets?.map(b => <li>{b}</li>)}
+                  {e.bullets?.map(b => <li set:html={emphasize(b)} />)}
                 </ul>
                 {isExternal(e.href) && (
                   <a class="hn-link cr-site" href={e.href} target="_blank" rel="noopener noreferrer">{e.name} website</a>

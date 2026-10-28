@@ -5,6 +5,7 @@ import profile from './profile.json';
 import experience from './experience.json';
 import events from './events.json';
 import timelineTags from './timelineTags.json';
+import { plain } from '../lib/emphasis';
 
 // Profile leads: the person comes before the work.
 export const categories = [
@@ -22,7 +23,7 @@ export interface ConsoleItem {
 }
 
 const studioForProject: Record<string, number> = { 'Dakar Desert Rally': 3, 'Timefront': 1, 'Road Kings': 3, 'AutoRocket': 5, 'Totally Basketball': 4, 'Aotearoa Explorers': 4 };
-const contributionForProject: Record<string, number[]> = { 'Dakar Desert Rally': [0], 'Timefront': [0, 1, 2, 3, 4], 'Road Kings': [1, 2], 'AutoRocket': [0, 1, 2], 'Totally Basketball': [0, 2], 'Aotearoa Explorers': [0, 1] };
+const contributionForProject: Record<string, number[]> = { 'Dakar Desert Rally': [0], 'Timefront': [0, 1, 2, 3, 4], 'Road Kings': [1, 2, 3], 'AutoRocket': [0, 1, 2], 'Totally Basketball': [0, 2], 'Aotearoa Explorers': [0, 1] };
 
 /** Artwork for the ventures that borrow theirs from elsewhere on the site. */
 const borrowedArt: Record<string, { image: string; thumbnail: string }> = {
@@ -90,7 +91,7 @@ export const consoleItems: ConsoleItem[] = [
       id: `game-${i}`, category: 'games', name: p.name, subtitle: p.role || 'Game development', description: p.desc,
       image: `/console/art/game-${i}.webp`, thumbnail: `/console/covers/game-${i}.webp`, href: p.href, action: 'Visit game',
       meta: [p.role || 'Game development', studio?.name || 'Game project'],
-      bullets: (contributionForProject[p.name] || []).map(index => studio.bullets[index]),
+      bullets: (contributionForProject[p.name] || []).map(index => plain(studio.bullets[index])),
       studio: studio?.name, studioLogo: studio?.logo,
     };
   }),

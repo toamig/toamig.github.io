@@ -5,6 +5,7 @@ import experience     from '../../data/experience.json';
 import education      from '../../data/education.json';
 import technologies   from '../../data/technologies.json';
 import techCategories from '../../data/techCategories.json';
+import { emphasize } from '../../lib/emphasis';
 import projects       from '../../data/projects.json';
 import plugins        from '../../data/plugins.json';
 import ventures       from '../../data/ventures.json';
@@ -345,6 +346,7 @@ const bareUrl = (u: string) => u.replace(/^https?:\/\//, '');
       font-size: 10.5px; line-height: 1.45; color: var(--ink-sub);
       padding-left: 12px; position: relative; margin-bottom: 1.5px;
     }
+    .entry ul li strong { color: var(--ink); font-weight: 600; }
     .entry ul li::before {
       content: ''; position: absolute; left: 2px; top: 6.5px;
       width: 3px; height: 3px; background: var(--accent); border-radius: 50%;
@@ -466,13 +468,14 @@ const bareUrl = (u: string) => u.replace(/^https?:\/\//, '');
         <div class="brand-eyebrow">Lead Software Engineer · Games</div>
         <h1>Miguel <em>Vieira</em></h1>
         <div class="role-line">
-          UE5 Engineer at Side · Engineering Director at Flama Craftworks
-          <span class="sep">/</span>
-          Author of five modular UE plugins
+          Unreal Senior Engineer at Side<br />
+          Former Engineering Director at Flama Craftworks<br />
+          Former Tools Lead at Saber Interactive
         </div>
       </div>
       <div class="meta">
         <div><strong>{cv.contact.location}</strong></div>
+        <div>{cv.contact.relocation}</div>
         <div><a href={`mailto:${cv.contact.email}`}>{cv.contact.email}</a></div>
         <div>{cv.contact.phone}</div>
         <div><a href={`https://${cv.contact.website}`}>{cv.contact.website}</a></div>
@@ -550,7 +553,7 @@ const bareUrl = (u: string) => u.replace(/^https?:\/\//, '');
               </div>
               <div class="entry-role">{e.role}{e.location && <span class="loc">· {e.location}</span>}</div>
               {Array.isArray(e.bullets) && e.bullets.length > 0 && (
-                <ul>{e.bullets.map((b: string) => <li>{b}</li>)}</ul>
+                <ul>{e.bullets.map((b: string) => <li set:html={emphasize(b)} />)}</ul>
               )}
             </div>
           ))}
@@ -588,7 +591,7 @@ const bareUrl = (u: string) => u.replace(/^https?:\/\//, '');
               </div>
               <div class="entry-role">{e.role}{e.location && <span class="loc">· {e.location}</span>}</div>
               {Array.isArray(e.bullets) && e.bullets.length > 0 && (
-                <ul>{e.bullets.map((b: string) => <li>{b}</li>)}</ul>
+                <ul>{e.bullets.map((b: string) => <li set:html={emphasize(b)} />)}</ul>
               )}
             </div>
           ))}

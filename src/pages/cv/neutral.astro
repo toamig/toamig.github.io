@@ -5,6 +5,7 @@ import experience     from '../../data/experience.json';
 import education      from '../../data/education.json';
 import technologies   from '../../data/technologies.json';
 import techCategories from '../../data/techCategories.json';
+import { emphasize } from '../../lib/emphasis';
 import projects       from '../../data/projects.json';
 import plugins        from '../../data/plugins.json';
 import ventures       from '../../data/ventures.json';
@@ -256,6 +257,7 @@ const bareUrl = (u: string) => u.replace(/^https?:\/\//, '');
       font-size: 10.5px; line-height: 1.5; color: var(--ink-sub);
       padding-left: 12px; position: relative; margin-bottom: 1px;
     }
+    .entry ul li strong { font-weight: 600; }
     .entry ul li::before {
       content: '·'; position: absolute; left: 3px; top: -2px;
       color: var(--ink); font-size: 16px; line-height: 1;
@@ -355,9 +357,9 @@ const bareUrl = (u: string) => u.replace(/^https?:\/\//, '');
   <article class="page" style="view-transition-name:cv-sheet-neutral">
     <header class="header">
       <h1>Miguel Vieira</h1>
-      <div class="role">Lead Software Engineer · Games &nbsp;·&nbsp; UE5 Engineer at Side · Engineering Director at Flama Craftworks</div>
+      <div class="role">Lead Software Engineer · Games &nbsp;·&nbsp; Unreal Senior Engineer at Side · Previously Engineering Director at Flama Craftworks and Tools Lead at Saber Interactive</div>
       <div class="meta">
-        <span>{cv.contact.location}</span>
+        <span>{cv.contact.location} ({cv.contact.relocation.toLowerCase()})</span>
         <span class="dot"></span>
         <span><a href={`mailto:${cv.contact.email}`}>{cv.contact.email}</a></span>
         <span class="dot"></span>
@@ -391,7 +393,7 @@ const bareUrl = (u: string) => u.replace(/^https?:\/\//, '');
           </div>
           {e.location && <div class="entry-loc">{e.location}</div>}
           {Array.isArray(e.bullets) && e.bullets.length > 0 && (
-            <ul>{e.bullets.map((b: string) => <li>{b}</li>)}</ul>
+            <ul>{e.bullets.map((b: string) => <li set:html={emphasize(b)} />)}</ul>
           )}
         </div>
       ))}

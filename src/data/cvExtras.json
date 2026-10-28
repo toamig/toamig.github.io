@@ -3,6 +3,7 @@
     "email":    "carlosmiguelvieira@hotmail.com",
     "phone":    "+351 937 067 472",
     "location": "Vila Nova de Gaia, Portugal",
+    "relocation": "Open to relocation",
     "website":  "toamig.com",
     "linkedin": "linkedin.com/in/toamig",
     "github":   "github.com/toamig",
@@ -12,7 +13,7 @@
   "highlights": [
     "Shipped Dakar Desert Rally (AAA, Saber Interactive) on PC, PS4/5, Xbox One/Series X.",
     "Promoted twice to leadership roles within three years.",
-    "Currently directing the engineering and gameplay team on Timefront (RTS / battle-royale hybrid).",
+    "Directed the engineering and gameplay team on Timefront (RTS / battle-royale hybrid), and still consult on it.",
     "Author of five modular Unreal Engine plugins in active development, covering combat, inventory, dialog, world-streaming, and multiplayer social.",
     "Founder of Polyglyph, a multi-provider LLM localization platform built solo and in public beta; also designed the agent knowledge layer and AI review pipeline behind every personal project."
   ],
