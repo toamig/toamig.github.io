@@ -13,7 +13,13 @@ import cv             from '../../data/cvExtras.json';
 
 const exp = experience;
 
-const techByCat = techCategories.map(cat => ({
+// Page 1 is a fixed A4 sheet that clips what does not fit, so the older roles
+// continue at the top of page 2. Check the fit in print media, not on screen.
+const PAGE1_EXP_COUNT = 4;
+const expPage1 = exp.slice(0, PAGE1_EXP_COUNT);
+const expPage2 = exp.slice(PAGE1_EXP_COUNT);
+
+const techByCat = techCategories.filter(cat => !(cat as any).cvHidden).map(cat => ({
   name: cat.name,
   items: technologies.filter(t => t.category === cat.id).map(t => t.name),
 })).filter(g => g.items.length > 0);
@@ -383,7 +389,7 @@ const bareUrl = (u: string) => u.replace(/^https?:\/\//, '');
 
     <section>
       <h2>Experience</h2>
-      {exp.map((e: any) => (
+      {expPage1.map((e: any) => (
         <div class="entry">
           <div class="entry-head">
             <div class="entry-title">
@@ -419,6 +425,26 @@ const bareUrl = (u: string) => u.replace(/^https?:\/\//, '');
 
     <!-- Page 1 is full with the profile and experience, so the sections that
          follow experience start here, in the same reading order. -->
+    {expPage2.length > 0 && (
+    <section>
+      <h2>Experience <span class="cont-mark">/ continued</span></h2>
+      {expPage2.map((e: any) => (
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">
+              {e.name}<span class="sep">·</span><span class="role">{e.role}</span>
+            </div>
+            <div class="entry-date">{e.period}</div>
+          </div>
+          {e.location && <div class="entry-loc">{e.location}</div>}
+          {Array.isArray(e.bullets) && e.bullets.length > 0 && (
+            <ul>{e.bullets.map((b: string) => <li set:html={emphasize(b)} />)}</ul>
+          )}
+        </div>
+      ))}
+    </section>
+    )}
+
     <section>
       <h2>Independent Work</h2>
       {independentWork.map(v => (
@@ -459,6 +485,7 @@ const bareUrl = (u: string) => u.replace(/^https?:\/\//, '');
       </div>
     </section>
 
+    {featuredProjects.length > 0 && (
     <section>
       <h2>Selected Projects</h2>
       <div class="two-up">
@@ -467,16 +494,15 @@ const bareUrl = (u: string) => u.replace(/^https?:\/\//, '');
         ))}
       </div>
     </section>
+    )}
 
     <section>
       <h2>Unreal Engine Plugins</h2>
-      {publishedPlugins.map(p => (
-        <div class="plugin-row">
-          <span class="name">{p.name}</span>
-          <span class="tag">{p.tagline.length > 130 ? p.tagline.slice(0, 130) + '…' : p.tagline}</span>
-          <span class="ver">v{p.version}</span>
-        </div>
-      ))}
+      <div class="two-up">
+        {publishedPlugins.map(p => (
+          <div class="row"><span class="name">{p.name}</span>, <span class="desc">{p.domain}, v{p.version}{p.status === 'live' ? ', live on Fab' : ''}</span></div>
+        ))}
+      </div>
     </section>
 
     <section>

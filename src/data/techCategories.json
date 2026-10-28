@@ -2,9 +2,9 @@
   { "id": "languages",       "name": "Languages"       },
   { "id": "engines",         "name": "Engines"         },
   { "id": "ue-systems",      "name": "Unreal Systems"  },
-  { "id": "web",             "name": "Web & Cloud"     },
+  { "id": "web",             "name": "Web & Cloud",    "cvHidden": true },
   { "id": "art-tools",       "name": "Art Tools"       },
   { "id": "version-control", "name": "Version Control" },
-  { "id": "ai",              "name": "AI Tools"        },
-  { "id": "ai-eng",          "name": "AI Engineering"  }
+  { "id": "ai",              "name": "AI Tools",       "cvHidden": true },
+  { "id": "ai-eng",          "name": "AI Engineering", "cvHidden": true }
 ]

@@ -15,17 +15,15 @@ const exp = experience;
 
 // Editorial's 2-column layout makes the right column the page-height
 // bottleneck. The full 6-entry experience list overflows A4 even with
-// zero margins (verified in the build-time PDF). Keep the four most-
+// zero margins (verified in the build-time PDF). Keep the three most-
 // recent roles on page 1 and continue with the rest at the top of
-// page 2 under "Experience / continued".
-//
-// Neutral uses a single-column layout that has no such constraint, so
-// this split is editorial-only on purpose — don't propagate it.
-const PAGE1_EXP_COUNT = 4;
+// page 2 under "Experience / continued". Print margins are wider than the
+// screen preview, so check the fit in print media, not on screen.
+const PAGE1_EXP_COUNT = 3;
 const expPage1 = exp.slice(0, PAGE1_EXP_COUNT);
 const expPage2 = exp.slice(PAGE1_EXP_COUNT);
 
-const techByCat = techCategories.map(cat => ({
+const techByCat = techCategories.filter(cat => !(cat as any).cvHidden).map(cat => ({
   name: cat.name,
   items: technologies.filter(t => t.category === cat.id).map(t => t.name),
 })).filter(g => g.items.length > 0);
@@ -629,6 +627,7 @@ const bareUrl = (u: string) => u.replace(/^https?:\/\//, '');
         ))}
       </section>
 
+      {featuredProjects.length > 0 && (
       <section>
         <h2>Selected Projects</h2>
         <div class="work-list">
@@ -640,6 +639,7 @@ const bareUrl = (u: string) => u.replace(/^https?:\/\//, '');
           ))}
         </div>
       </section>
+      )}
 
       <section>
         <h2>Unreal Engine Plugins</h2>
@@ -647,7 +647,7 @@ const bareUrl = (u: string) => u.replace(/^https?:\/\//, '');
           {publishedPlugins.map(p => (
             <div class="plugin-item">
               <span class="plugin-name">{p.name}</span>
-              <span class="plugin-tag">{p.tagline.length > 130 ? p.tagline.slice(0, 130) + '…' : p.tagline}</span>
+              <span class="plugin-tag">{p.domain}{p.status === 'live' ? ' · live on Fab' : ''}</span>
               <span class="plugin-ver">v{p.version}</span>
             </div>
           ))}

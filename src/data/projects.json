@@ -3,6 +3,7 @@
     "href": "https://store.steampowered.com/app/1839940/Dakar_Desert_Rally",
     "image": "/projects/dakar.jpg",
     "name": "Dakar Desert Rally",
+    "cvHidden": true,
     "role": "Multiplayer Programmer",
     "desc": "Open-world rally simulator. Shipped on PC, PS4/5, and Xbox One/Series X."
   },
@@ -10,6 +11,7 @@
     "href": "https://store.steampowered.com/app/3328840/Timefront/",
     "image": "/projects/timefront.jpg",
     "name": "Timefront",
+    "cvHidden": true,
     "role": "Engineering Director",
     "desc": "RTS game blending battle royale mechanics."
   },
@@ -17,6 +19,7 @@
     "href": "https://store.steampowered.com/app/2141130/Road_Kings/",
     "image": "/projects/RoadKings.avif",
     "name": "Road Kings",
+    "cvHidden": true,
     "role": "Tools Lead Programmer",
     "desc": "Adventure truck simulator."
   },
@@ -24,6 +27,7 @@
     "href": "https://toamig.itch.io/autorocket",
     "image": "/projects/autorocket.png",
     "name": "AutoRocket",
+    "cvHidden": true,
     "role": "Team Lead",
     "desc": "Educational rocket simulator with visual programming, built by a team of eight."
   },

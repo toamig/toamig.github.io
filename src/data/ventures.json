@@ -118,7 +118,6 @@
       "Every issue picks its inks, paper and display face from a contrast-checked catalog, so no combination is unreadable.",
       "A kit of display formats (charts, timelines, comparisons, custom art) lets each day's layout fit its stories."
     ],
-    "cv": "Daily game dev and AI briefing that runs itself: a GitHub Actions sweep of about 35 sources with Claude Haiku triage feeds a scheduled Claude Code routine that researches, writes, lays out, validates and publishes each issue. Astro on GitHub Pages.",
     "image": "/ventures/radar/cover.svg",
     "mark": "/ventures/radar/mark.svg",
     "href": "https://toamig.com/radar/",

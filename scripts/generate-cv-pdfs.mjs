@@ -124,6 +124,24 @@ async function generatePdf(browser, variant) {
   // always catch CSS-driven font fetches.
   await page.evaluate(() => document.fonts.ready);
 
+  // Each .page is a fixed A4 sheet that clips its overflow, so text that does
+  // not fit vanishes from the PDF instead of moving to a new page. Measure in
+  // print media (its margins are wider than the screen preview) and fail the
+  // build rather than ship a CV with lines cut off under the footer.
+  await page.emulateMediaType('print');
+  const overflow = await page.evaluate(() => [...document.querySelectorAll('.page')].flatMap((sheet, i) => {
+    const footer = sheet.querySelector('.page-footer');
+    const limit = footer ? footer.getBoundingClientRect().top : sheet.getBoundingClientRect().bottom;
+    let bottom = 0;
+    for (const el of sheet.querySelectorAll('*')) {
+      if (footer && footer.contains(el)) continue;
+      const r = el.getBoundingClientRect();
+      if (r.height) bottom = Math.max(bottom, r.bottom);
+    }
+    return bottom > limit ? [`page ${i + 1} runs ${Math.ceil(bottom - limit)}px into its footer`] : [];
+  }));
+  if (overflow.length) throw new Error(`[cv-pdfs] ${variant}: ${overflow.join('; ')}`);
+
   const outPath = pdfPath(variant);
   await page.pdf({
     path: outPath,
