@@ -86,7 +86,7 @@ const domains = [...new Set(plugins.map(p => p.domain).filter(Boolean))];
 
   <!-- ── Hero ─────────────────────────────────────────────────────────── -->
   <section class="hero">
-    <canvas id="hero-circuits" aria-hidden="true"></canvas>
+    <canvas id="hero-smoke" aria-hidden="true"></canvas>
     <p class="eyebrow"><span class="eyebrow-mark" aria-hidden="true"></span>Unreal Engine 5</p>
     <h1>Modular Plugins</h1>
     <p class="sub">Production-grade systems for world-building, combat, and pipeline automation, fragment-based, multiplayer-ready, extensible per project.</p>
@@ -175,408 +175,13 @@ const domains = [...new Set(plugins.map(p => p.domain).filter(Boolean))];
 
 
 <script>
-(function () {
-  function rng(seed) {
-    let s = seed >>> 0;
-    return () => {
-      s ^= s << 13; s ^= s >>> 17; s ^= s << 5;
-      return (s >>> 0) / 4294967296;
-    };
-  }
+import { mountFluidSmoke } from '../../scripts/fluid-smoke';
 
-  const canvas  = document.getElementById('hero-circuits');
-  const hero    = canvas.parentElement;
-  const ctx     = canvas.getContext('2d');
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // Built once per layout: the static circuit baked to an offscreen canvas,
-  // plus the segment list + projection so pulses can travel the same traces.
-  let base = null, segments = [], project = null;
-  let W = 0, H = 0, OX = 0, OY = 0;
-  // Routing graph built from the circuit segments.
-  let nodes = {}, adj = {}, nodeList = [], visNodes = [], visSet = new Set();
-  // Only these keys are rendered junction dots, charges may only flare here,
-  // never at the degree-2 pass-through cells between them.
-  let dotSet = new Set();
-  let pulses = [], flare = {}, flashes = [];
-  // Cursor emission: every eligible node within INFLUENCE of the cursor
-  // emits a charge at its own 1/s cadence (2 nodes in range = 2 streams).
-  let cx = -9999, cy = -9999, cursorActive = false;
-  let autoAcc = 0, wakeLeft = 0, wakeAcc = 0;
-  let eligible = [], nodeEmit = {};
-  const HOVER = matchMedia('(hover: hover)').matches;  // false on touch
-  const CAP   = 16;
-  const EMIT  = 1.0;       // s between charges, per in-range node
-  const INFLUENCE = 110;   // px radius of the cursor's area of influence
-  const SPEED = 46;        // px/s, identical for every charge (normalized)
-  const TRAIL = 16;        // px, constant comet trail length
-  const AUTO = 0.55;   // s between charges on touch (no cursor)
-
-  function build() {
-    W = hero.offsetWidth;
-    H = hero.offsetHeight;
-    canvas.width  = W;
-    canvas.height = H;
-
-    const rand = rng(6487);
-    const STEP   = 26;
-    OX = W / 2;
-    OY = H * 0.26;            // grid origin, upper hero, where the glow is
-    const FOLD_Y = H * 0.64;  // where the wall surface folds into the floor
-    const R_FOLD = Math.round((FOLD_Y - OY) / STEP);
-    const CAM    = 190;
-    const VS     = 0.52;
-
-    project = function (c, r) {
-      const flatY = OY + r * STEP;
-      if (flatY <= FOLD_Y) return { x: OX + c * STEP, y: flatY };
-      const depth  = r - R_FOLD;
-      const spread = 1 + (depth * STEP) / CAM;
-      return { x: OX + c * STEP * spread, y: FOLD_Y + depth * STEP * VS };
-    };
-
-    const DC      = [ 1,  0, -1,  0];
-    const DR      = [ 0,  1,  0, -1];
-    const REVERSE = [ 2,  3,  0,  1];
-    const visited = new Set();
-    segments = [];
-    const dots = [];
-
-    function walk(c, r, dir, energy) {
-      if (energy <= 0) return;
-      const steps = 3 + Math.floor(rand() * 7);
-      let pc = c, pr = r, walked = 0;
-      for (let i = 0; i < steps; i++) {
-        const nc = pc + DC[dir], nr = pr + DR[dir], nk = `${nc},${nr}`;
-        if (visited.has(nk)) break;
-        const sp = project(nc, nr);
-        if (sp.x < -STEP || sp.x > W + STEP || sp.y < -STEP || sp.y > H + STEP) break;
-        visited.add(nk);
-        segments.push({ c1: pc, r1: pr, c2: nc, r2: nr });
-        pc = nc; pr = nr; walked++;
-      }
-      if (walked === 0) return;
-      const nextEnergy = energy - walked * 2 - rand() * 4;
-      const { x: sx } = project(pc, pr);
-      if (nextEnergy < 6) { dots.push({ c: pc, r: pr }); return; }
-      const distFromCenter = Math.abs(sx - OX) / (W / 2);
-      const options = [];
-      for (let d = 0; d < 4; d++) {
-        if (d === REVERSE[dir]) continue;
-        let w = 1;
-        if (DC[d] > 0 && sx > OX) w += 1 + Math.round(distFromCenter * 4);
-        if (DC[d] < 0 && sx < OX) w += 1 + Math.round(distFromCenter * 4);
-        if (DR[d] > 0)            w += 1;
-        for (let j = 0; j < w; j++) options.push(d);
-      }
-      const nd = options[Math.floor(rand() * options.length)];
-      dots.push({ c: pc, r: pr });
-      walk(pc, pr, nd, nextEnergy);
-      if (rand() < 0.55 && nextEnergy > 14) {
-        const others = options.filter(d => d !== nd);
-        if (others.length) walk(pc, pr, others[Math.floor(rand() * others.length)], nextEnergy * 0.6);
-      }
-    }
-
-    const seeds = 20 + Math.floor(rand() * 6);
-    for (let i = 0; i < seeds; i++) {
-      const c = Math.round((rand() - 0.5) * 20);
-      const r = Math.round((rand() - 0.5) * 6);
-      visited.add(`${c},${r}`);
-      walk(c, r, Math.floor(rand() * 4), 95 + rand() * 95);
-    }
-
-    // Bake the static circuit (no centre fade, that's applied per-frame so
-    // it dissolves the pulses behind the title too).
-    base = document.createElement('canvas');
-    base.width = W; base.height = H;
-    const bx = base.getContext('2d');
-
-    bx.lineWidth = 4; bx.lineCap = 'round'; bx.strokeStyle = 'rgba(99,102,241,0.05)';
-    bx.beginPath();
-    for (const s of segments) {
-      const p1 = project(s.c1, s.r1), p2 = project(s.c2, s.r2);
-      bx.moveTo(p1.x, p1.y); bx.lineTo(p2.x, p2.y);
-    }
-    bx.stroke();
-
-    bx.lineWidth = 1; bx.lineCap = 'square'; bx.strokeStyle = 'rgba(109,112,251,0.22)';
-    bx.beginPath();
-    for (const s of segments) {
-      const p1 = project(s.c1, s.r1), p2 = project(s.c2, s.r2);
-      bx.moveTo(p1.x, p1.y); bx.lineTo(p2.x, p2.y);
-    }
-    bx.stroke();
-
-    for (const d of dots) {
-      const p = project(d.c, d.r);
-      bx.fillStyle = 'rgba(129,140,248,0.18)';
-      bx.beginPath(); bx.arc(p.x, p.y, 4.5, 0, Math.PI * 2); bx.fill();
-      bx.fillStyle = 'rgba(160,168,255,0.50)';
-      bx.beginPath(); bx.arc(p.x, p.y, 1.8, 0, Math.PI * 2); bx.fill();
-    }
-
-    // Build the routing graph from the segments: nodes = cell endpoints,
-    // adjacency = traces between them. Charges hop node-to-node along this.
-    nodes = {}; adj = {};
-    const link = (a, b) => { (adj[a] = adj[a] || new Set()).add(b); };
-    for (const s of segments) {
-      const k1 = s.c1 + ',' + s.r1, k2 = s.c2 + ',' + s.r2;
-      nodes[k1] = { c: s.c1, r: s.r1 }; nodes[k2] = { c: s.c2, r: s.r2 };
-      link(k1, k2); link(k2, k1);
-    }
-    for (const key in adj) adj[key] = [...adj[key]];
-    nodeList = Object.keys(nodes);
-    dotSet = new Set(dots.map(d => d.c + ',' + d.r));   // the only flare-able nodes
-    // Nodes whose projection lands near the visible canvas, used for the
-    // load wake and the touch auto-flow so charges light what people see.
-    visNodes = nodeList.filter(key => {
-      const p = projKey(key);
-      return p.x > -20 && p.x < W + 20 && p.y > -20 && p.y < H + 20;
-    });
-    visSet = new Set(visNodes);   // charges route within the visible board only
-    // Eligible spawn origins: nodes in the clearly-visible region, excludes
-    // the mask-faded bottom and the centre-fade behind the title.
-    eligible = [...dotSet].filter(key => {
-      const p = projKey(key);
-      if (p.x < 12 || p.x > W - 12) return false;
-      return visAlpha(p) > 0.12;     // any dot that's more than faintly visible
-    });
-    if (!eligible.length) eligible = [...dotSet];   // safety fallback
-    pulses = []; flare = {}; flashes = []; nodeEmit = {}; autoAcc = 0;
-    wakeLeft = 2.6; wakeAcc = 0;   // brief wake stream so first paint has life
-  }
-
-  function projKey(key) { const n = nodes[key]; return project(n.c, n.r); }
-  // Approximate the rendered opacity of a point: the canvas mask fades the
-  // bottom (opaque to 35% height, transparent by 92%) and the centre-fade
-  // erases up to ~68% behind the title. A dot is a valid spawn origin if what
-  // shows through is more than faint, so dim-but-visible dots still spawn.
-  function visAlpha(p) {
-    const fy = p.y / H;
-    let m = 1;
-    if (fy >= 0.92) m = 0; else if (fy > 0.35) m = (0.92 - fy) / 0.57;
-    const d = Math.hypot(p.x - OX, p.y - OY), r0 = W * 0.04, r1 = W * 0.125;
-    let erase = 0;
-    if (d <= r0) erase = 0.68; else if (d < r1) erase = 0.68 * (1 - (d - r0) / (r1 - r0));
-    return m * (1 - erase);
-  }
-  // Adjacent nodes that are visible on the board (fall back to all if a node
-  // sits at the visible edge with only off-screen neighbours).
-  function visAdj(key) {
-    const ns = adj[key]; if (!ns || !ns.length) return [];
-    const v = ns.filter(n => visSet.has(n));
-    return v.length ? v : ns;
-  }
-  function neighbor(key, avoid) {
-    const ns = visAdj(key); if (!ns.length) return key;
-    let p = ns[Math.floor(Math.random() * ns.length)];
-    if (ns.length > 1 && p === avoid) p = ns[(ns.indexOf(p) + 1) % ns.length];
-    return p;
-  }
-  function awayNeighbor(key, x, y) {
-    const ns = visAdj(key); if (!ns.length) return key;
-    const sorted = ns.slice().sort((a, b) => {
-      const ca = projKey(a), cb = projKey(b);
-      return ((cb.x-x)**2+(cb.y-y)**2) - ((ca.x-x)**2+(ca.y-y)**2);
-    });
-    return sorted[Math.floor(Math.random() * Math.min(2, sorted.length))];
-  }
-  function randElig() { return eligible[Math.floor(Math.random() * eligible.length)]; }
-  function emit(fromKey, x, y) {
-    if (!fromKey || pulses.length >= CAP) return;
-    const to = (x != null) ? awayNeighbor(fromKey, x, y) : neighbor(fromKey, null);
-    pulses.push({ from: fromKey, to, t: 0, hop: 0, max: 3 + Math.floor(Math.random() * 3) });
-  }
-
-  function centreFade() {
-    ctx.globalCompositeOperation = 'destination-out';
-    const radial = ctx.createRadialGradient(OX, OY, W * 0.04, OX, OY, W * 0.38);
-    radial.addColorStop(0,    'rgba(0,0,0,0.68)');
-    radial.addColorStop(0.25, 'rgba(0,0,0,0)');
-    radial.addColorStop(1,    'rgba(0,0,0,0)');
-    ctx.fillStyle = radial;
-    ctx.fillRect(0, 0, W, H);
-    ctx.globalCompositeOperation = 'source-over';
-  }
-
-  function frame(dt) {
-    ctx.clearRect(0, 0, W, H);
-    if (base) ctx.drawImage(base, 0, 0);   // board stays anchored
-
-    // ── Emission ────────────────────────────────────────────────────────
-    if (wakeLeft > 0 && eligible.length) {            // brief wake on load
-      wakeLeft -= dt; wakeAcc += dt;
-      const iv = 0.18 + (2.6 - wakeLeft) * 0.16;      // slows as it tapers out
-      if (wakeAcc >= iv) { wakeAcc = 0; emit(randElig(), null); }
-    }
-    if (HOVER) {                                       // desktop: cursor area of influence
-      if (cursorActive) {
-        const R2 = INFLUENCE * INFLUENCE;
-        for (const key of eligible) {
-          const p = projKey(key);
-          if ((p.x - cx) ** 2 + (p.y - cy) ** 2 <= R2) {
-            // Random phase on entry so in-range nodes don't all fire in sync.
-            if (nodeEmit[key] === undefined) nodeEmit[key] = Math.random() * EMIT;
-            nodeEmit[key] += dt;
-            if (nodeEmit[key] >= EMIT) { nodeEmit[key] -= EMIT; emit(key, cx, cy); }
-          } else if (nodeEmit[key] !== undefined) {
-            delete nodeEmit[key];                       // left range → reset its timer
-          }
-        }
-      }
-    } else if (eligible.length) {                      // touch: gentle auto-flow
-      autoAcc += dt; if (autoAcc >= AUTO) { autoAcc = 0; emit(randElig(), null); }
-    }
-
-    // Cursor presence glow (matches the area of influence)
-    if (cursorActive && cx > -999) {
-      const gg = ctx.createRadialGradient(cx, cy, 0, cx, cy, INFLUENCE);
-      gg.addColorStop(0, 'rgba(120,135,255,0.10)'); gg.addColorStop(1, 'rgba(120,135,255,0)');
-      ctx.fillStyle = gg; ctx.fillRect(0, 0, W, H);
-    }
-
-    // ── Lit junctions (flares from arriving charges) ─────────────────────
-    for (const key in flare) {
-      flare[key] -= dt * 1.7;
-      if (flare[key] <= 0) { delete flare[key]; continue; }
-      const fl = flare[key], p = projKey(key);
-      ctx.shadowBlur = 16 * fl; ctx.shadowColor = 'rgba(150,170,255,' + fl + ')';
-      ctx.fillStyle = 'rgba(' + (150 + fl*70|0) + ',' + (160 + fl*60|0) + ',255,' + (0.5 * fl) + ')';
-      ctx.beginPath(); ctx.arc(p.x, p.y, 2 + fl * 3, 0, Math.PI * 2); ctx.fill();
-      ctx.shadowBlur = 0;
-    }
-
-    // ── Charges: advance + route, caching head position + direction ──────
-    for (let i = pulses.length - 1; i >= 0; i--) {
-      const p = pulses[i];
-      let a = projKey(p.from), b = projKey(p.to);
-      let len = Math.hypot(b.x - a.x, b.y - a.y) || 1;
-      p.t += (SPEED * dt) / len;                 // constant px/s on every edge
-      if (p.t >= 1) {
-        if (dotSet.has(p.to)) flare[p.to] = Math.min(1, (flare[p.to] || 0) + 0.9);
-        p.hop++;
-        if (p.hop >= p.max) { pulses.splice(i, 1); continue; }
-        const old = p.from; p.from = p.to; p.to = neighbor(p.to, old); p.t = 0;
-        a = projKey(p.from); b = projKey(p.to); len = Math.hypot(b.x - a.x, b.y - a.y) || 1;
-      }
-      p.ax = a.x; p.ay = a.y; p.bx = b.x; p.by = b.y; p.len = len;
-      p.hx = a.x + (b.x - a.x) * p.t; p.hy = a.y + (b.y - a.y) * p.t;
-      p.dx = (b.x - a.x) / len; p.dy = (b.y - a.y) / len;
-    }
-
-    // ── Collisions: two heads meeting head-on annihilate in a flash ──────
-    for (let i = 0; i < pulses.length; i++) {
-      for (let j = i + 1; j < pulses.length; j++) {
-        const A = pulses[i], B = pulses[j];
-        if (A.dead || B.dead) continue;
-        if (Math.hypot(A.hx - B.hx, A.hy - B.hy) < 9 && (A.dx*B.dx + A.dy*B.dy) < -0.25) {
-          flashes.push({ x: (A.hx + B.hx) / 2, y: (A.hy + B.hy) / 2, age: 0 });
-          A.dead = B.dead = true;
-        }
-      }
-    }
-    if (pulses.some(p => p.dead)) pulses = pulses.filter(p => !p.dead);
-
-    // ── Draw charges ─────────────────────────────────────────────────────
-    ctx.lineCap = 'round';
-    for (const p of pulses) {
-      let env = 0.4 + 0.6 * p.t;                       // brightens along the trace
-      if (p.hop === 0)         env *= Math.min(1, p.t / 0.4);        // fade in
-      if (p.hop === p.max - 1) env *= Math.min(1, (1 - p.t) / 0.4);  // fade out
-      const tt = Math.max(0, p.t - TRAIL / p.len);   // constant-length trail
-      const tx = p.ax + (p.bx - p.ax) * tt, ty = p.ay + (p.by - p.ay) * tt;
-      const g = ctx.createLinearGradient(tx, ty, p.hx, p.hy);
-      g.addColorStop(0, 'rgba(150,160,255,0)');
-      g.addColorStop(1, 'rgba(184,192,255,' + (0.72 * env) + ')');
-      ctx.strokeStyle = g; ctx.lineWidth = 1.6 + env;
-      ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(p.hx, p.hy); ctx.stroke();
-      ctx.shadowBlur = 9; ctx.shadowColor = 'rgba(150,165,255,' + (0.85 * env) + ')';
-      ctx.fillStyle = 'rgba(216,221,255,' + env + ')';
-      ctx.beginPath(); ctx.arc(p.hx, p.hy, 2.2, 0, Math.PI * 2); ctx.fill();
-      ctx.shadowBlur = 0;
-    }
-
-    // ── Collision flashes: expanding ring + bright core, quick fade ──────
-    for (let i = flashes.length - 1; i >= 0; i--) {
-      const f = flashes[i]; f.age += dt;
-      const kk = f.age / 0.45;
-      if (kk >= 1) { flashes.splice(i, 1); continue; }
-      const al = 1 - kk;
-      ctx.shadowBlur = 16 * al; ctx.shadowColor = 'rgba(170,185,255,' + al + ')';
-      ctx.strokeStyle = 'rgba(200,210,255,' + (al * 0.9) + ')';
-      ctx.lineWidth = 1.6 * al + 0.4;
-      ctx.beginPath(); ctx.arc(f.x, f.y, 3 + kk * 22, 0, Math.PI * 2); ctx.stroke();
-      ctx.fillStyle = 'rgba(232,236,255,' + (al * al) + ')';
-      ctx.beginPath(); ctx.arc(f.x, f.y, 1.5 + al * 3.5, 0, Math.PI * 2); ctx.fill();
-      ctx.shadowBlur = 0;
-    }
-
-    // Centre fade stays anchored to the title so the copy area is always clear.
-    centreFade();
-  }
-
-  // ── Lifecycle ──────────────────────────────────────────────────────────
-  let raf = 0, last = 0;
-  function idle() {
-    // On desktop, once the wake has tapered and nothing's flowing and the
-    // cursor's away, the board is a static frame, stop the loop to save CPU
-    // (pointermove restarts it). Touch always animates (auto-flow).
-    return HOVER && !cursorActive && wakeLeft <= 0 && pulses.length === 0 && flashes.length === 0;
-  }
-  function loop(now) {
-    const dt = Math.min((now - last) / 1000, 0.05);
-    last = now;
-    frame(dt);
-    if (idle()) { raf = 0; return; }   // settle into a static frame
-    raf = requestAnimationFrame(loop);
-  }
-
-  function start() {
-    if (raf) return;
-    last = performance.now();
-    raf = requestAnimationFrame(loop);
-  }
-  function stop() { if (raf) { cancelAnimationFrame(raf); raf = 0; } }
-
-  function paintStatic() {
-    ctx.clearRect(0, 0, W, H);
-    if (base) ctx.drawImage(base, 0, 0);
-    centreFade();
-  }
-
-  build();
-  // Always paint one frame immediately so the canvas is never blank, rAF
-  // doesn't fire while the tab is hidden (background-tab load / SSR preview),
-  // and the loop would otherwise leave nothing on screen until it runs.
-  if (reduced) {
-    paintStatic();
-  } else {
-    frame(0);
-    start();
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) stop(); else start();
-    });
-    // Cursor-only emission: track position; charges stream from the nearest
-    // junction at a steady cadence (in frame), board stays anchored. Moving
-    // the cursor wakes the loop if it had settled into the idle static frame.
-    hero.addEventListener('pointermove', (e) => {
-      const r = hero.getBoundingClientRect();
-      cx = e.clientX - r.left; cy = e.clientY - r.top; cursorActive = true;
-      start();
-    });
-    hero.addEventListener('pointerleave', () => { cursorActive = false; nodeEmit = {}; });
-  }
-
-  let rt = 0;
-  window.addEventListener('resize', () => {
-    clearTimeout(rt);
-    rt = setTimeout(() => {
-      build();                       // rebuilds graph + restarts the wake
-      if (reduced) { paintStatic(); } else { frame(0); start(); }
-    }, 150);
-  });
-})();
+// Indigo smoke that follows the cursor across the hero. Skipped (plain hero)
+// on touch, reduced motion, or without half-float WebGL.
+const canvas = document.getElementById('hero-smoke') as HTMLCanvasElement | null;
+const hero = canvas?.parentElement;
+if (canvas && hero) mountFluidSmoke(canvas, hero, { hue: 0.62, hueSpread: 0.05, saturation: [0.45, 0.75] });
 </script>
 
 <!-- ── Pointer-driven 3D card tilt (vanilla, matches the home-page cards) ── -->
@@ -686,9 +291,6 @@ body::after {
 .home-pill svg { flex-shrink: 0; opacity: .7; }
 
 /* ── Hero ────────────────────────────────────────────────────────────── */
-/* NOTE: the circuit pattern is generated from the hero's W/H (OY = H*0.26,
-   FOLD_Y = H*0.64). Changing this padding / inner spacing changes the hero
-   height and therefore regenerates the pattern, keep these metrics stable. */
 .hero {
   position: relative;
   padding: 120px 24px 56px;
@@ -698,20 +300,17 @@ body::after {
   overflow: hidden;
 }
 
-#hero-circuits {
+/* Fluid smoke (src/scripts/fluid-smoke.ts). Sits under the copy; the fade
+   keeps it from stopping dead on the hero's bottom border. */
+#hero-smoke {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+  display: block;
   pointer-events: none;
-  opacity: 0;
-  animation: circuits-fadein 1.2s ease forwards;
-  -webkit-mask-image: linear-gradient(to bottom, black 35%, transparent 92%);
-  mask-image: linear-gradient(to bottom, black 35%, transparent 92%);
-}
-
-@keyframes circuits-fadein {
-  to { opacity: 1; }
+  -webkit-mask-image: linear-gradient(to bottom, black 65%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 65%, transparent 100%);
 }
 
 .hero .eyebrow,
@@ -1180,6 +779,5 @@ h2 {
 @media (prefers-reduced-motion: reduce) {
   .card { animation: none; }
   .badge-dot { animation: none; }
-  #hero-circuits { animation: none; opacity: 1; }
 }
 </style>
