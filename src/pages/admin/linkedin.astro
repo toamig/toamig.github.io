@@ -250,9 +250,28 @@
     }
   }
 
+  // LinkedIn's composer drops the blank lines of pasted plain text, so the post also goes on the
+  // clipboard as HTML: one paragraph per line and an empty paragraph for each blank line, which the
+  // composer keeps. Editors that only take plain text still get the plain version.
+  function clipboardHtml(text: string): string {
+    return text.split('\n').map((line) => (line.trim() === '' ? '<p><br></p>' : `<p>${esc(line)}</p>`)).join('');
+  }
+
   async function copy(text: string, what: string) {
-    try { await navigator.clipboard.writeText(text); toast(`${what} copied`); }
-    catch { toast('Copy failed: select the text by hand'); }
+    try {
+      if (typeof ClipboardItem !== 'undefined' && navigator.clipboard.write) {
+        await navigator.clipboard.write([new ClipboardItem({
+          'text/plain': new Blob([text], { type: 'text/plain' }),
+          'text/html': new Blob([clipboardHtml(text)], { type: 'text/html' }),
+        })]);
+      } else {
+        await navigator.clipboard.writeText(text);
+      }
+      toast(`${what} copied`);
+    } catch {
+      try { await navigator.clipboard.writeText(text); toast(`${what} copied`); }
+      catch { toast('Copy failed: select the text by hand'); }
+    }
   }
 
   // ── rendering ────────────────────────────────────────────
