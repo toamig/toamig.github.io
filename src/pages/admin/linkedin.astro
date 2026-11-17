@@ -208,6 +208,9 @@
   async function load() {
     state.loading = true; state.error = ''; render();
     try {
+      // GitHub answers 404, not 403, for a private repo the token cannot see, so ask for the repo first:
+      // otherwise a token without access looks exactly like an empty desk.
+      await gh('GET', `/repos/${OWNER}/${REPO}`);
       const list = await gh('GET', `/repos/${OWNER}/${REPO}/contents/posts?ref=${BRANCH}`).catch((e: any) => {
         if (e.status === 404) return [];
         throw e;
@@ -218,8 +221,9 @@
         return { post: JSON.parse(b64decode(data.content)) as Post, sha: data.sha as string };
       }));
     } catch (e: any) {
-      state.error = e.status === 404
-        ? `Cannot see ${OWNER}/${REPO}. The token needs the full "repo" scope to read a private repo.`
+      state.entries = [];
+      state.error = e.status === 404 || e.status === 403
+        ? `This token cannot see the private repo ${OWNER}/${REPO}, so no posts can load. Sign out and sign in with a token that can: a classic token with the full "repo" scope, or a fine-grained token that includes ${REPO} with Contents set to Read and write.`
         : `Could not load the posts: ${e.message}`;
     }
     state.loading = false;
@@ -384,7 +388,7 @@
 
   function renderLogin(err = '') {
     app.innerHTML = `<div class="login"><h1>LinkedIn desk</h1>
-      <p>Sign in with the same GitHub token as the site admin: a classic token with the <b>repo</b> scope, so it can read the private drafts repo. It stays in this tab only.</p>
+      <p>Sign in with a GitHub token that can read and write the private repo <b>${OWNER}/${REPO}</b>: a classic token with the full <b>repo</b> scope, or a fine-grained token that includes ${REPO} (and toamig.github.io, to use it for the site admin too) with Contents set to Read and write. It stays in this tab only.</p>
       <input type="password" id="token" placeholder="ghp_..." autocomplete="off">
       <button class="btn primary" data-act="login">Sign in</button>
       ${err ? `<p class="err">${esc(err)}</p>` : ''}</div>`;
