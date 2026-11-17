@@ -24,6 +24,10 @@ const EASE = 'power3.inOut';
   let flip: gsap.core.Timeline | null = null;
   let resize: gsap.core.Tween | null = null;
 
+  // A filter is "all", a shelf, or "unreal" (which cuts across the shelves).
+  const shows = (t: HTMLElement, filter: string) =>
+    filter === 'all' || (filter === 'unreal' ? t.dataset.unreal !== undefined : t.dataset.shelf === filter);
+
   const apply = (filter: string) => {
     if (grid.dataset.filter === filter) return;
     chips.forEach(c => c.setAttribute('aria-pressed', String(c.dataset.filter === filter)));
@@ -36,7 +40,7 @@ const EASE = 'power3.inOut';
 
     grid.dataset.filter = filter;
     tiles.forEach(t => {
-      t.style.display = filter === 'all' || t.dataset.shelf === filter ? '' : 'none';
+      t.style.display = shows(t, filter) ? '' : 'none';
     });
     if (!state) return;
 
@@ -81,7 +85,7 @@ const EASE = 'power3.inOut';
     chips.forEach(c => c.setAttribute('aria-pressed', String(c.dataset.filter === arriving)));
     grid.dataset.filter = arriving;
     tiles.forEach(t => {
-      t.style.display = arriving === 'all' || t.dataset.shelf === arriving ? '' : 'none';
+      t.style.display = shows(t, arriving) ? '' : 'none';
     });
   }
 

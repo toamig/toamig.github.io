@@ -13,12 +13,24 @@ export type WorkShelf = 'studio' | 'games' | 'products';
 /** How much of the bento grid a tile takes: 2x2, 2x1 or 1x1. */
 export type WorkSize = 'xl' | 'wide' | 'sm';
 
+/**
+ * The Unreal Engine filter on the Work grid. It cuts across the shelves rather
+ * than being one, so a tile carries both: its shelf and whether it is Unreal.
+ */
+export const UNREAL_FILTER = { id: 'unreal', label: 'Unreal Engine' } as const;
+
+// The work that was built in Unreal Engine: the three shipped studio games and
+// the plugin line. Add an id here to put a project under the filter.
+const UNREAL_IDS = new Set(['road-kings', 'timefront', 'dakar-desert-rally', 'plugins']);
+
 export interface WorkLink { href: string; label: string; external: boolean; }
 
 export interface WorkItem {
   id: string;
   name: string;
   shelf: WorkShelf;
+  /** True when the work was built in Unreal Engine (the Unreal Engine filter). */
+  unreal: boolean;
   size: WorkSize;
   /** Short context for the tile: a role, a studio, or what the thing is. */
   label: string;
@@ -125,6 +137,7 @@ function fromVenture(v: (typeof ventures)[number]): WorkItem {
     id: v.id,
     name: v.name,
     shelf: isGame ? 'games' : 'products',
+    unreal: UNREAL_IDS.has(v.id),
     size: 'sm',
     label,
     state: v.state || undefined,
@@ -155,6 +168,7 @@ function fromProject(p: (typeof projects)[number]): WorkItem {
     id,
     name: p.name,
     shelf: 'studio',
+    unreal: UNREAL_IDS.has(id),
     size: 'sm',
     label: p.role || 'Studio game',
     line: p.desc,
@@ -201,3 +215,6 @@ export const workWithDetail = work.filter(w => w.hasDetail);
 
 /** How many items sit on each shelf, for the filter counts. */
 export const shelfCount = (shelf: WorkShelf) => work.filter(w => w.shelf === shelf).length;
+
+/** How many items the Unreal Engine filter shows. */
+export const unrealCount = work.filter(w => w.unreal).length;

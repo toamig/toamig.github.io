@@ -5,7 +5,7 @@
 // homepage stays the same length however many projects get added.
 import PolyglyphMock from '../PolyglyphMock.astro';
 import RadarMark     from '../RadarMark.astro';
-import { work, SHELVES, shelfCount, pluginCovers } from '../../data/work';
+import { work, SHELVES, shelfCount, pluginCovers, UNREAL_FILTER, unrealCount } from '../../data/work';
 
 const FEED = import.meta.env.DEV ? 'https://toamig.com/radar/latest.json' : '/radar/latest.json';
 ---
@@ -22,6 +22,9 @@ const FEED = import.meta.env.DEV ? 'https://toamig.com/radar/latest.json' : '/ra
       <button class="hn-chip wk-chip" type="button" data-filter="all" aria-pressed="true">
         All <span class="hn-n">{work.length}</span>
       </button>
+      <button class="hn-chip wk-chip" type="button" data-filter={UNREAL_FILTER.id} aria-pressed="false">
+        {UNREAL_FILTER.label} <span class="hn-n">{unrealCount}</span>
+      </button>
       {SHELVES.map(s => (
         <button class="hn-chip wk-chip" type="button" data-filter={s.id} aria-pressed="false">
           {s.label} <span class="hn-n">{shelfCount(s.id)}</span>
@@ -36,6 +39,7 @@ const FEED = import.meta.env.DEV ? 'https://toamig.com/radar/latest.json' : '/ra
           id={`w-${w.id}`}
           href={w.href}
           data-shelf={w.shelf}
+          data-unreal={w.unreal ? '' : undefined}
           data-id={w.id}
           data-radar-tile={w.id === 'radar' ? FEED : undefined}
           style={w.palette
