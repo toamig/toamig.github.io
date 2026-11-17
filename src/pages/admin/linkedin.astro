@@ -1,0 +1,475 @@
+---
+// The review desk for Miguel's personal LinkedIn drafts (Brain toamig.github.io/LinkedIn.md).
+// Posts live in the PRIVATE repo toamig/linkedin-posts; this page only holds the code and reads them
+// through the GitHub API with the same token as /admin. Nothing here posts to LinkedIn.
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>LinkedIn desk | Toamig admin</title>
+  <link rel="icon" href="/logo_head.svg" type="image/svg+xml" />
+  <style is:global>
+    :root {
+      --bg: #0e1116; --panel: #161b22; --panel2: #1c232c; --line: #2a333e; --text: #e6edf3; --sub: #9aa7b4;
+      --accent: #4c9be8; --ok: #3fb950; --warn: #d29922; --bad: #f85149;
+      --li-bg: #ffffff; --li-text: rgba(0,0,0,.9); --li-sub: rgba(0,0,0,.6);
+      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font: 15px/1.5 var(--font); -webkit-font-smoothing: antialiased; }
+    button, input, textarea, select { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+    a { color: var(--accent); }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 20px 16px 80px; }
+    header.top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+    header.top h1 { font-size: 20px; font-weight: 700; margin-right: auto; }
+    header.top .who { color: var(--sub); font-size: 13px; }
+    .btn { background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; font-size: 14px; }
+    .btn:hover { border-color: var(--accent); }
+    a.btn { color: var(--text); text-decoration: none; }
+    .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+    .btn.ok { background: var(--ok); border-color: var(--ok); color: #fff; font-weight: 600; }
+    .btn.bad { color: var(--bad); }
+    .btn:disabled { opacity: .5; cursor: default; }
+    .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+    .tab { background: none; border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; color: var(--sub); }
+    .tab.on { background: var(--panel2); color: var(--text); border-color: var(--accent); }
+    .tab b { margin-left: 4px; color: var(--text); }
+    .bar { display: flex; gap: 8px; align-items: center; margin-bottom: 14px; color: var(--sub); font-size: 13px; flex-wrap: wrap; }
+    .empty { color: var(--sub); padding: 40px 0; text-align: center; }
+    .card { display: grid; grid-template-columns: minmax(0, 560px) minmax(0, 1fr); gap: 20px; background: var(--panel);
+            border: 1px solid var(--line); border-radius: 12px; padding: 18px; margin-bottom: 18px; }
+    @media (max-width: 900px) { .card { grid-template-columns: 1fr; padding: 12px; } }
+    .meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; font-size: 13px; color: var(--sub); }
+    .chip { border-radius: 999px; padding: 2px 10px; font-size: 12px; font-weight: 600; background: var(--panel2); border: 1px solid var(--line); color: var(--text); }
+    .chip.leadership { border-color: #a371f7; } .chip.unreal { border-color: #4c9be8; }
+    .chip.ai-pipelines { border-color: #3fb950; } .chip.building { border-color: #d29922; }
+    .chip.edited { border-color: var(--warn); color: var(--warn); }
+    /* LinkedIn-like preview */
+    .li { background: var(--li-bg); color: var(--li-text); border-radius: 10px; padding: 12px 16px 14px; max-width: 555px; }
+    .li.phone { max-width: 360px; }
+    .li-head { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+    .li-av { width: 48px; height: 48px; border-radius: 50%; background: #0a66c2 center/cover no-repeat; flex: none; }
+    .li-name { font-weight: 600; font-size: 14px; line-height: 1.3; }
+    .li-sub { color: var(--li-sub); font-size: 12px; line-height: 1.3; }
+    .li-text { white-space: pre-wrap; word-wrap: break-word; font-size: 14px; line-height: 1.43; }
+    .li-more { color: var(--li-sub); background: none; border: 0; font-size: 14px; padding: 0; }
+    .li-more:hover { color: #0a66c2; text-decoration: underline; }
+    .li-comment { margin-top: 10px; background: #f2f2f2; border-radius: 8px; padding: 8px 10px; font-size: 13px; white-space: pre-wrap; word-wrap: break-word; }
+    .li-comment b { display: block; font-size: 12px; color: var(--li-sub); }
+    .side h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--sub); margin: 14px 0 6px; }
+    .side h4:first-child { margin-top: 0; }
+    .side p, .side li { font-size: 14px; white-space: pre-wrap; word-wrap: break-word; }
+    .side ul { padding-left: 18px; }
+    .side code { font-size: 12px; color: var(--sub); word-break: break-all; }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .editor textarea { width: 100%; min-height: 320px; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px; line-height: 1.45; resize: vertical; }
+    .editor textarea.small { min-height: 70px; }
+    .editor label { display: block; font-size: 12px; color: var(--sub); margin: 8px 0 4px; }
+    .warns { font-size: 13px; color: var(--warn); margin-top: 6px; }
+    .count { font-size: 13px; color: var(--sub); }
+    .count.out { color: var(--warn); }
+    .dialog { background: var(--panel2); border: 1px solid var(--line); border-radius: 10px; padding: 12px; margin-top: 12px; }
+    .dialog input, .dialog textarea { width: 100%; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px; margin: 6px 0 10px; }
+    .login { max-width: 460px; margin: 12vh auto 0; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 24px; }
+    .login h1 { font-size: 20px; margin-bottom: 8px; }
+    .login p { color: var(--sub); font-size: 14px; margin-bottom: 14px; }
+    .login input { width: 100%; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px; margin-bottom: 12px; }
+    .err { color: var(--bad); font-size: 14px; margin-top: 8px; }
+    .toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--panel2); border: 1px solid var(--line);
+             border-radius: 8px; padding: 10px 16px; font-size: 14px; z-index: 10; }
+  </style>
+</head>
+<body>
+  <div id="app" class="wrap"></div>
+
+  <script>
+  const OWNER = 'toamig';
+  const REPO = 'linkedin-posts';
+  const BRANCH = 'main';
+  const GH = 'https://api.github.com';
+  const PILLARS: Record<string, string> = { leadership: 'Leadership', unreal: 'Unreal', 'ai-pipelines': 'AI pipelines', building: 'Building' };
+  const TABS = [
+    { id: 'draft', label: 'Drafts' },
+    { id: 'approved', label: 'Scheduled' },
+    { id: 'posted', label: 'Posted' },
+    { id: 'discarded', label: 'Discarded' },
+  ];
+  /** Where LinkedIn cuts a post before "see more": about three lines. */
+  const FOLD = { desktop: 210, phone: 140 };
+  /** Default posting days: Tuesday and Thursday, at most two a week (Brain LinkedIn.md, Timing). */
+  const POST_DAYS = [2, 4];
+  const PER_WEEK = 2;
+
+  interface Post {
+    id: string; slug?: string; created: string; pillar: string; status: string;
+    text: string; draft_text: string; first_comment?: string;
+    material?: { label: string; ref: string }[]; notes?: string; image?: string;
+    publish_on: string | null; discard_reason: string | null; posted_url: string | null;
+  }
+  interface Entry { post: Post; sha: string; }
+
+  const state = {
+    token: sessionStorage.getItem('admin_token'),
+    user: '' as string,
+    tab: 'draft',
+    entries: [] as Entry[],
+    loading: false,
+    error: '',
+    phone: localStorage.getItem('li_desk_phone') === '1',
+    open: {} as Record<string, string>, // id -> 'edit' | 'approve' | 'discard' | 'posted' | 'more'
+  };
+
+  const app = document.getElementById('app')!;
+
+  // ── helpers ──────────────────────────────────────────────
+  function esc(s: unknown): string {
+    return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
+  }
+  function b64decode(b64: string): string {
+    const bin = atob(b64.replace(/\n/g, ''));
+    return new TextDecoder().decode(Uint8Array.from(bin, (c) => c.charCodeAt(0)));
+  }
+  function b64encode(text: string): string {
+    const bytes = new TextEncoder().encode(text);
+    let bin = '';
+    bytes.forEach((b) => { bin += String.fromCharCode(b); });
+    return btoa(bin);
+  }
+  function toast(msg: string) {
+    const t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 2600);
+  }
+  function lisbonToday(): string {
+    return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Lisbon' }).format(new Date());
+  }
+  function addDays(iso: string, n: number): string {
+    const d = new Date(`${iso}T12:00:00Z`);
+    d.setUTCDate(d.getUTCDate() + n);
+    return d.toISOString().slice(0, 10);
+  }
+  function weekKey(iso: string): string {
+    const d = new Date(`${iso}T12:00:00Z`);
+    const monday = addDays(iso, -((d.getUTCDay() + 6) % 7));
+    return monday;
+  }
+  function fmtDay(iso: string | null): string {
+    if (!iso) return '';
+    return new Date(`${iso}T12:00:00Z`).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' });
+  }
+  /** The next Tuesday or Thursday that is free and keeps its week at two posts or fewer. */
+  function nextFreeDay(exceptId?: string): string {
+    const taken = state.entries
+      .filter((e) => e.post.status === 'approved' && e.post.publish_on && e.post.id !== exceptId)
+      .map((e) => e.post.publish_on as string);
+    let day = addDays(lisbonToday(), 1);
+    for (let i = 0; i < 120; i++, day = addDays(day, 1)) {
+      const dow = new Date(`${day}T12:00:00Z`).getUTCDay();
+      if (!POST_DAYS.includes(dow) || taken.includes(day)) continue;
+      if (taken.filter((t) => weekKey(t) === weekKey(day)).length >= PER_WEEK) continue;
+      return day;
+    }
+    return addDays(lisbonToday(), 1);
+  }
+  /** Same writing checks as tools/posts.mjs, as warnings: Miguel's text is his call. */
+  function warnings(text: string): string[] {
+    const w: string[] = [];
+    if (/[—–]/.test(text)) w.push('Has an em or en dash.');
+    if (/\S - \S/.test(text)) w.push('Has a spaced hyphen used as a separator.');
+    if (/https?:\/\/|www\./i.test(text)) w.push('Has a link in the text: LinkedIn shows those to fewer people. Use the first comment.');
+    const tags = text.match(/(^|\s)#[A-Za-z]\w*/g) || [];
+    if (tags.length > 3) w.push(`${tags.length} hashtags (3 at most).`);
+    if (text.length > 3000) w.push('Over LinkedIn\'s 3,000 character limit.');
+    return w;
+  }
+
+  // ── GitHub ───────────────────────────────────────────────
+  async function gh(method: string, path: string, body?: unknown) {
+    const res = await fetch(`${GH}${path}`, {
+      method,
+      headers: { Authorization: `Bearer ${state.token}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
+      body: body ? JSON.stringify(body) : undefined,
+      cache: 'no-store',
+    });
+    if (!res.ok) {
+      const err: any = new Error((await res.json().catch(() => ({}))).message || `HTTP ${res.status}`);
+      err.status = res.status;
+      throw err;
+    }
+    return res.status === 204 ? null : res.json();
+  }
+
+  async function load() {
+    state.loading = true; state.error = ''; render();
+    try {
+      const list = await gh('GET', `/repos/${OWNER}/${REPO}/contents/posts?ref=${BRANCH}`).catch((e: any) => {
+        if (e.status === 404) return [];
+        throw e;
+      });
+      const files = (list as any[]).filter((f) => f.name.endsWith('.json'));
+      state.entries = await Promise.all(files.map(async (f) => {
+        const data = await gh('GET', `/repos/${OWNER}/${REPO}/contents/${f.path}?ref=${BRANCH}`);
+        return { post: JSON.parse(b64decode(data.content)) as Post, sha: data.sha as string };
+      }));
+    } catch (e: any) {
+      state.error = e.status === 404
+        ? `Cannot see ${OWNER}/${REPO}. The token needs the full "repo" scope to read a private repo.`
+        : `Could not load the posts: ${e.message}`;
+    }
+    state.loading = false;
+    render();
+  }
+
+  async function save(entry: Entry, change: Partial<Post>, message: string) {
+    const post = { ...entry.post, ...change };
+    try {
+      const res = await gh('PUT', `/repos/${OWNER}/${REPO}/contents/posts/${post.id}.json`, {
+        message: `desk: ${message} ${post.id}`,
+        content: b64encode(`${JSON.stringify(post, null, 2)}\n`),
+        sha: entry.sha,
+        branch: BRANCH,
+      });
+      entry.post = post;
+      entry.sha = res.content.sha;
+      delete state.open[post.id];
+      toast(`Saved: ${message}`);
+      render();
+    } catch (e: any) {
+      if (e.status === 409) { toast('Changed somewhere else. Reloaded; try again.'); await load(); }
+      else toast(`Not saved: ${e.message}`);
+    }
+  }
+
+  async function copy(text: string, what: string) {
+    try { await navigator.clipboard.writeText(text); toast(`${what} copied`); }
+    catch { toast('Copy failed: select the text by hand'); }
+  }
+
+  // ── rendering ────────────────────────────────────────────
+  function preview(p: Post, text: string): string {
+    const fold = state.phone ? FOLD.phone : FOLD.desktop;
+    const lines = text.split('\n');
+    let cut = text.length;
+    if (lines.length > 3) cut = Math.min(cut, lines.slice(0, 3).join('\n').length);
+    cut = Math.min(cut, fold);
+    const expanded = state.open[p.id] === 'more' || state.open[p.id] === 'edit';
+    const shown = expanded || cut >= text.length ? text : text.slice(0, cut).replace(/\s+\S*$/, '');
+    const more = !expanded && cut < text.length
+      ? `<span>…</span><button class="li-more" data-act="more" data-id="${esc(p.id)}">see more</button>` : '';
+    const comment = p.first_comment
+      ? `<div class="li-comment"><b>First comment</b>${esc(p.first_comment)}</div>` : '';
+    return `<div class="li ${state.phone ? 'phone' : ''}">
+      <div class="li-head"><div class="li-av" style="background-image:url('/me/IMG_7.JPEG')"></div>
+        <div><div class="li-name">Miguel Vieira</div><div class="li-sub">Unreal Engine engineering lead</div><div class="li-sub">Now</div></div></div>
+      <div class="li-text">${esc(shown)}${more}</div>${comment}</div>`;
+  }
+
+  function sideInfo(p: Post): string {
+    const mat = (p.material || []).map((m) => {
+      const ref = /^https:\/\//.test(m.ref) ? `<a href="${esc(m.ref)}" target="_blank" rel="noopener">${esc(m.ref)}</a>` : `<code>${esc(m.ref)}</code>`;
+      return `<li>${esc(m.label)}<br>${ref}</li>`;
+    }).join('');
+    return `
+      ${p.notes ? `<h4>Notes from the task</h4><p>${esc(p.notes)}</p>` : ''}
+      ${p.image ? `<h4>Image</h4><p>${esc(p.image)}</p>` : ''}
+      ${mat ? `<h4>Drawn from</h4><ul>${mat}</ul>` : ''}
+      ${p.discard_reason ? `<h4>Discarded because</h4><p>${esc(p.discard_reason)}</p>` : ''}
+      ${p.posted_url ? `<h4>On LinkedIn</h4><p><a href="${esc(p.posted_url)}" target="_blank" rel="noopener">${esc(p.posted_url)}</a></p>` : ''}`;
+  }
+
+  function actions(p: Post): string {
+    const id = esc(p.id);
+    const b = (act: string, label: string, cls = '') => `<button class="btn ${cls}" data-act="${act}" data-id="${id}">${label}</button>`;
+    const copyBtns = b('copy', 'Copy text') + (p.first_comment ? b('copy-comment', 'Copy first comment') : '');
+    if (p.status === 'draft') return b('approve', 'Approve…', 'ok') + b('edit', 'Edit') + copyBtns + b('discard', 'Discard…', 'bad');
+    if (p.status === 'approved') return b('posted', 'Mark as posted…', 'ok') + copyBtns + b('edit', 'Edit') + b('approve', 'Change day…') + b('to-draft', 'Back to drafts');
+    if (p.status === 'posted') return copyBtns;
+    return b('to-draft', 'Back to drafts');
+  }
+
+  function dialog(p: Post): string {
+    const id = esc(p.id);
+    const mode = state.open[p.id];
+    if (mode === 'approve') {
+      const day = p.publish_on && p.status === 'approved' ? p.publish_on : nextFreeDay(p.id);
+      return `<div class="dialog"><label>Post on</label><input type="date" id="day-${id}" value="${day}">
+        <div class="actions"><button class="btn ok" data-act="approve-ok" data-id="${id}">Approve for this day</button>
+        <button class="btn" data-act="close" data-id="${id}">Cancel</button></div></div>`;
+    }
+    if (mode === 'discard') {
+      return `<div class="dialog"><label>Why? (the task learns from this)</label><textarea id="why-${id}" rows="3"></textarea>
+        <div class="actions"><button class="btn bad" data-act="discard-ok" data-id="${id}">Discard</button>
+        <button class="btn" data-act="close" data-id="${id}">Cancel</button></div></div>`;
+    }
+    if (mode === 'posted') {
+      return `<div class="dialog"><label>Link to the post on LinkedIn (optional)</label><input type="url" id="url-${id}" placeholder="https://www.linkedin.com/posts/...">
+        <div class="actions"><button class="btn ok" data-act="posted-ok" data-id="${id}">Mark as posted</button>
+        <button class="btn" data-act="close" data-id="${id}">Cancel</button></div></div>`;
+    }
+    return '';
+  }
+
+  function card(e: Entry): string {
+    const p = e.post;
+    const editing = state.open[p.id] === 'edit';
+    const edited = p.draft_text && p.text !== p.draft_text;
+    const n = p.text.length;
+    const meta = `<div class="meta"><span class="chip ${esc(p.pillar)}">${esc(PILLARS[p.pillar] || p.pillar)}</span>
+      ${edited ? '<span class="chip edited">edited</span>' : ''}
+      <span>written ${esc(fmtDay(p.created))}</span>
+      ${p.publish_on ? `<span>· for <b>${esc(fmtDay(p.publish_on))}</b></span>` : ''}
+      <span class="count ${n < 800 || n > 1500 ? 'out' : ''}">· ${n} chars</span></div>`;
+    const left = editing
+      ? `<div class="editor"><label>Post</label><textarea id="text-${esc(p.id)}" data-live="${esc(p.id)}">${esc(p.text)}</textarea>
+          <div class="count" id="count-${esc(p.id)}"></div><div class="warns" id="warns-${esc(p.id)}"></div>
+          <label>First comment (links go here)</label><textarea class="small" id="comment-${esc(p.id)}">${esc(p.first_comment || '')}</textarea>
+          <div class="actions"><button class="btn primary" data-act="edit-ok" data-id="${esc(p.id)}">Save</button>
+          <button class="btn" data-act="close" data-id="${esc(p.id)}">Cancel</button>
+          ${edited ? `<button class="btn" data-act="revert" data-id="${esc(p.id)}">Back to the task's version</button>` : ''}</div></div>`
+      : `${preview(p, p.text)}`;
+    const warn = !editing && p.status === 'draft' ? warnings(p.text) : [];
+    return `<article class="card" id="card-${esc(p.id)}">
+      <div>${meta}${left}${editing ? `<h4 style="margin:14px 0 6px;font-size:12px;color:var(--sub)">PREVIEW</h4><div id="live-${esc(p.id)}">${preview({ ...p, first_comment: '' }, p.text)}</div>` : ''}
+        ${warn.length ? `<div class="warns">${warn.map(esc).join('<br>')}</div>` : ''}
+        ${editing ? '' : `<div class="actions">${actions(p)}</div>${dialog(p)}`}</div>
+      <div class="side">${sideInfo(p) || '<p style="color:var(--sub)">No notes.</p>'}</div>
+    </article>`;
+  }
+
+  function sorted(status: string): Entry[] {
+    const list = state.entries.filter((e) => e.post.status === status);
+    if (status === 'approved') return list.sort((a, b) => (a.post.publish_on || '').localeCompare(b.post.publish_on || ''));
+    if (status === 'posted') return list.sort((a, b) => (b.post.publish_on || '').localeCompare(a.post.publish_on || ''));
+    return list.sort((a, b) => b.post.created.localeCompare(a.post.created));
+  }
+
+  function render() {
+    if (!state.token) { renderLogin(); return; }
+    const counts = Object.fromEntries(TABS.map((t) => [t.id, state.entries.filter((e) => e.post.status === t.id).length]));
+    const list = sorted(state.tab);
+    const nextDay = state.tab === 'draft' ? `Next free slot: <b>${esc(fmtDay(nextFreeDay()))}</b>` : '';
+    app.innerHTML = `
+      <header class="top"><h1>LinkedIn desk</h1><span class="who">${esc(state.user)}</span>
+        <a class="btn" href="/admin">Site admin</a>
+        <button class="btn" data-act="reload">Reload</button>
+        <button class="btn" data-act="logout">Sign out</button></header>
+      <div class="tabs">${TABS.map((t) => `<button class="tab ${state.tab === t.id ? 'on' : ''}" data-tab="${t.id}">${t.label}<b>${counts[t.id]}</b></button>`).join('')}</div>
+      <div class="bar">${nextDay}
+        <span style="margin-left:auto">Preview as</span>
+        <button class="tab ${state.phone ? '' : 'on'}" data-act="width" data-phone="0">Computer</button>
+        <button class="tab ${state.phone ? 'on' : ''}" data-act="width" data-phone="1">Phone</button></div>
+      ${state.error ? `<p class="err">${esc(state.error)}</p>` : ''}
+      ${state.loading ? '<p class="empty">Loading…</p>' : list.length ? list.map(card).join('') : '<p class="empty">Nothing here.</p>'}`;
+    for (const ta of app.querySelectorAll<HTMLTextAreaElement>('textarea[data-live]')) {
+      const id = ta.dataset.live!;
+      const update = () => {
+        const e = find(id);
+        if (!e) return;
+        document.getElementById(`live-${id}`)!.innerHTML = preview({ ...e.post, first_comment: '' }, ta.value);
+        const c = document.getElementById(`count-${id}`)!;
+        c.textContent = `${ta.value.length} characters (aim for 800 to 1,500)`;
+        c.className = `count ${ta.value.length < 800 || ta.value.length > 1500 ? 'out' : ''}`;
+        document.getElementById(`warns-${id}`)!.innerHTML = warnings(ta.value).map(esc).join('<br>');
+      };
+      ta.addEventListener('input', update);
+      update();
+    }
+  }
+
+  function renderLogin(err = '') {
+    app.innerHTML = `<div class="login"><h1>LinkedIn desk</h1>
+      <p>Sign in with the same GitHub token as the site admin: a classic token with the <b>repo</b> scope, so it can read the private drafts repo. It stays in this tab only.</p>
+      <input type="password" id="token" placeholder="ghp_..." autocomplete="off">
+      <button class="btn primary" data-act="login">Sign in</button>
+      ${err ? `<p class="err">${esc(err)}</p>` : ''}</div>`;
+    (document.getElementById('token') as HTMLInputElement).addEventListener('keydown', (e) => { if (e.key === 'Enter') login(); });
+  }
+
+  async function login() {
+    const token = (document.getElementById('token') as HTMLInputElement).value.trim();
+    if (!token) return;
+    state.token = token;
+    try {
+      const u = await gh('GET', '/user');
+      state.user = u.login;
+      sessionStorage.setItem('admin_token', token);
+      await load();
+    } catch {
+      state.token = null;
+      renderLogin('That token did not work.');
+    }
+  }
+
+  function find(id: string): Entry | undefined { return state.entries.find((e) => e.post.id === id); }
+
+  // ── events ───────────────────────────────────────────────
+  app.addEventListener('click', async (ev) => {
+    const el = (ev.target as HTMLElement).closest<HTMLElement>('[data-act],[data-tab]');
+    if (!el) return;
+    if (el.dataset.tab) { state.tab = el.dataset.tab; state.open = {}; render(); return; }
+    const act = el.dataset.act!;
+    const id = el.dataset.id || '';
+    const e = find(id);
+    switch (act) {
+      case 'login': return login();
+      case 'logout': sessionStorage.removeItem('admin_token'); state.token = null; state.entries = []; return render();
+      case 'reload': return load();
+      case 'width': state.phone = el.dataset.phone === '1'; localStorage.setItem('li_desk_phone', state.phone ? '1' : '0'); return render();
+      case 'more': state.open[id] = 'more'; return render();
+      case 'close': delete state.open[id]; return render();
+      case 'edit': case 'approve': case 'discard': case 'posted':
+        state.open = { [id]: act }; render();
+        document.getElementById(`card-${id}`)?.scrollIntoView({ block: 'nearest' });
+        return;
+    }
+    if (!e) return;
+    const p = e.post;
+    switch (act) {
+      case 'copy': return copy(p.text, 'Post');
+      case 'copy-comment': return copy(p.first_comment || '', 'First comment');
+      case 'edit-ok': {
+        const text = (document.getElementById(`text-${id}`) as HTMLTextAreaElement).value;
+        const first_comment = (document.getElementById(`comment-${id}`) as HTMLTextAreaElement).value.trim();
+        if (!text.trim()) return toast('The post is empty.');
+        return save(e, { text, first_comment }, 'edit');
+      }
+      case 'revert': return save(e, { text: p.draft_text }, 'revert');
+      case 'approve-ok': {
+        const day = (document.getElementById(`day-${id}`) as HTMLInputElement).value;
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return toast('Pick a day.');
+        return save(e, { status: 'approved', publish_on: day, discard_reason: null }, 'approve');
+      }
+      case 'discard-ok': {
+        const why = (document.getElementById(`why-${id}`) as HTMLTextAreaElement).value.trim();
+        if (!why) return toast('Say why, in a few words: the next drafts learn from it.');
+        return save(e, { status: 'discarded', discard_reason: why, publish_on: null }, 'discard');
+      }
+      case 'posted-ok': {
+        const url = (document.getElementById(`url-${id}`) as HTMLInputElement).value.trim();
+        if (url && !/^https:\/\/(www\.)?linkedin\.com\//.test(url)) return toast('That is not a linkedin.com link.');
+        return save(e, { status: 'posted', posted_url: url || null, publish_on: p.publish_on || lisbonToday() }, 'posted');
+      }
+      case 'to-draft': return save(e, { status: 'draft', publish_on: null, discard_reason: null }, 'back to draft');
+    }
+  });
+
+  (async () => {
+    if (!state.token) return render();
+    try {
+      state.user = (await gh('GET', '/user')).login;
+      await load();
+    } catch {
+      sessionStorage.removeItem('admin_token');
+      state.token = null;
+      render();
+    }
+  })();
+  </script>
+</body>
+</html>
