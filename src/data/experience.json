@@ -23,7 +23,7 @@
     "bullets": [
       "Directed the engineering and gameplay team on Timefront, an RTS / battle-royale hybrid built in Unreal Engine 5; now consult on it occasionally.",
       "Architected extensible gameplay systems on the **Gameplay Ability System** that scale to hundreds of concurrent actors in a single session, with character animation on **vertex animation textures** (VAT) and spatial optimizations.",
-      "Profiled in **Unreal Insights** and planned the refactors that took 400 on-map characters from 8 to 60 fps.",
+      "Profiled 400 on-map characters at 8 fps in **Unreal Insights** (ticks, perception, and AI behaviors dominated) and planned the refactor: a quadtree spatial system for perception, fog of war, and replication relevancy, plus event-driven **StateTree**s.",
       "Led the multiplayer architecture and the project refactor and migration to support it, implementing **Replication Graph** and features hands-on.",
       "Hired and grew the gameplay engineering team: technical interviews, onboarding, and training for junior and mid engineers.",
       "Partnered with Cinematics, VFX, Character, and Technical Art leads to land integrated gameplay features end-to-end.",
